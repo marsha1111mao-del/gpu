@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "release": {
+    "repository": "marsha1111mao-del/gpu",
+    "tag": "rootfs-20260603",
+    "url": "https://github.com/marsha1111mao-del/gpu/releases/tag/rootfs-20260603"
+  },
+  "destination_dir": "GPU-SFTP/firecracker-bins/rootfs",
+  "created_at": "2026-06-03T23:15:50+08:00",
+  "artifacts": [
+    {
+      "name": "rootfs.ext2",
+      "purpose": "Lightweight Firecracker rootfs used by vmshm/shared-virtualization and simple passthrough shell tests.",
+      "path": "GPU-SFTP/firecracker-bins/rootfs/rootfs.ext2",
+      "size": 268435456,
+      "sha256": "ccfe04443e5a9dd16a2dd1111399d9473b140f53a0545e8d7f502fd84c22d1f2",
+      "source": "root@192.168.137.10:/root/GPU-SFTP/firecracker-bins/rootfs/rootfs.ext2",
+      "url": "https://github.com/marsha1111mao-del/gpu/releases/download/rootfs-20260603/rootfs.ext2"
+    },
+    {
+      "name": "rootfs-panfrost.ext4",
+      "purpose": "Panfrost/Mesa userspace rootfs used by host-vs-passthrough GPU performance workflows.",
+      "path": "GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4",
+      "size": 1610612736,
+      "sha256": "3e491917386cec88ed4eba1d59036c8ba4a94ea8547444c9da4c48e1a22c5174",
+      "source": "root@192.168.137.10:/root/GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4",
+      "url": "https://github.com/marsha1111mao-del/gpu/releases/download/rootfs-20260603/rootfs-panfrost.ext4"
+    }
+  ]
+}

@@ -37,6 +37,7 @@ Clone the workspace and first-level component source repositories with:
 git clone https://github.com/marsha1111mao-del/gpu.git
 cd gpu
 git submodule update --init
+./scripts/artifacts/fetch-rootfs.sh
 ```
 
 For an existing clone, initialize or refresh first-level submodules with:
@@ -51,3 +52,19 @@ commit the updated submodule pointer in this superproject.
 Some component repositories may have their own nested submodule setup. Keep
 those nested dependencies managed inside the component repository that owns
 them.
+
+## Runtime Artifacts
+
+Large generated payloads stay out of Git history. Most binaries and kernels are
+rebuilt from the tracked source repositories through `scripts/build/`; the two
+Firecracker rootfs images are distributed as pinned GitHub Release assets:
+
+```bash
+./scripts/artifacts/fetch-rootfs.sh
+```
+
+The fetch script reads `GPU-SFTP/rootfs-manifest.json`, downloads
+`rootfs.ext2` and `rootfs-panfrost.ext4` into
+`GPU-SFTP/firecracker-bins/rootfs/`, verifies their sizes and SHA-256 hashes,
+and leaves already-valid local copies untouched. See `GPU-SFTP/ARTIFACTS.md`
+for the full rebuild/restore policy.
