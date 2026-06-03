@@ -1,0 +1,21 @@
+{
+  "boot-source": {
+    "kernel_image_path": "/root/GPU-SFTP/firecracker-bins/kernels/passthrough/Image",
+    "boot_args": "console=ttyS0 root=/dev/vda rw rootfstype=ext4 init=/bin/sh"
+  },
+  "drives": [
+    {
+      "drive_id": "rootfs",
+      "path_on_host": "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs.ext2",
+      "is_root_device": false,
+      "is_read_only": false
+    }
+  ],
+  "machine-config": {
+    "vcpu_count": 1,
+    "mem_size_mib": 512,
+    "cpu_template": null,
+    "gpu_passthrough": true,
+    "dump_fdt_path": "/root/GPU-SFTP/artifacts/dtb/firecracker.dtb"
+  }
+}

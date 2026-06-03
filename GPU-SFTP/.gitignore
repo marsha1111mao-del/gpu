@@ -1,0 +1,80 @@
+# Local editor connection state. Keep .vscode.example/ in Git instead.
+.vscode/
+
+# Runtime logs: keep directory skeleton via .gitkeep only.
+/log/**
+!/log/
+!/log/.gitkeep
+!/log/passthrough/
+!/log/passthrough/.gitkeep
+!/log/passthrough/perf/
+!/log/passthrough/perf/.gitkeep
+!/log/passthrough/probe/
+!/log/passthrough/probe/.gitkeep
+!/log/shared/
+!/log/shared/.gitkeep
+!/log/shared/vmshm-1client/
+!/log/shared/vmshm-1client/.gitkeep
+!/log/shared/vmshm-2client/
+!/log/shared/vmshm-2client/.gitkeep
+
+# Firecracker runtime binaries rebuilt by ../firecracker/sftp-build.sh and
+# GPU-SFTP/tests/* build scripts.
+/firecracker-bins/bin/**
+!/firecracker-bins/bin/
+!/firecracker-bins/bin/.gitkeep
+
+# Guest kernel Images rebuilt by ../Linux-Guest-GPU build scripts.
+/firecracker-bins/kernels/**
+!/firecracker-bins/kernels/
+!/firecracker-bins/kernels/.gitkeep
+!/firecracker-bins/kernels/passthrough/
+!/firecracker-bins/kernels/passthrough/.gitkeep
+!/firecracker-bins/kernels/passthrough/backups/
+!/firecracker-bins/kernels/passthrough/backups/.gitkeep
+!/firecracker-bins/kernels/shared/
+!/firecracker-bins/kernels/shared/.gitkeep
+!/firecracker-bins/kernels/shared/client/
+!/firecracker-bins/kernels/shared/client/.gitkeep
+!/firecracker-bins/kernels/shared/proxy/
+!/firecracker-bins/kernels/shared/proxy/.gitkeep
+
+# Rootfs images, mounts, and rootfs build workdirs are local/remote artifacts.
+/firecracker-bins/rootfs/**
+!/firecracker-bins/rootfs/
+!/firecracker-bins/rootfs/.gitkeep
+!/firecracker-bins/rootfs/mounts/
+!/firecracker-bins/rootfs/mounts/.gitkeep
+!/firecracker-bins/rootfs/work/
+!/firecracker-bins/rootfs/work/.gitkeep
+!/firecracker-bins/rootfs/**/.gitkeep
+*.ext2
+*.ext4
+*.img
+
+# Generated Firecracker DTB/DTS dumps. Keep helper scripts in artifacts/dtb/.
+/artifacts/dtb/*.dtb
+/artifacts/dtb/*.dts
+
+# Built test payloads.
+/tests/panthor-ioctl-smoke/panthor_ioctl_smoke
+/tests/vmshm-test/vmshm_demo
+
+# Host kernel deployment payloads are produced by ../scripts/deploy-host-kernel-and-test.sh.
+/linux-host-kernel/Image
+/linux-host-kernel/image_map_*
+/linux-host-kernel/lib/
+/linux-host-kernel/modules-staging/**
+!/linux-host-kernel/modules-staging/
+!/linux-host-kernel/modules-staging/.gitkeep
+!/linux-host-kernel/modules-staging/selected-modules.txt
+
+# Generic local build leftovers.
+*.o
+*.a
+*.so
+*.ko
+*.tmp
+*.pid
+*.sock
+core

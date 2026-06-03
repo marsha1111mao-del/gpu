@@ -1,0 +1,48 @@
+{
+  "boot-source": {
+    "kernel_image_path": "/root/GPU-SFTP/firecracker-bins/kernels/shared/client/Image",
+    "boot_args": "console=ttyS0 root=/dev/vda rw rootfstype=ext4 init=/bin/sh"
+  },
+  "drives": [
+    {
+      "drive_id": "rootfs",
+      "path_on_host": "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs.ext2",
+      "is_root_device": false,
+      "is_read_only": false
+    }
+  ],
+  "machine-config": {
+    "vcpu_count": 1,
+    "mem_size_mib": 512,
+    "cpu_template": null,
+    "gpu_passthrough": false,
+    "dump_fdt_path": "/root/GPU-SFTP/artifacts/dtb/vmshm-2client-client1.dtb"
+  },
+  "vmshm": [
+    {
+      "socket_path": "/run/vmshm/vmshm-object.sock",
+      "name": "vmshm-object-client1",
+      "role": "client",
+      "guest_phys_addr": "0x20000000",
+      "slot": 1,
+      "expected_size": 67108864,
+      "fdt_node_name": "client-vmshm-manager",
+      "fdt_compatible": "client-vmshm-manager"
+    },
+    {
+      "socket_path": "/run/vmshm/vmshm-comm-client1.sock",
+      "name": "vmshm-comm-client1-client",
+      "role": "client",
+      "guest_phys_addr": "0x24000000",
+      "slot": 2,
+      "expected_size": 33554432,
+      "fdt_node_name": "client_comm_vmshm",
+      "fdt_compatible": "client_comm_vmshm",
+      "notify": {
+        "doorbell_addr": "0x2f000000",
+        "doorbell_size": "0x1000",
+        "irq": 80
+      }
+    }
+  ]
+}

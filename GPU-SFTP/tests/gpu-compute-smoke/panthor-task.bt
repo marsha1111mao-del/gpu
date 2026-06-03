@@ -1,0 +1,130 @@
+/*
+ * bpftrace helper for observing Panthor GPU task lifetime in the guest.
+ *
+ * Run inside the guest, for example:
+ *   bpftrace /root/panthor-task.bt
+ *
+ * This script intentionally hooks driver functions instead of only the
+ * sys_enter_ioctl tracepoint. The DRM core has already copied userspace ioctl
+ * data into kernel memory by the time panthor_ioctl_*() handlers run, so these
+ * fields are easier to read.
+ */
+
+BEGIN
+{
+  printf("panthor-task.bt: tracing Panthor ioctl/job path\n");
+}
+
+tracepoint:syscalls:sys_enter_ioctl
+{
+  $cmd = args->cmd;
+  if ($cmd == 0xc0106440) {
+    printf("IOCTL pid=%d comm=%s fd=%d DEV_QUERY arg=0x%lx\n", pid, comm, args->fd, args->arg);
+  } else if ($cmd == 0xc0106441) {
+    printf("IOCTL pid=%d comm=%s fd=%d VM_CREATE arg=0x%lx\n", pid, comm, args->fd, args->arg);
+  } else if ($cmd == 0xc0086442) {
+    printf("IOCTL pid=%d comm=%s fd=%d VM_DESTROY arg=0x%lx\n", pid, comm, args->fd, args->arg);
+  } else if ($cmd == 0xc0186443) {
+    printf("IOCTL pid=%d comm=%s fd=%d VM_BIND arg=0x%lx\n", pid, comm, args->fd, args->arg);
+  } else if ($cmd == 0xc0086444) {
+    printf("IOCTL pid=%d comm=%s fd=%d VM_GET_STATE arg=0x%lx\n", pid, comm, args->fd, args->arg);
+  } else if ($cmd == 0xc0186445) {
+    printf("IOCTL pid=%d comm=%s fd=%d BO_CREATE arg=0x%lx\n", pid, comm, args->fd, args->arg);
+  } else if ($cmd == 0xc0106446) {
+    printf("IOCTL pid=%d comm=%s fd=%d BO_MMAP_OFFSET arg=0x%lx\n", pid, comm, args->fd, args->arg);
+  } else if ($cmd == 0xc0386447) {
+    printf("IOCTL pid=%d comm=%s fd=%d GROUP_CREATE arg=0x%lx\n", pid, comm, args->fd, args->arg);
+  } else if ($cmd == 0xc0086448) {
+    printf("IOCTL pid=%d comm=%s fd=%d GROUP_DESTROY arg=0x%lx\n", pid, comm, args->fd, args->arg);
+  } else if ($cmd == 0xc0186449) {
+    printf("IOCTL pid=%d comm=%s fd=%d GROUP_SUBMIT arg=0x%lx\n", pid, comm, args->fd, args->arg);
+  } else if ($cmd == 0xc010644a) {
+    printf("IOCTL pid=%d comm=%s fd=%d GROUP_GET_STATE arg=0x%lx\n", pid, comm, args->fd, args->arg);
+  } else if ($cmd == 0xc028644b) {
+    printf("IOCTL pid=%d comm=%s fd=%d TILER_HEAP_CREATE arg=0x%lx\n", pid, comm, args->fd, args->arg);
+  } else if ($cmd == 0xc008644c) {
+    printf("IOCTL pid=%d comm=%s fd=%d TILER_HEAP_DESTROY arg=0x%lx\n", pid, comm, args->fd, args->arg);
+  }
+}
+
+kprobe:panthor_ioctl_group_submit
+{
+  $p = (uint64)arg1;
+  $group = *(uint32*)($p + 0);
+  $count = *(uint32*)($p + 12);
+  $array = *(uint64*)($p + 16);
+  printf("GROUP_SUBMIT pid=%d comm=%s group=%u qsubmit_count=%u qsubmit_array=0x%lx\n",
+         pid, comm, $group, $count, $array);
+}
+
+kretprobe:panthor_ioctl_group_submit
+{
+  printf("GROUP_SUBMIT_RET pid=%d comm=%s ret=%d\n", pid, comm, retval);
+}
+
+kprobe:panthor_job_create
+{
+  $q = (uint64)arg2;
+  $queue_index = *(uint32*)($q + 0);
+  $stream_size = *(uint32*)($q + 4);
+  $stream_addr = *(uint64*)($q + 8);
+  $latest_flush = *(uint32*)($q + 16);
+  $sync_count = *(uint32*)($q + 28);
+  printf("JOB_CREATE pid=%d comm=%s group=%u queue=%u stream_addr=0x%lx stream_size=%u latest_flush=%u sync_count=%u\n",
+         pid, comm, (uint32)arg1, $queue_index, $stream_addr, $stream_size,
+         $latest_flush, $sync_count);
+}
+
+kretprobe:panthor_job_create
+{
+  printf("JOB_CREATE_RET pid=%d comm=%s job=0x%lx\n", pid, comm, retval);
+}
+
+kprobe:panthor_ioctl_vm_bind
+{
+  $p = (uint64)arg1;
+  $vm_id = *(uint32*)($p + 0);
+  $flags = *(uint32*)($p + 4);
+  $op_count = *(uint32*)($p + 12);
+  $op_array = *(uint64*)($p + 16);
+  printf("VM_BIND pid=%d comm=%s vm=%u flags=0x%x op_count=%u op_array=0x%lx\n",
+         pid, comm, $vm_id, $flags, $op_count, $op_array);
+}
+
+kretprobe:panthor_ioctl_vm_bind
+{
+  printf("VM_BIND_RET pid=%d comm=%s ret=%d\n", pid, comm, retval);
+}
+
+kprobe:panthor_vm_bind_exec_sync_op
+{
+  $op = (uint64)arg2;
+  $flags = *(uint32*)($op + 0);
+  $bo = *(uint32*)($op + 4);
+  $bo_off = *(uint64*)($op + 8);
+  $va = *(uint64*)($op + 16);
+  $size = *(uint64*)($op + 24);
+  $sync_count = *(uint32*)($op + 36);
+  printf("VM_BIND_SYNC_OP pid=%d comm=%s flags=0x%x bo=%u bo_off=0x%lx va=0x%lx size=0x%lx sync_count=%u\n",
+         pid, comm, $flags, $bo, $bo_off, $va, $size, $sync_count);
+}
+
+kretprobe:panthor_vm_bind_exec_sync_op
+{
+  printf("VM_BIND_SYNC_OP_RET pid=%d comm=%s ret=%d\n", pid, comm, retval);
+}
+
+kprobe:queue_run_job
+{
+  printf("JOB_RUN pid=%d comm=%s sched_job=0x%lx\n", pid, comm, arg0);
+}
+
+kprobe:queue_timedout_job
+{
+  printf("JOB_TIMEOUT pid=%d comm=%s sched_job=0x%lx\n", pid, comm, arg0);
+}
+
+END
+{
+  printf("panthor-task.bt: done\n");
+}

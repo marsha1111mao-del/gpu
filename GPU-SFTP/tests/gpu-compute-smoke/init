@@ -1,0 +1,48 @@
+#!/bin/sh
+
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
+export PATH
+
+mountpoint -q /proc || mount -t proc proc /proc
+mountpoint -q /sys || mount -t sysfs sysfs /sys
+mountpoint -q /dev || mount -t devtmpfs devtmpfs /dev
+
+mkdir -p /dev/pts /dev/shm /run /tmp
+mountpoint -q /dev/pts || mount -t devpts devpts /dev/pts
+mountpoint -q /dev/shm || mount -t tmpfs tmpfs /dev/shm
+mountpoint -q /run || mount -t tmpfs tmpfs /run
+mountpoint -q /tmp || mount -t tmpfs tmpfs /tmp
+chmod 1777 /tmp /dev/shm
+
+hostname firecracker-gpu-smoke 2>/dev/null || true
+
+echo "[init] starting GPU passthrough user-space smoke test"
+
+if [ -f /root/gpu-smoke.env ]; then
+	# shellcheck disable=SC1091
+	. /root/gpu-smoke.env
+fi
+
+/root/gpu-smoke.sh
+rc=$?
+if [ "${rc}" -eq 0 ]; then
+	echo "[init] GPU_SMOKE_RESULT=PASS"
+else
+	echo "[init] GPU_SMOKE_RESULT=FAIL rc=${rc}"
+fi
+
+sync
+case "${GPU_SMOKE_AFTER_RUN:-shell}" in
+poweroff | halt)
+	echo "[init] smoke test finished; powering off"
+	poweroff -f 2>/dev/null || halt -f 2>/dev/null || exit "${rc}"
+	;;
+exit)
+	echo "[init] smoke test finished; exiting init"
+	exit "${rc}"
+	;;
+*)
+	echo "[init] smoke test finished; entering shell"
+	exec /bin/sh
+	;;
+esac

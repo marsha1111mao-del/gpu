@@ -1,20 +1,28 @@
 # GPU Workspace
 
-This repository is a superproject for the local GPU virtualization workspace.
-It tracks the top-level orchestration files and records the exact commits of
-the component repositories used together.
+This repository is the main workspace for the local GPU virtualization project.
+It tracks the orchestration scripts, GPU-SFTP deploy layout, and project docs
+directly, while recording the exact commits of the large component source
+repositories used together.
 
-## Submodules
+## Directories Tracked Directly
 
 - `docs`
 - `GPU-SFTP`
+- `scripts`
+- `.vscode`
+- `firecracker/config`
+- `firecracker/sftp-build.sh`
+
+## Submodules
+
 - `Linux-Host-GPU`
 - `Linux-Guest-GPU`
 - `firecracker/Firecracker-CCA-MZH`
 - `firecracker/firecracker-deps`
 - `firecracker/vmshm-broker`
 
-Clone the workspace and first-level component repositories with:
+Clone the workspace and first-level component source repositories with:
 
 ```bash
 git clone https://github.com/marsha1111mao-del/gpu.git

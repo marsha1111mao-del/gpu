@@ -1,0 +1,23 @@
+[broker]
+socket_dir = "/run/vmshm"
+
+[[domains]]
+id = "vmshm-object"
+socket_path = "/run/vmshm/vmshm-object.sock"
+memfd_name = "vmshm-object-2client"
+window_size = 67108864
+seal = true
+
+[[domains]]
+id = "vmshm-comm-client0"
+socket_path = "/run/vmshm/vmshm-comm-client0.sock"
+memfd_name = "vmshm-comm-client0"
+window_size = 33554432
+seal = true
+
+[[domains]]
+id = "vmshm-comm-client1"
+socket_path = "/run/vmshm/vmshm-comm-client1.sock"
+memfd_name = "vmshm-comm-client1"
+window_size = 33554432
+seal = true

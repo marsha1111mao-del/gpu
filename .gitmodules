@@ -1,9 +1,3 @@
-[submodule "docs"]
-	path = docs
-	url = https://github.com/marsha1111mao-del/docs.git
-[submodule "GPU-SFTP"]
-	path = GPU-SFTP
-	url = https://github.com/marsha1111mao-del/GPU-SFTP.git
 [submodule "Linux-Host-GPU"]
 	path = Linux-Host-GPU
 	url = https://github.com/marsha1111mao-del/Linux-Host-GPU.git
