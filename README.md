@@ -12,6 +12,10 @@ repositories used together.
 - `scripts`
 - `.vscode`
 
+Codex skill guidance for GPU passthrough/shared virtualization testing is
+versioned under `docs/skills/`. The live runtime copies remain under
+`/home/mzh/.codex/skills/`.
+
 Workspace-owned scripts are grouped by purpose:
 
 - `scripts/build`: build and install artifacts produced from component repos.
