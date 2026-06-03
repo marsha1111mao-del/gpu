@@ -1,9 +1,17 @@
 {
   "git.autoRepositoryDetection": "subFolders",
   "git.repositoryScanMaxDepth": 4,
-  "git.detectSubmodules": true,
-  "git.scanRepositories": [
+  "git.repositoryScanIgnoredFolders": [
+    "docs",
     "GPU-SFTP",
+    "node_modules"
+  ],
+  "git.detectSubmodules": true,
+  "git.ignoredRepositories": [
+    "docs",
+    "GPU-SFTP"
+  ],
+  "git.scanRepositories": [
     "Linux-Host-GPU",
     "Linux-Guest-GPU",
     "firecracker/Firecracker-CCA-MZH",
