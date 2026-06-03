@@ -1,0 +1,28 @@
+# Top-level workspace cache/build outputs.
+*.log
+*.tmp
+*.pid
+*.sock
+*.img
+*.ext2
+*.ext4
+*.dtb
+*.dts
+
+# Python/editor/local cache.
+__pycache__/
+.pytest_cache/
+.cache/
+
+# Kernel and Rust build outputs that should live inside their component repos.
+out/
+build/
+target/
+
+# Runtime logs/artifacts are handled by component repos such as GPU-SFTP.
+run-logs/
+log/
+
+# Local secrets. Commit examples instead of real machine credentials.
+**/.vscode/sftp.json
+

@@ -1,0 +1,21 @@
+[submodule "docs"]
+	path = docs
+	url = https://github.com/marsha1111mao-del/docs.git
+[submodule "GPU-SFTP"]
+	path = GPU-SFTP
+	url = https://github.com/marsha1111mao-del/GPU-SFTP.git
+[submodule "Linux-Host-GPU"]
+	path = Linux-Host-GPU
+	url = https://github.com/marsha1111mao-del/Linux-Host-GPU.git
+[submodule "Linux-Guest-GPU"]
+	path = Linux-Guest-GPU
+	url = https://github.com/marsha1111mao-del/Linux-Guest-GPU.git
+[submodule "firecracker/Firecracker-CCA-MZH"]
+	path = firecracker/Firecracker-CCA-MZH
+	url = https://github.com/marsha1111mao-del/Firecracker-CCA-MZH.git
+[submodule "firecracker/firecracker-deps"]
+	path = firecracker/firecracker-deps
+	url = https://github.com/marsha1111mao-del/firecracker-deps.git
+[submodule "firecracker/vmshm-broker"]
+	path = firecracker/vmshm-broker
+	url = https://github.com/marsha1111mao-del/vmshm-broker.git

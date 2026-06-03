@@ -1,0 +1,13 @@
+{
+  "git.autoRepositoryDetection": "subFolders",
+  "git.repositoryScanMaxDepth": 4,
+  "git.detectSubmodules": true,
+  "git.scanRepositories": [
+    "GPU-SFTP",
+    "Linux-Host-GPU",
+    "Linux-Guest-GPU",
+    "firecracker/Firecracker-CCA-MZH",
+    "firecracker/firecracker-deps",
+    "firecracker/vmshm-broker"
+  ]
+}

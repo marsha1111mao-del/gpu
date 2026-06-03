@@ -1,0 +1,41 @@
+{
+  "boot-source": {
+    "kernel_image_path": "/root/GPU-SFTP/firecracker-bins/kernels/shared/proxy/Image",
+    "boot_args": "console=ttyS0 root=/dev/vda rw rootfstype=ext4 init=/bin/sh"
+  },
+  "drives": [
+    {
+      "drive_id": "rootfs",
+      "path_on_host": "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs.ext2",
+      "is_root_device": false,
+      "is_read_only": false
+    }
+  ],
+  "machine-config": {
+    "vcpu_count": 1,
+    "mem_size_mib": 512,
+    "cpu_template": null
+  },
+  "vmshm": [
+    {
+        "socket_path": "/run/vmshm/vmshm-object.sock",
+        "name": "vmshm-object-proxy",
+        "role": "proxy",
+        "guest_phys_addr": "0x20000000",
+        "slot": 1,
+        "expected_size": 67108864,
+        "fdt_node_name": "proxy-vmshm-manager",
+        "fdt_compatible": "proxy-vmshm-manager"
+    },
+    {
+        "socket_path": "/run/vmshm/vmshm-comm.sock",
+        "name": "vmshm-comm-proxy",
+        "role": "proxy",
+        "guest_phys_addr": "0x24000000",
+        "slot": 2,
+        "expected_size": 33554432,
+        "fdt_node_name": "proxy_comm_vmshm",
+        "fdt_compatible": "proxy_comm_vmshm"
+    }
+  ]
+}
