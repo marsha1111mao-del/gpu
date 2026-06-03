@@ -164,7 +164,7 @@ Standard command:
 ```bash
 cd /home/mzh/gpu
 RUN_ID=gpu-perf-host-vs-passthrough-$(date +%Y%m%d-%H%M%S) \
-  ./scripts/run-host-vs-passthrough-gles-perf.sh \
+  ./scripts/run/run-host-vs-passthrough-gles-perf.sh \
   --host-rootfs-userspace \
   --iterations 100 \
   --warmup 5 \
@@ -297,7 +297,7 @@ Default shared test is one proxy VM plus one client VM:
 ```bash
 cd /home/mzh/gpu
 RUN_ID=vmshm-1client-devquery-$(date +%Y%m%d-%H%M%S) \
-  ./scripts/run-vmshm-e2e.sh
+  ./scripts/run/run-vmshm-e2e.sh
 ```
 
 Fast log-path or behavior verification can use:
@@ -305,7 +305,7 @@ Fast log-path or behavior verification can use:
 ```bash
 cd /home/mzh/gpu
 RUN_ID=vmshm-logpath-1client-$(date +%Y%m%d-%H%M%S) \
-  ./scripts/run-vmshm-e2e.sh --skip-build
+  ./scripts/run/run-vmshm-e2e.sh --skip-build
 ```
 
 Fast retest of the current session/devquery/vm-create surface should avoid
@@ -314,7 +314,7 @@ full rebuilds when code has not changed:
 ```bash
 cd /home/mzh/gpu
 RUN_ID=vmshm-1client-vm-create-rerun-$(date +%Y%m%d-%H%M%S) \
-  ./scripts/run-vmshm-e2e.sh --skip-build --vm-create-smoke
+  ./scripts/run/run-vmshm-e2e.sh --skip-build --vm-create-smoke
 ```
 
 Shared virtualization build policy is artifact-reuse first. The known-good
@@ -389,12 +389,13 @@ This run verified that the new shared log path works and that obsolete remote
 
 ## Scripts
 
-Main scripts are under `/home/mzh/gpu/scripts`:
+Main scripts are grouped under `/home/mzh/gpu/scripts`:
 
-- `run-host-vs-passthrough-gles-perf.sh`
-- `deploy-host-kernel-and-test.sh`
-- `run-vmshm-e2e.sh`
-- `run-vmshm-2client-e2e.sh`
+- `scripts/build/`: component artifact build/install wrappers.
+- `scripts/deploy/deploy-host-kernel-and-test.sh`
+- `scripts/run/run-host-vs-passthrough-gles-perf.sh`
+- `scripts/run/run-vmshm-e2e.sh`
+- `scripts/run/run-vmshm-2client-e2e.sh`
 
 They were updated to use `SFTP_LOG_ROOT="${SFTP_ROOT}/log"` and
 `REMOTE_LOG_ROOT="${REMOTE_ROOT}/log"`, with subdirectories by test kind. They

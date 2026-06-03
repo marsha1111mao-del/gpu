@@ -62,8 +62,8 @@ Canonical guest Image: /root/GPU-SFTP/firecracker-bins/kernels/passthrough/Image
 如果只修改 GPU passthrough guest kernel 代码，例如 guest `panthor`、guest io-pgtable 或 passthrough page-table 逻辑，不需要构建 vmshm client/proxy 两套 role kernel。使用单内核构建脚本：
 
 ```bash
-cd /home/mzh/gpu/Linux-Guest-GPU
-./build-arm64-passthrough-kernel.sh
+cd /home/mzh/gpu
+./scripts/build/build-guest-passthrough-kernel.sh
 ```
 
 该脚本只构建普通 Panthor guest `Image`，并安装到：
@@ -78,7 +78,7 @@ host kernel 修改后通常只需要替换 host `Image` 并重启。完整 modul
 
 ```bash
 cd /home/mzh/gpu
-./scripts/deploy-host-kernel-and-test.sh \
+./scripts/deploy/deploy-host-kernel-and-test.sh \
   --skip-firecracker-build \
   --skip-tests \
   --run-id-prefix gpu-perf-host-kernel-fast
@@ -88,7 +88,7 @@ cd /home/mzh/gpu
 
 ```bash
 cd /home/mzh/gpu
-./scripts/deploy-host-kernel-and-test.sh \
+./scripts/deploy/deploy-host-kernel-and-test.sh \
   --skip-firecracker-build \
   --skip-tests \
   --host-modules drivers/gpu/drm/panthor/panthor.ko \
@@ -177,7 +177,7 @@ COMPUTE_CHECK=PASS count=... samples=...
 ```bash
 cd /home/mzh/gpu
 RUN_ID=gpu-perf-host-vs-passthrough-$(date +%Y%m%d-%H%M%S) \
-  ./scripts/run-host-vs-passthrough-gles-perf.sh \
+  ./scripts/run/run-host-vs-passthrough-gles-perf.sh \
   --host-rootfs-userspace \
   --iterations 100 \
   --warmup 5 \
@@ -193,7 +193,7 @@ RUN_ID=gpu-perf-host-vs-passthrough-$(date +%Y%m%d-%H%M%S) \
 
 ```bash
 RUN_ID=gpu-perf-host-vs-passthrough-fast-$(date +%Y%m%d-%H%M%S) \
-  ./scripts/run-host-vs-passthrough-gles-perf.sh \
+  ./scripts/run/run-host-vs-passthrough-gles-perf.sh \
   --host-rootfs-userspace \
   --skip-sync \
   --skip-remote-build \
@@ -321,7 +321,7 @@ Page-table timing 诊断：
 
 ```bash
 RUN_ID=gpu-perf-pttiming-vmonly-$(date +%Y%m%d-%H%M%S) \
-  ./scripts/run-host-vs-passthrough-gles-perf.sh \
+  ./scripts/run/run-host-vs-passthrough-gles-perf.sh \
   --host-rootfs-userspace \
   --skip-host \
   --iterations 100 \
@@ -338,7 +338,7 @@ IRQ timing 诊断：
 
 ```bash
 RUN_ID=gpu-perf-irqstats-vmonly-$(date +%Y%m%d-%H%M%S) \
-  ./scripts/run-host-vs-passthrough-gles-perf.sh \
+  ./scripts/run/run-host-vs-passthrough-gles-perf.sh \
   --host-rootfs-userspace \
   --skip-host \
   --iterations 100 \
@@ -356,7 +356,7 @@ Submit timing 诊断：
 
 ```bash
 RUN_ID=gpu-perf-submitstats-vmonly-$(date +%Y%m%d-%H%M%S) \
-  ./scripts/run-host-vs-passthrough-gles-perf.sh \
+  ./scripts/run/run-host-vs-passthrough-gles-perf.sh \
   --host-rootfs-userspace \
   --skip-host \
   --iterations 100 \
@@ -500,7 +500,7 @@ Codex 应执行：
 ```bash
 cd /home/mzh/gpu
 RUN_ID=gpu-perf-host-vs-passthrough-$(date +%Y%m%d-%H%M%S) \
-  ./scripts/run-host-vs-passthrough-gles-perf.sh \
+  ./scripts/run/run-host-vs-passthrough-gles-perf.sh \
   --host-rootfs-userspace \
   --iterations 100 \
   --warmup 5 \

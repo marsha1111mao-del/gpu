@@ -15,9 +15,9 @@ __pycache__/
 .cache/
 
 # Kernel and Rust build outputs that should live inside their component repos.
-out/
-build/
-target/
+/out/
+/build/
+/target/
 
 # Runtime logs/artifacts are handled by component repos such as GPU-SFTP.
 run-logs/
@@ -25,4 +25,3 @@ log/
 
 # Local secrets. Commit examples instead of real machine credentials.
 **/.vscode/sftp.json
-

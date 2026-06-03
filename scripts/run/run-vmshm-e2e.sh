@@ -2,13 +2,14 @@
 set -euo pipefail
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-ROOT_DIR=$(cd -- "${SCRIPT_DIR}/.." && pwd)
+ROOT_DIR=$(cd -- "${SCRIPT_DIR}/../.." && pwd)
 
-LINUX_DIR=${LINUX_DIR:-"${ROOT_DIR}/Linux-Guest-GPU"}
-FIRECRACKER_DIR=${FIRECRACKER_DIR:-"${ROOT_DIR}/firecracker"}
 SFTP_ROOT=${SFTP_ROOT:-"${ROOT_DIR}/GPU-SFTP"}
 SFTP_BINS=${SFTP_BINS:-"${SFTP_ROOT}/firecracker-bins"}
 SFTP_LOG_ROOT=${SFTP_LOG_ROOT:-"${SFTP_ROOT}/log"}
+BUILD_GUEST_VMSHM_KERNELS=${BUILD_GUEST_VMSHM_KERNELS:-"${ROOT_DIR}/scripts/build/build-guest-vmshm-kernels.sh"}
+BUILD_FIRECRACKER_RUNTIME=${BUILD_FIRECRACKER_RUNTIME:-"${ROOT_DIR}/scripts/build/build-firecracker-runtime.sh"}
+BUILD_PANTHOR_IOCTL_SMOKE=${BUILD_PANTHOR_IOCTL_SMOKE:-"${ROOT_DIR}/scripts/build/build-panthor-ioctl-smoke.sh"}
 
 REMOTE_HOST=${REMOTE_HOST:-192.168.137.10}
 REMOTE_USER=${REMOTE_USER:-root}
@@ -37,8 +38,8 @@ Usage: $(basename "$0") [options]
 Build, sync, run the vmshm Firecracker test, collect logs, and generate result.
 
 Options:
-  --skip-kernel-build        Do not run Linux-Guest-GPU/build-arm64-vmshm-kernels.sh
-  --skip-firecracker-build   Do not run firecracker/sftp-build.sh
+  --skip-kernel-build        Do not run scripts/build/build-guest-vmshm-kernels.sh
+  --skip-firecracker-build   Do not run scripts/build/build-firecracker-runtime.sh
   --skip-build               Skip both kernel and Firecracker/broker builds
   --skip-config-install      Do not regenerate SFTP vmshm irq configs
   --skip-sync                Do not rsync GPU-SFTP to the remote host
@@ -52,7 +53,8 @@ Options:
   -h, --help                 Show this help
 
 Environment overrides:
-  LINUX_DIR FIRECRACKER_DIR SFTP_ROOT SFTP_BINS SFTP_LOG_ROOT
+  SFTP_ROOT SFTP_BINS SFTP_LOG_ROOT
+  BUILD_GUEST_VMSHM_KERNELS BUILD_FIRECRACKER_RUNTIME BUILD_PANTHOR_IOCTL_SMOKE
   REMOTE_HOST REMOTE_USER REMOTE_PASS REMOTE_ROOT REMOTE_BINS REMOTE_LOG_ROOT RUN_ID
 
 Default remote is ${REMOTE_USER}@${REMOTE_HOST}, logs go under:
@@ -175,11 +177,11 @@ rsync_remote() {
 }
 
 # shellcheck source=scripts/lib/gpu_sftp_layout.sh
-source "${SCRIPT_DIR}/lib/gpu_sftp_layout.sh"
+source "${ROOT_DIR}/scripts/lib/gpu_sftp_layout.sh"
 
 build_kernels() {
 	log "Building client/proxy arm64 kernels"
-	(cd "${LINUX_DIR}" && ./build-arm64-vmshm-kernels.sh)
+	"${BUILD_GUEST_VMSHM_KERNELS}"
 
 	[[ -f "${SFTP_BINS}/kernels/shared/client/Image" ]] ||
 		die "missing client Image: ${SFTP_BINS}/kernels/shared/client/Image"
@@ -189,7 +191,7 @@ build_kernels() {
 
 build_firecracker() {
 	log "Building Firecracker and vmshm-broker"
-	(cd "${FIRECRACKER_DIR}" && ./sftp-build.sh)
+	"${BUILD_FIRECRACKER_RUNTIME}"
 
 	[[ -x "${SFTP_BINS}/bin/firecracker" ]] ||
 		die "missing firecracker binary: ${SFTP_BINS}/bin/firecracker"
@@ -203,7 +205,7 @@ build_ioctl_smoke() {
 	fi
 
 	log "Building Panthor userspace ioctl smoke test"
-	(cd "${SFTP_ROOT}/tests/panthor-ioctl-smoke" && bash ./build.sh)
+	"${BUILD_PANTHOR_IOCTL_SMOKE}"
 
 	[[ -x "${SFTP_BINS}/bin/panthor_ioctl_smoke" ]] ||
 		die "missing ioctl smoke binary: ${SFTP_BINS}/bin/panthor_ioctl_smoke"

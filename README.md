@@ -11,8 +11,13 @@ repositories used together.
 - `GPU-SFTP`
 - `scripts`
 - `.vscode`
-- `firecracker/config`
-- `firecracker/sftp-build.sh`
+
+Workspace-owned scripts are grouped by purpose:
+
+- `scripts/build`: build and install artifacts produced from component repos.
+- `scripts/deploy`: deploy host-side payloads and reboot/test remote hosts.
+- `scripts/run`: run end-to-end or performance test workflows.
+- `scripts/lib`: shared shell helpers used by workspace scripts.
 
 ## Submodules
 

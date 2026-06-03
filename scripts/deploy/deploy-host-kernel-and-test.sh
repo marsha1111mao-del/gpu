@@ -2,12 +2,14 @@
 set -euo pipefail
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-ROOT_DIR=$(cd -- "${SCRIPT_DIR}/.." && pwd)
+ROOT_DIR=$(cd -- "${SCRIPT_DIR}/../.." && pwd)
 HOST_KERNEL_DIR=${HOST_KERNEL_DIR:-"${ROOT_DIR}/Linux-Host-GPU"}
 SFTP_ROOT=${SFTP_ROOT:-"${ROOT_DIR}/GPU-SFTP"}
 SFTP_HOST_KERNEL=${SFTP_HOST_KERNEL:-"${SFTP_ROOT}/linux-host-kernel"}
 SFTP_BINS=${SFTP_BINS:-"${SFTP_ROOT}/firecracker-bins"}
 SFTP_LOG_ROOT=${SFTP_LOG_ROOT:-"${SFTP_ROOT}/log"}
+BUILD_HOST_KERNEL_PAYLOAD=${BUILD_HOST_KERNEL_PAYLOAD:-"${ROOT_DIR}/scripts/build/build-host-kernel-payload.sh"}
+BUILD_FIRECRACKER_RUNTIME=${BUILD_FIRECRACKER_RUNTIME:-"${ROOT_DIR}/scripts/build/build-firecracker-runtime.sh"}
 
 REMOTE_HOST=${REMOTE_HOST:-192.168.137.10}
 REMOTE_USER=${REMOTE_USER:-root}
@@ -44,8 +46,8 @@ Firecracker VM with GPU passthrough and check that the guest panthor driver
 probes successfully.
 
 Options:
-  --skip-host-build          Do not run Linux-Host-GPU/cp-build.sh
-  --skip-firecracker-build   Do not run firecracker/sftp-build.sh
+  --skip-host-build          Do not run scripts/build/build-host-kernel-payload.sh
+  --skip-firecracker-build   Do not run scripts/build/build-firecracker-runtime.sh
   --skip-sync                Do not rsync GPU-SFTP to the remote host
   --skip-install-reboot      Do not replace /boot image or reboot
   --skip-tests               Do not run GPU passthrough probe tests after reboot
@@ -63,6 +65,7 @@ Environment overrides:
   SSH_TIMEOUT RUN_ID_PREFIX SFTP_ROOT SFTP_HOST_KERNEL SFTP_LOG_ROOT
   PASSTHROUGH_RUNS VM_TIMEOUT REMOTE_LOG_ROOT
   INSTALL_HOST_MODULES HOST_MODULES PASSTHROUGH_VM_RUNNER PASSTHROUGH_VM_CONFIG
+  BUILD_HOST_KERNEL_PAYLOAD BUILD_FIRECRACKER_RUNTIME
 
 Logs:
   remote: ${REMOTE_LOG_ROOT}/passthrough/probe/<generated-run-id>
@@ -195,21 +198,21 @@ rsync_remote() {
 }
 
 # shellcheck source=scripts/lib/gpu_sftp_layout.sh
-source "${SCRIPT_DIR}/lib/gpu_sftp_layout.sh"
+source "${ROOT_DIR}/scripts/lib/gpu_sftp_layout.sh"
 
 build_host_kernel() {
 	log "Building host kernel payload"
-	(cd "${HOST_KERNEL_DIR}" && \
-		INSTALL_MODULES="${INSTALL_HOST_MODULES}" \
-		HOST_MODULES="${HOST_MODULES}" \
-		./cp-build.sh)
+	HOST_KERNEL_DIR="${HOST_KERNEL_DIR}" \
+	INSTALL_MODULES="${INSTALL_HOST_MODULES}" \
+	HOST_MODULES="${HOST_MODULES}" \
+		"${BUILD_HOST_KERNEL_PAYLOAD}"
 	[[ -f "${SFTP_HOST_KERNEL}/Image" ]] ||
 		die "missing host Image: ${SFTP_HOST_KERNEL}/Image"
 }
 
 build_firecracker() {
 	log "Building Firecracker payload"
-	(cd "${ROOT_DIR}/firecracker" && ./sftp-build.sh)
+	"${BUILD_FIRECRACKER_RUNTIME}"
 	[[ -x "${SFTP_BINS}/bin/firecracker" ]] ||
 		die "missing firecracker binary: ${SFTP_BINS}/bin/firecracker"
 }

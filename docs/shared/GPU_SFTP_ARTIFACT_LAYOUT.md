@@ -39,7 +39,7 @@ firecracker-bins/bin/
 ```
 
 Firecracker and broker builds install into `bin/` through
-`firecracker/sftp-build.sh`. The Panthor IOCTL smoke build installs
+`scripts/build/build-firecracker-runtime.sh`. The Panthor IOCTL smoke build installs
 `panthor_ioctl_smoke` into the same directory.
 
 ## Configs
@@ -74,9 +74,9 @@ firecracker-bins/kernels/passthrough/Image
 firecracker-bins/kernels/passthrough/backups/
 ```
 
-Use `Linux-Guest-GPU/build-arm64-vmshm-kernels.sh` for the shared
+Use `scripts/build/build-guest-vmshm-kernels.sh` for the shared
 client/proxy role kernels. Use
-`Linux-Guest-GPU/build-arm64-passthrough-kernel.sh` for the single passthrough
+`scripts/build/build-guest-passthrough-kernel.sh` for the single passthrough
 guest kernel.
 
 ## Rootfs Images

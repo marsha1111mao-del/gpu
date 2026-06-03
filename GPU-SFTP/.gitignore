@@ -18,13 +18,13 @@
 !/log/shared/vmshm-2client/
 !/log/shared/vmshm-2client/.gitkeep
 
-# Firecracker runtime binaries rebuilt by ../firecracker/sftp-build.sh and
-# GPU-SFTP/tests/* build scripts.
+# Firecracker runtime binaries and test payloads rebuilt by workspace scripts
+# under ../scripts/build/.
 /firecracker-bins/bin/**
 !/firecracker-bins/bin/
 !/firecracker-bins/bin/.gitkeep
 
-# Guest kernel Images rebuilt by ../Linux-Guest-GPU build scripts.
+# Guest kernel Images rebuilt by workspace scripts under ../scripts/build/.
 /firecracker-bins/kernels/**
 !/firecracker-bins/kernels/
 !/firecracker-bins/kernels/.gitkeep
@@ -60,7 +60,7 @@
 /tests/panthor-ioctl-smoke/panthor_ioctl_smoke
 /tests/vmshm-test/vmshm_demo
 
-# Host kernel deployment payloads are produced by ../scripts/deploy-host-kernel-and-test.sh.
+# Host kernel deployment payloads are produced by ../scripts/deploy/deploy-host-kernel-and-test.sh.
 /linux-host-kernel/Image
 /linux-host-kernel/image_map_*
 /linux-host-kernel/lib/

@@ -34,7 +34,7 @@ Rebuild/install from the main workspace:
 
 ```bash
 cd /home/mzh/gpu
-./firecracker/sftp-build.sh
+./scripts/build/build-firecracker-runtime.sh
 ```
 
 The script builds `firecracker/Firecracker-CCA-MZH` and
@@ -53,13 +53,15 @@ firecracker-bins/bin/panthor_ioctl_smoke
 Rebuild/install:
 
 ```bash
-cd /home/mzh/gpu/GPU-SFTP/tests/panthor-ioctl-smoke
-./build.sh
+cd /home/mzh/gpu
+./scripts/build/build-panthor-ioctl-smoke.sh
 ```
 
-The build script uses the Panthor UAPI from
+The workspace build script uses the Panthor UAPI from
 `/home/mzh/gpu/Linux-Guest-GPU/include/uapi/drm` when available and installs the
-static aarch64 test binary into `GPU-SFTP/firecracker-bins/bin/`.
+static aarch64 test binary into `GPU-SFTP/firecracker-bins/bin/`. The
+`GPU-SFTP/tests/panthor-ioctl-smoke/build.sh` wrapper remains for remote or
+legacy callers.
 
 ### vmshm demo binary
 
@@ -73,13 +75,15 @@ firecracker-bins/bin/vmshm_demo
 Rebuild/install:
 
 ```bash
-cd /home/mzh/gpu/GPU-SFTP/tests/vmshm-test
-./compile.sh
+cd /home/mzh/gpu
+./scripts/build/build-vmshm-demo.sh
 ```
 
-The build script installs the static aarch64 demo binary into
+The workspace build script installs the static aarch64 demo binary into
 `GPU-SFTP/firecracker-bins/bin/`, which is the path consumed by
-`firecracker-bins/scripts/tools/copy-vmshm-test.sh`.
+`firecracker-bins/scripts/tools/copy-vmshm-test.sh`. The
+`GPU-SFTP/tests/vmshm-test/compile.sh` wrapper remains for remote or legacy
+callers.
 
 ### GLES compute smoke binary
 
@@ -94,7 +98,7 @@ workflow:
 
 ```bash
 cd /home/mzh/gpu
-./scripts/run-host-vs-passthrough-gles-perf.sh --host-rootfs-userspace
+./scripts/run/run-host-vs-passthrough-gles-perf.sh --host-rootfs-userspace
 ```
 
 The script compiles `GPU-SFTP/tests/gpu-compute-smoke/gles_compute_smoke.c` on
@@ -115,14 +119,14 @@ Rebuild shared proxy/client kernels:
 
 ```bash
 cd /home/mzh/gpu
-./Linux-Guest-GPU/build-arm64-vmshm-kernels.sh
+./scripts/build/build-guest-vmshm-kernels.sh
 ```
 
 Rebuild the passthrough kernel:
 
 ```bash
 cd /home/mzh/gpu
-./Linux-Guest-GPU/build-arm64-passthrough-kernel.sh
+./scripts/build/build-guest-passthrough-kernel.sh
 ```
 
 Both scripts keep incremental kernel build outputs under
@@ -144,7 +148,7 @@ Produce/deploy from the main workspace:
 
 ```bash
 cd /home/mzh/gpu
-./scripts/deploy-host-kernel-and-test.sh --skip-firecracker-build --skip-tests
+./scripts/deploy/deploy-host-kernel-and-test.sh --skip-firecracker-build --skip-tests
 ```
 
 For selected module deployment, use the script's `--host-modules` option. Full

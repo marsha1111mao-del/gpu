@@ -2,7 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-ROOT_DIR=$(cd -- "${SCRIPT_DIR}/.." && pwd)
+ROOT_DIR=$(cd -- "${SCRIPT_DIR}/../.." && pwd)
 SFTP_ROOT=${SFTP_ROOT:-"${ROOT_DIR}/GPU-SFTP"}
 SFTP_BINS=${SFTP_BINS:-"${SFTP_ROOT}/firecracker-bins"}
 SFTP_LOG_ROOT=${SFTP_LOG_ROOT:-"${SFTP_ROOT}/log"}
@@ -136,7 +136,7 @@ rsync_remote() {
 }
 
 # shellcheck source=scripts/lib/gpu_sftp_layout.sh
-source "${SCRIPT_DIR}/lib/gpu_sftp_layout.sh"
+source "${ROOT_DIR}/scripts/lib/gpu_sftp_layout.sh"
 
 install_configs() {
 	local installer="${SFTP_BINS}/scripts/shared/vmshm-2client/install-vmshm-irq-configs-2client.sh"

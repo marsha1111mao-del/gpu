@@ -29,7 +29,7 @@ GPU 直通相关代码主要分布在三个仓库：
 - `GPU-SFTP/firecracker-bins/scripts/passthrough/run-gpu-passthrough-vm.sh`
 - `GPU-SFTP/firecracker-bins/configs/shared/vmshm-1client/proxy-vm-config.json`
 - `GPU-SFTP/firecracker-bins/configs/shared/vmshm-1client/client-vm-config.json`
-- `scripts/deploy-host-kernel-and-test.sh`
+- `scripts/deploy/deploy-host-kernel-and-test.sh`
 
 ## Commit Timeline
 
@@ -1432,7 +1432,7 @@ exec "${BINS_DIR}/bin/firecracker" --no-api --no-seccomp --config-file "${BINS_D
 
 ### Host Kernel
 
-`Linux-Host-GPU/cp-build.sh`：
+`scripts/build/build-host-kernel-payload.sh`：
 
 ```text
 make CROSS_COMPILE=aarch64-linux-gnu- ARCH=arm64 -j${JOBS}
@@ -1444,7 +1444,7 @@ make modules_install -> GPU-SFTP/linux-host-kernel/modules-staging
 
 ### Guest Kernel
 
-`Linux-Guest-GPU/build-arm64-vmshm-kernels.sh` 会构建 guest kernel image，并安装 proxy/client kernel 产物：
+`scripts/build/build-guest-vmshm-kernels.sh` 会构建 guest kernel image，并安装 proxy/client kernel 产物：
 
 ```text
 GPU-SFTP/firecracker-bins/kernels/shared/client/Image
@@ -1470,13 +1470,13 @@ GPU-SFTP/firecracker-bins/kernels/passthrough/Image
 
 ### Firecracker
 
-`firecracker/Firecracker-CCA-MZH/sftp-build.sh`：
+`scripts/build/build-firecracker-runtime.sh`：
 
 ```text
 cargo build --release --target aarch64-unknown-linux-musl --bins --examples
 ```
 
-`firecracker/sftp-build.sh` 会构建 Firecracker 并安装到：
+`scripts/build/build-firecracker-runtime.sh` 会构建 Firecracker 并安装到：
 
 ```text
 GPU-SFTP/firecracker-bins/bin/firecracker
@@ -1486,7 +1486,7 @@ GPU-SFTP/firecracker-bins/bin/firecracker
 
 ### Host Deploy and Passthrough Test
 
-`scripts/deploy-host-kernel-and-test.sh` 做完整远端流程：
+`scripts/deploy/deploy-host-kernel-and-test.sh` 做完整远端流程：
 
 ```text
 build Linux-Host-GPU
@@ -1620,7 +1620,7 @@ Host kernel:
 - `Linux-Host-GPU/drivers/pmthor/Kconfig`
 - `Linux-Host-GPU/drivers/pmthor/Makefile`
 - `Linux-Host-GPU/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi`
-- `Linux-Host-GPU/cp-build.sh`
+- `scripts/build/build-host-kernel-payload.sh`
 
 Guest kernel:
 
@@ -1629,7 +1629,7 @@ Guest kernel:
 - `Linux-Guest-GPU/drivers/iommu/io-pgtable.c`
 - `Linux-Guest-GPU/drivers/iommu/io-pgtable-arm.c`
 - `Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_mmu.c`
-- `Linux-Guest-GPU/build-arm64-vmshm-kernels.sh`
+- `scripts/build/build-guest-vmshm-kernels.sh`
 
 Firecracker:
 
@@ -1643,8 +1643,7 @@ Firecracker:
 - `firecracker/Firecracker-CCA-MZH/src/vmm/src/gpu_passthrough.rs`
 - `firecracker/Firecracker-CCA-MZH/src/vmm/src/arch/aarch64/mod.rs`
 - `firecracker/Firecracker-CCA-MZH/src/vmm/src/arch/aarch64/fdt.rs`
-- `firecracker/Firecracker-CCA-MZH/sftp-build.sh`
-- `firecracker/sftp-build.sh`
+- `scripts/build/build-firecracker-runtime.sh`
 
 Runtime/test:
 
@@ -1652,4 +1651,4 @@ Runtime/test:
 - `GPU-SFTP/firecracker-bins/scripts/passthrough/run-gpu-passthrough-vm.sh`
 - `GPU-SFTP/firecracker-bins/configs/shared/vmshm-1client/proxy-vm-config.json`
 - `GPU-SFTP/firecracker-bins/configs/shared/vmshm-1client/client-vm-config.json`
-- `scripts/deploy-host-kernel-and-test.sh`
+- `scripts/deploy/deploy-host-kernel-and-test.sh`

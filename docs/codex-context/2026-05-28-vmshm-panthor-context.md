@@ -150,7 +150,7 @@ Current shared windows:
 
 Linux kernel build script:
 
-- `/home/mzh/gpu/Linux-Guest-GPU/build-arm64-vmshm-kernels.sh`
+- `/home/mzh/gpu/scripts/build/build-guest-vmshm-kernels.sh`
 
 It builds two arm64 kernels:
 
@@ -159,32 +159,28 @@ It builds two arm64 kernels:
 - proxy kernel image installed to:
   `/home/mzh/gpu/GPU-SFTP/firecracker-bins/kernels/shared/proxy/Image`
 
-Firecracker/broker build scripts:
+Firecracker/broker workspace build script:
 
-- Firecracker-only:
-  `/home/mzh/gpu/firecracker/Firecracker-CCA-MZH/sftp-build.sh`
-- Broker-only:
-  `/home/mzh/gpu/firecracker/vmshm-broker/sftp-build.sh`
 - Top-level Firecracker+broker build and SFTP install:
-  `/home/mzh/gpu/firecracker/sftp-build.sh`
+  `/home/mzh/gpu/scripts/build/build-firecracker-runtime.sh`
 
 Top-level installs:
 
-- `/home/mzh/gpu/GPU-SFTP/firecracker-bins/firecracker`
-- `/home/mzh/gpu/GPU-SFTP/firecracker-bins/vmshm-broker`
-- `/home/mzh/gpu/GPU-SFTP/firecracker-bins/vmshm-client-test`
+- `/home/mzh/gpu/GPU-SFTP/firecracker-bins/bin/firecracker`
+- `/home/mzh/gpu/GPU-SFTP/firecracker-bins/bin/vmshm-broker`
+- `/home/mzh/gpu/GPU-SFTP/firecracker-bins/bin/vmshm-client-test`
 
 ## E2E Automation Script
 
 Added:
 
-- `/home/mzh/gpu/scripts/run-vmshm-e2e.sh`
+- `/home/mzh/gpu/scripts/run/run-vmshm-e2e.sh`
 
 Default full run:
 
 ```bash
 cd /home/mzh/gpu
-./scripts/run-vmshm-e2e.sh
+./scripts/run/run-vmshm-e2e.sh
 ```
 
 It performs:
@@ -202,21 +198,21 @@ Fast rerun without rebuilding:
 
 ```bash
 cd /home/mzh/gpu
-./scripts/run-vmshm-e2e.sh --skip-build
+./scripts/run/run-vmshm-e2e.sh --skip-build
 ```
 
 Remote-only rerun after no local changes:
 
 ```bash
 cd /home/mzh/gpu
-./scripts/run-vmshm-e2e.sh --skip-build --skip-sync
+./scripts/run/run-vmshm-e2e.sh --skip-build --skip-sync
 ```
 
 Fixed run ID:
 
 ```bash
 cd /home/mzh/gpu
-./scripts/run-vmshm-e2e.sh --skip-build --run-id my-test-001
+./scripts/run/run-vmshm-e2e.sh --skip-build --run-id my-test-001
 ```
 
 Useful options:
@@ -339,7 +335,7 @@ panthor-proxy: vmshm handler registered
 
 Fix:
 
-- `scripts/run-vmshm-e2e.sh` now waits for `panthor-proxy: vmshm handler registered`.
+- `scripts/run/run-vmshm-e2e.sh` now waits for `panthor-proxy: vmshm handler registered`.
 
 ## Kernel Config Intent
 
@@ -376,7 +372,7 @@ The old hello-world selftest configs were removed from the build fragments after
 
 - Do not store `broker-config.toml`, `client-vm-config.json`, or `proxy-vm-config.json` in the Linux kernel repo. They belong under SFTP only.
 - Do not merge Firecracker-only and broker-only build responsibilities; keep subproject scripts narrow.
-- Use `/home/mzh/gpu/firecracker/sftp-build.sh` as the top-level Firecracker+broker build/install wrapper.
-- Use `/home/mzh/gpu/scripts/run-vmshm-e2e.sh` for full regression or fast reruns.
+- Use `/home/mzh/gpu/scripts/build/build-firecracker-runtime.sh` as the top-level Firecracker+broker build/install wrapper.
+- Use `/home/mzh/gpu/scripts/run/run-vmshm-e2e.sh` for full regression or fast reruns.
 - Before starting a new remote run, it is normal to kill existing remote `firecracker` and `vmshm-broker` processes with exact-name `pkill -x`; avoid broad `pkill -f` commands.
 - The guest Linux IRQ number may show as `irq=14` even though Firecracker/broker config uses GSI `80` or `81`; this is expected after guest IRQ translation.
