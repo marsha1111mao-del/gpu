@@ -16,7 +16,7 @@ socket_dir = "/run/vmshm"
 id = "vmshm-object"
 socket_path = "/run/vmshm/vmshm-object.sock"
 memfd_name = "vmshm-object"
-window_size = 67108864
+window_size = 134217728
 seal = true
 
 # control/rpc shared window
@@ -54,9 +54,9 @@ cat >"${CONFIG_DIR}/client-vm-config.json" <<'EOF'
       "socket_path": "/run/vmshm/vmshm-object.sock",
       "name": "vmshm-object-client",
       "role": "client",
-      "guest_phys_addr": "0x20000000",
+      "guest_phys_addr": "0x30000000",
       "slot": 1,
-      "expected_size": 67108864,
+      "expected_size": 134217728,
       "fdt_node_name": "client-vmshm-manager",
       "fdt_compatible": "client-vmshm-manager"
     },
@@ -105,9 +105,9 @@ cat >"${CONFIG_DIR}/proxy-vm-config.json" <<'EOF'
       "socket_path": "/run/vmshm/vmshm-object.sock",
       "name": "vmshm-object-proxy",
       "role": "proxy",
-      "guest_phys_addr": "0x20000000",
+      "guest_phys_addr": "0x30000000",
       "slot": 1,
-      "expected_size": 67108864,
+      "expected_size": 134217728,
       "fdt_node_name": "proxy-vmshm-manager",
       "fdt_compatible": "proxy-vmshm-manager"
     },

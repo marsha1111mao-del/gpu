@@ -6,7 +6,7 @@ socket_dir = "/run/vmshm"
 id = "vmshm-object"
 socket_path = "/run/vmshm/vmshm-object.sock"
 memfd_name = "vmshm-object"
-window_size = 67108864
+window_size = 134217728
 seal = true
 
 # control/rpc shared window

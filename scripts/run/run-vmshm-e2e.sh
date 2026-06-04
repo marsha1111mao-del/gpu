@@ -30,6 +30,8 @@ CLEAN_REMOTE_PROCS=1
 SYNC_ROOTFS=0
 IOCTL_SMOKE=0
 IOCTL_SMOKE_MODE=basic
+GLES_COMPUTE_SMOKE=0
+GLES_SMOKE_ARGS=${GLES_SMOKE_ARGS:-"--count 64"}
 
 usage() {
 	cat <<EOF
@@ -49,6 +51,26 @@ Options:
   --sync-rootfs              Include rootfs.ext2 in local-to-remote rsync
   --ioctl-smoke              Run userspace /dev/dri/card0 VERSION/GET_CAP/DEV_QUERY smoke
   --vm-create-smoke          Run ioctl smoke plus PANTHOR_VM_CREATE/VM_DESTROY
+  --bo-create-smoke          Run ioctl smoke plus PANTHOR_BO_CREATE/GEM_CLOSE
+  --bo-lifecycle-smoke       Run ioctl smoke plus multi-BO lifecycle/close cleanup stress
+  --bo-mmap-smoke            Run ioctl smoke plus BO_MMAP_OFFSET/client mmap read-write
+  --vm-bind-smoke            Run ioctl smoke plus synchronous PANTHOR_VM_BIND MAP/UNMAP
+  --vm-bind-async-sync-smoke Run ioctl smoke plus async VM_BIND sync arrays/SYNC_ONLY
+  --vm-state-flush-smoke     Run ioctl smoke plus VM_GET_STATE and flush-id mmap
+  --syncobj-lifecycle-smoke  Run ioctl smoke plus SYNCOBJ_CREATE/DESTROY lifecycle
+  --syncobj-wait-smoke       Run ioctl smoke plus SYNCOBJ_WAIT poll semantics
+  --syncobj-transfer-smoke   Run ioctl smoke plus SYNCOBJ_TRANSFER binary path
+  --syncobj-timeline-wait-smoke
+                             Run ioctl smoke plus SYNCOBJ_TIMELINE_WAIT points path
+  --syncobj-signal-query-smoke
+                             Run ioctl smoke plus SYNCOBJ_SIGNAL/RESET/QUERY paths
+  --group-lifecycle-smoke    Run ioctl smoke plus GROUP_CREATE/GET_STATE/DESTROY
+  --group-submit-syncpoint-smoke
+                             Run ioctl smoke plus zero-length GROUP_SUBMIT syncpoint
+  --tiler-heap-lifecycle-smoke
+                             Run ioctl smoke plus TILER_HEAP_CREATE/DESTROY
+  --gles-compute-smoke       Boot the shared client with rootfs-panfrost.ext4
+                             and run /root/gpu-smoke.sh correctness smoke
   --run-id ID                Use a fixed run log directory name
   -h, --help                 Show this help
 
@@ -101,6 +123,66 @@ while [[ $# -gt 0 ]]; do
 		IOCTL_SMOKE=1
 		IOCTL_SMOKE_MODE=vm-create
 		;;
+	--bo-create-smoke)
+		IOCTL_SMOKE=1
+		IOCTL_SMOKE_MODE=bo-create
+		;;
+	--bo-lifecycle-smoke)
+		IOCTL_SMOKE=1
+		IOCTL_SMOKE_MODE=bo-lifecycle
+		;;
+	--bo-mmap-smoke)
+		IOCTL_SMOKE=1
+		IOCTL_SMOKE_MODE=bo-mmap
+		;;
+	--vm-bind-smoke)
+		IOCTL_SMOKE=1
+		IOCTL_SMOKE_MODE=vm-bind
+		;;
+	--vm-bind-async-sync-smoke)
+		IOCTL_SMOKE=1
+		IOCTL_SMOKE_MODE=vm-bind-async-sync
+		;;
+	--vm-state-flush-smoke)
+		IOCTL_SMOKE=1
+		IOCTL_SMOKE_MODE=vm-state-flush
+		;;
+	--syncobj-lifecycle-smoke)
+		IOCTL_SMOKE=1
+		IOCTL_SMOKE_MODE=syncobj-lifecycle
+		;;
+	--syncobj-wait-smoke)
+		IOCTL_SMOKE=1
+		IOCTL_SMOKE_MODE=syncobj-wait
+		;;
+	--syncobj-transfer-smoke)
+		IOCTL_SMOKE=1
+		IOCTL_SMOKE_MODE=syncobj-transfer
+		;;
+	--syncobj-timeline-wait-smoke)
+		IOCTL_SMOKE=1
+		IOCTL_SMOKE_MODE=syncobj-timeline-wait
+		;;
+	--syncobj-signal-query-smoke)
+		IOCTL_SMOKE=1
+		IOCTL_SMOKE_MODE=syncobj-signal-query
+		;;
+	--group-lifecycle-smoke)
+		IOCTL_SMOKE=1
+		IOCTL_SMOKE_MODE=group-lifecycle
+		;;
+	--group-submit-syncpoint-smoke)
+		IOCTL_SMOKE=1
+		IOCTL_SMOKE_MODE=group-submit-syncpoint
+		;;
+	--tiler-heap-lifecycle-smoke)
+		IOCTL_SMOKE=1
+		IOCTL_SMOKE_MODE=tiler-heap-lifecycle
+		;;
+	--gles-compute-smoke)
+		IOCTL_SMOKE=0
+		GLES_COMPUTE_SMOKE=1
+		;;
 	--run-id)
 		shift
 		if [[ $# -eq 0 ]]; then
@@ -121,6 +203,10 @@ while [[ $# -gt 0 ]]; do
 	esac
 	shift
 done
+
+if [[ "${GLES_COMPUTE_SMOKE}" -eq 1 ]]; then
+	SYNC_ROOTFS=1
+fi
 
 log() {
 	printf '\n==> %s\n' "$*"
@@ -254,7 +340,7 @@ sync_to_remote() {
 
 run_remote_test() {
 	local run_id_q remote_root_q remote_bins_q remote_log_root_q clean_q
-	local ioctl_smoke_q ioctl_smoke_mode_q
+	local ioctl_smoke_q ioctl_smoke_mode_q gles_compute_smoke_q gles_smoke_args_q
 
 	run_id_q=$(quote "${RUN_ID}")
 	remote_root_q=$(quote "${REMOTE_ROOT}")
@@ -263,9 +349,11 @@ run_remote_test() {
 	clean_q=$(quote "${CLEAN_REMOTE_PROCS}")
 	ioctl_smoke_q=$(quote "${IOCTL_SMOKE}")
 	ioctl_smoke_mode_q=$(quote "${IOCTL_SMOKE_MODE}")
+	gles_compute_smoke_q=$(quote "${GLES_COMPUTE_SMOKE}")
+	gles_smoke_args_q=$(quote "${GLES_SMOKE_ARGS}")
 
 	log "Running remote vmshm test: ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_BINS}"
-	ssh_remote "RUN_ID=${run_id_q} REMOTE_ROOT=${remote_root_q} REMOTE_BINS=${remote_bins_q} REMOTE_LOG_ROOT=${remote_log_root_q} CLEAN_REMOTE_PROCS=${clean_q} IOCTL_SMOKE=${ioctl_smoke_q} IOCTL_SMOKE_MODE=${ioctl_smoke_mode_q} bash -s" <<'REMOTE_SCRIPT'
+	ssh_remote "RUN_ID=${run_id_q} REMOTE_ROOT=${remote_root_q} REMOTE_BINS=${remote_bins_q} REMOTE_LOG_ROOT=${remote_log_root_q} CLEAN_REMOTE_PROCS=${clean_q} IOCTL_SMOKE=${ioctl_smoke_q} IOCTL_SMOKE_MODE=${ioctl_smoke_mode_q} GLES_COMPUTE_SMOKE=${gles_compute_smoke_q} GLES_SMOKE_ARGS=${gles_smoke_args_q} bash -s" <<'REMOTE_SCRIPT'
 set -euo pipefail
 
 cd "${REMOTE_BINS}"
@@ -273,6 +361,8 @@ LOG_DIR="${REMOTE_LOG_ROOT}/shared/vmshm-1client/${RUN_ID}"
 mkdir -p /run/vmshm "${LOG_DIR}"
 SMOKE_ROOTFS="${REMOTE_BINS}/rootfs/rootfs-ioctl-smoke-${RUN_ID}.ext2"
 SMOKE_CLIENT_CONFIG="${LOG_DIR}/client-ioctl-smoke-config.json"
+GLES_ROOTFS="${REMOTE_BINS}/rootfs/rootfs-gles-compute-${RUN_ID}.ext4"
+GLES_CLIENT_CONFIG="${LOG_DIR}/client-gles-compute-config.json"
 SMOKE_MNT=""
 
 if [[ "${CLEAN_REMOTE_PROCS}" == "1" ]]; then
@@ -289,6 +379,9 @@ cleanup_ioctl_smoke_rootfs() {
 	fi
 	if [[ "${IOCTL_SMOKE}" == "1" ]]; then
 		rm -f "${SMOKE_ROOTFS}"
+	fi
+	if [[ "${GLES_COMPUTE_SMOKE}" == "1" ]]; then
+		rm -f "${GLES_ROOTFS}"
 	fi
 }
 trap cleanup_ioctl_smoke_rootfs EXIT
@@ -473,6 +566,48 @@ case "${mode}" in
 	vm-create)
 		smoke_arg="--vm-create"
 		;;
+	bo-create)
+		smoke_arg="--bo-create"
+		;;
+	bo-lifecycle)
+		smoke_arg="--bo-lifecycle"
+		;;
+	bo-mmap)
+		smoke_arg="--bo-mmap"
+		;;
+	vm-bind)
+		smoke_arg="--vm-bind"
+		;;
+	vm-bind-async-sync)
+		smoke_arg="--vm-bind-async-sync"
+		;;
+	vm-state-flush)
+		smoke_arg="--vm-state-flush"
+		;;
+	syncobj-lifecycle)
+		smoke_arg="--syncobj-lifecycle"
+		;;
+	syncobj-wait)
+		smoke_arg="--syncobj-wait"
+		;;
+	syncobj-transfer)
+		smoke_arg="--syncobj-transfer"
+		;;
+	syncobj-timeline-wait)
+		smoke_arg="--syncobj-timeline-wait"
+		;;
+	syncobj-signal-query)
+		smoke_arg="--syncobj-signal-query"
+		;;
+	group-lifecycle)
+		smoke_arg="--group-lifecycle"
+		;;
+	group-submit-syncpoint)
+		smoke_arg="--group-submit-syncpoint"
+		;;
+	tiler-heap-lifecycle)
+		smoke_arg="--tiler-heap-lifecycle"
+		;;
 	*)
 		smoke_arg="--basic"
 		;;
@@ -523,9 +658,84 @@ INIT_SCRIPT
       "socket_path": "/run/vmshm/vmshm-object.sock",
       "name": "vmshm-object-client",
       "role": "client",
-      "guest_phys_addr": "0x20000000",
+      "guest_phys_addr": "0x30000000",
       "slot": 1,
-      "expected_size": 67108864,
+      "expected_size": 134217728,
+      "fdt_node_name": "client-vmshm-manager",
+      "fdt_compatible": "client-vmshm-manager"
+    },
+    {
+      "socket_path": "/run/vmshm/vmshm-comm.sock",
+      "name": "vmshm-comm-client",
+      "role": "client",
+      "guest_phys_addr": "0x24000000",
+      "slot": 2,
+      "expected_size": 33554432,
+      "fdt_node_name": "client_comm_vmshm",
+      "fdt_compatible": "client_comm_vmshm",
+      "notify": {
+        "doorbell_addr": "0x2f000000",
+        "doorbell_size": "0x1000",
+        "irq": 80
+      }
+    }
+  ]
+}
+EOF
+}
+
+prepare_gles_compute_client() {
+	[[ -f ./rootfs/rootfs-panfrost.ext4 ]] ||
+		{ echo "missing ./rootfs/rootfs-panfrost.ext4 on remote" >&2; return 1; }
+
+	cp -f ./rootfs/rootfs-panfrost.ext4 "${GLES_ROOTFS}"
+	SMOKE_MNT=$(mktemp -d /tmp/panthor-gles-rootfs.XXXXXX)
+	mount -o loop "${GLES_ROOTFS}" "${SMOKE_MNT}"
+
+	[[ -x "${SMOKE_MNT}/root/gpu-smoke.sh" ]] ||
+		{ echo "missing /root/gpu-smoke.sh in rootfs-panfrost.ext4" >&2; return 1; }
+	[[ -x "${SMOKE_MNT}/root/gles-compute-smoke" ]] ||
+		{ echo "missing /root/gles-compute-smoke in rootfs-panfrost.ext4" >&2; return 1; }
+
+	cat >"${SMOKE_MNT}/root/gpu-smoke.env" <<EOF
+GPU_SMOKE_ARGS="${GLES_SMOKE_ARGS}"
+GPU_SMOKE_QUIET_CONSOLE=0
+GPU_SMOKE_AFTER_RUN=shell
+EOF
+	sync
+	umount "${SMOKE_MNT}"
+	rmdir "${SMOKE_MNT}"
+	SMOKE_MNT=""
+
+	cat >"${GLES_CLIENT_CONFIG}" <<EOF
+{
+  "boot-source": {
+    "kernel_image_path": "${REMOTE_BINS}/kernels/shared/client/Image",
+    "boot_args": "console=ttyS0 root=/dev/vda rw rootfstype=ext4 init=/init panic=-1 print-fatal-signals=1"
+  },
+  "drives": [
+    {
+      "drive_id": "rootfs",
+      "path_on_host": "${GLES_ROOTFS}",
+      "is_root_device": false,
+      "is_read_only": false
+    }
+  ],
+  "machine-config": {
+    "vcpu_count": 1,
+    "mem_size_mib": 512,
+    "cpu_template": null,
+    "gpu_passthrough": false,
+    "dump_fdt_path": "${REMOTE_ROOT}/artifacts/dtb/client-gles-compute-${RUN_ID}.dtb"
+  },
+  "vmshm": [
+    {
+      "socket_path": "/run/vmshm/vmshm-object.sock",
+      "name": "vmshm-object-client",
+      "role": "client",
+      "guest_phys_addr": "0x30000000",
+      "slot": 1,
+      "expected_size": 134217728,
       "fdt_node_name": "client-vmshm-manager",
       "fdt_compatible": "client-vmshm-manager"
     },
@@ -584,13 +794,20 @@ if [[ "${IOCTL_SMOKE}" == "1" ]]; then
 	NO_COLOR=1 RUST_LOG_STYLE=never nohup \
 		./bin/firecracker --no-api --no-seccomp --config-file "${SMOKE_CLIENT_CONFIG}" \
 		>"${LOG_DIR}/client.log" 2>&1 &
+elif [[ "${GLES_COMPUTE_SMOKE}" == "1" ]]; then
+	prepare_gles_compute_client >"${LOG_DIR}/gles-compute-rootfs.log" 2>&1
+	NO_COLOR=1 RUST_LOG_STYLE=never nohup \
+		./bin/firecracker --no-api --no-seccomp --config-file "${GLES_CLIENT_CONFIG}" \
+		>"${LOG_DIR}/client.log" 2>&1 &
 else
 	NO_COLOR=1 RUST_LOG_STYLE=never nohup sh ./scripts/shared/vmshm-1client/vm-client-test.sh >"${LOG_DIR}/client.log" 2>&1 &
 fi
 echo $! >"${LOG_DIR}/client.pid"
 
 if [[ "${IOCTL_SMOKE}" == "1" ]]; then
-	wait_for_log "${LOG_DIR}/client.log" "PANTHOR_IOCTL_SMOKE=(BASIC_PASS|VM_CREATE_PASS)|PANTHOR_IOCTL_INIT=FAIL|Kernel panic|Guest-boot failed" 80 || true
+	wait_for_log "${LOG_DIR}/client.log" "PANTHOR_IOCTL_SMOKE=(BASIC_PASS|VM_CREATE_PASS|BO_CREATE_PASS|BO_LIFECYCLE_PASS|BO_MMAP_PASS|VM_BIND_PASS|VM_BIND_ASYNC_SYNC_PASS|VM_STATE_FLUSH_PASS|SYNCOBJ_LIFECYCLE_PASS|SYNCOBJ_WAIT_PASS|SYNCOBJ_TRANSFER_PASS|SYNCOBJ_TIMELINE_WAIT_PASS|SYNCOBJ_SIGNAL_QUERY_PASS|GROUP_LIFECYCLE_PASS|GROUP_SUBMIT_SYNCPOINT_PASS|TILER_HEAP_LIFECYCLE_PASS)|PANTHOR_IOCTL_INIT=FAIL|Kernel panic|Guest-boot failed" 80 || true
+elif [[ "${GLES_COMPUTE_SMOKE}" == "1" ]]; then
+	wait_for_log "${LOG_DIR}/client.log" "GPU_SMOKE_RESULT=(PASS|FAIL)|COMPUTE_CHECK=PASS|Kernel panic|Guest-boot failed|Oops|job timeout|mismatch|software renderer detected" 180 || true
 else
 	wait_for_log "${LOG_DIR}/client.log" "panthor-client: registered DRM frontend" 60 || true
 fi
@@ -620,6 +837,48 @@ ioctl_mode_marker_ok() {
 		;;
 	vm-create)
 		grep -qa "PANTHOR_IOCTL_SMOKE=VM_CREATE_PASS" "${LOG_DIR}/client.log"
+		;;
+	bo-create)
+		grep -qa "PANTHOR_IOCTL_SMOKE=BO_CREATE_PASS" "${LOG_DIR}/client.log"
+		;;
+	bo-lifecycle)
+		grep -qa "PANTHOR_IOCTL_SMOKE=BO_LIFECYCLE_PASS" "${LOG_DIR}/client.log"
+		;;
+	bo-mmap)
+		grep -qa "PANTHOR_IOCTL_SMOKE=BO_MMAP_PASS" "${LOG_DIR}/client.log"
+		;;
+	vm-bind)
+		grep -qa "PANTHOR_IOCTL_SMOKE=VM_BIND_PASS" "${LOG_DIR}/client.log"
+		;;
+	vm-bind-async-sync)
+		grep -qa "PANTHOR_IOCTL_SMOKE=VM_BIND_ASYNC_SYNC_PASS" "${LOG_DIR}/client.log"
+		;;
+	vm-state-flush)
+		grep -qa "PANTHOR_IOCTL_SMOKE=VM_STATE_FLUSH_PASS" "${LOG_DIR}/client.log"
+		;;
+	syncobj-lifecycle)
+		grep -qa "PANTHOR_IOCTL_SMOKE=SYNCOBJ_LIFECYCLE_PASS" "${LOG_DIR}/client.log"
+		;;
+	syncobj-wait)
+		grep -qa "PANTHOR_IOCTL_SMOKE=SYNCOBJ_WAIT_PASS" "${LOG_DIR}/client.log"
+		;;
+	syncobj-transfer)
+		grep -qa "PANTHOR_IOCTL_SMOKE=SYNCOBJ_TRANSFER_PASS" "${LOG_DIR}/client.log"
+		;;
+	syncobj-timeline-wait)
+		grep -qa "PANTHOR_IOCTL_SMOKE=SYNCOBJ_TIMELINE_WAIT_PASS" "${LOG_DIR}/client.log"
+		;;
+	syncobj-signal-query)
+		grep -qa "PANTHOR_IOCTL_SMOKE=SYNCOBJ_SIGNAL_QUERY_PASS" "${LOG_DIR}/client.log"
+		;;
+	group-lifecycle)
+		grep -qa "PANTHOR_IOCTL_SMOKE=GROUP_LIFECYCLE_PASS" "${LOG_DIR}/client.log"
+		;;
+	group-submit-syncpoint)
+		grep -qa "PANTHOR_IOCTL_SMOKE=GROUP_SUBMIT_SYNCPOINT_PASS" "${LOG_DIR}/client.log"
+		;;
+	tiler-heap-lifecycle)
+		grep -qa "PANTHOR_IOCTL_SMOKE=TILER_HEAP_LIFECYCLE_PASS" "${LOG_DIR}/client.log"
 		;;
 	*)
 		return 1
@@ -651,8 +910,235 @@ ioctl_vm_create_markers_ok() {
 	grep -qaE "panthor-proxy: VM_DESTROY session=[1-9][0-9]*" "${LOG_DIR}/proxy.log" || return 1
 }
 
+ioctl_bo_create_markers_ok() {
+	[[ "${IOCTL_SMOKE_MODE}" != "bo-create" ]] && return 0
+
+	grep -qa "PANTHOR_BO_CREATE_SMOKE=PASS" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: VM_CREATE session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: VM_DESTROY session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: BO_CREATE session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: BO_DESTROY session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-proxy: VM_CREATE session=[1-9][0-9]*" "${LOG_DIR}/proxy.log" || return 1
+	grep -qaE "panthor-proxy: VM_DESTROY session=[1-9][0-9]*" "${LOG_DIR}/proxy.log" || return 1
+	grep -qaE "panthor-proxy: BO_CREATE session=[1-9][0-9]*" "${LOG_DIR}/proxy.log" || return 1
+	grep -qaE "panthor-proxy: BO_DESTROY session=[1-9][0-9]*" "${LOG_DIR}/proxy.log" || return 1
+}
+
+ioctl_bo_lifecycle_markers_ok() {
+	[[ "${IOCTL_SMOKE_MODE}" != "bo-lifecycle" ]] && return 0
+
+	grep -qa "PANTHOR_BO_LIFECYCLE_SMOKE=PASS" "${LOG_DIR}/client.log" || return 1
+	grep -qa "GEM_CLOSE_DOUBLE .*expected_failure" "${LOG_DIR}/client.log" || return 1
+	grep -qa "GEM_CLOSE_INVALID .*expected_failure" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: VM_CREATE session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: VM_DESTROY session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: BO_CREATE session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: BO_DESTROY session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-proxy: VM_CREATE session=[1-9][0-9]*" "${LOG_DIR}/proxy.log" || return 1
+	grep -qaE "panthor-proxy: VM_DESTROY session=[1-9][0-9]*" "${LOG_DIR}/proxy.log" || return 1
+	grep -qaE "panthor-proxy: BO_CREATE session=[1-9][0-9]*" "${LOG_DIR}/proxy.log" || return 1
+	grep -qaE "panthor-proxy: BO_DESTROY session=[1-9][0-9]*" "${LOG_DIR}/proxy.log" || return 1
+	grep -qaE "panthor-proxy: SESSION_RELEASE session=[1-9][0-9]* leftover_bos=[1-9][0-9]*" "${LOG_DIR}/proxy.log" || return 1
+}
+
+ioctl_bo_mmap_markers_ok() {
+	[[ "${IOCTL_SMOKE_MODE}" != "bo-mmap" ]] && return 0
+
+	grep -qa "PANTHOR_BO_MMAP_SMOKE=PASS" "${LOG_DIR}/client.log" || return 1
+	grep -qa "BO_MMAP_OFFSET handle=" "${LOG_DIR}/client.log" || return 1
+	grep -qa "BO_MMAP_RW handle=" "${LOG_DIR}/client.log" || return 1
+	grep -qa "BO_MMAP_OFFSET_NO_MMAP .*expected_failure" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: BO_MMAP_OFFSET session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: MMAP session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: BO_CREATE session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: BO_DESTROY session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-proxy: BO_CREATE session=[1-9][0-9]*" "${LOG_DIR}/proxy.log" || return 1
+	grep -qaE "panthor: BO_CREATE vmshm-backed handle=[1-9][0-9]*" "${LOG_DIR}/proxy.log" || return 1
+	grep -qaE "panthor-proxy: BO_DESTROY session=[1-9][0-9]*" "${LOG_DIR}/proxy.log" || return 1
+}
+
+ioctl_vm_bind_markers_ok() {
+	[[ "${IOCTL_SMOKE_MODE}" != "vm-bind" ]] && return 0
+
+	grep -qa "PANTHOR_VM_BIND_SMOKE=PASS" "${LOG_DIR}/client.log" || return 1
+	grep -qa "VM_BIND_MAP vm=" "${LOG_DIR}/client.log" || return 1
+	grep -qa "VM_BIND_UNMAP vm=" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: VM_BIND session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-proxy: VM_BIND session=[1-9][0-9]*" "${LOG_DIR}/proxy.log" || return 1
+	grep -qaE "panthor-proxy: VM_BIND session=[1-9][0-9]*.*ret=0" "${LOG_DIR}/proxy.log" || return 1
+	grep -qaE "panthor-client: BO_CREATE session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: BO_DESTROY session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-proxy: BO_CREATE session=[1-9][0-9]*" "${LOG_DIR}/proxy.log" || return 1
+	grep -qaE "panthor: BO_CREATE vmshm-backed handle=[1-9][0-9]*" "${LOG_DIR}/proxy.log" || return 1
+	grep -qaE "panthor: VM_BIND vmshm payload mapped iova=0x[0-9a-f]+ size=0x[0-9a-f]+ spans=[1-9][0-9]*" "${LOG_DIR}/proxy.log" || return 1
+	grep -qaE "panthor-proxy: BO_DESTROY session=[1-9][0-9]*" "${LOG_DIR}/proxy.log" || return 1
+}
+
+ioctl_vm_bind_async_sync_markers_ok() {
+	[[ "${IOCTL_SMOKE_MODE}" != "vm-bind-async-sync" ]] && return 0
+
+	grep -qa "PANTHOR_VM_BIND_ASYNC_SYNC_SMOKE=PASS" "${LOG_DIR}/client.log" || return 1
+	grep -qa "VM_BIND_ASYNC_MAP vm=" "${LOG_DIR}/client.log" || return 1
+	grep -qa "VM_BIND_ASYNC_SYNC_ONLY vm=" "${LOG_DIR}/client.log" || return 1
+	grep -qa "VM_BIND_ASYNC_UNMAP vm=" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_WAIT_AFTER_VM_BIND_MAP handle=" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_WAIT_AFTER_VM_BIND_SYNC_ONLY handle=" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_WAIT_AFTER_VM_BIND_UNMAP handle=" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: VM_BIND session=[1-9][0-9]*.*syncs=1.*flags=0x1" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-proxy: VM_BIND session=[1-9][0-9]*.*ret=0" "${LOG_DIR}/proxy.log" || return 1
+	grep -qaE "panthor: VM_BIND vmshm payload mapped iova=0x[0-9a-f]+ size=0x[0-9a-f]+ spans=[1-9][0-9]*" "${LOG_DIR}/proxy.log" || return 1
+}
+
+ioctl_vm_state_flush_markers_ok() {
+	[[ "${IOCTL_SMOKE_MODE}" != "vm-state-flush" ]] && return 0
+
+	grep -qa "PANTHOR_VM_STATE_FLUSH_SMOKE=PASS" "${LOG_DIR}/client.log" || return 1
+	grep -qa "VM_GET_STATE vm=" "${LOG_DIR}/client.log" || return 1
+	grep -qa "MMAP_FLUSH_ID offset=" "${LOG_DIR}/client.log" || return 1
+	grep -qa "MUNMAP_FLUSH_ID" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: VM_GET_STATE session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: MMAP_FLUSH_ID offset=" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-proxy: VM_GET_STATE session=[1-9][0-9]*.*ret=0" "${LOG_DIR}/proxy.log" || return 1
+	grep -qaE "panthor-client: VM_DESTROY session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-proxy: VM_DESTROY session=[1-9][0-9]*" "${LOG_DIR}/proxy.log" || return 1
+}
+
+ioctl_syncobj_lifecycle_markers_ok() {
+	[[ "${IOCTL_SMOKE_MODE}" != "syncobj-lifecycle" ]] && return 0
+
+	grep -qa "PANTHOR_SYNCOBJ_LIFECYCLE_SMOKE=PASS" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_CREATE\\[0\\] handle=" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_CREATE\\[1\\] handle=" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_DESTROY\\[0\\] handle=" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_DESTROY_DOUBLE .*expected_failure" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_DESTROY\\[1\\] handle=" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: SYNCOBJ_CREATE session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: SYNCOBJ_DESTROY session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-proxy: SYNCOBJ_CREATE session=[1-9][0-9]*" "${LOG_DIR}/proxy.log" || return 1
+	grep -qaE "panthor-proxy: SYNCOBJ_DESTROY session=[1-9][0-9]*" "${LOG_DIR}/proxy.log" || return 1
+}
+
+ioctl_syncobj_wait_markers_ok() {
+	[[ "${IOCTL_SMOKE_MODE}" != "syncobj-wait" ]] && return 0
+
+	grep -qa "PANTHOR_SYNCOBJ_WAIT_SMOKE=PASS" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_WAIT\\[0\\] count=1" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_WAIT_ALL count=2" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_WAIT_UNSIGNALED_POLL expected_failure" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_WAIT_INVALID expected_failure" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: SYNCOBJ_WAIT session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-proxy: SYNCOBJ_WAIT session=[1-9][0-9]*.*ret=0" "${LOG_DIR}/proxy.log" || return 1
+	grep -qaE "panthor-proxy: SYNCOBJ_WAIT session=[1-9][0-9]*.*ret=-" "${LOG_DIR}/proxy.log" || return 1
+}
+
+ioctl_syncobj_transfer_markers_ok() {
+	[[ "${IOCTL_SMOKE_MODE}" != "syncobj-transfer" ]] && return 0
+
+	grep -qa "PANTHOR_SYNCOBJ_TRANSFER_SMOKE=PASS" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_TRANSFER_BINARY src=" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_WAIT_TRANSFER_DST handle=" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_TRANSFER_INVALID_SRC expected_failure" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: SYNCOBJ_TRANSFER session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: SYNCOBJ_WAIT session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-proxy: SYNCOBJ_TRANSFER session=[1-9][0-9]*.*ret=0" "${LOG_DIR}/proxy.log" || return 1
+}
+
+ioctl_syncobj_timeline_wait_markers_ok() {
+	[[ "${IOCTL_SMOKE_MODE}" != "syncobj-timeline-wait" ]] && return 0
+
+	grep -qa "PANTHOR_SYNCOBJ_TIMELINE_WAIT_SMOKE=PASS" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_TRANSFER_TIMELINE\\[0\\] src=" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_TRANSFER_TIMELINE\\[1\\] src=" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_TIMELINE_WAIT\\[0\\] handle=" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_TIMELINE_WAIT_ALL count=2" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_TIMELINE_WAIT_AVAILABLE\\[0\\] handle=" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_TIMELINE_WAIT_AVAILABLE_EMPTY expected_failure" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_TIMELINE_WAIT_MISSING_POINT expected_failure" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_TIMELINE_WAIT_INVALID expected_failure" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: SYNCOBJ_TIMELINE_WAIT session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: SYNCOBJ_TRANSFER session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-proxy: SYNCOBJ_TIMELINE_WAIT session=[1-9][0-9]*.*ret=0" "${LOG_DIR}/proxy.log" || return 1
+	grep -qaE "panthor-proxy: SYNCOBJ_TIMELINE_WAIT session=[1-9][0-9]*.*ret=-" "${LOG_DIR}/proxy.log" || return 1
+	grep -qaE "panthor-proxy: SYNCOBJ_TRANSFER session=[1-9][0-9]*.*ret=0" "${LOG_DIR}/proxy.log" || return 1
+}
+
+ioctl_syncobj_signal_query_markers_ok() {
+	[[ "${IOCTL_SMOKE_MODE}" != "syncobj-signal-query" ]] && return 0
+
+	grep -qa "PANTHOR_SYNCOBJ_SIGNAL_QUERY_SMOKE=PASS" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_SIGNAL_BINARY handle=" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_WAIT_AFTER_SIGNAL handle=" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_RESET_BINARY handle=" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_WAIT_AFTER_RESET expected_failure" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_SIGNAL_INVALID expected_failure" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_TIMELINE_SIGNAL count=2" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_TIMELINE_WAIT_AFTER_SIGNAL count=2" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_QUERY count=2 point0=5 point1=9" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_QUERY_LAST_SUBMITTED count=2 point0=5 point1=9" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_QUERY_INVALID expected_failure" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: SYNCOBJ_SIGNAL session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: SYNCOBJ_RESET session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: SYNCOBJ_TIMELINE_SIGNAL session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: SYNCOBJ_QUERY session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-proxy: SYNCOBJ_SIGNAL session=[1-9][0-9]*.*ret=0" "${LOG_DIR}/proxy.log" || return 1
+	grep -qaE "panthor-proxy: SYNCOBJ_RESET session=[1-9][0-9]*.*ret=0" "${LOG_DIR}/proxy.log" || return 1
+	grep -qaE "panthor-proxy: SYNCOBJ_TIMELINE_SIGNAL session=[1-9][0-9]*.*ret=0" "${LOG_DIR}/proxy.log" || return 1
+	grep -qaE "panthor-proxy: SYNCOBJ_QUERY session=[1-9][0-9]*.*ret=0" "${LOG_DIR}/proxy.log" || return 1
+	return 0
+}
+
+ioctl_group_lifecycle_markers_ok() {
+	[[ "${IOCTL_SMOKE_MODE}" != "group-lifecycle" ]] && return 0
+
+	grep -qa "PANTHOR_GROUP_LIFECYCLE_SMOKE=PASS" "${LOG_DIR}/client.log" || return 1
+	grep -qa "GROUP_CREATE handle=" "${LOG_DIR}/client.log" || return 1
+	grep -qa "GROUP_GET_STATE handle=" "${LOG_DIR}/client.log" || return 1
+	grep -qa "GROUP_DESTROY handle=" "${LOG_DIR}/client.log" || return 1
+	grep -qa "GROUP_DESTROY_DOUBLE .*expected_failure" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: GROUP_CREATE session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: GROUP_GET_STATE session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: GROUP_DESTROY session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-proxy: GROUP_CREATE session=[1-9][0-9]*.*ret=0" "${LOG_DIR}/proxy.log" || return 1
+	grep -qaE "panthor-proxy: GROUP_GET_STATE session=[1-9][0-9]*.*ret=0" "${LOG_DIR}/proxy.log" || return 1
+	grep -qaE "panthor-proxy: GROUP_DESTROY session=[1-9][0-9]*.*ret=0" "${LOG_DIR}/proxy.log" || return 1
+}
+
+ioctl_group_submit_syncpoint_markers_ok() {
+	[[ "${IOCTL_SMOKE_MODE}" != "group-submit-syncpoint" ]] && return 0
+
+	grep -qa "PANTHOR_GROUP_SUBMIT_SYNCPOINT_SMOKE=PASS" "${LOG_DIR}/client.log" || return 1
+	grep -qa "GROUP_SUBMIT_SYNCPOINT group=" "${LOG_DIR}/client.log" || return 1
+	grep -qa "SYNCOBJ_WAIT_AFTER_GROUP_SUBMIT handle=" "${LOG_DIR}/client.log" || return 1
+	grep -qa "GROUP_GET_STATE_AFTER_SUBMIT handle=" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: GROUP_CREATE session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: GROUP_SUBMIT session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: SYNCOBJ_WAIT session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: GROUP_GET_STATE session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: GROUP_DESTROY session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-proxy: GROUP_CREATE session=[1-9][0-9]*.*ret=0" "${LOG_DIR}/proxy.log" || return 1
+	grep -qaE "panthor-proxy: GROUP_SUBMIT session=[1-9][0-9]*.*ret=0" "${LOG_DIR}/proxy.log" || return 1
+	grep -qaE "panthor-proxy: SYNCOBJ_WAIT session=[1-9][0-9]*.*ret=0" "${LOG_DIR}/proxy.log" || return 1
+	grep -qaE "panthor-proxy: GROUP_GET_STATE session=[1-9][0-9]*.*ret=0" "${LOG_DIR}/proxy.log" || return 1
+	grep -qaE "panthor-proxy: GROUP_DESTROY session=[1-9][0-9]*.*ret=0" "${LOG_DIR}/proxy.log" || return 1
+}
+
+ioctl_tiler_heap_lifecycle_markers_ok() {
+	[[ "${IOCTL_SMOKE_MODE}" != "tiler-heap-lifecycle" ]] && return 0
+
+	grep -qa "PANTHOR_TILER_HEAP_LIFECYCLE_SMOKE=PASS" "${LOG_DIR}/client.log" || return 1
+	grep -qa "TILER_HEAP_CREATE handle=" "${LOG_DIR}/client.log" || return 1
+	grep -qa "TILER_HEAP_DESTROY handle=" "${LOG_DIR}/client.log" || return 1
+	grep -qa "TILER_HEAP_DESTROY_DOUBLE .*expected_failure" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: TILER_HEAP_CREATE session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-client: TILER_HEAP_DESTROY session=[1-9][0-9]*" "${LOG_DIR}/client.log" || return 1
+	grep -qaE "panthor-proxy: TILER_HEAP_CREATE session=[1-9][0-9]*.*ret=0" "${LOG_DIR}/proxy.log" || return 1
+	grep -qaE "panthor-proxy: TILER_HEAP_DESTROY session=[1-9][0-9]*.*ret=0" "${LOG_DIR}/proxy.log" || return 1
+}
+
 {
-	if [[ "${IOCTL_SMOKE}" == "1" ]]; then
+	if [[ "${GLES_COMPUTE_SMOKE}" == "1" ]]; then
+		echo "Panthor shared GLES compute smoke result"
+	elif [[ "${IOCTL_SMOKE}" == "1" ]]; then
 		echo "Panthor DRM open/session/version/cap/devquery vmshm test result"
 	else
 		echo "DRM_PANTHOR_DEV_QUERY vmshm test result"
@@ -662,6 +1148,8 @@ ioctl_vm_create_markers_ok() {
 	echo "Remote log dir: ${LOG_DIR}"
 	echo "IOCTL smoke: ${IOCTL_SMOKE}"
 	echo "IOCTL smoke mode: ${IOCTL_SMOKE_MODE}"
+	echo "GLES compute smoke: ${GLES_COMPUTE_SMOKE}"
+	echo "GLES smoke args: ${GLES_SMOKE_ARGS}"
 	echo
 	echo "== Broker notify relay =="
 	grep -aE "vmshm notify relay started|vmshm notify direct eventfd|sent vmshm memfd|registered vmshm notify" \
@@ -674,24 +1162,55 @@ ioctl_vm_create_markers_ok() {
 	echo "== Proxy vmshm/panthor =="
 	grep -aE "registered vmshm notify|proxy_comm_vmshm .*irq notify enabled|proxy_comm_vmshm: selftest passed|proxy_comm_vmshm: perf|panthor-proxy: vmshm handler registered" \
 		"${LOG_DIR}/proxy.log" || true
-	grep -aE "panthor-proxy: OPEN_SESSION session=[1-9][0-9]*|panthor-proxy: DEV_QUERY session=[1-9][0-9]*|panthor-proxy: VM_CREATE session=[1-9][0-9]*|panthor-proxy: VM_DESTROY session=[1-9][0-9]*|panthor-proxy: CLOSE_SESSION session=[1-9][0-9]*" \
-		"${LOG_DIR}/proxy.log" | tail -n 80 || true
+			grep -aE "panthor: BO_CREATE vmshm-backed|panthor: VM_BIND vmshm payload mapped|panthor-proxy: OPEN_SESSION session=[1-9][0-9]*|panthor-proxy: DEV_QUERY session=[1-9][0-9]*|panthor-proxy: VM_CREATE session=[1-9][0-9]*|panthor-proxy: VM_DESTROY session=[1-9][0-9]*|panthor-proxy: VM_BIND session=[1-9][0-9]*|panthor-proxy: VM_GET_STATE session=[1-9][0-9]*|panthor-proxy: BO_CREATE session=[1-9][0-9]*|panthor-proxy: BO_CREATE vmshm-backed session=[1-9][0-9]*|panthor-proxy: BO_DESTROY session=[1-9][0-9]*|panthor-proxy: SYNCOBJ_CREATE session=[1-9][0-9]*|panthor-proxy: SYNCOBJ_DESTROY session=[1-9][0-9]*|panthor-proxy: SYNCOBJ_WAIT session=[1-9][0-9]*|panthor-proxy: SYNCOBJ_TRANSFER session=[1-9][0-9]*|panthor-proxy: SYNCOBJ_TIMELINE_WAIT session=[1-9][0-9]*|panthor-proxy: SYNCOBJ_RESET session=[1-9][0-9]*|panthor-proxy: SYNCOBJ_SIGNAL session=[1-9][0-9]*|panthor-proxy: SYNCOBJ_TIMELINE_SIGNAL session=[1-9][0-9]*|panthor-proxy: SYNCOBJ_QUERY session=[1-9][0-9]*|panthor-proxy: GROUP_CREATE session=[1-9][0-9]*|panthor-proxy: GROUP_GET_STATE session=[1-9][0-9]*|panthor-proxy: GROUP_SUBMIT session=[1-9][0-9]*|panthor-proxy: GROUP_DESTROY session=[1-9][0-9]*|panthor-proxy: TILER_HEAP_CREATE session=[1-9][0-9]*|panthor-proxy: TILER_HEAP_DESTROY session=[1-9][0-9]*|panthor-proxy: SESSION_RELEASE session=[1-9][0-9]*|panthor-proxy: CLOSE_SESSION session=[1-9][0-9]*" \
+				"${LOG_DIR}/proxy.log" | tail -n 80 || true
 	echo
 	if [[ -f "${LOG_DIR}/ioctl-smoke-rootfs.log" ]]; then
 		echo "== IOCTL smoke rootfs prep =="
 		sed -n '1,120p' "${LOG_DIR}/ioctl-smoke-rootfs.log" || true
 		echo
 	fi
-	echo "== Client Panthor DRM =="
-	grep -aE "registered vmshm notify|client_comm_vmshm .*irq notify enabled|client_comm_vmshm: perf|panthor-client: OPEN_SESSION|panthor-client: DEV_QUERY|panthor-client: VM_CREATE|panthor-client: VM_DESTROY|panthor-client: CLOSE_SESSION|panthor-client: registered DRM frontend|PANTHOR_IOCTL_|PANTHOR_BASIC_SMOKE|PANTHOR_VM_CREATE_SMOKE|OPEN path=|VERSION name=|GET_CAP|DEV_QUERY_SIZE|GPU_INFO|CSIF_INFO|VM_CREATE|VM_DESTROY|ERROR|WARN|Kernel panic|Guest-boot failed" \
-		"${LOG_DIR}/client.log" || true
+	if [[ -f "${LOG_DIR}/gles-compute-rootfs.log" ]]; then
+		echo "== GLES compute rootfs prep =="
+		sed -n '1,120p' "${LOG_DIR}/gles-compute-rootfs.log" || true
+		echo
+	fi
+		echo "== Client Panthor DRM =="
+				grep -aE "registered vmshm notify|client_comm_vmshm .*irq notify enabled|client_comm_vmshm: perf|panthor-client: OPEN_SESSION|panthor-client: DEV_QUERY|panthor-client: VM_CREATE|panthor-client: VM_DESTROY|panthor-client: VM_BIND|panthor-client: VM_GET_STATE|panthor-client: BO_CREATE|panthor-client: BO_DESTROY|panthor-client: BO_MMAP_OFFSET|panthor-client: MMAP|panthor-client: MMAP_FLUSH_ID|panthor-client: SYNCOBJ_CREATE|panthor-client: SYNCOBJ_DESTROY|panthor-client: SYNCOBJ_WAIT|panthor-client: SYNCOBJ_TRANSFER|panthor-client: SYNCOBJ_TIMELINE_WAIT|panthor-client: SYNCOBJ_RESET|panthor-client: SYNCOBJ_SIGNAL|panthor-client: SYNCOBJ_TIMELINE_SIGNAL|panthor-client: SYNCOBJ_QUERY|panthor-client: GROUP_CREATE|panthor-client: GROUP_GET_STATE|panthor-client: GROUP_SUBMIT|panthor-client: GROUP_DESTROY|panthor-client: TILER_HEAP_CREATE|panthor-client: TILER_HEAP_DESTROY|panthor-client: CLOSE_SESSION|panthor-client: registered DRM frontend|PANTHOR_IOCTL_|PANTHOR_BASIC_SMOKE|PANTHOR_VM_CREATE_SMOKE|PANTHOR_BO_CREATE_SMOKE|PANTHOR_BO_LIFECYCLE_SMOKE|PANTHOR_BO_MMAP_SMOKE|PANTHOR_VM_BIND_SMOKE|PANTHOR_VM_BIND_ASYNC_SYNC_SMOKE|PANTHOR_VM_STATE_FLUSH_SMOKE|PANTHOR_SYNCOBJ_LIFECYCLE_SMOKE|PANTHOR_SYNCOBJ_WAIT_SMOKE|PANTHOR_SYNCOBJ_TRANSFER_SMOKE|PANTHOR_SYNCOBJ_TIMELINE_WAIT_SMOKE|PANTHOR_SYNCOBJ_SIGNAL_QUERY_SMOKE|PANTHOR_GROUP_LIFECYCLE_SMOKE|PANTHOR_GROUP_SUBMIT_SYNCPOINT_SMOKE|PANTHOR_TILER_HEAP_LIFECYCLE_SMOKE|OPEN path=|VERSION name=|GET_CAP|DEV_QUERY_SIZE|GPU_INFO|CSIF_INFO|VM_CREATE|VM_DESTROY|VM_BIND|VM_GET_STATE|GROUP_|TILER_HEAP_|MMAP_FLUSH_ID|MUNMAP_FLUSH_ID|BO_CREATE|BO_MMAP|BO_MUNMAP|PRIME_|SYNCOBJ_|GEM_CLOSE|ERROR|WARN|Kernel panic|Guest-boot failed" \
+					"${LOG_DIR}/client.log" || true
+	if [[ "${GLES_COMPUTE_SMOKE}" == "1" ]]; then
+		echo
+		echo "== GLES compute smoke =="
+		grep -aE "GPU_SMOKE_RESULT|COMPUTE_CHECK|GL_RENDERER|GL_VENDOR|GL_VERSION|GBM_BACKEND|DRM_NODE|STAGE=|PERF_|gles-compute-smoke rc|mismatch|software renderer detected|job timeout|gpu fault|Oops|Unable to handle|Kernel panic|ERROR|WARN" \
+			"${LOG_DIR}/client.log" || true
+	fi
 	echo
 	if [[ "${IOCTL_SMOKE}" == "1" ]] &&
 	   ioctl_mode_marker_ok &&
 	   ioctl_common_markers_ok &&
-	   ioctl_vm_create_markers_ok; then
-		echo "RESULT: PASS"
-	elif [[ "${IOCTL_SMOKE}" != "1" ]] &&
+	   ioctl_vm_create_markers_ok &&
+	   ioctl_bo_create_markers_ok &&
+		   ioctl_bo_lifecycle_markers_ok &&
+		   ioctl_bo_mmap_markers_ok &&
+		   ioctl_vm_bind_markers_ok &&
+		   ioctl_vm_bind_async_sync_markers_ok &&
+		   ioctl_vm_state_flush_markers_ok &&
+	   ioctl_syncobj_lifecycle_markers_ok &&
+	   ioctl_syncobj_wait_markers_ok &&
+		   ioctl_syncobj_transfer_markers_ok &&
+			   ioctl_syncobj_timeline_wait_markers_ok &&
+			   ioctl_syncobj_signal_query_markers_ok &&
+			   ioctl_group_lifecycle_markers_ok &&
+			   ioctl_group_submit_syncpoint_markers_ok &&
+			   ioctl_tiler_heap_lifecycle_markers_ok; then
+			echo "RESULT: PASS"
+	elif [[ "${GLES_COMPUTE_SMOKE}" == "1" ]] &&
+	     grep -qa "GPU_SMOKE_RESULT=PASS" "${LOG_DIR}/client.log" &&
+	     grep -qa "COMPUTE_CHECK=PASS" "${LOG_DIR}/client.log" &&
+	     grep -qaE "GL_RENDERER=.*Mali|GL_RENDERER=.*Panfrost" "${LOG_DIR}/client.log" &&
+	     ! grep -qaE "software renderer detected|llvmpipe|softpipe|Software Rasterizer|COMPUTE_CHECK=FAIL|GPU_SMOKE_RESULT=FAIL|Kernel panic|Oops|job timeout|mismatch" "${LOG_DIR}/client.log"; then
+			echo "RESULT: PASS"
+	elif [[ "${IOCTL_SMOKE}" != "1" && "${GLES_COMPUTE_SMOKE}" != "1" ]] &&
 	     grep -qa "panthor-client: DEV_QUERY selftest passed" "${LOG_DIR}/client.log" &&
 	     grep -qa "panthor-client: DEV_QUERY perf selftest passed" "${LOG_DIR}/client.log"; then
 		echo "RESULT: PASS"

@@ -18,24 +18,38 @@ The current implementation is a split GPU virtualization prototype:
   `*_vmshm_comm` is the control transport, while `*_vmshm_manager` manages a
   payload/object shared memory window.
 
-At the time of this analysis, the Panthor frontend is **discovery-only**: it
-supports `DRM_IOCTL_PANTHOR_DEV_QUERY`, so client userspace can query
-`GPU_INFO` and `CSIF_INFO` from the real proxy-side GPU. Full GPU work
-submission, BO lifecycle virtualization, VM_BIND, fences, event delivery, and
-command stream execution are not implemented yet in the client frontend.
+The Panthor frontend has moved beyond the original discovery-only stage. The
+current one-client prototype supports the Panthor resource, memory, sync,
+submit, and cleanup ioctls needed by the local `panthor_ioctl_smoke` suite and
+by a Mesa/Panfrost GLES compute smoke. It has passed a 16-mode one-client ioctl
+sweep and a real compute workload through:
+
+```text
+client VM userspace
+  -> panthor-client DRM frontend
+  -> vmshm-comm control RPC
+  -> panthor-proxy
+  -> real proxy-side DRM_PANTHOR
+  -> physical GPU through the custom passthrough path
+```
+
+The important remaining caveat is scope: this is one proxy VM plus one client
+VM. It does not yet prove multi-client scheduling/isolation, reset recovery,
+long-run leak freedom, PRIME/dma-buf/fd transport, or sustained performance
+under large memory pressure.
 
 High-level request flow:
 
 ```text
 client userspace
   -> /dev/dri/card* or /dev/dri/renderD*
-  -> panthor-client DEV_QUERY ioctl
-  -> client_comm_vmshm_call(PTQR)
+  -> panthor-client DRM ioctl
+  -> client_comm_vmshm_call()
   -> shared-memory control queue
   -> proxy_comm_vmshm dispatch
   -> panthor-proxy handler
-  -> real panthor_vmshm_dev_query()
-  -> proxy response PTQS
+  -> real panthor_vmshm_* helper
+  -> proxy response
   -> client copies data back to userspace
 ```
 
@@ -543,18 +557,37 @@ the proxy returns query data inline in the response.
 frontend.
 
 It registers a DRM driver named `panthor` with the DRM features needed by
-Mesa's discovery path, including render, GEM, syncobj, syncobj timeline, and
-GPUVA support. At this stage it only implements the Panthor-specific ioctl:
+Mesa's Panthor/Panfrost path, including render, GEM, syncobj, syncobj timeline,
+and GPUVA-related behavior. The current client frontend handles the core
+Panthor private ioctls and the DRM core ioctls needed for virtual BO and
+syncobj operation:
 
-```c
-DRM_IOCTL_PANTHOR_DEV_QUERY
+```text
+DEV_QUERY
+VM_CREATE / VM_DESTROY / VM_BIND / VM_GET_STATE
+BO_CREATE / BO_MMAP_OFFSET / GEM_CLOSE
+GROUP_CREATE / GROUP_DESTROY / GROUP_GET_STATE / GROUP_SUBMIT
+TILER_HEAP_CREATE / TILER_HEAP_DESTROY
+SYNCOBJ_CREATE / DESTROY / WAIT / TRANSFER / TIMELINE_WAIT
+SYNCOBJ_RESET / SIGNAL / TIMELINE_SIGNAL / QUERY
+```
+
+It also explicitly rejects fd-based ioctls that are unsafe across VM
+boundaries:
+
+```text
+DRM_IOCTL_PRIME_HANDLE_TO_FD
+DRM_IOCTL_PRIME_FD_TO_HANDLE
+DRM_IOCTL_SYNCOBJ_HANDLE_TO_FD
+DRM_IOCTL_SYNCOBJ_FD_TO_HANDLE
+DRM_IOCTL_SYNCOBJ_EVENTFD
 ```
 
 The earlier `/dev/panthor` character-device compatibility path was removed.
 Userspace validation now goes through the normal DRM nodes under `/dev/dri`,
 which is the path Mesa and libdrm use.
 
-When userspace calls DEV_QUERY:
+For `DEV_QUERY`, the flow remains:
 
 1. `panthor_client_ioctl_dev_query()` receives the DRM ioctl.
 2. `panthor_client_dev_query()` converts it to
@@ -565,9 +598,11 @@ When userspace calls DEV_QUERY:
 6. If the pointer was non-null, it copies returned data back to userspace and
    clears unused tail bytes.
 
-This is intentionally compatible with the real Panthor DEV_QUERY behavior, so
-client-side userspace can discover the real GPU's identity and command stream
-interface information.
+The other supported ioctls follow the same rule: the client copies and
+validates user pointers in the client VM, translates client-visible handles to
+per-session proxy handles, sends fixed metadata through `vmshm-comm`, and only
+uses `vmshm-object` for BO payloads that client userspace or the GPU must
+directly access.
 
 The frontend also has optional boot-time selftests:
 
@@ -751,9 +786,10 @@ through the character device.
 ### `panthor-client`
 
 This is the current visible GPU frontend in the client VM. It makes client
-userspace see a Panthor-like DRM render node, but it only implements device
-query. It proves that a real DRM ioctl can cross the vmshm control path and be
-served by the real proxy-side GPU driver.
+userspace see a Panthor-like DRM render node. It now virtualizes the one-client
+Panthor ioctl surface needed for BO lifecycle, VM_BIND, syncobj/timeline waits,
+group submission, tiler heap lifecycle, and session cleanup. The current test
+evidence includes both the full ioctl smoke sweep and a real GLES compute task.
 
 ### `panthor-proxy`
 
@@ -763,30 +799,27 @@ into a vmshm response.
 
 ### Real `panthor` modifications
 
-These changes expose a safe in-kernel query function for the proxy bridge.
-Instead of making the proxy bridge fake GPU info, the bridge reuses the real
-initialized Panthor device state.
+These changes expose in-kernel helpers for the proxy bridge. Instead of making
+the proxy bridge fake GPU state, the bridge reuses the real initialized Panthor
+device state and real Panthor VM/GEM/MMU/scheduler/syncobj paths.
 
 ## 9. Current Limitations And Risks
 
-### 9.1 DEV_QUERY only
+### 9.1 One-client scope
 
-The client Panthor driver currently implements only `DRM_IOCTL_PANTHOR_DEV_QUERY`.
-It does not implement:
+The current supported surface is a one-proxy-one-client prototype. It proves
+that the virtual Panthor ioctl path can run the available smoke suite and a
+small real GLES compute workload, but it does not yet prove:
 
-- `VM_CREATE`
-- `VM_DESTROY`
-- `VM_BIND`
-- `BO_CREATE`
-- `BO_MMAP_OFFSET`
-- `GROUP_CREATE`
-- `GROUP_SUBMIT`
-- `GROUP_GET_STATE`
-- tiler heap ioctls
-- fence/event delivery
+- multiple client VMs using the same proxy GPU concurrently
+- cross-client handle namespace isolation under adversarial or racing access
+- fairness, scheduling policy, throttling, or accounting
+- reset recovery after GPU faults or client/proxy crashes
+- long-run leak freedom under repeated create/submit/destroy cycles
+- sustained performance under large BOs, many mappings, or high submit rate
 
-So the current functionality is GPU discovery and RPC path validation, not
-complete GPU acceleration inside the client VM.
+Two-client tests should be explicit experiments, not inferred from the
+one-client pass.
 
 ### 9.2 Permission fields are not fully enforced
 
@@ -897,7 +930,7 @@ flowchart LR
 
     subgraph Shared["Shared memory"]
         CTRL["control vmshm<br/>small RPC envelope"]
-        DATA["payload vmshm<br/>arrays / BO backing / rings / fences"]
+        DATA["payload vmshm<br/>BO backing / client-visible data"]
     end
 
     subgraph ProxyVM["Proxy VM"]
@@ -912,7 +945,7 @@ flowchart LR
     U -->|"Panthor ioctls"| CF
     CF --> CMAP
     CF -->|"small request"| CC
-    CF <-->|"large arrays / BO data"| COBJ
+    CF <-->|"BO mmap / payload lookup"| COBJ
     CC <-->|"session_id + op + handles"| CTRL
     COBJ <-->|"descriptors / offsets"| DATA
     CTRL <-->|"typed messages"| PC
@@ -942,10 +975,12 @@ userspace client to the real driver.
 
 ### 10.2 RPC Shape
 
-Keep the 512-byte control channel for fixed metadata and use
-`vmshm_manager` objects for variable-size payloads. The Panthor UAPI has
-several nested `drm_panthor_obj_array` fields; those contain userspace pointers
-that are valid only inside the client VM. The proxy must never dereference them.
+Keep `vmshm-comm` for control metadata and flattened transient ioctl arrays.
+Use `vmshm-object` only for payloads that the client VM must directly
+`mmap`/read/write or that the physical GPU must access as BO backing. The
+Panthor UAPI has several nested `drm_panthor_obj_array` fields; those contain
+userspace pointers that are valid only inside the client VM. The proxy must
+never dereference them.
 
 A useful protocol shape is:
 
@@ -970,13 +1005,19 @@ struct panthor_vmshm_ioctl_rsp {
 };
 ```
 
-The exact structs can be more specific per ioctl, but the important rules are:
+The current implementation uses more specific fixed request/response structs
+rather than one generic ioctl envelope. The important rules are:
 
-- Small fixed structs can be sent inline.
-- Arrays must be copied from client userspace by `panthor-client`, placed in a
-  transfer vmshm object, and referenced by handle/grant in the RPC.
-- Nested arrays, especially sync arrays inside `VM_BIND` and `GROUP_SUBMIT`,
-  need either a packed transfer format or multiple transfer objects.
+- Small fixed structs are sent inline through `vmshm-comm`.
+- Transient arrays are copied from client userspace by `panthor-client`,
+  validated, translated, flattened, and carried inside the `vmshm-comm` request
+  when they fit the bounded protocol limits.
+- Do not put transient ioctl arrays in `vmshm-object`. This includes
+  `VM_BIND ops[]`, VM_BIND sync arrays, syncobj handle/point arrays,
+  `GROUP_CREATE queues[]`, and `GROUP_SUBMIT queue_submits[]/syncs[]`.
+- If an array grows beyond the fixed protocol limits, add a deliberate
+  control-plane extension or batching scheme; do not silently repurpose BO
+  payload object memory as a generic transfer object.
 - Responses return the same fields that the real ioctl mutates, such as
   returned VM ID, BO handle, heap GPU VA, or updated failing `ops.count`.
 - `seq` and `reply_to` in `vmshm_comm` still provide request/reply matching,
@@ -991,11 +1032,11 @@ The exact structs can be more specific per ioctl, but the important rules are:
 | `VM_GET_STATE` | Reports whether a VM is usable or unusable after faults/async bind failure. | Translate VM ID, query proxy state, return state unchanged. | Low |
 | `BO_CREATE` | Creates a GEM object in the real DRM file handle table; may be exclusive to one VM. | RPC plus memory-model decision. Translate `exclusive_vm_id`, create a proxy GEM handle, then return a client-visible BO handle. For early bring-up, require `DRM_PANTHOR_BO_NO_MMAP` and keep the BO proxy-owned. For CPU-visible BOs, back the BO with vmshm or implement a copy/import path. | High |
 | `BO_MMAP_OFFSET` | Returns a fake offset valid for `mmap()` on the same real DRM file. | Do not return the proxy fake offset directly; it is meaningless in the client VM. Client driver must return a client-local fake offset and implement `.mmap` to map a vmshm-backed object. If the BO was created with `NO_MMAP` or no shared backing exists, return `-EINVAL`/`-EOPNOTSUPP`. | High |
-| `VM_BIND` | Maps/unmaps GEM ranges into a GPU VM; async mode uses syncobjs and scheduler jobs. | Copy bind ops from client userspace, translate `vm_id` and `bo_handle`, send packed ops to proxy. Start with synchronous binds only and empty `syncs`. Async bind requires syncobj/timeline virtualization and nested sync array transfer. GPU VAs can pass through because the real GPU executes in the proxy VM's Panthor VM. | High |
-| `GROUP_CREATE` | Creates a scheduling group and queues bound to one VM. | Copy queue array into a transfer object, translate `vm_id`, proxy creates the group, return a client group handle mapped to the proxy group handle. Priority checks should be enforced on the proxy side; client-side checks are only advisory. | Medium |
+| `VM_BIND` | Maps/unmaps GEM ranges into a GPU VM; async mode uses syncobjs and scheduler jobs. | Copy bind ops and nested sync arrays from client userspace, translate `vm_id`, `bo_handle`, and syncobj handles, then send bounded flattened arrays through `vmshm-comm`. GPU VAs pass through because the real GPU executes in the proxy-created Panthor VM. | High |
+| `GROUP_CREATE` | Creates a scheduling group and queues bound to one VM. | Copy the queue array into the bounded `vmshm-comm` request, translate `vm_id`, proxy creates the group, return a client group handle mapped to the proxy group handle. Priority checks should be enforced on the proxy side; client-side checks are only advisory. | Medium |
 | `GROUP_DESTROY` | Destroys a scheduling group. | Translate group handle, call proxy destroy, remove mapping. Also define what happens to in-flight submits and virtual fences. | Low/Medium |
 | `GROUP_GET_STATE` | Returns timeout/fatal-fault state and fatal queue mask. | Translate group handle, query proxy, return state/fatal queues unchanged. | Low |
-| `GROUP_SUBMIT` | Submits command streams to group queues; stream addresses are GPU VAs; sync arrays describe waits/signals. | Hardest path. Copy `queue_submits` and nested sync arrays, translate group and sync handles, ensure command stream BOs were already created and bound in the proxy VM at the same GPU VAs, submit on proxy, then reflect completion through virtual syncobjs/fences/events. A first prototype can allow only empty sync arrays and block until completion or expose one simple completion fence. | Very high |
+| `GROUP_SUBMIT` | Submits command streams to group queues; stream addresses are GPU VAs; sync arrays describe waits/signals. | Copy `queue_submits` and nested sync arrays into the bounded `vmshm-comm` request, translate group and sync handles, ensure command stream BOs were created and bound in the proxy VM at the same GPU VAs, submit on proxy, then reflect completion through proxy-backed syncobjs/fences. Zero-length submit is protocol evidence; nonzero submit plus readback is execution evidence. | Very high |
 | `TILER_HEAP_CREATE` | Allocates tiler heap objects in a VM and returns heap handle plus GPU VAs. | Translate VM ID, call proxy create, return GPU VAs unchanged and map a client heap handle to proxy heap handle. The returned GPU VAs are meaningful because later jobs execute in the proxy-created GPU VM. | Medium |
 | `TILER_HEAP_DESTROY` | Destroys a tiler heap. | Translate client heap handle to proxy heap handle, call proxy destroy, remove mapping. Be careful because real heap handles encode VM ID in the high bits. | Low/Medium |
 
@@ -1017,29 +1058,21 @@ allocate/grant/pin shared payload objects, pass descriptors over the control
 path, and let both VMs see the same bytes. To turn that into Panthor BO backing,
 you still need one of these memory models:
 
-1. **Proxy-owned BO, no client mmap.** Simplest for first execution tests.
-   Client creates BOs and binds/submits them, but CPU mapping is unsupported.
-   This only works if command/data contents are uploaded through explicit
-   transfer RPCs.
-2. **vmshm-backed BO.** Best long-term fit for your current infrastructure.
+1. **vmshm-backed BO.** Best fit for the current infrastructure and the
+   validated path.
    BO storage lives in the payload shared-memory window; client userspace maps
    it through the virtual DRM frontend, and the proxy imports/maps the same
    pages into the real Panthor GEM/MMU path. This needs careful cacheability,
    DMA mapping, SG/contiguous descriptor support, and lifetime pinning.
-3. **Shadow/copy BO.** Client maps local memory, proxy owns real GEM memory,
+2. **Shadow/copy BO.** Client maps local memory, proxy owns real GEM memory,
    and the frontend copies dirty ranges before submit and copies readback ranges
    after completion. This is easier to prototype than true shared backing, but
    slower and semantically tricky for coherent CPU/GPU sharing.
 
-For your current codebase, the best staged path is usually:
-
-```text
-first useful prototype:
-  proxy-owned BO + explicit upload transfer + sync VM_BIND + simple submit
-
-then:
-  vmshm-backed BO + client mmap + real fence/syncobj virtualization
-```
+The old proxy-owned BO plus explicit upload path should not be revived for the
+current GLES target. It would create a second memory model and make mmap
+readback/cache ordering harder to reason about. Keep BO payloads in
+`vmshm-object` and keep ioctl metadata in `vmshm-comm`.
 
 ### 10.5 Client Frontend Responsibilities
 
@@ -1096,47 +1129,48 @@ heap, and scheduler helpers.
 `handle` field is a DRM syncobj or timeline syncobj handle. These handles are
 per `drm_file`, so the client handle cannot be passed to the proxy.
 
-A staged design:
+Current one-client implementation:
 
-1. Initially reject non-empty sync arrays and async VM_BIND with `-EOPNOTSUPP`.
-2. Add client/proxy syncobj mapping:
-   - client syncobj handle -> proxy syncobj handle
-   - timeline point values pass through
-   - wait/signal operations are rewritten with proxy handles before calling the
-     real submit path
-3. Add event/fence propagation back to the client:
-   - either mirror proxy fences into client-visible DRM syncobjs
-   - or maintain a vmshm fence page/event ring and wake the client DRM file
-4. Only then enable `DRIVER_SYNCOBJ_TIMELINE` in the virtual frontend.
+- maps client syncobj handles to proxy syncobj handles
+- preserves timeline point values
+- rewrites wait/signal/transfer/query operations with proxy handles
+- supports async VM_BIND sync arrays and GROUP_SUBMIT sync arrays through
+  bounded flattened `vmshm-comm` requests
+- exposes `DRIVER_SYNCOBJ` and `DRIVER_SYNCOBJ_TIMELINE` only because those
+  virtualized paths exist
+
+Remaining sync work is about depth rather than first enablement: stress larger
+arrays, long waits, timeout races, close-while-waiting, fault/reset behavior,
+and multi-client namespace isolation. `DRM_IOCTL_SYNCOBJ_EVENTFD`,
+`SYNCOBJ_HANDLE_TO_FD`, and `SYNCOBJ_FD_TO_HANDLE` remain intentionally
+unsupported until there is an explicit cross-VM fd/eventfd protocol.
 
 This is necessary because Panthor's submit path updates syncobjs after
 `drm_sched_job_arm()` and pushes job fences into the scheduler. Without a real
 virtual fence model, userspace could submit work but never observe completion
 correctly.
 
-### 10.8 Suggested Implementation Order
+### 10.8 Current Implementation Boundary
 
-The safest order is:
+The implementation has already crossed the basic bring-up sequence:
 
-1. **Session RPC:** add `OPEN`, `CLOSE`, protocol version query, `session_id`,
-   and proxy session lifetime tied to client DRM open/close.
-2. **Simple resource ioctls:** implement `VM_CREATE`, `VM_DESTROY`,
-   `VM_GET_STATE`, `GROUP_CREATE`, `GROUP_DESTROY`, `GROUP_GET_STATE`,
-   `TILER_HEAP_CREATE`, and `TILER_HEAP_DESTROY`.
-3. **BO handles without mmap:** implement `BO_CREATE` for `NO_MMAP`, proxy GEM
-   handles, client BO handle mapping, and cleanup on close.
-4. **Synchronous VM_BIND:** support map/unmap with empty sync arrays. Transfer
-   bind-op arrays through vmshm objects and translate BO handles on proxy.
-5. **Minimal GROUP_SUBMIT:** support queue submits with empty sync arrays and
-   command streams already resident in proxy-visible BOs. For a bring-up test,
-   either block until completion or expose one simple completion object.
-6. **Syncobj/timeline virtualization:** add proper wait/signal translation and
-   completion propagation, then enable async VM_BIND.
-7. **CPU mmap/shared BOs:** implement vmshm-backed BOs or a shadow/copy model,
-   then support `BO_MMAP_OFFSET` and client `.mmap`.
-8. **Performance work:** batch RPCs, use persistent submit/event rings, support
-   SG descriptors, enforce permissions, and remove serialized
-   `client_comm_vmshm_call()` bottlenecks where needed.
+1. **Session RPC:** `OPEN_SESSION` / `CLOSE_SESSION` are tied to client DRM
+   open/close and clean up leftover session resources.
+2. **Resource ioctls:** VM, group, tiler heap, and state-query lifecycles are
+   virtualized with per-session handle translation.
+3. **BO and mmap:** BO creation returns client-visible handles, allocates
+   `vmshm-object` payloads, provides client-local fake mmap offsets, and maps
+   payload pages into client userspace.
+4. **VM_BIND:** synchronous and async VM_BIND use bounded flattened op/sync
+   arrays in `vmshm-comm`; proxy VM_BIND maps vmshm-backed payload pages
+   through the real Panthor path.
+5. **Syncobj/timeline:** create/destroy/wait/transfer/reset/signal/query
+   operations translate client handles to proxy syncobj handles.
+6. **GROUP_SUBMIT:** submit metadata and nested sync arrays are flattened into
+   `vmshm-comm`; nonzero command streams have been exercised by GLES compute.
+
+The next engineering work is hardening those paths under larger and more
+adversarial conditions, not adding another basic Panthor ioctl number.
 
 ### 10.9 Critical Rules
 
@@ -1147,6 +1181,9 @@ The safest order is:
   revalidate through submit completion.
 - Enforce `required_perms` before using shared payload objects for CPU write,
   GPU read/write, submit, signal, or mmap.
+- Preserve the two-memslot rule: transient ioctl metadata belongs to
+  `vmshm-comm`; BO payloads and other client-visible data objects belong to
+  `vmshm-object`.
 - Treat proxy-side checks as authoritative. Client-side validation improves
   error quality, but it is not a security boundary.
 - Define teardown semantics first: closing the client DRM file must destroy or
@@ -1155,29 +1192,35 @@ The safest order is:
 
 ## 11. Suggested Next Steps
 
-To turn this from discovery-only virtualization into useful GPU virtualization,
-the natural next steps are:
+The next steps are now hardening and scaling, not basic DEV_QUERY bring-up:
 
-1. Define a stable VM GPU protocol version separate from the C struct internals.
-2. Enforce `required_perms` in object and grant lookup.
-3. Add a lease or submit-time revalidation model for object descriptors.
-4. Extend client/proxy Panthor RPC beyond DEV_QUERY:
-   - BO create/import/export over vmshm objects.
-   - VM create/destroy/bind.
-   - Group create/submit/get-state.
-   - Fence page and event ring delivery.
-5. Decide whether GPU BO backing must be contiguous, or add SG descriptor
+1. Keep the one-client ioctl suite as a regression gate for every protocol or
+   memory-model change.
+2. Enforce `required_perms` in object and grant lookup before treating the path
+   as multi-tenant safe.
+3. Add stronger lease or submit-time revalidation rules for vmshm-object
+   descriptors so object offsets cannot be reused while the client or GPU still
+   treats them as live.
+4. Add explicit two-client namespace/isolation tests for VM, BO, syncobj, group,
+   heap, and payload handles.
+5. Stress VM_BIND with larger BOs, multi-span payloads, async sync arrays,
+   partial failures, cleanup unmaps, and memory pressure.
+6. Stress real GPU workloads beyond the current compute smoke: repeated
+   dispatches, larger buffers, more ALU work, graphics/tiler jobs, and reset or
+   fault recovery.
+7. Decide whether BO backing must remain contiguous or add SG descriptor
    protocol support to `VMSHM_MANAGER_MSG_GET_OBJECT_RSP`.
-6. Move larger payloads out of inline 512-byte control messages and into
-   managed vmshm objects.
-7. Remove the single global Panthor device assumption if multiple GPUs or
+8. Keep PRIME/dma-buf/syncobj-fd/eventfd ioctls disabled unless a real
+   cross-VM fd/grant/eventfd protocol is designed and tested.
+9. Remove the single global Panthor device assumption if multiple GPUs or
    multiple proxy devices are in scope.
-8. Split proxy handler lookup from handler execution if response handlers begin
+10. Split proxy handler lookup from handler execution if response handlers begin
    doing heavier work.
 
 ## 12. Summary
 
-Your drivers form a clean first stage of a split GPU virtualization stack.
+Your drivers have moved from a clean first-stage transport prototype to a
+working one-client split GPU virtualization prototype.
 
 The most complete part is the control transport: `proxy_comm_vmshm` and
 `client_comm_vmshm` provide a typed, request/response message path over shared
@@ -1187,8 +1230,12 @@ The second important part is the object manager: `proxy_vmshm_manager` and
 `client_vmshm_manager` define how future GPU buffers/rings/fences can be
 allocated, named, granted, looked up, and translated across VM address spaces.
 
-The Panthor layer currently proves the end-to-end path with `DEV_QUERY`:
-client userspace can issue a real Panthor DRM ioctl, the request crosses the
-vmshm channel, the proxy calls the real Panthor driver, and the result is
-returned to the client. This is not yet full GPU execution virtualization, but
-it is the right skeleton for building it.
+The Panthor layer now proves more than `DEV_QUERY`: client userspace can create
+VMs and BOs, mmap shared payloads, bind them into the proxy-created GPU VA
+space, create syncobjs, submit nonzero command streams through `GROUP_SUBMIT`,
+wait for proxy-backed fences, and read back GPU-written data from the same
+vmshm-backed BO payloads. That is a working one-client GPU execution path.
+
+The remaining work is about confidence and scope: multi-client isolation,
+fairness, reset recovery, long-run cleanup, larger memory pressure, permission
+enforcement, and optional cross-VM fd/dma-buf/eventfd protocols.

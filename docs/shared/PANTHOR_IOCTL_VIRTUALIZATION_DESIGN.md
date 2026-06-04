@@ -36,19 +36,32 @@ SSBO readback。
 - `*_vmshm_comm` 是 control-plane RPC 通道。
 - `*_vmshm_manager` 管理 payload/object shared memory window。
 
-但目前 Panthor frontend 仍然是 discovery-only：
+当前一客户端原型已经越过 discovery-only 阶段。`panthor-client`/`panthor-proxy`
+已经实现并验证了以下 Panthor/DRM 路径：
 
-- `Linux-Guest-GPU/include/linux/panthor_vmshm.h` 只定义了
-  `PANTHOR_VMSHM_MSG_DEV_QUERY_REQ/RSP`。
-- `Linux-Guest-GPU/drivers/gpu/drm/panthor-client/panthor_client_drv.c`
-  只注册了 `DRM_IOCTL_PANTHOR_DEV_QUERY`。
-- `panthor-client` 的 `driver_features` 当前只有 `DRIVER_RENDER`。
-- full GPU work submission、BO lifecycle、VM_BIND、fence/syncobj、
-  event delivery、command stream execution 还没有虚拟化。
+- `OPEN_SESSION` / `CLOSE_SESSION`
+- `DRM_IOCTL_VERSION` / `DRM_IOCTL_GET_CAP`
+- `DRM_IOCTL_PANTHOR_DEV_QUERY`
+- `DRM_IOCTL_PANTHOR_VM_CREATE` / `VM_DESTROY` / `VM_GET_STATE`
+- `DRM_IOCTL_PANTHOR_BO_CREATE` / `BO_MMAP_OFFSET` / client `.mmap`
+- `DRM_IOCTL_PANTHOR_VM_BIND`，包括同步 MAP/UNMAP、async MAP/UNMAP 和
+  `SYNC_ONLY`
+- `DRM_IOCTL_SYNCOBJ_CREATE` / `DESTROY` / `WAIT` / `TRANSFER` /
+  `TIMELINE_WAIT` / `RESET` / `SIGNAL` / `TIMELINE_SIGNAL` / `QUERY`
+- `DRM_IOCTL_PANTHOR_GROUP_CREATE` / `GROUP_DESTROY` / `GROUP_GET_STATE` /
+  `GROUP_SUBMIT`
+- `DRM_IOCTL_PANTHOR_TILER_HEAP_CREATE` / `TILER_HEAP_DESTROY`
+- client close 后的 session resource cleanup
 
-这意味着 Mesa/Panthor 可以查询 GPU/CSF capability，但在后续
-`VM_CREATE`、`BO_CREATE`、`VM_BIND`、`GROUP_SUBMIT`、syncobj 等步骤会缺
-capability 或直接返回 `-ENOTTY`。
+这些路径已经通过一客户端 16 模式 ioctl sweep，并通过一次
+`gles-compute-smoke --count 4096 --iterations 5 --warmup 1 --perf` 的真实
+Mesa/Panfrost compute workload。该 workload 证明了非零 `GROUP_SUBMIT`、
+vmshm-backed BO、proxy 真实 Panthor `VM_BIND`、syncobj/timeline wait 和 CPU
+readback 可以串起来工作。
+
+当前仍然没有证明多 client 隔离/公平性、reset recovery、长期资源泄漏自由、
+大内存压力性能，或 cross-VM fd/dma-buf/eventfd transport。PRIME 和 syncobj
+fd/eventfd 相关 ioctl 目前应继续显式拒绝，而不是裸转发 fd 数字。
 
 ## 2. 设计原则
 
@@ -216,9 +229,14 @@ proxy：
 
 关键点：
 
-- 当前 `panthor-client` 只有 `DRIVER_RENDER`，不能支撑 Mesa 后续 syncobj 路径。
-- client driver features 应补齐至少：
-  `DRIVER_RENDER | DRIVER_GEM | DRIVER_SYNCOBJ | DRIVER_SYNCOBJ_TIMELINE`。
+- `panthor-client` 当前应只暴露已经虚拟化并测试过的 capability。
+- `DRM_CAP_SYNCOBJ` 和 `DRM_CAP_SYNCOBJ_TIMELINE` 需要为 `1`，因为 Mesa
+  submit/wait 路径依赖 syncobj/timeline。
+- `DRM_CAP_PRIME` 当前必须为 `0`。PRIME fd import/export、syncobj fd
+  import/export 和 `DRM_IOCTL_SYNCOBJ_EVENTFD` 没有 cross-VM fd/eventfd 协议，
+  必须返回 `-EOPNOTSUPP`。
+- 不要依赖 DRM core 默认 capability 泄漏；client frontend 应拦截并只声明
+  已经有语义保证的能力。
 
 ### 5.4 `DRM_IOCTL_PANTHOR_DEV_QUERY`
 
