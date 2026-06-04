@@ -109,6 +109,7 @@ cd /home/mzh/gpu
 RUN_ID=gpu-perf-host-vs-passthrough-$(date +%Y%m%d-%H%M%S) \
   ./scripts/run/run-host-vs-passthrough-gles-perf.sh \
   --host-rootfs-userspace \
+  --exclude-cpu-prepare \
   --iterations 100 \
   --warmup 5 \
   --large-count-iterations 20 \
@@ -117,7 +118,7 @@ RUN_ID=gpu-perf-host-vs-passthrough-$(date +%Y%m%d-%H%M%S) \
   --host-timeout 900
 ```
 
-Default formal sweep is 4 MiB, 16 MiB, and 64 MiB. Report the `Formal Host/VM performance ratio table`; values are `host/vm`, closer to `1.000` is better. Do not report old overhead tables unless the user explicitly asks.
+Default formal sweep is 4 MiB, 16 MiB, and 64 MiB. Report the `Formal Host/VM performance ratio table`; values are `host/vm`, closer to `1.000` is better. Current formal runs exclude the per-iteration `input[]` CPU fill from `PERF_ITER_US` / `iter_total`; `cpu_prepare` is still printed as a phase, but the formal `metadata` group is `buffer_upload` only. Do not report old overhead tables unless the user explicitly asks.
 
 Do not enable these for a formal baseline: `--guest-panthor-pt-timing`, `--pmthor-irq-stats`, `--guest-panthor-irq-stats`, `--guest-panthor-submit-stats`, `--vm-huge-pages-2m`, `--vm-taskset-cpu`, `--pmthor-irq-affinity-cpu`, tracing wrappers, or perf-record.
 
@@ -132,6 +133,7 @@ cd /home/mzh/gpu
 RUN_ID=gpu-perf-pttiming-vmonly-$(date +%Y%m%d-%H%M%S) \
   ./scripts/run/run-host-vs-passthrough-gles-perf.sh \
   --host-rootfs-userspace \
+  --exclude-cpu-prepare \
   --skip-host \
   --iterations 100 \
   --warmup 5 \
@@ -148,6 +150,7 @@ cd /home/mzh/gpu
 RUN_ID=gpu-perf-irqstats-vmonly-$(date +%Y%m%d-%H%M%S) \
   ./scripts/run/run-host-vs-passthrough-gles-perf.sh \
   --host-rootfs-userspace \
+  --exclude-cpu-prepare \
   --skip-host \
   --iterations 100 \
   --warmup 5 \

@@ -39,6 +39,7 @@ PMTHOR_IRQ_STATS=${PMTHOR_IRQ_STATS:-0}
 GUEST_PANTHOR_IRQ_STATS=${GUEST_PANTHOR_IRQ_STATS:-0}
 GUEST_PANTHOR_SUBMIT_STATS=${GUEST_PANTHOR_SUBMIT_STATS:-0}
 GUEST_PANTHOR_PT_TIMING=${GUEST_PANTHOR_PT_TIMING:-0}
+EXCLUDE_CPU_PREPARE=${EXCLUDE_CPU_PREPARE:-0}
 
 SYNC_TO_REMOTE=1
 REMOTE_BUILD=1
@@ -79,6 +80,7 @@ Options:
   --guest-panthor-irq-stats   Diagnostic mode: enable guest Panthor job IRQ timing stats
   --guest-panthor-submit-stats Diagnostic mode: enable guest Panthor submit/vm-bind aggregate timing stats
   --guest-panthor-pt-timing    Diagnostic mode: enable guest passthrough page-table aggregate timing stats
+  --exclude-cpu-prepare       Exclude input[] CPU fill from PERF_ITER_US/iter_total
   --vm-timeout SEC           VM run timeout, default: ${VM_TIMEOUT}
   --host-timeout SEC         Host smoke timeout, default: ${HOST_TIMEOUT}
   --run-id ID                Run log directory name
@@ -99,7 +101,7 @@ Environment overrides:
   ROOTFS_IMAGE HOST_USE_ROOTFS_USERSPACE ALU_ITERS VM_HUGE_PAGES_2M
   VM_TASKSET_CPU PMTHOR_IRQ_AFFINITY_CPU
   PMTHOR_IRQ_AFFINITY_LABELS PMTHOR_IRQ_STATS GUEST_PANTHOR_IRQ_STATS
-  GUEST_PANTHOR_SUBMIT_STATS GUEST_PANTHOR_PT_TIMING
+  GUEST_PANTHOR_SUBMIT_STATS GUEST_PANTHOR_PT_TIMING EXCLUDE_CPU_PREPARE
 
 Logs:
   remote: ${REMOTE_LOG_ROOT}/passthrough/perf/${RUN_ID}
@@ -171,6 +173,9 @@ while [[ $# -gt 0 ]]; do
 		;;
 	--guest-panthor-pt-timing)
 		GUEST_PANTHOR_PT_TIMING=1
+		;;
+	--exclude-cpu-prepare)
+		EXCLUDE_CPU_PREPARE=1
 		;;
 	--vm-timeout)
 		shift; [[ $# -gt 0 ]] || { echo "--vm-timeout requires an argument" >&2; exit 2; }
@@ -310,7 +315,7 @@ run_remote_perf() {
 	local count_sweep_q host_rootfs_q alu_iters_q vm_huge_pages_q
 	local vm_taskset_cpu_q pmthor_irq_affinity_cpu_q pmthor_irq_affinity_labels_q pmthor_irq_stats_q
 	local guest_panthor_irq_stats_q guest_panthor_submit_stats_q
-	local guest_panthor_pt_timing_q
+	local guest_panthor_pt_timing_q exclude_cpu_prepare_q
 	local sync_q build_q update_q run_vm_q run_host_q deps_q remote_status
 
 	run_id_q=$(quote "${RUN_ID}")
@@ -339,6 +344,7 @@ run_remote_perf() {
 	guest_panthor_irq_stats_q=$(quote "${GUEST_PANTHOR_IRQ_STATS}")
 	guest_panthor_submit_stats_q=$(quote "${GUEST_PANTHOR_SUBMIT_STATS}")
 	guest_panthor_pt_timing_q=$(quote "${GUEST_PANTHOR_PT_TIMING}")
+	exclude_cpu_prepare_q=$(quote "${EXCLUDE_CPU_PREPARE}")
 	sync_q=$(quote "${SYNC_TO_REMOTE}")
 	build_q=$(quote "${REMOTE_BUILD}")
 	update_q=$(quote "${ROOTFS_UPDATE}")
@@ -348,7 +354,7 @@ run_remote_perf() {
 
 	log "Running remote host-vs-passthrough GLES perf test: ${RUN_ID}"
 	set +e
-	ssh_remote "RUN_ID=${run_id_q} REMOTE_ROOT=${remote_root_q} REMOTE_BINS=${remote_bins_q} REMOTE_LOG_ROOT=${remote_log_root_q} ITERATIONS=${iterations_q} WARMUP=${warmup_q} COUNT=${count_q} COUNT_SWEEP=${count_sweep_q} LARGE_COUNT_THRESHOLD=${large_threshold_q} LARGE_COUNT_ITERATIONS=${large_iterations_q} LARGE_COUNT_WARMUP=${large_warmup_q} VM_TIMEOUT=${vm_timeout_q} HOST_TIMEOUT=${host_timeout_q} PASSTHROUGH_VM_RUNNER=${runner_q} PASSTHROUGH_VM_CONFIG=${config_q} ROOTFS_IMAGE=${rootfs_q} HOST_USE_ROOTFS_USERSPACE=${host_rootfs_q} ALU_ITERS=${alu_iters_q} VM_HUGE_PAGES_2M=${vm_huge_pages_q} VM_TASKSET_CPU=${vm_taskset_cpu_q} PMTHOR_IRQ_AFFINITY_CPU=${pmthor_irq_affinity_cpu_q} PMTHOR_IRQ_AFFINITY_LABELS=${pmthor_irq_affinity_labels_q} PMTHOR_IRQ_STATS=${pmthor_irq_stats_q} GUEST_PANTHOR_IRQ_STATS=${guest_panthor_irq_stats_q} GUEST_PANTHOR_SUBMIT_STATS=${guest_panthor_submit_stats_q} GUEST_PANTHOR_PT_TIMING=${guest_panthor_pt_timing_q} SYNC_TO_REMOTE=${sync_q} REMOTE_BUILD=${build_q} ROOTFS_UPDATE=${update_q} RUN_VM=${run_vm_q} RUN_HOST=${run_host_q} INSTALL_REMOTE_DEPS=${deps_q} bash -s" <<'REMOTE_SCRIPT'
+	ssh_remote "RUN_ID=${run_id_q} REMOTE_ROOT=${remote_root_q} REMOTE_BINS=${remote_bins_q} REMOTE_LOG_ROOT=${remote_log_root_q} ITERATIONS=${iterations_q} WARMUP=${warmup_q} COUNT=${count_q} COUNT_SWEEP=${count_sweep_q} LARGE_COUNT_THRESHOLD=${large_threshold_q} LARGE_COUNT_ITERATIONS=${large_iterations_q} LARGE_COUNT_WARMUP=${large_warmup_q} VM_TIMEOUT=${vm_timeout_q} HOST_TIMEOUT=${host_timeout_q} PASSTHROUGH_VM_RUNNER=${runner_q} PASSTHROUGH_VM_CONFIG=${config_q} ROOTFS_IMAGE=${rootfs_q} HOST_USE_ROOTFS_USERSPACE=${host_rootfs_q} ALU_ITERS=${alu_iters_q} VM_HUGE_PAGES_2M=${vm_huge_pages_q} VM_TASKSET_CPU=${vm_taskset_cpu_q} PMTHOR_IRQ_AFFINITY_CPU=${pmthor_irq_affinity_cpu_q} PMTHOR_IRQ_AFFINITY_LABELS=${pmthor_irq_affinity_labels_q} PMTHOR_IRQ_STATS=${pmthor_irq_stats_q} GUEST_PANTHOR_IRQ_STATS=${guest_panthor_irq_stats_q} GUEST_PANTHOR_SUBMIT_STATS=${guest_panthor_submit_stats_q} GUEST_PANTHOR_PT_TIMING=${guest_panthor_pt_timing_q} EXCLUDE_CPU_PREPARE=${exclude_cpu_prepare_q} SYNC_TO_REMOTE=${sync_q} REMOTE_BUILD=${build_q} ROOTFS_UPDATE=${update_q} RUN_VM=${run_vm_q} RUN_HOST=${run_host_q} INSTALL_REMOTE_DEPS=${deps_q} bash -s" <<'REMOTE_SCRIPT'
 set -euo pipefail
 
 LOG_DIR="${REMOTE_LOG_ROOT}/passthrough/perf/${RUN_ID}"
@@ -382,6 +388,10 @@ validate_workload_options() {
 		write_failure_result "invalid --alu-iters value: ${ALU_ITERS}"
 		exit 1
 	fi
+	if [[ "${EXCLUDE_CPU_PREPARE}" != "0" && "${EXCLUDE_CPU_PREPARE}" != "1" ]]; then
+		write_failure_result "invalid EXCLUDE_CPU_PREPARE value: ${EXCLUDE_CPU_PREPARE}"
+		exit 1
+	fi
 }
 
 select_count_iterations() {
@@ -398,6 +408,9 @@ select_count_iterations() {
 	PERF_ARGS=(--perf --iterations "${COUNT_ITERATIONS}" --warmup "${COUNT_WARMUP}" --count "${count}")
 	if [[ "${ALU_ITERS}" -ne 1 ]]; then
 		PERF_ARGS+=(--alu-iters "${ALU_ITERS}")
+	fi
+	if [[ "${EXCLUDE_CPU_PREPARE}" -eq 1 ]]; then
+		PERF_ARGS+=(--exclude-cpu-prepare)
 	fi
 }
 
@@ -903,7 +916,10 @@ update_rootfs() {
 	if [[ "${ALU_ITERS}" -ne 1 ]]; then
 		smoke_args="${smoke_args} --alu-iters ${ALU_ITERS}"
 	fi
-		cat >"${MNT}/root/gpu-smoke.env" <<EOF
+	if [[ "${EXCLUDE_CPU_PREPARE}" -eq 1 ]]; then
+		smoke_args="${smoke_args} --exclude-cpu-prepare"
+	fi
+	cat >"${MNT}/root/gpu-smoke.env" <<EOF
 GPU_SMOKE_ARGS="${smoke_args}"
 GPU_SMOKE_QUIET_CONSOLE=1
 GPU_SMOKE_GUEST_IRQ_STATS=${GUEST_PANTHOR_IRQ_STATS}
@@ -1261,6 +1277,27 @@ host_vm_ratio_values() {
 	'
 }
 
+phase_share_values() {
+	awk -v total="$1" -v metadata="$2" -v submit="$3" -v completion="$4" -v map_unmap="$5" '
+		BEGIN {
+			if (total == "" || total == "NA" || total + 0 == 0 ||
+			    metadata == "" || metadata == "NA" ||
+			    submit == "" || submit == "NA" ||
+			    completion == "" || completion == "NA" ||
+			    map_unmap == "" || map_unmap == "NA") {
+				printf "NA";
+			} else {
+				printf "%.1f/%.1f/%.1f/%.02f",
+				       metadata * 100.0 / total,
+				       submit * 100.0 / total,
+				       completion * 100.0 / total,
+				       map_unmap * 100.0 / total;
+			}
+			exit;
+		}
+	'
+}
+
 workload_label() {
 	case "$1" in
 	1048576)
@@ -1274,23 +1311,6 @@ workload_label() {
 		;;
 	*)
 		awk -v count="$1" 'BEGIN { printf "%.2f MiB", count * 4.0 / 1048576.0 }'
-		;;
-	esac
-}
-
-host_phase_share_ref() {
-	case "$1" in
-	1048576)
-		printf '79.0/6.7/14.4/0.07'
-		;;
-	4194304)
-		printf '81.0/2.0/16.3/0.02'
-		;;
-	16777216)
-		printf '80.0/0.75/19.3/0.01'
-		;;
-	*)
-		printf 'NA'
 		;;
 	esac
 }
@@ -1342,17 +1362,24 @@ write_sweep_result() {
 			echo "pmthor IRQ affinity labels: ${PMTHOR_IRQ_AFFINITY_LABELS}"
 			echo "pmthor IRQ stats: ${PMTHOR_IRQ_STATS}"
 			echo "Guest Panthor IRQ stats: ${GUEST_PANTHOR_IRQ_STATS}"
-				echo "Guest Panthor submit stats: ${GUEST_PANTHOR_SUBMIT_STATS}"
-				echo "Guest Panthor page-table timing: ${GUEST_PANTHOR_PT_TIMING}"
-				echo "Rootfs: ${ROOTFS_PATH}"
-		echo
-		echo "Correctness is checked only as a post-loop PASS/FAIL sanity check and is excluded from PERF_ITER_US/iter_total."
-		echo "Performance metric: host/vm = Host elapsed time / VM elapsed time; closer to 1.000 means passthrough is closer to host."
-		echo "Phase groups: metadata=cpu_prepare+buffer_upload; submit=dispatch_call; completion=memory_barrier+map_wait; map_unmap=unmap."
-		echo "Host phase share reference is fixed from stable Host baselines and is not recalculated for every report."
-		echo
-		echo "== Formal Host/VM performance ratio table =="
-		echo "| **Workload** | **iter** | **total** | **metadata** | **submit** | **completion** | **map_unmap** | **Host phase share ref** |"
+			echo "Guest Panthor submit stats: ${GUEST_PANTHOR_SUBMIT_STATS}"
+			echo "Guest Panthor page-table timing: ${GUEST_PANTHOR_PT_TIMING}"
+			echo "Exclude CPU prepare from iter_total: ${EXCLUDE_CPU_PREPARE}"
+			echo "Rootfs: ${ROOTFS_PATH}"
+			echo
+			if [[ "${EXCLUDE_CPU_PREPARE}" -eq 1 ]]; then
+				echo "Correctness and input[] CPU fill are excluded from PERF_ITER_US/iter_total; cpu_prepare remains reported as a phase."
+				echo "Performance metric: host/vm = Host elapsed time without cpu_prepare / VM elapsed time without cpu_prepare; closer to 1.000 means passthrough is closer to host."
+				echo "Phase groups: metadata=buffer_upload; submit=dispatch_call; completion=memory_barrier+map_wait; map_unmap=unmap."
+			else
+				echo "Correctness is checked only as a post-loop PASS/FAIL sanity check and is excluded from PERF_ITER_US/iter_total."
+				echo "Performance metric: host/vm = Host elapsed time / VM elapsed time; closer to 1.000 means passthrough is closer to host."
+				echo "Phase groups: metadata=cpu_prepare+buffer_upload; submit=dispatch_call; completion=memory_barrier+map_wait; map_unmap=unmap."
+			fi
+			echo "Host phase share is computed from this run as metadata/submit/completion/map_unmap."
+			echo
+			echo "== Formal Host/VM performance ratio table =="
+			echo "| **Workload** | **iter** | **total** | **metadata** | **submit** | **completion** | **map_unmap** | **Host phase share** |"
 		echo "| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |"
 
 		while read -r count; do
@@ -1367,9 +1394,15 @@ write_sweep_result() {
 				if ! grep -qa 'GPU_SMOKE_RESULT=PASS' "${vm_log}" || ! grep -qa 'COMPUTE_CHECK=PASS' "${vm_log}"; then
 					overall=FAIL
 				fi
+				if [[ "${EXCLUDE_CPU_PREPARE}" -eq 1 ]] && ! grep -qa 'PERF_CPU_PREPARE_EXCLUDED=1' "${vm_log}"; then
+					overall=FAIL
+				fi
 			fi
 			if [[ "${RUN_HOST}" -eq 1 ]]; then
 				if ! grep -qa 'COMPUTE_CHECK=PASS' "${host_log}"; then
+					overall=FAIL
+				fi
+				if [[ "${EXCLUDE_CPU_PREPARE}" -eq 1 ]] && ! grep -qa 'PERF_CPU_PREPARE_EXCLUDED=1' "${host_log}"; then
 					overall=FAIL
 				fi
 			fi
@@ -1394,8 +1427,13 @@ write_sweep_result() {
 
 			vm_iter=$(get_iter_avg "${vm_log}" || true)
 			host_iter=$(get_iter_avg "${host_log}" || true)
-			vm_meta=$(sum_values "$(get_phase_avg "${vm_log}" cpu_prepare)" "$(get_phase_avg "${vm_log}" buffer_upload)")
-			host_meta=$(sum_values "$(get_phase_avg "${host_log}" cpu_prepare)" "$(get_phase_avg "${host_log}" buffer_upload)")
+			if [[ "${EXCLUDE_CPU_PREPARE}" -eq 1 ]]; then
+				vm_meta=$(sum_values "$(get_phase_avg "${vm_log}" buffer_upload)")
+				host_meta=$(sum_values "$(get_phase_avg "${host_log}" buffer_upload)")
+			else
+				vm_meta=$(sum_values "$(get_phase_avg "${vm_log}" cpu_prepare)" "$(get_phase_avg "${vm_log}" buffer_upload)")
+				host_meta=$(sum_values "$(get_phase_avg "${host_log}" cpu_prepare)" "$(get_phase_avg "${host_log}" buffer_upload)")
+			fi
 			vm_submit=$(sum_values "$(get_phase_avg "${vm_log}" dispatch_call)")
 			host_submit=$(sum_values "$(get_phase_avg "${host_log}" dispatch_call)")
 			vm_wait=$(sum_values "$(get_phase_avg "${vm_log}" memory_barrier)" "$(get_phase_avg "${vm_log}" map_wait)")
@@ -1411,7 +1449,7 @@ write_sweep_result() {
 				"$(host_vm_ratio_values "${vm_submit}" "${host_submit}")" \
 				"$(host_vm_ratio_values "${vm_wait}" "${host_wait}")" \
 				"$(host_vm_ratio_values "${vm_map}" "${host_map}")" \
-				"$(host_phase_share_ref "${count}")"
+				"$(phase_share_values "${host_iter:-NA}" "${host_meta}" "${host_submit}" "${host_wait}" "${host_map}")"
 
 			echo "count=${count} vm_summary=${vm_summary} host_summary=${host_summary}" >>"${LOG_DIR}/sweep-files.txt"
 		done < <(count_list)

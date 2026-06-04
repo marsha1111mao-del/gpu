@@ -4342,3 +4342,385 @@ smoke workload, and the two-memslot object/control split is doing the right
 thing for payload data.  The remaining performance gap is dominated by fixed
 cross-VM submit/synchronization overhead, not by buffer-size-proportional
 payload handling.
+
+## 2026-06-04: Passthrough and Shared BO Backing Separation
+
+A code inspection confirms that the ordinary Panthor path and the shared
+virtualization path are separated by BO backing type.  The shared work did not
+replace the normal single-VM passthrough BO allocation path with the vmshm
+object allocator.
+
+### Ordinary DRM / single-VM passthrough path
+
+The normal userspace ioctl path still creates GEM objects through the regular
+Panthor shmem helper path:
+
+```text
+DRM_IOCTL_PANTHOR_BO_CREATE
+  -> panthor_ioctl_bo_create()
+  -> panthor_gem_create_with_handle()
+  -> drm_gem_shmem_create()
+```
+
+The exported vmshm session helper `panthor_vmshm_bo_create()` also uses the
+same regular helper:
+
+```text
+panthor_vmshm_bo_create()
+  -> panthor_gem_create_with_handle()
+  -> drm_gem_shmem_create()
+```
+
+This means a single passthrough VM using the normal Panthor DRM device can
+continue to allocate BOs from the guest kernel's ordinary GEM shmem backing.
+Its GPU page-table path then follows the passthrough design: shmem BO pages are
+pinned, converted to an sg-table, and mapped through the custom GPA-to-HPA
+passthrough page-table machinery.
+
+### Shared virtualization payload path
+
+The shared client/proxy path takes a different branch.  A client BO_CREATE RPC
+is handled by the proxy module, which first allocates a `proxy_vmshm` object
+from the `vmshm-object` window:
+
+```text
+client BO_CREATE RPC
+  -> panthor_proxy_session_bo_create()
+  -> proxy_vmshm_alloc_ext(PROXY_VMSHM_OBJ_GPU_BO)
+  -> panthor_vmshm_bo_create_from_payload()
+  -> panthor_gem_create_vmshm_with_handle()
+```
+
+`panthor_gem_create_vmshm_with_handle()` still creates a GEM shmem object as
+the DRM object shell, but it pins and stores the shared payload in
+`bo->vmshm_payload`.  The comment on `vmshm_payload` is the intended contract:
+when this field is set, VM_BIND maps the shared payload directly instead of
+using the shmem GEM page list.
+
+### VM_BIND runtime split
+
+The actual mapping decision is runtime-gated by
+`panthor_gem_is_vmshm_backed(bo)`:
+
+```text
+if BO is vmshm-backed:
+  proxy_vmshm_obj_translate()
+  panthor_vm_map_vmshm_spans()
+
+else:
+  drm_gem_shmem_pin()
+  drm_gem_shmem_get_pages_sgt()
+  panthor_vm_map_pages()
+```
+
+So the split is not only conceptual; it is enforced at the VM_BIND hot path.
+Only BOs that have `bo->vmshm_payload` set take the `vmshm-object` span mapping
+path.  Ordinary BOs, including the single-VM passthrough workload's BOs, remain
+on the kernel shmem allocation and sg-table mapping path.
+
+### Client-side shared mapping
+
+On the client VM side, the client frontend receives the proxy's payload handle,
+looks it up through `client_vmshm_manager_get()`, and maps the payload GPA with
+`remap_pfn_range()`.  This is separate from the real Panthor driver's ordinary
+GEM mmap path and exists only in the panthor-client frontend.
+
+### Conclusion
+
+Current code separates the two memory designs:
+
+```text
+single-VM passthrough / ordinary Panthor:
+  drm_gem_shmem_create()
+  drm_gem_shmem_pin()
+  drm_gem_shmem_get_pages_sgt()
+  normal passthrough GPA-to-HPA GPU page-table handling
+
+shared client/proxy virtualization:
+  proxy_vmshm_alloc_ext() for BO payload
+  GEM shmem object only as DRM object shell
+  bo->vmshm_payload marks the object
+  VM_BIND maps vmshm-object spans instead of shmem page list
+```
+
+This distinction is important for performance interpretation.  Shared
+metadata being close to host does not mean the passthrough path was converted
+to vmshm memory.  It means the shared path's client-visible BO payloads are
+using a separate `vmshm-object` data plane, while the ordinary passthrough path
+continues to use the kernel's regular GEM shmem allocation and passthrough
+GPA-to-HPA mapping flow.
+
+## 2026-06-04: GLES Perf Metric Revision - Exclude CPU Input Fill
+
+The earlier 4/16/64 MiB shared performance tables used the same smoke output
+that passthrough used at the time:
+
+```text
+metadata   = cpu_prepare + buffer_upload
+submit     = dispatch_call
+completion = memory_barrier + map_wait
+map_unmap  = unmap
+total      = iter_total including cpu_prepare
+```
+
+That grouping was useful as a first end-to-end view, but it is not the cleanest
+metric for comparing GPU virtualization overhead.  `cpu_prepare` is just the
+userspace loop that fills the input array before `glBufferData()`.  It measures
+ordinary CPU memory-store behavior in the current process and rootfs, not an
+ioctl virtualization boundary, a BO mapping decision, vmshm payload handling,
+or GPU completion behavior.
+
+This matters because the old grouped `metadata` number made shared look very
+close to host and sometimes better than passthrough.  That does not imply that
+shared has a magically faster Panthor BO metadata path.  A large part of the
+old group was CPU input fill, and that phase can move independently of the
+actual GPU/DRM/VM path.  Shared and passthrough also differ structurally:
+
+- Passthrough still allocates ordinary Panthor GEM shmem BOs and maps them
+  through the passthrough GPA-to-HPA page-table path.
+- Shared client-visible BO payloads use the `vmshm-object` memslot and the
+  proxy-owned object allocator, while transient ioctl metadata stays in
+  `vmshm-comm`.
+- The proxy VM itself reaches the physical GPU through the project's custom
+  passthrough path, so submit/completion includes both cross-VM RPC cost and
+  non-native proxy passthrough behavior.
+
+The smoke test now has an explicit mode:
+
+```text
+--exclude-cpu-prepare
+```
+
+When enabled:
+
+```text
+PERF_CPU_PREPARE_EXCLUDED=1
+PERF_ITER_US / iter_total = iter_end - cpu_prepare_done
+```
+
+`cpu_prepare` is still printed as `PERF_PHASE_US name=cpu_prepare`, so we can
+check whether input fill is unusual, but it is excluded from the formal
+`total` and from the formal `metadata` group.
+
+The revised formal grouping is:
+
+```text
+metadata   = buffer_upload
+submit     = dispatch_call
+completion = memory_barrier + map_wait
+map_unmap  = unmap
+total      = buffer_upload + dispatch_call + memory_barrier + map_wait + unmap
+```
+
+Related runner/script changes:
+
+- `GPU-SFTP/tests/gpu-compute-smoke/gles_compute_smoke.c`
+  - accepts `--exclude-cpu-prepare`
+  - emits `PERF_CPU_PREPARE_EXCLUDED=0/1`
+  - keeps measuring `cpu_prepare` as a separate phase
+  - changes only the formal iter total when the flag is enabled
+- `scripts/run/run-host-vs-passthrough-gles-perf.sh`
+  - accepts `--exclude-cpu-prepare`
+  - injects the flag into VM rootfs `GPU_SMOKE_ARGS`
+  - passes the flag to host direct runs
+  - treats `metadata=buffer_upload` under the new mode
+  - requires `PERF_CPU_PREPARE_EXCLUDED=1` in VM and host logs before PASS
+- `scripts/run/run-vmshm-e2e.sh`
+  - for `--gles-compute-smoke`, compiles the current smoke source on the remote
+    host and injects that binary into the temporary Panfrost client rootfs
+  - installs current `gpu-smoke.sh` and `init` into the temporary rootfs
+  - leaves `GPU_SMOKE_AFTER_RUN=shell` so the external runner can stop the VM
+    after seeing PASS markers, avoiding a false guest `init` exit panic marker
+  - requires `PERF_CPU_PREPARE_EXCLUDED=1` if the requested GLES args include
+    `--exclude-cpu-prepare`
+- `docs/passthrough/GPU_HOST_VS_PASSTHROUGH_PERF_TEST_GUIDE.md` and both skill
+  copies now document the revised formal metric.
+
+This revised metric is the one to use for the next host/passthrough/shared
+comparison.  Old tables in this worklog remain useful historical evidence for
+functional correctness and coarse trends, but they should not be used as the
+final performance comparison when discussing BO or vmshm data-plane overhead.
+
+## 2026-06-04: CPU-Fill-Excluded Host/Passthrough/Shared Results
+
+The revised smoke metric was tested on the same 4/16/64 MiB GLES compute
+workloads.  The formal `total` below excludes per-iteration CPU input fill.
+`cpu_prepare` is still reported for sanity, but does not contribute to
+`PERF_ITER_US` / `iter_total`.
+
+### Runs
+
+Passthrough host-vs-VM sweep:
+
+```text
+run id: gpu-perf-exclude-cpu-prepare-20260604-153928
+local logs: GPU-SFTP/log/passthrough/perf/gpu-perf-exclude-cpu-prepare-20260604-153928
+command:
+  ./scripts/run/run-host-vs-passthrough-gles-perf.sh
+    --host-rootfs-userspace
+    --exclude-cpu-prepare
+    --iterations 100
+    --warmup 5
+    --large-count-iterations 20
+    --large-count-warmup 5
+    --vm-timeout 900
+    --host-timeout 900
+result: PASS
+```
+
+Shared one-client runs:
+
+```text
+4 MiB:
+  run id: vmshm-1client-perf-4m-exclude-cpu-prepare-rerun-20260604-155550
+  local logs: GPU-SFTP/log/shared/vmshm-1client/vmshm-1client-perf-4m-exclude-cpu-prepare-rerun-20260604-155550
+  result: PASS
+
+16 MiB:
+  run id: vmshm-1client-perf-16m-exclude-cpu-prepare-20260604-160553
+  local logs: GPU-SFTP/log/shared/vmshm-1client/vmshm-1client-perf-16m-exclude-cpu-prepare-20260604-160553
+  result: PASS
+
+64 MiB:
+  run id: vmshm-1client-perf-64m-exclude-cpu-prepare-20260604-161512
+  local logs: GPU-SFTP/log/shared/vmshm-1client/vmshm-1client-perf-64m-exclude-cpu-prepare-20260604-161512
+  result: PASS
+```
+
+The first 4 MiB attempt after adding `GPU_SMOKE_AFTER_RUN=poweroff` is not used
+as a formal result.  The compute workload itself passed and emitted
+`PERF_CPU_PREPARE_EXCLUDED=1`, but the shared client rootfs then produced a
+guest `init` exit panic marker during poweroff.  The runner was corrected to
+leave `GPU_SMOKE_AFTER_RUN=shell` and let the outer test harness stop the VM.
+
+All adopted logs contain:
+
+```text
+PERF_CPU_PREPARE_EXCLUDED=1
+COMPUTE_CHECK=PASS
+GPU_SMOKE_RESULT=PASS
+GL_RENDERER=Mali-G610 (Panfrost)
+GL_VERSION=OpenGL ES 3.1 Mesa 25.0.7-2
+```
+
+No adopted shared result contains the earlier false `Kernel panic` marker.
+
+### Total Time Ratios
+
+Metric:
+
+```text
+host/path = Host elapsed time / path elapsed time
+```
+
+Higher is better; `1.000` means equal to host.  `Passthrough/shared` is included
+to show how close shared is to the already virtualized single-VM passthrough
+path.
+
+| Workload | Host us | Passthrough us | Shared us | Host/passthrough | Host/shared | Passthrough/shared |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 4 MiB | 1349.27 | 1819.29 | 6285.86 | 0.742 | 0.215 | 0.289 |
+| 16 MiB | 5304.48 | 7789.52 | 10272.35 | 0.681 | 0.516 | 0.758 |
+| 64 MiB | 22743.35 | 25156.05 | 27337.20 | 0.904 | 0.832 | 0.920 |
+
+The size trend now matches the expected amortization model much more cleanly:
+
+```text
+host/shared:
+  4 MiB  = 0.215
+  16 MiB = 0.516
+  64 MiB = 0.832
+
+passthrough/shared:
+  4 MiB  = 0.289
+  16 MiB = 0.758
+  64 MiB = 0.920
+```
+
+At 64 MiB, shared is only about `8.0%` slower than passthrough by this smoke
+metric:
+
+```text
+1 - passthrough/shared = 1 - 0.920 = 0.080
+```
+
+This does not mean shared has no fixed overhead.  It means the fixed overhead
+is largely amortized once buffer upload and GPU work dominate the iteration.
+
+### Phase Ratios
+
+Revised phase grouping:
+
+```text
+metadata   = buffer_upload
+submit     = dispatch_call
+completion = memory_barrier + map_wait
+map_unmap  = unmap
+```
+
+Host/shared ratios:
+
+| Workload | total | metadata | submit | completion | map_unmap |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 4 MiB | 0.215 | 0.925 | 0.049 | 0.310 | 0.631 |
+| 16 MiB | 0.516 | 0.900 | 0.057 | 0.752 | 0.514 |
+| 64 MiB | 0.832 | 0.923 | 0.080 | 1.048 | 1.061 |
+
+Absolute phase averages:
+
+| Workload | Path | total | metadata | submit | completion | map_unmap | cpu_prepare reported |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 4 MiB | Host | 1349.27 | 723.87 | 204.71 | 418.83 | 1.86 | 1787.33 |
+| 4 MiB | Passthrough | 1819.29 | 752.42 | 208.80 | 854.68 | 3.39 | 2185.72 |
+| 4 MiB | Shared | 6285.86 | 782.68 | 4151.06 | 1349.17 | 2.95 | 1809.81 |
+| 16 MiB | Host | 5304.48 | 2945.39 | 238.17 | 2118.91 | 2.01 | 6903.44 |
+| 16 MiB | Passthrough | 7789.52 | 4569.04 | 308.34 | 2908.06 | 4.08 | 8297.27 |
+| 16 MiB | Shared | 10272.35 | 3271.22 | 4180.75 | 2816.47 | 3.91 | 7285.56 |
+| 64 MiB | Host | 22743.35 | 11842.75 | 357.80 | 10536.75 | 6.05 | 27347.50 |
+| 64 MiB | Passthrough | 25156.05 | 14326.55 | 533.30 | 10292.35 | 3.85 | 34283.00 |
+| 64 MiB | Shared | 27337.20 | 12830.80 | 4445.20 | 10055.50 | 5.70 | 29082.40 |
+
+### Interpretation
+
+The revised data changes the earlier interpretation in a useful way:
+
+- `metadata=buffer_upload` is close to host for shared across all sizes:
+  `0.925`, `0.900`, and `0.923`.  This supports the two-memslot design: large
+  client-visible BO payloads belong in `vmshm-object`, while transient ioctl
+  metadata remains in `vmshm-comm`.
+- The main shared penalty is still `submit`, but the new quiet-console,
+  CPU-fill-excluded run measures it around `4.1-4.4 ms`, not the old
+  `14-15 ms` seen in the earlier console-noisy/shared grouping.  It is still a
+  fixed per-iteration cost and remains the dominant 4 MiB problem.
+- `completion` is worse than host at 4 MiB, improves at 16 MiB, and is roughly
+  host-level at 64 MiB.  The 64 MiB `completion > 1.0` ratio should be treated
+  as measurement/scheduling variance, not proof that shared completion is
+  intrinsically faster than host.
+- `cpu_prepare` remains visible for sanity.  It scales with buffer size and is
+  ordinary CPU memory-store work, so it is intentionally excluded from the
+  formal ratio.
+- The proxy VM still uses the project's custom passthrough technology to reach
+  the real GPU.  Shared results therefore combine cross-VM client/proxy RPC
+  overhead with the proxy VM's non-native interrupt and memory-management
+  behavior.  They should not be interpreted as a pure vmshm transport number.
+
+The most important conclusion is that the apparent old `metadata` advantage was
+not reliable because it included CPU input fill.  With the revised metric,
+shared BO payload handling still looks healthy, but the credible remaining
+target is fixed submit/RPC/synchronization overhead.
+
+### Runner Notes
+
+Two runner reliability details were found while collecting these logs:
+
+- Re-copying `rootfs-panfrost.ext4` into a per-run temporary GLES rootfs is the
+  dominant wall-clock cost of the shared perf harness.  This is outside
+  `PERF_ITER_US`, but it slows experiment iteration.  `run-vmshm-e2e.sh` now
+  tries `cp --reflink=auto --sparse=always` before falling back to normal `cp`;
+  a future harness should consider an overlay or reusable prepared rootfs.
+- The shared GLES client intentionally leaves `GPU_SMOKE_AFTER_RUN=shell` to
+  avoid false init-exit panic markers.  Some runs still required manual remote
+  cleanup and log fetch after `RESULT: PASS` had already been written.  The
+  script now redirects background process stdin from `/dev/null` and uses
+  stronger pid cleanup, but the harness should still be watched for SSH-session
+  teardown hangs during long perf sweeps.

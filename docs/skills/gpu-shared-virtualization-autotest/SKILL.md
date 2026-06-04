@@ -95,6 +95,11 @@ outputs unless that change invalidates them.
 - `GPU-SFTP/tests/panthor-ioctl-smoke/` changes: rebuild only the userspace
   smoke payload with `GPU-SFTP/tests/panthor-ioctl-smoke/build.sh`. Skip both
   kernel and Firecracker/broker builds.
+- `GPU-SFTP/tests/gpu-compute-smoke/` changes for shared GLES performance:
+  sync the source; `scripts/run/run-vmshm-e2e.sh --gles-compute-smoke`
+  compiles the current `gles-compute-smoke` on the remote host and injects it
+  into the temporary Panfrost rootfs. Skip kernel and Firecracker/broker builds
+  unless guest driver or vmshm runtime code also changed.
 - `GPU-SFTP/firecracker-bins/configs/shared/...` or config installer changes:
   regenerate and sync configs only. Skip kernel and Firecracker/broker builds
   unless the config change depends on new Firecracker code, such as a new JSON
@@ -175,6 +180,39 @@ Common options:
 - `--ioctl-smoke`
 - `--vm-create-smoke`
 - `--run-id ID`
+
+## Shared GLES Performance Smoke
+
+Use `--gles-compute-smoke` for the shared client/proxy GLES compute path. For
+performance comparisons, exclude the CPU-side `input[]` fill from the primary
+metric so shared, passthrough, and host use the same formal timing definition.
+The smoke still prints `cpu_prepare`, but `PERF_ITER_US` / `iter_total` and the
+formal `metadata` group exclude it; `metadata=buffer_upload`.
+
+Current one-client commands:
+
+```bash
+cd /home/mzh/gpu
+GLES_SMOKE_ARGS="--count 1048576 --iterations 100 --warmup 5 --perf --exclude-cpu-prepare" \
+  ./scripts/run/run-vmshm-e2e.sh --skip-build --skip-config-install \
+    --gles-compute-smoke \
+    --run-id vmshm-1client-perf-4m-$(date +%Y%m%d-%H%M%S)
+
+GLES_SMOKE_ARGS="--count 4194304 --iterations 100 --warmup 5 --perf --exclude-cpu-prepare" \
+  ./scripts/run/run-vmshm-e2e.sh --skip-build --skip-config-install \
+    --gles-compute-smoke \
+    --run-id vmshm-1client-perf-16m-$(date +%Y%m%d-%H%M%S)
+
+GLES_SMOKE_ARGS="--count 16777216 --iterations 20 --warmup 5 --perf --exclude-cpu-prepare" \
+  ./scripts/run/run-vmshm-e2e.sh --skip-build --skip-config-install \
+    --gles-compute-smoke \
+    --run-id vmshm-1client-perf-64m-$(date +%Y%m%d-%H%M%S)
+```
+
+Before reporting PASS, fetch and inspect local logs for
+`PERF_CPU_PREPARE_EXCLUDED=1`, `GPU_SMOKE_RESULT=PASS`,
+`COMPUTE_CHECK=PASS`, a Mali/Panfrost renderer, and absence of software
+renderer, mismatch, GPU fault, job timeout, panic, or Oops markers.
 
 ## Two-Client Experiments
 

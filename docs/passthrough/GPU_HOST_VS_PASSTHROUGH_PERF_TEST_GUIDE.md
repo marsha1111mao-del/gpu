@@ -9,6 +9,8 @@
 
 正式性能结论只看 GPU task 稳态循环内的阶段均值。正确性检查只作为 PASS/FAIL sanity check，不计算耗时，也不参与性能指标。
 
+当前正式口径还会使用 `--exclude-cpu-prepare` 排除每轮 `input[]` CPU 填充时间。这样 `PERF_ITER_US` / `iter_total` 只覆盖 CPU 填充完成之后的 buffer upload、submit、completion 和 unmap，避免把普通 CPU 写内存吞吐混入 GPU 虚拟化路径对比。
+
 ## 测试原则
 
 正式性能 run 禁止使用会改变时序的 tracing wrapper：
@@ -116,7 +118,7 @@ value = value * 3 + 7
 默认 sweep：
 
 ```text
---perf --iterations 100 --warmup 5 --count-sweep 1048576,4194304,16777216
+--perf --exclude-cpu-prepare --iterations 100 --warmup 5 --count-sweep 1048576,4194304,16777216
 ```
 
 规模和轮次：
@@ -134,6 +136,7 @@ value = value * 3 + 7
 程序输出每轮 GPU task 的 phase：
 
 ```text
+PERF_CPU_PREPARE_EXCLUDED=1
 PERF_PHASE_US name=cpu_prepare samples=N min=... avg=... max=... total=...
 PERF_PHASE_US name=buffer_upload samples=N min=... avg=... max=... total=...
 PERF_PHASE_US name=dispatch_call samples=N min=... avg=... max=... total=...
@@ -144,31 +147,31 @@ PERF_PHASE_US name=iter_total samples=N min=... avg=... max=... total=...
 COMPUTE_CHECK=PASS count=... samples=...
 ```
 
+`cpu_prepare` 仍然会作为独立 phase 输出，用来观察 CPU input 填充是否异常；但在正式 `--exclude-cpu-prepare` run 中，它不再计入 `PERF_ITER_US`、`PERF_PHASE_US name=iter_total` 或正式表的 `metadata` 分组。
+
 正式表使用五个 Host/VM ratio：
 
 | 指标 | Host/VM ratio 定义 | 含义 |
 | --- | --- | --- |
-| `total` | `host(iter_total) / vm(iter_total)` | 完整 GPU task 稳态每轮性能比例。 |
-| `metadata` | `host(cpu_prepare + buffer_upload) / vm(cpu_prepare + buffer_upload)` | 数据准备、buffer upload、BO/metadata 准备路径。 |
+| `total` | `host(iter_total_without_cpu_prepare) / vm(iter_total_without_cpu_prepare)` | 排除 CPU input 填充后的 GPU task 稳态每轮性能比例。 |
+| `metadata` | `host(buffer_upload) / vm(buffer_upload)` | 用户态数据上传和底层 BO/metadata 准备路径；不再包含 CPU input 填充。 |
 | `submit` | `host(dispatch_call) / vm(dispatch_call)` | CPU 侧提交 API 调用路径。 |
 | `completion` | `host(memory_barrier + map_wait) / vm(memory_barrier + map_wait)` | 提交后等待 GPU 完成并可读回的同步路径。 |
 | `map_unmap` | `host(unmap) / vm(unmap)` | map 返回后的尾部 unmap 成本。 |
 
 `host/vm = Host 耗时 / VM 耗时`。值越接近 `1.000`，VM passthrough 越接近 host direct。VM 比 host 慢时该值小于 `1.000`。正式结果不再报告反向开销、性能百分比或绝对耗时差。
 
-## 固定阶段占比参考
+## 阶段占比
 
-阶段占总时间比例用于判断各阶段对整体性能的权重。这个比例以后不在每次 run 中重新计算，而是使用稳定 Host baseline 得到的固定参考值。只有 workload 实现、Mesa userspace、phase 定义或测试规模发生实质变化时，才需要重新标定。
+阶段占总时间比例用于判断各阶段对整体性能的权重。因为 `--exclude-cpu-prepare` 改变了 `iter_total` 和 `metadata` 的定义，脚本现在在每次 run 中重新计算 Host phase share，而不是继续使用旧的固定参考值。
 
-当前固定 Host phase share reference：
+正式表最后一列为：
 
-| Workload | metadata | submit | completion | map_unmap |
-| ---: | ---: | ---: | ---: | ---: |
-| 4 MiB | 79.0% | 6.7% | 14.4% | 0.07% |
-| 16 MiB | 81.0% | 2.0% | 16.3% | 0.02% |
-| 64 MiB | 80.0% | 0.75% | 19.3% | 0.01% |
+```text
+Host phase share = metadata / submit / completion / map_unmap
+```
 
-脚本在正式表最后一列用 `Host phase share ref` 记录这些固定参考值，例如 `79.0/6.7/14.4/0.07`。这列是解释上下文，不是本次 run 重新计算的数据。
+其中 `metadata=buffer_upload`。这列是本次 Host direct run 的阶段权重，不是 host/vm ratio。
 
 ## 正式测试命令
 
@@ -179,6 +182,7 @@ cd /home/mzh/gpu
 RUN_ID=gpu-perf-host-vs-passthrough-$(date +%Y%m%d-%H%M%S) \
   ./scripts/run/run-host-vs-passthrough-gles-perf.sh \
   --host-rootfs-userspace \
+  --exclude-cpu-prepare \
   --iterations 100 \
   --warmup 5 \
   --large-count-iterations 20 \
@@ -195,6 +199,7 @@ RUN_ID=gpu-perf-host-vs-passthrough-$(date +%Y%m%d-%H%M%S) \
 RUN_ID=gpu-perf-host-vs-passthrough-fast-$(date +%Y%m%d-%H%M%S) \
   ./scripts/run/run-host-vs-passthrough-gles-perf.sh \
   --host-rootfs-userspace \
+  --exclude-cpu-prepare \
   --skip-sync \
   --skip-remote-build \
   --skip-rootfs-update \
@@ -206,7 +211,7 @@ RUN_ID=gpu-perf-host-vs-passthrough-fast-$(date +%Y%m%d-%H%M%S) \
   --host-timeout 900
 ```
 
-只有确认 VM rootfs 中已有正确 `/root/gpu-smoke.env` 和新 `/root/gles-compute-smoke` 时，才使用 `--skip-rootfs-update`。
+只有确认 VM rootfs 中已有正确 `/root/gpu-smoke.env` 和支持 `--exclude-cpu-prepare` 的新 `/root/gles-compute-smoke` 时，才使用 `--skip-rootfs-update`。启用新口径时，result 会要求 VM 与 host 日志都包含 `PERF_CPU_PREPARE_EXCLUDED=1`。
 
 ## 正式结果格式
 
@@ -214,11 +219,11 @@ RUN_ID=gpu-perf-host-vs-passthrough-fast-$(date +%Y%m%d-%H%M%S) \
 
 ```text
 == Formal Host/VM performance ratio table ==
-| **Workload** | **iter** | **total** | **metadata** | **submit** | **completion** | **map_unmap** | **Host phase share ref** |
+| **Workload** | **iter** | **total** | **metadata** | **submit** | **completion** | **map_unmap** | **Host phase share** |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| 4 MiB | 100 | ... | ... | ... | ... | ... | 79.0/6.7/14.4/0.07 |
-| 16 MiB | 100 | ... | ... | ... | ... | ... | 81.0/2.0/16.3/0.02 |
-| 64 MiB | 20 | ... | ... | ... | ... | ... | 80.0/0.75/19.3/0.01 |
+| 4 MiB | 100 | ... | ... | ... | ... | ... | .../.../.../... |
+| 16 MiB | 100 | ... | ... | ... | ... | ... | .../.../.../... |
+| 64 MiB | 20 | ... | ... | ... | ... | ... | .../.../.../... |
 ```
 
 正式报告只需要包含：
@@ -231,9 +236,9 @@ RUN_ID=gpu-perf-host-vs-passthrough-fast-$(date +%Y%m%d-%H%M%S) \
 - 上面这一张 Host/VM ratio 表
 - 明确说明是否打开了任何诊断开关；正式 baseline 应全部关闭
 
-不要在正式报告里额外补充多张性能表，也不要每次重新计算 phase share。诊断数据可以留在对应 summary/log 中，需要定位问题时再单独读取。
+不要在正式报告里额外补充多张性能表。诊断数据可以留在对应 summary/log 中，需要定位问题时再单独读取。
 
-最新脚本格式验证 run：
+历史脚本格式验证 run：
 
 ```text
 Run ID: gpu-perf-ratio-table-20260603-154030
@@ -244,7 +249,7 @@ Diagnostic stats: disabled
 RESULT: PASS
 ```
 
-该 run 的正式表：
+该 run 发生在 `--exclude-cpu-prepare` 引入之前，表里的 `metadata` 仍是旧定义 `cpu_prepare + buffer_upload`，最后一列也是旧的固定 `Host phase share ref`。它只保留为脚本格式演进记录，不能与当前正式 baseline 直接混用。
 
 | **Workload** | **iter** | **total** | **metadata** | **submit** | **completion** | **map_unmap** | **Host phase share ref** |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
@@ -323,6 +328,7 @@ Page-table timing 诊断：
 RUN_ID=gpu-perf-pttiming-vmonly-$(date +%Y%m%d-%H%M%S) \
   ./scripts/run/run-host-vs-passthrough-gles-perf.sh \
   --host-rootfs-userspace \
+  --exclude-cpu-prepare \
   --skip-host \
   --iterations 100 \
   --warmup 5 \
@@ -340,6 +346,7 @@ IRQ timing 诊断：
 RUN_ID=gpu-perf-irqstats-vmonly-$(date +%Y%m%d-%H%M%S) \
   ./scripts/run/run-host-vs-passthrough-gles-perf.sh \
   --host-rootfs-userspace \
+  --exclude-cpu-prepare \
   --skip-host \
   --iterations 100 \
   --warmup 5 \
@@ -358,6 +365,7 @@ Submit timing 诊断：
 RUN_ID=gpu-perf-submitstats-vmonly-$(date +%Y%m%d-%H%M%S) \
   ./scripts/run/run-host-vs-passthrough-gles-perf.sh \
   --host-rootfs-userspace \
+  --exclude-cpu-prepare \
   --skip-host \
   --iterations 100 \
   --warmup 5 \
@@ -488,7 +496,7 @@ resample
 ```text
 参考 GPU_HOST_VS_PASSTHROUGH_PERF_TEST_GUIDE.md，
 运行一次 host vs passthrough GLES compute 正式性能测试，
-参数 --host-rootfs-userspace --iterations 100 --warmup 5，
+参数 --host-rootfs-userspace --exclude-cpu-prepare --iterations 100 --warmup 5，
 使用默认 4 MiB / 16 MiB / 64 MiB sweep，
 其中 64 MiB 使用 --large-count-iterations 20，
 不要使用 tracing、stats、hugepages、affinity 或其他诊断开关，
@@ -502,6 +510,7 @@ cd /home/mzh/gpu
 RUN_ID=gpu-perf-host-vs-passthrough-$(date +%Y%m%d-%H%M%S) \
   ./scripts/run/run-host-vs-passthrough-gles-perf.sh \
   --host-rootfs-userspace \
+  --exclude-cpu-prepare \
   --iterations 100 \
   --warmup 5 \
   --large-count-iterations 20 \

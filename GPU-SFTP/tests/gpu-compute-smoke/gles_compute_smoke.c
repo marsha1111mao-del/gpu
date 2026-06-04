@@ -291,6 +291,7 @@ int main(int argc, char **argv)
     GLint alu_iters_loc = -1;
     int rc = 1;
     int perf = 0;
+    int exclude_cpu_prepare = 0;
     int iterations_set = 0;
     int warmup_set = 0;
     unsigned count = 64;
@@ -334,6 +335,8 @@ int main(int argc, char **argv)
     for (int i = 1; i < argc; i++) {
         if (!strcmp(argv[i], "--perf")) {
             perf = 1;
+        } else if (!strcmp(argv[i], "--exclude-cpu-prepare")) {
+            exclude_cpu_prepare = 1;
         } else if (!strcmp(argv[i], "--iterations")) {
             if (++i >= argc || parse_uint_arg("--iterations", argv[i], &iterations))
                 return 2;
@@ -350,14 +353,14 @@ int main(int argc, char **argv)
                 return 2;
         } else if (!strcmp(argv[i], "-h") || !strcmp(argv[i], "--help")) {
             fprintf(stderr,
-                    "usage: %s [--perf] [--alu-iters N] [--iterations N] [--warmup N] [--count N] [drm-node]\n",
+                    "usage: %s [--perf] [--exclude-cpu-prepare] [--alu-iters N] [--iterations N] [--warmup N] [--count N] [drm-node]\n",
                     argv[0]);
             return 0;
         } else if (!requested_path) {
             requested_path = argv[i];
         } else {
             fprintf(stderr,
-                    "usage: %s [--perf] [--alu-iters N] [--iterations N] [--warmup N] [--count N] [drm-node]\n",
+                    "usage: %s [--perf] [--exclude-cpu-prepare] [--alu-iters N] [--iterations N] [--warmup N] [--count N] [drm-node]\n",
                     argv[0]);
             return 2;
         }
@@ -571,6 +574,7 @@ int main(int argc, char **argv)
         printf("PERF_CONFIG iterations=%u warmup=%u count=%u bytes=%zu alu_iters=%u\n",
                iterations, warmup, count, (size_t)count * sizeof(*input),
                alu_iters);
+        printf("PERF_CPU_PREPARE_EXCLUDED=%u\n", exclude_cpu_prepare ? 1u : 0u);
         printf("PERF_INIT_PHASE_US name=open_drm total=%llu\n",
                (unsigned long long)(open_done_us - open_start_us));
         printf("PERF_INIT_PHASE_US name=gbm_create_device total=%llu\n",
@@ -654,9 +658,12 @@ int main(int argc, char **argv)
 
         iter_end_us = now_us();
         if (measured) {
-            uint64_t iter_total = iter_end_us - iter_start_us;
+            uint64_t cpu_prepare_us = cpu_prepare_done_us - iter_start_us;
+            uint64_t iter_total = exclude_cpu_prepare ?
+                                  iter_end_us - cpu_prepare_done_us :
+                                  iter_end_us - iter_start_us;
 
-            perf_stats_add(&cpu_prepare_stats, cpu_prepare_done_us - iter_start_us);
+            perf_stats_add(&cpu_prepare_stats, cpu_prepare_us);
             perf_stats_add(&buffer_upload_stats, buffer_upload_done_us - cpu_prepare_done_us);
             perf_stats_add(&dispatch_call_stats, dispatch_done_us - buffer_upload_done_us);
             perf_stats_add(&memory_barrier_stats, barrier_done_us - dispatch_done_us);

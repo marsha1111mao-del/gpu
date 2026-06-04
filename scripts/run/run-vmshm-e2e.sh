@@ -363,6 +363,8 @@ SMOKE_ROOTFS="${REMOTE_BINS}/rootfs/rootfs-ioctl-smoke-${RUN_ID}.ext2"
 SMOKE_CLIENT_CONFIG="${LOG_DIR}/client-ioctl-smoke-config.json"
 GLES_ROOTFS="${REMOTE_BINS}/rootfs/rootfs-gles-compute-${RUN_ID}.ext4"
 GLES_CLIENT_CONFIG="${LOG_DIR}/client-gles-compute-config.json"
+GLES_SMOKE_SRC_DIR="${REMOTE_ROOT}/tests/gpu-compute-smoke"
+GLES_SMOKE_BIN="${REMOTE_BINS}/bin/gles-compute-smoke"
 SMOKE_MNT=""
 
 if [[ "${CLEAN_REMOTE_PROCS}" == "1" ]]; then
@@ -479,6 +481,33 @@ proc_value() {
 	awk -F= -v key="${key}" '$1 == key {print $2; exit}' "${file}" 2>/dev/null
 }
 
+copy_rootfs_image() {
+	local src="$1"
+	local dst="$2"
+
+	cp --reflink=auto --sparse=always -f "${src}" "${dst}" 2>/dev/null ||
+		cp -f "${src}" "${dst}"
+}
+
+stop_pid_file() {
+	local pid_file="$1"
+	local pid
+
+	[[ -f "${pid_file}" ]] || return 0
+	pid=$(cat "${pid_file}" 2>/dev/null || true)
+	[[ -n "${pid}" ]] || return 0
+
+	kill -INT "${pid}" 2>/dev/null || true
+	sleep 0.2
+	if kill -0 "${pid}" 2>/dev/null; then
+		kill -TERM "${pid}" 2>/dev/null || true
+	fi
+	sleep 0.5
+	if kill -0 "${pid}" 2>/dev/null; then
+		kill -KILL "${pid}" 2>/dev/null || true
+	fi
+}
+
 write_broker_proc_delta() {
 	local start="$1"
 	local end="$2"
@@ -536,7 +565,7 @@ prepare_ioctl_smoke_client() {
 	[[ -f ./rootfs/rootfs.ext2 ]] ||
 		{ echo "missing ./rootfs/rootfs.ext2 on remote" >&2; return 1; }
 
-	cp -f ./rootfs/rootfs.ext2 "${SMOKE_ROOTFS}"
+	copy_rootfs_image ./rootfs/rootfs.ext2 "${SMOKE_ROOTFS}"
 	SMOKE_MNT=$(mktemp -d /tmp/panthor-ioctl-rootfs.XXXXXX)
 	mount -o loop "${SMOKE_ROOTFS}" "${SMOKE_MNT}"
 	install -m 0755 ./bin/panthor_ioctl_smoke "${SMOKE_MNT}/panthor_ioctl_smoke"
@@ -684,22 +713,50 @@ INIT_SCRIPT
 EOF
 }
 
+build_gles_compute_smoke() {
+	if [[ "${GLES_COMPUTE_SMOKE}" != "1" ]]; then
+		return 0
+	fi
+
+	echo "building current gles-compute-smoke from ${GLES_SMOKE_SRC_DIR}"
+	[[ -f "${GLES_SMOKE_SRC_DIR}/gles_compute_smoke.c" ]] ||
+		{ echo "missing ${GLES_SMOKE_SRC_DIR}/gles_compute_smoke.c" >&2; return 1; }
+	command -v cc >/dev/null 2>&1 ||
+		{ echo "missing cc on remote host" >&2; return 1; }
+	command -v pkg-config >/dev/null 2>&1 ||
+		{ echo "missing pkg-config on remote host" >&2; return 1; }
+
+	mkdir -p "$(dirname "${GLES_SMOKE_BIN}")"
+	cc -O2 -Wall -Wextra -std=c11 \
+		"${GLES_SMOKE_SRC_DIR}/gles_compute_smoke.c" \
+		-o "${GLES_SMOKE_BIN}" \
+		$(pkg-config --cflags --libs egl glesv2 gbm)
+	chmod 0755 "${GLES_SMOKE_BIN}"
+	"${GLES_SMOKE_BIN}" --help >/dev/null
+	echo "installed ${GLES_SMOKE_BIN}"
+}
+
 prepare_gles_compute_client() {
 	[[ -f ./rootfs/rootfs-panfrost.ext4 ]] ||
 		{ echo "missing ./rootfs/rootfs-panfrost.ext4 on remote" >&2; return 1; }
+	[[ -x "${GLES_SMOKE_BIN}" ]] ||
+		{ echo "missing executable ${GLES_SMOKE_BIN}" >&2; return 1; }
+	[[ -f "${GLES_SMOKE_SRC_DIR}/gpu-smoke.sh" ]] ||
+		{ echo "missing ${GLES_SMOKE_SRC_DIR}/gpu-smoke.sh" >&2; return 1; }
+	[[ -f "${GLES_SMOKE_SRC_DIR}/init" ]] ||
+		{ echo "missing ${GLES_SMOKE_SRC_DIR}/init" >&2; return 1; }
 
-	cp -f ./rootfs/rootfs-panfrost.ext4 "${GLES_ROOTFS}"
+	copy_rootfs_image ./rootfs/rootfs-panfrost.ext4 "${GLES_ROOTFS}"
 	SMOKE_MNT=$(mktemp -d /tmp/panthor-gles-rootfs.XXXXXX)
 	mount -o loop "${GLES_ROOTFS}" "${SMOKE_MNT}"
 
-	[[ -x "${SMOKE_MNT}/root/gpu-smoke.sh" ]] ||
-		{ echo "missing /root/gpu-smoke.sh in rootfs-panfrost.ext4" >&2; return 1; }
-	[[ -x "${SMOKE_MNT}/root/gles-compute-smoke" ]] ||
-		{ echo "missing /root/gles-compute-smoke in rootfs-panfrost.ext4" >&2; return 1; }
+	install -Dm0755 "${GLES_SMOKE_BIN}" "${SMOKE_MNT}/root/gles-compute-smoke"
+	install -Dm0755 "${GLES_SMOKE_SRC_DIR}/gpu-smoke.sh" "${SMOKE_MNT}/root/gpu-smoke.sh"
+	install -Dm0755 "${GLES_SMOKE_SRC_DIR}/init" "${SMOKE_MNT}/init"
 
 	cat >"${SMOKE_MNT}/root/gpu-smoke.env" <<EOF
 GPU_SMOKE_ARGS="${GLES_SMOKE_ARGS}"
-GPU_SMOKE_QUIET_CONSOLE=0
+GPU_SMOKE_QUIET_CONSOLE=1
 GPU_SMOKE_AFTER_RUN=shell
 EOF
 	sync
@@ -761,14 +818,16 @@ EOF
 
 if command -v perf >/dev/null 2>&1; then
 	NO_COLOR=1 RUST_LOG_STYLE=never nohup \
-		perf stat \
-			-e task-clock,context-switches,cpu-migrations \
-			-o "${LOG_DIR}/broker.perf" \
-			-- sh ./scripts/shared/vmshm-1client/broker-run.sh >"${LOG_DIR}/broker.log" 2>&1 &
+			perf stat \
+				-e task-clock,context-switches,cpu-migrations \
+				-o "${LOG_DIR}/broker.perf" \
+				-- sh ./scripts/shared/vmshm-1client/broker-run.sh \
+				< /dev/null >"${LOG_DIR}/broker.log" 2>&1 &
 	echo $! >"${LOG_DIR}/broker.pid"
 	echo "perf stat enabled for vmshm-broker" >"${LOG_DIR}/broker.perf.status"
 else
-	NO_COLOR=1 RUST_LOG_STYLE=never nohup sh ./scripts/shared/vmshm-1client/broker-run.sh >"${LOG_DIR}/broker.log" 2>&1 &
+	NO_COLOR=1 RUST_LOG_STYLE=never nohup sh ./scripts/shared/vmshm-1client/broker-run.sh \
+		< /dev/null >"${LOG_DIR}/broker.log" 2>&1 &
 	echo $! >"${LOG_DIR}/broker.pid"
 	echo "perf command not found on remote host" >"${LOG_DIR}/broker.perf.status"
 fi
@@ -781,7 +840,8 @@ if broker_task_pid=$(find_broker_task_pid); then
 	fi
 fi
 
-NO_COLOR=1 RUST_LOG_STYLE=never nohup sh ./scripts/shared/vmshm-1client/vm-proxy-test.sh >"${LOG_DIR}/proxy.log" 2>&1 &
+NO_COLOR=1 RUST_LOG_STYLE=never nohup sh ./scripts/shared/vmshm-1client/vm-proxy-test.sh \
+	< /dev/null >"${LOG_DIR}/proxy.log" 2>&1 &
 echo $! >"${LOG_DIR}/proxy.pid"
 
 wait_for_log \
@@ -791,16 +851,20 @@ wait_for_log \
 
 if [[ "${IOCTL_SMOKE}" == "1" ]]; then
 	prepare_ioctl_smoke_client >"${LOG_DIR}/ioctl-smoke-rootfs.log" 2>&1
-	NO_COLOR=1 RUST_LOG_STYLE=never nohup \
-		./bin/firecracker --no-api --no-seccomp --config-file "${SMOKE_CLIENT_CONFIG}" \
-		>"${LOG_DIR}/client.log" 2>&1 &
+		NO_COLOR=1 RUST_LOG_STYLE=never nohup \
+			./bin/firecracker --no-api --no-seccomp --config-file "${SMOKE_CLIENT_CONFIG}" \
+			< /dev/null >"${LOG_DIR}/client.log" 2>&1 &
 elif [[ "${GLES_COMPUTE_SMOKE}" == "1" ]]; then
-	prepare_gles_compute_client >"${LOG_DIR}/gles-compute-rootfs.log" 2>&1
-	NO_COLOR=1 RUST_LOG_STYLE=never nohup \
-		./bin/firecracker --no-api --no-seccomp --config-file "${GLES_CLIENT_CONFIG}" \
-		>"${LOG_DIR}/client.log" 2>&1 &
+	{
+		build_gles_compute_smoke
+		prepare_gles_compute_client
+	} >"${LOG_DIR}/gles-compute-rootfs.log" 2>&1
+		NO_COLOR=1 RUST_LOG_STYLE=never nohup \
+			./bin/firecracker --no-api --no-seccomp --config-file "${GLES_CLIENT_CONFIG}" \
+			< /dev/null >"${LOG_DIR}/client.log" 2>&1 &
 else
-	NO_COLOR=1 RUST_LOG_STYLE=never nohup sh ./scripts/shared/vmshm-1client/vm-client-test.sh >"${LOG_DIR}/client.log" 2>&1 &
+	NO_COLOR=1 RUST_LOG_STYLE=never nohup sh ./scripts/shared/vmshm-1client/vm-client-test.sh \
+		< /dev/null >"${LOG_DIR}/client.log" 2>&1 &
 fi
 echo $! >"${LOG_DIR}/client.pid"
 
@@ -820,14 +884,9 @@ if [[ ! -f "${LOG_DIR}/broker.perf" && -f "${LOG_DIR}/broker.task.pid" ]]; then
 		"${LOG_DIR}/broker.perf" || true
 fi
 
-for pid_file in client.pid proxy.pid broker.pid; do
-	if [[ -f "${LOG_DIR}/${pid_file}" ]]; then
-		kill -INT "$(cat "${LOG_DIR}/${pid_file}")" 2>/dev/null || true
-	fi
+for pid_file in client.pid proxy.pid broker.pid broker.task.pid; do
+	stop_pid_file "${LOG_DIR}/${pid_file}"
 done
-if [[ -f "${LOG_DIR}/broker.task.pid" ]]; then
-	kill -INT "$(cat "${LOG_DIR}/broker.task.pid")" 2>/dev/null || true
-fi
 sleep 1
 
 ioctl_mode_marker_ok() {
@@ -1135,6 +1194,13 @@ ioctl_tiler_heap_lifecycle_markers_ok() {
 	grep -qaE "panthor-proxy: TILER_HEAP_DESTROY session=[1-9][0-9]*.*ret=0" "${LOG_DIR}/proxy.log" || return 1
 }
 
+gles_metric_markers_ok() {
+	if [[ "${GLES_SMOKE_ARGS}" == *"--exclude-cpu-prepare"* ]]; then
+		grep -qa "PERF_CPU_PREPARE_EXCLUDED=1" "${LOG_DIR}/client.log" || return 1
+	fi
+	return 0
+}
+
 {
 	if [[ "${GLES_COMPUTE_SMOKE}" == "1" ]]; then
 		echo "Panthor shared GLES compute smoke result"
@@ -1208,6 +1274,7 @@ ioctl_tiler_heap_lifecycle_markers_ok() {
 	     grep -qa "GPU_SMOKE_RESULT=PASS" "${LOG_DIR}/client.log" &&
 	     grep -qa "COMPUTE_CHECK=PASS" "${LOG_DIR}/client.log" &&
 	     grep -qaE "GL_RENDERER=.*Mali|GL_RENDERER=.*Panfrost" "${LOG_DIR}/client.log" &&
+	     gles_metric_markers_ok &&
 	     ! grep -qaE "software renderer detected|llvmpipe|softpipe|Software Rasterizer|COMPUTE_CHECK=FAIL|GPU_SMOKE_RESULT=FAIL|Kernel panic|Oops|job timeout|mismatch" "${LOG_DIR}/client.log"; then
 			echo "RESULT: PASS"
 	elif [[ "${IOCTL_SMOKE}" != "1" && "${GLES_COMPUTE_SMOKE}" != "1" ]] &&
