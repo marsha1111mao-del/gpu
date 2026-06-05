@@ -159,8 +159,8 @@ being refreshed:
 ## 4. Remote Runtime Update Policy
 
 Do not delete `/root/GPU-SFTP` on the remote server. Treat it as the persistent
-runtime cache for rootfs images, generated binaries, kernels, DTB dumps, and
-historical logs.
+runtime artifact store for base rootfs images, generated binaries, kernels, DTB
+dumps, and historical logs.
 
 The remote host state normally changes slowly, and the workspace scripts are
 written to update it in place:

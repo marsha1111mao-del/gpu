@@ -15,7 +15,7 @@ socket_dir = "/run/vmshm"
 id = "vmshm-object"
 socket_path = "/run/vmshm/vmshm-object.sock"
 memfd_name = "vmshm-object-2client"
-window_size = 67108864
+window_size = 234881024
 seal = true
 
 [[domains]]
@@ -59,9 +59,9 @@ cat >"${CONFIG_DIR}/proxy-vm-config.json" <<'EOF'
       "socket_path": "/run/vmshm/vmshm-object.sock",
       "name": "vmshm-object-proxy",
       "role": "proxy",
-      "guest_phys_addr": "0x20000000",
+      "guest_phys_addr": "0x30000000",
       "slot": 1,
-      "expected_size": 67108864,
+      "expected_size": 234881024,
       "fdt_node_name": "proxy-vmshm-manager",
       "fdt_compatible": "proxy-vmshm-manager"
     },
@@ -125,9 +125,9 @@ cat >"${CONFIG_DIR}/client0-vm-config.json" <<'EOF'
       "socket_path": "/run/vmshm/vmshm-object.sock",
       "name": "vmshm-object-client0",
       "role": "client",
-      "guest_phys_addr": "0x20000000",
+      "guest_phys_addr": "0x30000000",
       "slot": 1,
-      "expected_size": 67108864,
+      "expected_size": 234881024,
       "fdt_node_name": "client-vmshm-manager",
       "fdt_compatible": "client-vmshm-manager"
     },
@@ -176,9 +176,9 @@ cat >"${CONFIG_DIR}/client1-vm-config.json" <<'EOF'
       "socket_path": "/run/vmshm/vmshm-object.sock",
       "name": "vmshm-object-client1",
       "role": "client",
-      "guest_phys_addr": "0x20000000",
+      "guest_phys_addr": "0x30000000",
       "slot": 1,
-      "expected_size": 67108864,
+      "expected_size": 234881024,
       "fdt_node_name": "client-vmshm-manager",
       "fdt_compatible": "client-vmshm-manager"
     },

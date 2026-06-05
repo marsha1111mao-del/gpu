@@ -32,6 +32,7 @@ IOCTL_SMOKE=0
 IOCTL_SMOKE_MODE=basic
 GLES_COMPUTE_SMOKE=0
 GLES_SMOKE_ARGS=${GLES_SMOKE_ARGS:-"--count 64"}
+GLES_CLIENT_BO_MMAP_CACHED=${GLES_CLIENT_BO_MMAP_CACHED:-0}
 
 usage() {
 	cat <<EOF
@@ -48,7 +49,10 @@ Options:
   --skip-remote-run          Do not start broker/proxy/client on the remote host
   --skip-fetch-logs          Do not rsync this run's logs back from the remote host
   --no-clean-remote-procs    Do not pkill existing firecracker/vmshm-broker first
-  --sync-rootfs              Include rootfs.ext2 in local-to-remote rsync
+  --sync-rootfs              Include base rootfs images in local-to-remote
+                             rsync. Normal runs reuse remote base rootfs
+                             images and inject the current test payload by
+                             loop-mounting the image before VM launch.
   --ioctl-smoke              Run userspace /dev/dri/card0 VERSION/GET_CAP/DEV_QUERY smoke
   --vm-create-smoke          Run ioctl smoke plus PANTHOR_VM_CREATE/VM_DESTROY
   --bo-create-smoke          Run ioctl smoke plus PANTHOR_BO_CREATE/GEM_CLOSE
@@ -69,8 +73,15 @@ Options:
                              Run ioctl smoke plus zero-length GROUP_SUBMIT syncpoint
   --tiler-heap-lifecycle-smoke
                              Run ioctl smoke plus TILER_HEAP_CREATE/DESTROY
-  --gles-compute-smoke       Boot the shared client with rootfs-panfrost.ext4
-                             and run /root/gpu-smoke.sh correctness smoke
+  --gles-compute-smoke       Boot the shared client with the base Panfrost
+                             rootfs after injecting the GLES compute payload
+                             and run
+                             /root/gpu-smoke.sh correctness smoke
+  --gles-smoke-args ARGS     Arguments passed to /root/gpu-smoke.sh in GLES mode
+  --gles-client-bo-mmap-cached
+                             In GLES mode, boot the shared client with
+                             panthor_client.bo_mmap_cached=1 so BO payload
+                             mmap uses cached WB instead of write-combine.
   --run-id ID                Use a fixed run log directory name
   -h, --help                 Show this help
 
@@ -183,6 +194,17 @@ while [[ $# -gt 0 ]]; do
 		IOCTL_SMOKE=0
 		GLES_COMPUTE_SMOKE=1
 		;;
+	--gles-smoke-args)
+		shift
+		if [[ $# -eq 0 ]]; then
+			echo "--gles-smoke-args requires an argument" >&2
+			exit 2
+		fi
+		GLES_SMOKE_ARGS=$1
+		;;
+	--gles-client-bo-mmap-cached)
+		GLES_CLIENT_BO_MMAP_CACHED=1
+		;;
 	--run-id)
 		shift
 		if [[ $# -eq 0 ]]; then
@@ -203,10 +225,6 @@ while [[ $# -gt 0 ]]; do
 	esac
 	shift
 done
-
-if [[ "${GLES_COMPUTE_SMOKE}" -eq 1 ]]; then
-	SYNC_ROOTFS=1
-fi
 
 log() {
 	printf '\n==> %s\n' "$*"
@@ -340,7 +358,9 @@ sync_to_remote() {
 
 run_remote_test() {
 	local run_id_q remote_root_q remote_bins_q remote_log_root_q clean_q
-	local ioctl_smoke_q ioctl_smoke_mode_q gles_compute_smoke_q gles_smoke_args_q
+	local ioctl_smoke_q ioctl_smoke_mode_q
+	local gles_compute_smoke_q gles_smoke_args_q
+	local gles_client_bo_mmap_cached_q
 
 	run_id_q=$(quote "${RUN_ID}")
 	remote_root_q=$(quote "${REMOTE_ROOT}")
@@ -351,21 +371,21 @@ run_remote_test() {
 	ioctl_smoke_mode_q=$(quote "${IOCTL_SMOKE_MODE}")
 	gles_compute_smoke_q=$(quote "${GLES_COMPUTE_SMOKE}")
 	gles_smoke_args_q=$(quote "${GLES_SMOKE_ARGS}")
+	gles_client_bo_mmap_cached_q=$(quote "${GLES_CLIENT_BO_MMAP_CACHED}")
 
 	log "Running remote vmshm test: ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_BINS}"
-	ssh_remote "RUN_ID=${run_id_q} REMOTE_ROOT=${remote_root_q} REMOTE_BINS=${remote_bins_q} REMOTE_LOG_ROOT=${remote_log_root_q} CLEAN_REMOTE_PROCS=${clean_q} IOCTL_SMOKE=${ioctl_smoke_q} IOCTL_SMOKE_MODE=${ioctl_smoke_mode_q} GLES_COMPUTE_SMOKE=${gles_compute_smoke_q} GLES_SMOKE_ARGS=${gles_smoke_args_q} bash -s" <<'REMOTE_SCRIPT'
+	ssh_remote "RUN_ID=${run_id_q} REMOTE_ROOT=${remote_root_q} REMOTE_BINS=${remote_bins_q} REMOTE_LOG_ROOT=${remote_log_root_q} CLEAN_REMOTE_PROCS=${clean_q} IOCTL_SMOKE=${ioctl_smoke_q} IOCTL_SMOKE_MODE=${ioctl_smoke_mode_q} GLES_COMPUTE_SMOKE=${gles_compute_smoke_q} GLES_SMOKE_ARGS=${gles_smoke_args_q} GLES_CLIENT_BO_MMAP_CACHED=${gles_client_bo_mmap_cached_q} bash -s" <<'REMOTE_SCRIPT'
 set -euo pipefail
 
 cd "${REMOTE_BINS}"
 LOG_DIR="${REMOTE_LOG_ROOT}/shared/vmshm-1client/${RUN_ID}"
 mkdir -p /run/vmshm "${LOG_DIR}"
-SMOKE_ROOTFS="${REMOTE_BINS}/rootfs/rootfs-ioctl-smoke-${RUN_ID}.ext2"
 SMOKE_CLIENT_CONFIG="${LOG_DIR}/client-ioctl-smoke-config.json"
-GLES_ROOTFS="${REMOTE_BINS}/rootfs/rootfs-gles-compute-${RUN_ID}.ext4"
 GLES_CLIENT_CONFIG="${LOG_DIR}/client-gles-compute-config.json"
 GLES_SMOKE_SRC_DIR="${REMOTE_ROOT}/tests/gpu-compute-smoke"
 GLES_SMOKE_BIN="${REMOTE_BINS}/bin/gles-compute-smoke"
 SMOKE_MNT=""
+GLES_CLIENT_BO_MMAP_CACHED=${GLES_CLIENT_BO_MMAP_CACHED:-0}
 
 if [[ "${CLEAN_REMOTE_PROCS}" == "1" ]]; then
 	pkill -x firecracker 2>/dev/null || true
@@ -378,12 +398,6 @@ cleanup_ioctl_smoke_rootfs() {
 	if [[ -n "${SMOKE_MNT}" && -d "${SMOKE_MNT}" ]]; then
 		umount "${SMOKE_MNT}" 2>/dev/null || true
 		rmdir "${SMOKE_MNT}" 2>/dev/null || true
-	fi
-	if [[ "${IOCTL_SMOKE}" == "1" ]]; then
-		rm -f "${SMOKE_ROOTFS}"
-	fi
-	if [[ "${GLES_COMPUTE_SMOKE}" == "1" ]]; then
-		rm -f "${GLES_ROOTFS}"
 	fi
 }
 trap cleanup_ioctl_smoke_rootfs EXIT
@@ -481,12 +495,19 @@ proc_value() {
 	awk -F= -v key="${key}" '$1 == key {print $2; exit}' "${file}" 2>/dev/null
 }
 
-copy_rootfs_image() {
-	local src="$1"
-	local dst="$2"
+gles_smoke_args_tokens() {
+	local -a argv
+	local arg
 
-	cp --reflink=auto --sparse=always -f "${src}" "${dst}" 2>/dev/null ||
-		cp -f "${src}" "${dst}"
+	read -r -a argv <<<"${GLES_SMOKE_ARGS}"
+	for arg in "${argv[@]}"; do
+		if [[ "${arg}" == *:* || "${arg}" == *[[:space:]]* || "${arg}" == *\"* || "${arg}" == *\\* ]]; then
+			echo "unsupported GLES smoke arg for kernel cmdline token transport: ${arg}" >&2
+			return 1
+		fi
+	done
+
+	(IFS=:; printf '%s' "${argv[*]}")
 }
 
 stop_pid_file() {
@@ -559,20 +580,12 @@ write_broker_proc_delta() {
 	} >"${out}"
 }
 
-prepare_ioctl_smoke_client() {
-	[[ -x ./bin/panthor_ioctl_smoke ]] ||
-		{ echo "missing executable ./bin/panthor_ioctl_smoke" >&2; return 1; }
-	[[ -f ./rootfs/rootfs.ext2 ]] ||
-		{ echo "missing ./rootfs/rootfs.ext2 on remote" >&2; return 1; }
+ioctl_smoke_mode_label() {
+	printf '%s' "${IOCTL_SMOKE_MODE}" | tr -c 'A-Za-z0-9._-' '_'
+}
 
-	copy_rootfs_image ./rootfs/rootfs.ext2 "${SMOKE_ROOTFS}"
-	SMOKE_MNT=$(mktemp -d /tmp/panthor-ioctl-rootfs.XXXXXX)
-	mount -o loop "${SMOKE_ROOTFS}" "${SMOKE_MNT}"
-	install -m 0755 ./bin/panthor_ioctl_smoke "${SMOKE_MNT}/panthor_ioctl_smoke"
-	cat >"${SMOKE_MNT}/panthor_ioctl_smoke_mode" <<EOF
-${IOCTL_SMOKE_MODE}
-EOF
-	cat >"${SMOKE_MNT}/panthor_ioctl_smoke_init" <<'INIT_SCRIPT'
+write_ioctl_smoke_init_script() {
+	cat <<'INIT_SCRIPT'
 #!/bin/sh
 mount -t devtmpfs devtmpfs /dev 2>/dev/null || true
 mkdir -p /dev/dri /proc /sys
@@ -591,6 +604,14 @@ done
 
 ls -l /dev/dri /dev/dri/* 2>&1 || true
 mode="$(cat /panthor_ioctl_smoke_mode 2>/dev/null || echo basic)"
+for word in $(cat /proc/cmdline 2>/dev/null); do
+	case "${word}" in
+	panthor_ioctl_smoke_mode=*)
+		mode="${word#*=}"
+		break
+		;;
+	esac
+done
 case "${mode}" in
 	vm-create)
 		smoke_arg="--vm-create"
@@ -655,24 +676,65 @@ sync
 sleep 2
 poweroff -f 2>/dev/null || reboot -f 2>/dev/null || while true; do sleep 60; done
 INIT_SCRIPT
+}
+
+prune_rootfs_base_layout() {
+	echo "rootfs_base_layout_prune_start root=${REMOTE_BINS}/rootfs ts=$(date -Is)" >&2
+	find ./rootfs -mindepth 1 -maxdepth 1 -type d \
+		! -name mounts \
+		! -name work \
+		-exec rm -rf {} +
+	find ./rootfs -mindepth 1 -maxdepth 1 \( -type f -o -type l \) \
+		! -name rootfs.ext2 \
+		! -name rootfs-panfrost.ext4 \
+		! -name .gitkeep \
+		-exec rm -f {} +
+	echo "rootfs_base_layout_prune_done root=${REMOTE_BINS}/rootfs ts=$(date -Is)" >&2
+}
+
+inject_ioctl_smoke_payload() {
+	local rootfs_path="${REMOTE_BINS}/rootfs/rootfs.ext2"
+
+	[[ -x ./bin/panthor_ioctl_smoke ]] ||
+		{ echo "missing executable ./bin/panthor_ioctl_smoke" >&2; return 1; }
+	[[ -f "${rootfs_path}" ]] ||
+		{ echo "missing ${rootfs_path} on remote" >&2; return 1; }
+
+	echo "rootfs_payload_inject_start payload=panthor-ioctl-smoke rootfs=${rootfs_path} ts=$(date -Is)" >&2
+	SMOKE_MNT=$(mktemp -d /tmp/panthor-ioctl-rootfs.XXXXXX)
+	mount -o loop,rw "${rootfs_path}" "${SMOKE_MNT}"
+	install -Dm0755 ./bin/panthor_ioctl_smoke "${SMOKE_MNT}/panthor_ioctl_smoke"
+	write_ioctl_smoke_init_script >"${SMOKE_MNT}/panthor_ioctl_smoke_init"
 	chmod 0755 "${SMOKE_MNT}/panthor_ioctl_smoke_init"
-	sync
+	sync -f "${SMOKE_MNT}" 2>/dev/null || sync
 	umount "${SMOKE_MNT}"
 	rmdir "${SMOKE_MNT}"
 	SMOKE_MNT=""
+	echo "rootfs_payload_inject_done payload=panthor-ioctl-smoke rootfs=${rootfs_path} ts=$(date -Is)" >&2
+	printf '%s\n' "${rootfs_path}"
+}
+
+prepare_ioctl_smoke_client() {
+	local rootfs_path mode_arg
+
+	rootfs_path=$(inject_ioctl_smoke_payload)
+	echo "ioctl_rootfs=${rootfs_path}" >&2
+	[[ -f "${rootfs_path}" ]] ||
+		{ echo "missing IOCTL smoke rootfs ${rootfs_path}" >&2; return 1; }
+	mode_arg="$(ioctl_smoke_mode_label)"
 
 	cat >"${SMOKE_CLIENT_CONFIG}" <<EOF
 {
   "boot-source": {
     "kernel_image_path": "${REMOTE_BINS}/kernels/shared/client/Image",
-    "boot_args": "console=ttyS0 root=/dev/vda rw rootfstype=ext4 init=/panthor_ioctl_smoke_init"
+    "boot_args": "console=ttyS0 root=/dev/vda ro rootfstype=ext4 init=/panthor_ioctl_smoke_init panthor_ioctl_smoke_mode=${mode_arg}"
   },
   "drives": [
     {
       "drive_id": "rootfs",
-      "path_on_host": "${SMOKE_ROOTFS}",
+      "path_on_host": "${rootfs_path}",
       "is_root_device": false,
-      "is_read_only": false
+      "is_read_only": true
     }
   ],
   "machine-config": {
@@ -718,7 +780,7 @@ build_gles_compute_smoke() {
 		return 0
 	fi
 
-	echo "building current gles-compute-smoke from ${GLES_SMOKE_SRC_DIR}"
+	echo "building current gles-compute-smoke from ${GLES_SMOKE_SRC_DIR}" >&2
 	[[ -f "${GLES_SMOKE_SRC_DIR}/gles_compute_smoke.c" ]] ||
 		{ echo "missing ${GLES_SMOKE_SRC_DIR}/gles_compute_smoke.c" >&2; return 1; }
 	command -v cc >/dev/null 2>&1 ||
@@ -732,50 +794,67 @@ build_gles_compute_smoke() {
 		-o "${GLES_SMOKE_BIN}" \
 		$(pkg-config --cflags --libs egl glesv2 gbm)
 	chmod 0755 "${GLES_SMOKE_BIN}"
-	"${GLES_SMOKE_BIN}" --help >/dev/null
-	echo "installed ${GLES_SMOKE_BIN}"
+	"${GLES_SMOKE_BIN}" --help >/dev/null 2>&1
+	echo "installed ${GLES_SMOKE_BIN}" >&2
 }
 
-prepare_gles_compute_client() {
-	[[ -f ./rootfs/rootfs-panfrost.ext4 ]] ||
-		{ echo "missing ./rootfs/rootfs-panfrost.ext4 on remote" >&2; return 1; }
-	[[ -x "${GLES_SMOKE_BIN}" ]] ||
-		{ echo "missing executable ${GLES_SMOKE_BIN}" >&2; return 1; }
+inject_gles_compute_payload() {
+	local rootfs_path="${REMOTE_BINS}/rootfs/rootfs-panfrost.ext4"
+
+	[[ -f "${rootfs_path}" ]] ||
+		{ echo "missing ${rootfs_path} on remote" >&2; return 1; }
+	[[ -f "${GLES_SMOKE_SRC_DIR}/gles_compute_smoke.c" ]] ||
+		{ echo "missing ${GLES_SMOKE_SRC_DIR}/gles_compute_smoke.c" >&2; return 1; }
 	[[ -f "${GLES_SMOKE_SRC_DIR}/gpu-smoke.sh" ]] ||
 		{ echo "missing ${GLES_SMOKE_SRC_DIR}/gpu-smoke.sh" >&2; return 1; }
 	[[ -f "${GLES_SMOKE_SRC_DIR}/init" ]] ||
 		{ echo "missing ${GLES_SMOKE_SRC_DIR}/init" >&2; return 1; }
 
-	copy_rootfs_image ./rootfs/rootfs-panfrost.ext4 "${GLES_ROOTFS}"
+	build_gles_compute_smoke
+	echo "rootfs_payload_inject_start payload=gles-compute rootfs=${rootfs_path} ts=$(date -Is)" >&2
 	SMOKE_MNT=$(mktemp -d /tmp/panthor-gles-rootfs.XXXXXX)
-	mount -o loop "${GLES_ROOTFS}" "${SMOKE_MNT}"
+	mount -o loop,rw "${rootfs_path}" "${SMOKE_MNT}"
 
 	install -Dm0755 "${GLES_SMOKE_BIN}" "${SMOKE_MNT}/root/gles-compute-smoke"
 	install -Dm0755 "${GLES_SMOKE_SRC_DIR}/gpu-smoke.sh" "${SMOKE_MNT}/root/gpu-smoke.sh"
 	install -Dm0755 "${GLES_SMOKE_SRC_DIR}/init" "${SMOKE_MNT}/init"
 
 	cat >"${SMOKE_MNT}/root/gpu-smoke.env" <<EOF
-GPU_SMOKE_ARGS="${GLES_SMOKE_ARGS}"
-GPU_SMOKE_QUIET_CONSOLE=1
 GPU_SMOKE_AFTER_RUN=shell
 EOF
-	sync
+	sync -f "${SMOKE_MNT}" 2>/dev/null || sync
 	umount "${SMOKE_MNT}"
 	rmdir "${SMOKE_MNT}"
 	SMOKE_MNT=""
+	echo "rootfs_payload_inject_done payload=gles-compute rootfs=${rootfs_path} ts=$(date -Is)" >&2
+	printf '%s\n' "${rootfs_path}"
+}
+
+prepare_gles_compute_client() {
+	local rootfs_path smoke_arg_tokens
+	local client_mmap_args=""
+
+	rootfs_path=$(inject_gles_compute_payload)
+	echo "gles_rootfs=${rootfs_path}" >&2
+	[[ -f "${rootfs_path}" ]] ||
+		{ echo "missing GLES rootfs ${rootfs_path}" >&2; return 1; }
+	smoke_arg_tokens=$(gles_smoke_args_tokens)
+	if [[ "${GLES_CLIENT_BO_MMAP_CACHED}" == "1" ]]; then
+		client_mmap_args=" panthor_client.bo_mmap_cached=1"
+	fi
 
 	cat >"${GLES_CLIENT_CONFIG}" <<EOF
 {
   "boot-source": {
     "kernel_image_path": "${REMOTE_BINS}/kernels/shared/client/Image",
-    "boot_args": "console=ttyS0 root=/dev/vda rw rootfstype=ext4 init=/init panic=-1 print-fatal-signals=1"
+    "boot_args": "console=ttyS0 root=/dev/vda ro rootfstype=ext4 init=/init panic=-1 print-fatal-signals=1 gpu_smoke_args_tokens=${smoke_arg_tokens} gpu_smoke_quiet_console=1 gpu_smoke_after_run=shell${client_mmap_args}"
   },
   "drives": [
     {
       "drive_id": "rootfs",
-      "path_on_host": "${GLES_ROOTFS}",
+      "path_on_host": "${rootfs_path}",
       "is_root_device": false,
-      "is_read_only": false
+      "is_read_only": true
     }
   ],
   "machine-config": {
@@ -812,9 +891,16 @@ EOF
       }
     }
   ]
-}
+	}
 EOF
 }
+
+prune_rootfs_base_layout >"${LOG_DIR}/rootfs-base-layout-prune.log" 2>&1
+if [[ "${IOCTL_SMOKE}" == "1" ]]; then
+	prepare_ioctl_smoke_client >"${LOG_DIR}/ioctl-smoke-rootfs.log" 2>&1
+elif [[ "${GLES_COMPUTE_SMOKE}" == "1" ]]; then
+	prepare_gles_compute_client >"${LOG_DIR}/gles-compute-rootfs.log" 2>&1
+fi
 
 if command -v perf >/dev/null 2>&1; then
 	NO_COLOR=1 RUST_LOG_STYLE=never nohup \
@@ -850,15 +936,10 @@ wait_for_log \
 	60 || true
 
 if [[ "${IOCTL_SMOKE}" == "1" ]]; then
-	prepare_ioctl_smoke_client >"${LOG_DIR}/ioctl-smoke-rootfs.log" 2>&1
 		NO_COLOR=1 RUST_LOG_STYLE=never nohup \
 			./bin/firecracker --no-api --no-seccomp --config-file "${SMOKE_CLIENT_CONFIG}" \
 			< /dev/null >"${LOG_DIR}/client.log" 2>&1 &
 elif [[ "${GLES_COMPUTE_SMOKE}" == "1" ]]; then
-	{
-		build_gles_compute_smoke
-		prepare_gles_compute_client
-	} >"${LOG_DIR}/gles-compute-rootfs.log" 2>&1
 		NO_COLOR=1 RUST_LOG_STYLE=never nohup \
 			./bin/firecracker --no-api --no-seccomp --config-file "${GLES_CLIENT_CONFIG}" \
 			< /dev/null >"${LOG_DIR}/client.log" 2>&1 &
@@ -1228,8 +1309,8 @@ gles_metric_markers_ok() {
 	echo "== Proxy vmshm/panthor =="
 	grep -aE "registered vmshm notify|proxy_comm_vmshm .*irq notify enabled|proxy_comm_vmshm: selftest passed|proxy_comm_vmshm: perf|panthor-proxy: vmshm handler registered" \
 		"${LOG_DIR}/proxy.log" || true
-			grep -aE "panthor: BO_CREATE vmshm-backed|panthor: VM_BIND vmshm payload mapped|panthor-proxy: OPEN_SESSION session=[1-9][0-9]*|panthor-proxy: DEV_QUERY session=[1-9][0-9]*|panthor-proxy: VM_CREATE session=[1-9][0-9]*|panthor-proxy: VM_DESTROY session=[1-9][0-9]*|panthor-proxy: VM_BIND session=[1-9][0-9]*|panthor-proxy: VM_GET_STATE session=[1-9][0-9]*|panthor-proxy: BO_CREATE session=[1-9][0-9]*|panthor-proxy: BO_CREATE vmshm-backed session=[1-9][0-9]*|panthor-proxy: BO_DESTROY session=[1-9][0-9]*|panthor-proxy: SYNCOBJ_CREATE session=[1-9][0-9]*|panthor-proxy: SYNCOBJ_DESTROY session=[1-9][0-9]*|panthor-proxy: SYNCOBJ_WAIT session=[1-9][0-9]*|panthor-proxy: SYNCOBJ_TRANSFER session=[1-9][0-9]*|panthor-proxy: SYNCOBJ_TIMELINE_WAIT session=[1-9][0-9]*|panthor-proxy: SYNCOBJ_RESET session=[1-9][0-9]*|panthor-proxy: SYNCOBJ_SIGNAL session=[1-9][0-9]*|panthor-proxy: SYNCOBJ_TIMELINE_SIGNAL session=[1-9][0-9]*|panthor-proxy: SYNCOBJ_QUERY session=[1-9][0-9]*|panthor-proxy: GROUP_CREATE session=[1-9][0-9]*|panthor-proxy: GROUP_GET_STATE session=[1-9][0-9]*|panthor-proxy: GROUP_SUBMIT session=[1-9][0-9]*|panthor-proxy: GROUP_DESTROY session=[1-9][0-9]*|panthor-proxy: TILER_HEAP_CREATE session=[1-9][0-9]*|panthor-proxy: TILER_HEAP_DESTROY session=[1-9][0-9]*|panthor-proxy: SESSION_RELEASE session=[1-9][0-9]*|panthor-proxy: CLOSE_SESSION session=[1-9][0-9]*" \
-				"${LOG_DIR}/proxy.log" | tail -n 80 || true
+	grep -aE "panthor: BO_CREATE vmshm-backed|panthor: VM_BIND vmshm payload mapped|panthor-proxy: OPEN_SESSION session=[1-9][0-9]*|panthor-proxy: DEV_QUERY session=[1-9][0-9]*|panthor-proxy: VM_CREATE session=[1-9][0-9]*|panthor-proxy: VM_DESTROY session=[1-9][0-9]*|panthor-proxy: VM_BIND session=[1-9][0-9]*|panthor-proxy: VM_GET_STATE session=[1-9][0-9]*|panthor-proxy: BO_CREATE session=[1-9][0-9]*|panthor-proxy: BO_CREATE vmshm-backed session=[1-9][0-9]*|panthor-proxy: BO_DESTROY session=[1-9][0-9]*|panthor-proxy: SYNCOBJ_CREATE session=[1-9][0-9]*|panthor-proxy: SYNCOBJ_DESTROY session=[1-9][0-9]*|panthor-proxy: SYNCOBJ_WAIT session=[1-9][0-9]*|panthor-proxy: SYNCOBJ_TRANSFER session=[1-9][0-9]*|panthor-proxy: SYNCOBJ_TIMELINE_WAIT session=[1-9][0-9]*|panthor-proxy: SYNCOBJ_RESET session=[1-9][0-9]*|panthor-proxy: SYNCOBJ_SIGNAL session=[1-9][0-9]*|panthor-proxy: SYNCOBJ_TIMELINE_SIGNAL session=[1-9][0-9]*|panthor-proxy: SYNCOBJ_QUERY session=[1-9][0-9]*|panthor-proxy: GROUP_CREATE session=[1-9][0-9]*|panthor-proxy: GROUP_GET_STATE session=[1-9][0-9]*|panthor-proxy: GROUP_SUBMIT session=[1-9][0-9]*|panthor-proxy: GROUP_DESTROY session=[1-9][0-9]*|panthor-proxy: TILER_HEAP_CREATE session=[1-9][0-9]*|panthor-proxy: TILER_HEAP_DESTROY session=[1-9][0-9]*|panthor-proxy: SESSION_RELEASE session=[1-9][0-9]*|panthor-proxy: CLOSE_SESSION session=[1-9][0-9]*" \
+		"${LOG_DIR}/proxy.log" | tail -n 80 || true
 	echo
 	if [[ -f "${LOG_DIR}/ioctl-smoke-rootfs.log" ]]; then
 		echo "== IOCTL smoke rootfs prep =="
@@ -1241,13 +1322,13 @@ gles_metric_markers_ok() {
 		sed -n '1,120p' "${LOG_DIR}/gles-compute-rootfs.log" || true
 		echo
 	fi
-		echo "== Client Panthor DRM =="
-				grep -aE "registered vmshm notify|client_comm_vmshm .*irq notify enabled|client_comm_vmshm: perf|panthor-client: OPEN_SESSION|panthor-client: DEV_QUERY|panthor-client: VM_CREATE|panthor-client: VM_DESTROY|panthor-client: VM_BIND|panthor-client: VM_GET_STATE|panthor-client: BO_CREATE|panthor-client: BO_DESTROY|panthor-client: BO_MMAP_OFFSET|panthor-client: MMAP|panthor-client: MMAP_FLUSH_ID|panthor-client: SYNCOBJ_CREATE|panthor-client: SYNCOBJ_DESTROY|panthor-client: SYNCOBJ_WAIT|panthor-client: SYNCOBJ_TRANSFER|panthor-client: SYNCOBJ_TIMELINE_WAIT|panthor-client: SYNCOBJ_RESET|panthor-client: SYNCOBJ_SIGNAL|panthor-client: SYNCOBJ_TIMELINE_SIGNAL|panthor-client: SYNCOBJ_QUERY|panthor-client: GROUP_CREATE|panthor-client: GROUP_GET_STATE|panthor-client: GROUP_SUBMIT|panthor-client: GROUP_DESTROY|panthor-client: TILER_HEAP_CREATE|panthor-client: TILER_HEAP_DESTROY|panthor-client: CLOSE_SESSION|panthor-client: registered DRM frontend|PANTHOR_IOCTL_|PANTHOR_BASIC_SMOKE|PANTHOR_VM_CREATE_SMOKE|PANTHOR_BO_CREATE_SMOKE|PANTHOR_BO_LIFECYCLE_SMOKE|PANTHOR_BO_MMAP_SMOKE|PANTHOR_VM_BIND_SMOKE|PANTHOR_VM_BIND_ASYNC_SYNC_SMOKE|PANTHOR_VM_STATE_FLUSH_SMOKE|PANTHOR_SYNCOBJ_LIFECYCLE_SMOKE|PANTHOR_SYNCOBJ_WAIT_SMOKE|PANTHOR_SYNCOBJ_TRANSFER_SMOKE|PANTHOR_SYNCOBJ_TIMELINE_WAIT_SMOKE|PANTHOR_SYNCOBJ_SIGNAL_QUERY_SMOKE|PANTHOR_GROUP_LIFECYCLE_SMOKE|PANTHOR_GROUP_SUBMIT_SYNCPOINT_SMOKE|PANTHOR_TILER_HEAP_LIFECYCLE_SMOKE|OPEN path=|VERSION name=|GET_CAP|DEV_QUERY_SIZE|GPU_INFO|CSIF_INFO|VM_CREATE|VM_DESTROY|VM_BIND|VM_GET_STATE|GROUP_|TILER_HEAP_|MMAP_FLUSH_ID|MUNMAP_FLUSH_ID|BO_CREATE|BO_MMAP|BO_MUNMAP|PRIME_|SYNCOBJ_|GEM_CLOSE|ERROR|WARN|Kernel panic|Guest-boot failed" \
-					"${LOG_DIR}/client.log" || true
+	echo "== Client Panthor DRM =="
+	grep -aE "registered vmshm notify|client_comm_vmshm .*irq notify enabled|client_comm_vmshm: perf|PANTHOR_CLIENT_BO_MMAP_CACHED|panthor-client: BO mmap cached=|panthor-client: OPEN_SESSION|panthor-client: DEV_QUERY|panthor-client: VM_CREATE|panthor-client: VM_DESTROY|panthor-client: VM_BIND|panthor-client: VM_GET_STATE|panthor-client: BO_CREATE|panthor-client: BO_DESTROY|panthor-client: BO_MMAP_OFFSET|panthor-client: MMAP|panthor-client: MMAP_FLUSH_ID|panthor-client: SYNCOBJ_CREATE|panthor-client: SYNCOBJ_DESTROY|panthor-client: SYNCOBJ_WAIT|panthor-client: SYNCOBJ_TRANSFER|panthor-client: SYNCOBJ_TIMELINE_WAIT|panthor-client: SYNCOBJ_RESET|panthor-client: SYNCOBJ_SIGNAL|panthor-client: SYNCOBJ_TIMELINE_SIGNAL|panthor-client: SYNCOBJ_QUERY|panthor-client: GROUP_CREATE|panthor-client: GROUP_GET_STATE|panthor-client: GROUP_SUBMIT|panthor-client: GROUP_DESTROY|panthor-client: TILER_HEAP_CREATE|panthor-client: TILER_HEAP_DESTROY|panthor-client: CLOSE_SESSION|panthor-client: registered DRM frontend|PANTHOR_IOCTL_|PANTHOR_BASIC_SMOKE|PANTHOR_VM_CREATE_SMOKE|PANTHOR_BO_CREATE_SMOKE|PANTHOR_BO_LIFECYCLE_SMOKE|PANTHOR_BO_MMAP_SMOKE|PANTHOR_VM_BIND_SMOKE|PANTHOR_VM_BIND_ASYNC_SYNC_SMOKE|PANTHOR_VM_STATE_FLUSH_SMOKE|PANTHOR_SYNCOBJ_LIFECYCLE_SMOKE|PANTHOR_SYNCOBJ_WAIT_SMOKE|PANTHOR_SYNCOBJ_TRANSFER_SMOKE|PANTHOR_SYNCOBJ_TIMELINE_WAIT_SMOKE|PANTHOR_SYNCOBJ_SIGNAL_QUERY_SMOKE|PANTHOR_GROUP_LIFECYCLE_SMOKE|PANTHOR_GROUP_SUBMIT_SYNCPOINT_SMOKE|PANTHOR_TILER_HEAP_LIFECYCLE_SMOKE|OPEN path=|VERSION name=|GET_CAP|DEV_QUERY_SIZE|GPU_INFO|CSIF_INFO|VM_CREATE|VM_DESTROY|VM_BIND|VM_GET_STATE|GROUP_|TILER_HEAP_|MMAP_FLUSH_ID|MUNMAP_FLUSH_ID|BO_CREATE|BO_MMAP|BO_MUNMAP|PRIME_|SYNCOBJ_|GEM_CLOSE|ERROR|WARN|Kernel panic|Guest-boot failed" \
+		"${LOG_DIR}/client.log" || true
 	if [[ "${GLES_COMPUTE_SMOKE}" == "1" ]]; then
 		echo
 		echo "== GLES compute smoke =="
-		grep -aE "GPU_SMOKE_RESULT|COMPUTE_CHECK|GL_RENDERER|GL_VENDOR|GL_VERSION|GBM_BACKEND|DRM_NODE|STAGE=|PERF_|gles-compute-smoke rc|mismatch|software renderer detected|job timeout|gpu fault|Oops|Unable to handle|Kernel panic|ERROR|WARN" \
+		grep -aE "PANTHOR_CLIENT_BO_MMAP_CACHED|GPU_SMOKE_RESULT|COMPUTE_CHECK|GL_RENDERER|GL_VENDOR|GL_VERSION|GBM_BACKEND|DRM_NODE|STAGE=|PERF_|gles-compute-smoke rc|mismatch|software renderer detected|job timeout|gpu fault|Oops|Unable to handle|Kernel panic|ERROR|WARN" \
 			"${LOG_DIR}/client.log" || true
 	fi
 	echo

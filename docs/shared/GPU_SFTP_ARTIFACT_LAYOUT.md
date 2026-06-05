@@ -21,7 +21,7 @@ GPU-SFTP/
   tests/
 ```
 
-`GPU-SFTP/firecracker-bins/` is a reusable artifact cache. Do not treat it as
+`GPU-SFTP/firecracker-bins/` is a reusable artifact store. Do not treat it as
 disposable state during smoke retests. Kernel output directories under
 `Linux-Guest-GPU/out/` are also incremental build state and should be preserved
 unless the user explicitly asks for a clean rebuild or the build tree is
@@ -88,9 +88,30 @@ firecracker-bins/rootfs/mounts/
 firecracker-bins/rootfs/work/
 ```
 
-Rootfs images are excluded from ordinary sync by default. Sync them only when a
-test requires a new image, when remote preflight shows one is missing, or when
-the user asks for rootfs refresh.
+Rootfs images are excluded from ordinary sync by default. Sync base images only
+when a test requires a new base image, when remote preflight shows one is
+missing, or when the user explicitly asks to reseed the remote base images.
+
+Shared virtualization tests now use base rootfs images plus per-run payload
+injection. Individual smoke programs, wrapper scripts, and workload sizes must
+not select or create additional rootfs images.
+
+```text
+rootfs/rootfs.ext2
+  Lightweight comm/query base image. IOCTL semantic smokes inject
+  /panthor_ioctl_smoke and /panthor_ioctl_smoke_init into this image before VM
+  launch, then pass panthor_ioctl_smoke_mode=<mode> through boot args.
+
+rootfs/rootfs-panfrost.ext4
+  GLES/Panfrost userspace base image. GLES smokes inject /root/gles-compute-smoke,
+  /root/gpu-smoke.sh, /root/gpu-smoke.env, and /init into this image before VM
+  launch, then pass workload arguments through gpu_smoke_args_tokens=...
+```
+
+Before injection, the runners prune `firecracker-bins/rootfs/` back to the base
+layout shown above. Runtime choices such as IOCTL mode, GLES `--count`,
+`--iterations`, and `--warmup` belong in per-run Firecracker config, not in the
+rootfs layout.
 
 ## Scripts
 

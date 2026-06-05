@@ -18,9 +18,90 @@ hostname firecracker-gpu-smoke 2>/dev/null || true
 
 echo "[init] starting GPU passthrough user-space smoke test"
 
+cmdline_value() {
+	key="$1"
+	for word in $(cat /proc/cmdline 2>/dev/null); do
+		case "${word}" in
+		"${key}="*)
+			printf '%s\n' "${word#*=}"
+			return 0
+			;;
+		esac
+	done
+	return 1
+}
+
+decode_cmdline_arg_tokens() {
+	rest="$1"
+	out=""
+
+	while :; do
+		case "${rest}" in
+		*:*)
+			token="${rest%%:*}"
+			rest="${rest#*:}"
+			;;
+		*)
+			token="${rest}"
+			rest=""
+			;;
+		esac
+
+		if [ -n "${token}" ]; then
+			if [ -n "${out}" ]; then
+				out="${out} ${token}"
+			else
+				out="${token}"
+			fi
+		fi
+
+		[ -n "${rest}" ] || break
+	done
+
+	printf '%s\n' "${out}"
+}
+
+apply_cmdline_overrides() {
+	value="$(cmdline_value gpu_smoke_args_tokens || true)"
+	if [ -n "${value}" ]; then
+		GPU_SMOKE_ARGS="$(decode_cmdline_arg_tokens "${value}")"
+		export GPU_SMOKE_ARGS
+	fi
+
+	value="$(cmdline_value gpu_smoke_args_b64 || true)"
+	if [ -n "${value}" ]; then
+		if ! command -v base64 >/dev/null 2>&1; then
+			echo "[init] missing base64 for gpu_smoke_args_b64"
+			return 1
+		fi
+		GPU_SMOKE_ARGS="$(printf '%s' "${value}" | base64 -d 2>/dev/null)" || {
+			echo "[init] failed to decode gpu_smoke_args_b64"
+			return 1
+		}
+		export GPU_SMOKE_ARGS
+	fi
+
+	value="$(cmdline_value gpu_smoke_quiet_console || true)"
+	if [ -n "${value}" ]; then
+		GPU_SMOKE_QUIET_CONSOLE="${value}"
+		export GPU_SMOKE_QUIET_CONSOLE
+	fi
+
+	value="$(cmdline_value gpu_smoke_after_run || true)"
+	if [ -n "${value}" ]; then
+		GPU_SMOKE_AFTER_RUN="${value}"
+		export GPU_SMOKE_AFTER_RUN
+	fi
+}
+
 if [ -f /root/gpu-smoke.env ]; then
 	# shellcheck disable=SC1091
 	. /root/gpu-smoke.env
+fi
+
+if ! apply_cmdline_overrides; then
+	echo "[init] GPU_SMOKE_RESULT=FAIL rc=125"
+	exit 125
 fi
 
 /root/gpu-smoke.sh

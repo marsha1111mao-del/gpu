@@ -10,7 +10,7 @@ The core idea is simple:
 Keep source and intent in Git.
 Keep generated runtime artifacts out of Git.
 Make every ignored artifact either rebuildable or restorable.
-Preserve the remote GPU host as a persistent runtime cache.
+Preserve the remote GPU host as a persistent runtime artifact store.
 Prefer semantic directories and scripted workflows over scattered files.
 ```
 
@@ -208,7 +208,7 @@ The remote GPU host directory is:
 /root/GPU-SFTP
 ```
 
-Treat this directory as a persistent runtime cache. Do not delete it as part of
+Treat this directory as a persistent runtime artifact store. Do not delete it as part of
 ordinary setup, testing, or cleanup.
 
 Why preserve it:
@@ -290,7 +290,7 @@ Do not mix defaults:
 
 ## 8. Incremental Build Discipline
 
-Full rebuilds are expensive. Use them only when the artifact cache is missing,
+Full rebuilds are expensive. Use them only when the artifact store is missing,
 corrupted, or invalidated by broad changes.
 
 Default incremental mapping:
@@ -416,4 +416,3 @@ When reorganizing scripts, configs, or artifacts:
 
 The goal is not only a clean tree. The goal is a tree whose structure teaches
 the next person, or future you, how the system should be operated.
-

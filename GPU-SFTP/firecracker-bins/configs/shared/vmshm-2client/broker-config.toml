@@ -5,7 +5,7 @@ socket_dir = "/run/vmshm"
 id = "vmshm-object"
 socket_path = "/run/vmshm/vmshm-object.sock"
 memfd_name = "vmshm-object-2client"
-window_size = 67108864
+window_size = 234881024
 seal = true
 
 [[domains]]

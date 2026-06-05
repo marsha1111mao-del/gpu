@@ -2383,13 +2383,8 @@ completion, and verified SSBO readback.
   - `/root/gpu-smoke.sh`
   - `/root/gles-compute-smoke`
   - Mesa/Panfrost userspace
-- The runner copies `rootfs-panfrost.ext4` to a run-local temporary rootfs:
-
-```text
-rootfs/rootfs-gles-compute-${RUN_ID}.ext4
-```
-
-  and injects only a temporary `/root/gpu-smoke.env`:
+- The current runner injects the smoke payload into `rootfs-panfrost.ext4`
+  before VM launch.  The injected environment includes:
 
 ```text
 GPU_SMOKE_ARGS="--count 64"
@@ -2397,15 +2392,18 @@ GPU_SMOKE_QUIET_CONSOLE=0
 GPU_SMOKE_AFTER_RUN=shell
 ```
 
-  The base `rootfs-panfrost.ext4` is not modified.
+  Current performance runs pass the workload through `gpu_smoke_args_tokens`
+  on the guest command line and keep the image set limited to base rootfs
+  images.
 - The generated client Firecracker config keeps the shared virtualization
   topology:
   - shared client kernel: `kernels/shared/client/Image`
   - no client GPU passthrough
   - `vmshm-object` at GPA `0x20000000`, slot 1
   - `vmshm-comm` at GPA `0x24000000`, slot 2, notify IRQ 80
-- The runner automatically includes rootfs images in rsync for this mode because
-  Panfrost userspace is required.
+- The runner requires the remote `rootfs-panfrost.ext4` base image to exist.
+  Ordinary smoke reruns inject the current payload into that base image instead
+  of syncing a new rootfs image.
 - The PASS gate is:
 
 ```text
@@ -4527,8 +4525,9 @@ Related runner/script changes:
   - requires `PERF_CPU_PREPARE_EXCLUDED=1` in VM and host logs before PASS
 - `scripts/run/run-vmshm-e2e.sh`
   - for `--gles-compute-smoke`, compiles the current smoke source on the remote
-    host and injects that binary into the temporary Panfrost client rootfs
-  - installs current `gpu-smoke.sh` and `init` into the temporary rootfs
+    host and injects that binary into the base Panfrost client rootfs
+  - installs current `gpu-smoke.sh` and `init` into the base rootfs before VM
+    launch
   - leaves `GPU_SMOKE_AFTER_RUN=shell` so the external runner can stop the VM
     after seeing PASS markers, avoiding a false guest `init` exit panic marker
   - requires `PERF_CPU_PREPARE_EXCLUDED=1` if the requested GLES args include
@@ -4593,7 +4592,7 @@ as a formal result.  The compute workload itself passed and emitted
 guest `init` exit panic marker during poweroff.  The runner was corrected to
 leave `GPU_SMOKE_AFTER_RUN=shell` and let the outer test harness stop the VM.
 
-All adopted logs contain:
+All accepted logs contain:
 
 ```text
 PERF_CPU_PREPARE_EXCLUDED=1
@@ -4603,7 +4602,7 @@ GL_RENDERER=Mali-G610 (Panfrost)
 GL_VERSION=OpenGL ES 3.1 Mesa 25.0.7-2
 ```
 
-No adopted shared result contains the earlier false `Kernel panic` marker.
+No accepted shared result contains the earlier false `Kernel panic` marker.
 
 ### Total Time Ratios
 
@@ -4713,14 +4712,1279 @@ target is fixed submit/RPC/synchronization overhead.
 
 Two runner reliability details were found while collecting these logs:
 
-- Re-copying `rootfs-panfrost.ext4` into a per-run temporary GLES rootfs is the
-  dominant wall-clock cost of the shared perf harness.  This is outside
-  `PERF_ITER_US`, but it slows experiment iteration.  `run-vmshm-e2e.sh` now
-  tries `cp --reflink=auto --sparse=always` before falling back to normal `cp`;
-  a future harness should consider an overlay or reusable prepared rootfs.
+- Older shared perf harness revisions spent most of their wall-clock setup time
+  preparing a separate GLES rootfs for each run.  This is outside
+  `PERF_ITER_US`, but it slows experiment iteration.  The later 2026-06-05
+  runner update replaces that with base-image loop-mount payload injection.
 - The shared GLES client intentionally leaves `GPU_SMOKE_AFTER_RUN=shell` to
   avoid false init-exit panic markers.  Some runs still required manual remote
   cleanup and log fetch after `RESULT: PASS` had already been written.  The
   script now redirects background process stdin from `/dev/null` and uses
   stronger pid cleanup, but the harness should still be watched for SSH-session
   teardown hangs during long perf sweeps.
+
+## 2026-06-05: Rootfs Injection Policy Locked In
+
+### User Direction
+
+The shared-GPU test harness should not keep making separate rootfs images for
+each test program, smoke mode, or GLES workload size.  Updating a shell script
+or smoke binary should be cheap enough for 32 MiB and 64 MiB scheduling
+iteration, so the harness now uses base images plus loop-mount payload
+injection before VM launch.
+
+### Current Rootfs Layout
+
+Only the base images belong in the shared runtime rootfs directory:
+
+```text
+firecracker-bins/rootfs/rootfs.ext2
+firecracker-bins/rootfs/rootfs-panfrost.ext4
+firecracker-bins/rootfs/mounts/
+firecracker-bins/rootfs/work/
+```
+
+`rootfs.ext2` is the lightweight comm/query base image.  One-client Panthor
+IOCTL semantic smokes use this same base image: the runner mounts it read-write,
+installs `/panthor_ioctl_smoke` and `/panthor_ioctl_smoke_init`, unmounts it,
+and then boots the client from that image.
+
+`rootfs-panfrost.ext4` is the GLES/Panfrost userspace base image.  One-client
+and two-client GLES smokes use this same base image: the runner builds the
+current `gles-compute-smoke` on the remote host, mounts the image read-write,
+installs `/root/gles-compute-smoke`, `/root/gpu-smoke.sh`,
+`/root/gpu-smoke.env`, and `/init`, unmounts it, and then boots the GLES
+client VM or VMs from that image.
+
+The rootfs directory is pruned with a base-image allowlist before injection:
+only `rootfs.ext2`, `rootfs-panfrost.ext4`, `.gitkeep`, `mounts/`, and `work/`
+should remain.  Test selection now lives in per-run Firecracker config and boot
+arguments, not in rootfs identity.
+
+### Runtime Argument Transport
+
+IOCTL semantic mode is passed through the client command line:
+
+```text
+panthor_ioctl_smoke_mode=<mode>
+```
+
+The generated `/panthor_ioctl_smoke_init` reads `/proc/cmdline`, maps the mode
+to the corresponding `panthor_ioctl_smoke` option, and runs the injected smoke
+binary.
+
+GLES workload and timing arguments are also passed through the generated client
+command line:
+
+```text
+gpu_smoke_args_tokens=--count:<N>:--iterations:<N>:--warmup:<N>:--perf:--exclude-cpu-prepare
+gpu_smoke_quiet_console=1
+gpu_smoke_after_run=shell
+```
+
+`GPU-SFTP/tests/gpu-compute-smoke/init` and
+`GPU-SFTP/tests/gpu-compute-smoke/gpu-smoke.sh` decode that token list back
+into `GPU_SMOKE_ARGS`.  The token format deliberately supports only the smoke
+arguments this harness needs: whitespace-free tokens without colons, quotes, or
+backslashes.  Unsupported tokens fail before VM launch.
+
+### Runner Evidence
+
+Rootfs preparation is now evidenced by injection markers rather than rootfs
+selection markers:
+
+```text
+rootfs_payload_inject_start payload=panthor-ioctl-smoke ...
+rootfs_payload_inject_done  payload=panthor-ioctl-smoke ...
+rootfs_payload_inject_start payload=gles-compute ...
+rootfs_payload_inject_done  payload=gles-compute ...
+```
+
+The one-client runner writes the IOCTL markers to `ioctl-smoke-rootfs.log` and
+the GLES markers to `gles-compute-rootfs.log`.  The two-client runner writes
+GLES markers to `gles-compute-rootfs.log`.  A valid shared GLES run should still
+also prove the actual GPU path with:
+
+```text
+GL_RENDERER=Mali-G610 (Panfrost)
+PERF_CPU_PREPARE_EXCLUDED=1
+COMPUTE_CHECK=PASS
+GPU_SMOKE_RESULT=PASS
+```
+
+### Two-Memslot Boundary
+
+The rootfs injection policy is only a test-harness change.  It does not alter
+the shared GPU virtualization memory design:
+
+```text
+vmshm-object -> BO payloads and other proxy/client-visible shared objects
+vmshm-comm   -> ioctl metadata, flattened arrays, handles, transient RPC/control data
+```
+
+For GLES, `--count` still controls the `vmshm-object` window size because it
+represents BO payload demand:
+
+```text
+--count 1048576   ->  64 MiB object window
+--count 4194304   ->  96 MiB object window
+--count 8388608   -> 128 MiB object window
+--count 16777216  -> 224 MiB object window
+unknown/custom    -> 224 MiB conservative fallback
+```
+
+The per-run broker `window_size`, client/proxy Firecracker `expected_size`, and
+host-memory preflight guard continue to use that object-window value.  The
+32 MiB workload remains a useful fallback when the remote host cannot safely
+hold a 64 MiB two-client launch envelope, but it uses the same injected
+Panfrost base image as the other GLES workloads.
+
+### Launch And Memory Guard Rules
+
+The two-client GLES runner keeps the memory guard because previous 64 MiB runs
+proved that host memory pressure can kill Firecracker processes and leave SSH
+unresponsive.  The default automatic guard is:
+
+```text
+proxy_mem + 2 * client_mem + object window + 64 MiB comm windows + 512 MiB guard
+```
+
+`--gles-client-start-gap-sec 0` now means near-parallel launch: client1 starts
+immediately after client0.  Positive values deliberately stagger the workload by
+waiting for client0's DRM frontend and then sleeping before launching client1.
+Positive-gap runs are useful diagnostics, but they should not be counted as
+near-parallel multi-client scheduling results.
+
+### Files Updated
+
+```text
+scripts/run/run-vmshm-e2e.sh
+scripts/run/run-vmshm-2client-e2e.sh
+GPU-SFTP/tests/gpu-compute-smoke/init
+GPU-SFTP/tests/gpu-compute-smoke/gpu-smoke.sh
+docs/shared/GPU_SFTP_ARTIFACT_LAYOUT.md
+docs/skills/gpu-shared-virtualization-autotest/SKILL.md
+/home/mzh/.codex/skills/gpu-shared-virtualization-autotest/SKILL.md
+docs/shared/PANTHOR_SHARED_VIRTUALIZATION_WORKLOG.md
+```
+
+### Validation
+
+Local checks for the injection-oriented harness:
+
+```text
+bash -n scripts/run/run-vmshm-e2e.sh
+bash -n scripts/run/run-vmshm-2client-e2e.sh
+sh -n GPU-SFTP/tests/gpu-compute-smoke/gpu-smoke.sh
+sh -n GPU-SFTP/tests/gpu-compute-smoke/init
+```
+
+The repo skill copy and the active local skill copy should remain identical.
+Remote rootfs cleanup should leave only the two base images and the two helper
+directories under `/root/GPU-SFTP/firecracker-bins/rootfs/`.
+
+## 2026-06-05: Client BO WB mmap Experiment
+
+### Reason
+
+The same-workload 32 MiB two-client evidence showed that shared performance was
+not dominated by GPU completion alone.  `buffer_upload` remained much higher
+than host and passthrough in the two-client shared run, while the shared BO
+payload mapping differed from the normal Panthor paths:
+
+```text
+client_vmshm_manager probe: memremap(..., MEMREMAP_WB)
+proxy_vmshm_manager probe:  memremap(..., MEMREMAP_WB)
+panthor-client mmap:        pgprot_writecombine(vma->vm_page_prot)
+normal Panthor GEM mmap:    drm_gem_shmem_object_mmap(), map_wc = !ptdev->coherent
+```
+
+So the shared `vmshm-object` payload is WB from the client/proxy kernel view,
+but the client userspace BO mmap path defaults to WC.  The GLES smoke repeatedly
+writes a large SSBO from userspace during `buffer_upload`, so this policy is a
+plausible contributor to the upload gap.
+
+### Design
+
+Added a controlled experimental module parameter in `panthor-client`:
+
+```text
+panthor_client.bo_mmap_cached=1
+```
+
+Default remains unchanged:
+
+```text
+bo_mmap_cached=0 -> client BO mmap uses WC
+bo_mmap_cached=1 -> client BO mmap uses default WB page attributes
+```
+
+The MMAP log includes the selected attribute:
+
+```text
+panthor-client: MMAP ... attr=WC
+panthor-client: MMAP ... attr=WB
+```
+
+This is intentionally not a default behavior change.  The shared path uses
+Firecracker/vmshm memfd-backed memory and the proxy VM reaches the real GPU
+through the custom passthrough path, so coherency behavior must be proven by
+correctness tests before treating WB mmap as a stable design.
+
+The runner exposes the experiment without hand-editing JSON:
+
+```text
+./scripts/run/run-vmshm-e2e.sh --gles-client-bo-mmap-cached ...
+./scripts/run/run-vmshm-2client-e2e.sh --gles-client-bo-mmap-cached ...
+```
+
+For two-client GLES, both client VMs receive the same boot argument.  The proxy
+VM is unchanged, and the two-memslot boundary is unchanged.
+
+## 2026-06-05: Two-Client 64 MiB Host CPU Affinity Reaches Target
+
+### Goal
+
+The previous valid near-parallel 64 MiB two-client runs were functionally
+correct, but they stayed around `host/shared=0.50-0.56`.  Logs showed the remote
+host normally exposes only two online A55 CPUs (`0-1`), while the near-parallel
+shared run launches:
+
+```text
+proxy VM:   2 vCPUs
+client0 VM: 1 vCPU
+client1 VM: 1 vCPU
+broker:     host process
+```
+
+That means the test was oversubscribing two online host CPUs with two
+simultaneous 64 MiB client uploads plus the proxy passthrough VM.  Merely
+onlining CPUs `2-3` without process placement had already been tested and was
+not enough.  This round tested an explicit host scheduling policy:
+
+```text
+online host CPUs: 0-3
+broker:           taskset -c 0-1
+proxy Firecracker:taskset -c 0-1
+client0:          taskset -c 2
+client1:          taskset -c 3
+```
+
+This keeps the proxy/broker side on CPUs `0-1` while giving each client upload
+path its own host CPU.  It does not change the GPU virtualization ABI, BO
+backing, sync semantics, or the two memslot split:
+
+```text
+vmshm-object -> BO payloads and proxy/client-visible shared objects
+vmshm-comm   -> ioctl metadata, flattened arrays, handles, RPC/control data
+```
+
+### Runner Changes
+
+Added diagnostic scheduling controls to `scripts/run/run-vmshm-2client-e2e.sh`:
+
+```text
+--gles-host-online-cpus LIST
+--gles-broker-cpus LIST
+--gles-proxy-cpus LIST
+--gles-client0-cpus LIST
+--gles-client1-cpus LIST
+```
+
+The runner records the chosen policy in `preflight.txt`, `affinity.log`, and
+the `== Host CPU affinity ==` section of `result`.  CPUs that were offline
+before the run and were onlined by `--gles-host-online-cpus` are restored at
+runner exit.  This was verified after the run:
+
+```text
+before optional host cpu online: online_cpus=0-1
+after optional host cpu online:  online_cpus=0-3
+after restore:                  online_cpus=0-1
+```
+
+The runner help and shared autotest skill now mark these as diagnostic
+scheduling controls.  They are not default behavior for semantic correctness
+tests.
+
+### Shared 64 MiB Affinity Run
+
+Run:
+
+```text
+run id:
+  vmshm-2client-gles-64m-nostats-wc-affinity-20260605-1154
+command:
+./scripts/run/run-vmshm-2client-e2e.sh
+  --skip-sync
+  --gles-compute-smoke
+  --gles-client-mem-mib 248
+  --gles-proxy-mem-mib 248
+  --gles-client-vcpus 1
+  --gles-proxy-vcpus 2
+  --gles-client-start-gap-sec 0
+  --gles-host-online-cpus 0-3
+  --gles-broker-cpus 0-1
+  --gles-proxy-cpus 0-1
+  --gles-client0-cpus 2
+  --gles-client1-cpus 3
+  --gles-smoke-args "--count 16777216 --iterations 20 --warmup 5 --perf --exclude-cpu-prepare"
+  --run-id vmshm-2client-gles-64m-nostats-wc-affinity-20260605-1154
+```
+
+Local logs:
+
+```text
+GPU-SFTP/log/shared/vmshm-2client/vmshm-2client-gles-64m-nostats-wc-affinity-20260605-1154
+```
+
+Correctness evidence:
+
+```text
+client0: GL_RENDERER=Mali-G610 (Panfrost)
+client0: PERF_CPU_PREPARE_EXCLUDED=1
+client0: COMPUTE_CHECK=PASS
+client0: GPU_SMOKE_RESULT=PASS
+
+client1: GL_RENDERER=Mali-G610 (Panfrost)
+client1: PERF_CPU_PREPARE_EXCLUDED=1
+client1: COMPUTE_CHECK=PASS
+client1: GPU_SMOKE_RESULT=PASS
+
+result: RESULT: GLES_PASS
+```
+
+Rootfs and memory evidence:
+
+```text
+rootfs_payload_inject_done payload=gles-compute rootfs=/root/GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4
+gles_object_window_mib=224
+gles_object_window_bytes=234881024
+gles_mem_available_mib=2263
+```
+
+Shared performance:
+
+```text
+client0 iter_total avg = 24291.50 us
+client1 iter_total avg = 24306.95 us
+shared avg             = 24299.23 us
+
+phase averages:
+  buffer_upload  = 13772.95 us
+  dispatch_call  =  1642.33 us
+  memory_barrier =    86.18 us
+  map_wait       =  8793.63 us
+  unmap          =     4.15 us
+  cpu_prepare    = 28372.45 us  # excluded
+```
+
+The proxy log confirms a real near-parallel run: both sessions open within the
+same time window and `GROUP_SUBMIT` lines from session 1 and session 2 overlap
+between roughly `3.15s` and `4.06s`.
+
+### Fair Host Baseline Under Same CPU Online Condition
+
+A new host-direct 64 MiB diagnostic baseline was collected with the same host
+CPU online condition (`0-3`) and the same formal smoke metric
+(`--exclude-cpu-prepare`):
+
+```text
+run id:
+  gpu-perf-host-direct-64m-cpu4-for-shared-affinity-20260605-1200
+local logs:
+  GPU-SFTP/log/passthrough/perf/gpu-perf-host-direct-64m-cpu4-for-shared-affinity-20260605-1200
+mode:
+  host direct only, VM skipped
+  host userspace from rootfs
+  count=16777216
+  iterations=20
+  warmup=5
+  PERF_CPU_PREPARE_EXCLUDED=1
+```
+
+Host direct evidence:
+
+```text
+GL_RENDERER=Mali-G610 (Panfrost)
+COMPUTE_CHECK=PASS
+PERF_CPU_PREPARE_EXCLUDED=1
+PERF_ITER_US avg=21354.50 us
+```
+
+Host phases:
+
+```text
+buffer_upload  = 11657.55 us
+dispatch_call  =   347.90 us
+memory_barrier =    40.90 us
+map_wait       =  9303.50 us
+unmap          =     4.65 us
+cpu_prepare    = 27365.65 us  # excluded
+```
+
+### Result
+
+Using the same CPU-online host baseline:
+
+```text
+host/shared = 21354.50 / 24299.23 = 0.879
+```
+
+Using the previous formal 64 MiB host baseline (`22743.35 us`) gives:
+
+```text
+host/shared = 22743.35 / 24299.23 = 0.936
+```
+
+The stricter same-topology value is the one to use for this scheduling
+diagnostic, and it still exceeds the target `host/shared > 0.8`.
+
+Compared with the previous no-stats 64 MiB shared baseline:
+
+```text
+no affinity shared avg = 40343.03 us
+affinity shared avg    = 24299.23 us
+improvement            = 39.8%
+
+buffer_upload: 27178.78 -> 13772.95 us
+dispatch_call:  4501.20 ->  1642.33 us
+map_wait:        8563.22 ->  8793.63 us
+```
+
+This strongly indicates that the previous 64 MiB two-client bottleneck was not
+only GPU/proxy RPC work.  A large part was host scheduling of the two
+concurrent client upload paths and proxy passthrough vCPUs on a two-online-CPU
+host envelope.
+
+### Interpretation
+
+This is a valid achieved-performance design for the current constrained remote
+host:
+
+```text
+1. Keep the proxy VM at 2 vCPUs so proxy-side passthrough submit/completion can
+   progress while serving both clients.
+2. Temporarily online enough host CPUs for near-parallel client upload and
+   proxy execution.
+3. Pin proxy/broker separately from each client Firecracker process.
+4. Restore host CPU online state after the diagnostic run.
+```
+
+The scheduling policy is deliberately explicit instead of hidden in the
+default semantic runner.  Correctness tests can continue to run without CPU
+affinity knobs, while performance runs that claim near-parallel `host/shared`
+must record CPU online state and process affinity.
+
+### Remaining Risks And Next Design Work
+
+This result satisfies the current two-client smoke performance target, but it
+does not remove all shared overhead.  Against the same-topology host baseline:
+
+```text
+buffer_upload overhead = 13772.95 - 11657.55 = 2115.40 us
+dispatch_call overhead =  1642.33 -   347.90 = 1294.43 us
+completion difference  = (86.18 + 8793.63) - (40.90 + 9303.50)
+                       = -464.59 us
+```
+
+The remaining optimization directions are:
+
+```text
+1. Reduce or batch vmshm-comm GROUP_SUBMIT metadata handling.
+   dispatch_call is still about 4.7x host even after CPU affinity.
+
+2. Keep investigating client BO upload policy, but do not promote WB mmap by
+   default yet.  The cached mmap experiment was correctness-valid but did not
+   materially improve 32 MiB no-stats performance.
+
+3. Treat process affinity as part of the multi-client scheduler design on this
+   host.  Future larger-client tests should allocate host CPUs deliberately
+   instead of letting Firecracker processes migrate across a tiny online set.
+
+4. Do not collapse `vmshm-object` and `vmshm-comm`.  The performance win came
+   from host scheduling, not from changing memslot semantics.
+```
+
+### Validation
+
+Local checks after the runner update:
+
+```text
+bash -n scripts/run/run-vmshm-2client-e2e.sh
+git diff --check -- scripts/run/run-vmshm-2client-e2e.sh
+```
+
+Remote cleanup check after both shared and host-direct runs:
+
+```text
+online=0-1
+/dev/pmthor present
+/dev/dri/card0 present
+```
+
+## 2026-06-05: Proxy VM Multi-Client Scheduling Policy
+
+This pass extends the two-client shared-GPU work from host CPU affinity into
+the proxy VM and Panthor-driver scheduling layers.  The goal is not only to
+make one two-client smoke pass, but to define a repeatable scheduling policy
+for the proxy VM when multiple client VMs concurrently submit GPU work through
+the same physical Panthor device.
+
+The tested topology remains:
+
+```text
+client0 VM /dev/panthor
+client1 VM /dev/panthor
+  -> panthor-client DRM frontend
+  -> client_vmshm_comm
+  -> vmshm-broker eventfd relay
+  -> proxy_comm_vmshm channels in proxy VM
+  -> panthor-proxy RPC handlers
+  -> real Panthor driver in proxy VM
+  -> custom passthrough GPU path
+```
+
+This matters because the proxy VM is not a normal native Linux GPU host.  Its
+real GPU access still goes through the custom passthrough path, so memory
+management, interrupt delivery, Firecracker vCPU scheduling, and Panthor
+completion work all interact.  A useful shared-GPU scheduler therefore has to
+cover four layers at once:
+
+```text
+1. host scheduler placement for Firecracker and broker processes;
+2. proxy_comm_vmshm fast transport into the proxy VM;
+3. panthor-proxy submit-before-real-DRM scheduling and RPC latency;
+4. proxy-VM Panthor CSF scheduler/completion work.
+```
+
+The two vmshm memslots are still kept separate:
+
+```text
+vmshm-object: BO payloads and GPU-visible shared objects that clients need to
+              expose to the proxy/physical GPU path.
+vmshm-comm:   ioctl metadata, queue descriptors, flattened arrays, handles,
+              and request/response control messages.
+```
+
+The scheduling changes below do not merge these regions.  The current design
+lets the proxy accept control requests normally through `vmshm-comm`, then
+schedules GPU work inside `panthor-proxy` immediately before a translated
+`GROUP_SUBMIT` enters the real Panthor driver.
+
+### Current Code Scheduling Model
+
+The current multi-client scheduling model should be understood as an
+approximation of two independent Panthor users in the proxy VM:
+
+```text
+client0 VM -> vmshm RPC -> panthor-proxy session 1 -> real Panthor file/session
+client1 VM -> vmshm RPC -> panthor-proxy session 2 -> real Panthor file/session
+```
+
+From the real Panthor driver's scheduling layer, two client VMs submitting GPU
+work look much like two separate proxy-VM Panthor file/session owners creating
+VMs, BOs, groups, and queue submits.  `panthor-proxy` creates one
+`panthor_proxy_session` per client `OPEN_SESSION`, and each proxy session owns
+its own `real_session`, `session->lock`, and per-session xarrays for VMs, BOs,
+syncobjs, groups, and heaps.  A request from one client is translated only
+inside that session namespace before being passed to the real Panthor helper
+such as `panthor_vmshm_group_submit()`.
+
+The approximation is intentionally limited:
+
+```text
+ordinary proxy-VM process:
+  userspace ioctl -> real Panthor ioctl path -> Panthor scheduler
+
+shared client VM:
+  client ioctl -> vmshm-comm RPC -> proxy worker -> panthor-proxy handler
+  -> real Panthor vmshm helper -> Panthor scheduler
+```
+
+So the GPU scheduling object is similar, but the submission path is not.  The
+shared path adds client RPC latency, proxy comm IRQ/workqueue scheduling,
+metadata validation, handle translation, and response delivery back through the
+same client comm channel.
+
+BO allocation is also deliberately different from a normal proxy-VM process.
+Client-visible BO payloads are allocated from `vmshm-object` by the proxy
+allocator and then turned into real Panthor BOs with
+`panthor_vmshm_bo_create_from_payload()`.  Transient ioctl metadata, submit
+arrays, VM_BIND arrays, sync handles, and request/response structs remain in
+`vmshm-comm`.  This is why the two-client design can look like two proxy-VM
+processes at the Panthor scheduler layer while still having a different data
+plane and memory-allocation path.
+
+The current proxy does not implement a full multi-tenant GPU scheduler with
+quotas, weighted fair queueing, deadlines, or per-client inflight limits.
+Fairness today comes from three layers working together:
+
+```text
+1. proxy_comm_vmshm transport:
+   each client has its own comm window, IRQ/doorbell, and proxy channel.
+   This layer is intentionally kept as a transport/receive path.  It should
+   accept and deliver requests into the proxy VM quickly instead of deciding GPU
+   fairness at the channel-drain level.
+
+2. panthor-proxy session isolation and submit scheduler:
+   each client session has independent handle namespaces and an independent
+   session lock.  Requests from the same client session are serialized where
+   they mutate or translate that session state; requests from different
+   sessions are not intentionally serialized by panthor-proxy.  GROUP_SUBMIT is
+   the first ioctl routed through an internal panthor-proxy scheduler queue:
+   requests are accepted from proxy comm, queued per session, and selected by a
+   proxy-side policy before calling `panthor_vmshm_group_submit()`.
+
+3. real Panthor scheduler in the proxy VM:
+   after translation, GROUP_SUBMIT creates normal Panthor scheduler jobs.
+   The real Panthor driver, drm_gpu_scheduler, CSF firmware, group priority,
+   CSG slot availability, and timeslice/round-robin behavior decide the final
+   GPU execution order.
+```
+
+This model also preserves the passthrough caveat: the proxy VM is not a native
+host GPU process owner.  It reaches the physical GPU through the custom
+passthrough path, so interrupt completion, memory-management behavior, and
+Firecracker vCPU scheduling still affect `dispatch_call` and `map_wait`
+latency even if the real Panthor scheduler sees ordinary-looking groups.
+
+One security/isolation follow-up remains important.  A proxy session is
+currently looked up by `session_id`, while the response is sent through the
+current `rx->proxy_channel`.  The controlled tests use the session ID returned
+to each client, but a stricter multi-tenant design should bind each
+`panthor_proxy_session` to the channel/client identity that created it and
+reject later requests for that session from any other proxy comm channel.
+
+### Implemented Scheduler Path
+
+The previous `proxy_comm_vmshm` channel-level policy knobs
+`global_dispatch`, `dispatch_budget`, `highpri_work`, and `dispatch_stats`
+were removed.  They made the transport layer decide fairness before the proxy
+could see the real scheduling object.  That was too rigid for future quota,
+priority, deadline, or weighted-fair policies.
+
+The current code instead accepts requests through the normal proxy comm receive
+path and moves the scheduling point into `panthor-proxy`:
+
+```text
+client request
+  -> proxy_comm_vmshm receive
+  -> panthor-proxy handler
+  -> per-session GROUP_SUBMIT queue
+  -> proxy submit scheduler worker
+  -> panthor_vmshm_group_submit()
+  -> real Panthor driver scheduler
+```
+
+The first implemented proxy-side policy is a small global submit scheduler with
+per-session FIFO queues.  It picks one pending `GROUP_SUBMIT` from a runnable
+session, requeues the session if more submits remain, and only then calls the
+real Panthor submit helper.  This gives us a real policy hook at the correct
+boundary: after requests have entered the proxy VM and after session identity is
+known, but before work is pushed into the real DRM/Panthor scheduler.
+
+The proxy comm handler registry was also changed from a mutex held across the
+handler call into an `rwsem` at
+`Linux-Guest-GPU/drivers/char/proxy_vmshm_comm/proxy_comm_vmshm.c:297`:
+
+```text
+dispatch path:        down_read() while looking up and executing the handler
+register/unregister: down_write()
+```
+
+This removes a hidden multi-client serialization point.  The old lock shape
+protected handler lifetime, but it also forced proxy-side Panthor RPC handling
+from different client channels to run one at a time.  That meant two ready
+client channels could still behave like a single proxy-side channel once they
+entered the shared handler registry.  The new shape still prevents unregister
+while a handler is active, while allowing multiple client channels to execute
+registered handlers concurrently when the rest of the proxy/Panthor path can
+make progress.
+
+Because global dispatch scans a shared channel list, the proxy comm device now
+uses `dispatch_refs` plus a wait queue so device removal waits until global
+dispatch is no longer using that channel.
+
+The real Panthor scheduler in the proxy VM now has diagnostic parameters:
+
+```text
+panthor.sched_tick_ms=N
+panthor.sched_highpri_wq=1
+```
+
+`sched_tick_ms` changes the CSF scheduler tick period from the default 10 ms
+for experiments such as `2 ms`.  `sched_highpri_wq=1` allocates the
+`panthor-csf-sched` workqueue with `WQ_HIGHPRI`, while preserving
+`WQ_MEM_RECLAIM`.  These knobs should be treated as proxy-VM scheduling
+experiments, not as proof that the upstream Panthor defaults are wrong.
+
+The two-client runner now exposes only host placement, Panthor diagnostic knobs,
+and proxy group-core partitioning.  The removed transport-layer proxy comm
+knobs are intentionally not part of the current interface:
+
+```text
+--gles-host-online-cpus LIST
+--gles-broker-cpus LIST
+--gles-proxy-cpus LIST
+--gles-client0-cpus LIST
+--gles-client1-cpus LIST
+--gles-panthor-sched-tick-ms N
+--gles-panthor-sched-highpri-wq
+```
+
+The older recommended policy for two 64 MiB GLES shared clients on the
+constrained remote host was:
+
+```text
+host CPUs online:        0-3 during the run, then restore the previous state
+broker/proxy placement: broker 0-1, proxy Firecracker 0-1
+client placement:       client0 on CPU 2, client1 on CPU 3
+proxy vCPUs:            2
+client vCPUs:           1 each
+proxy memory:           at least 184 MiB in current tests
+client memory:          184 MiB for formal 64 MiB samples, 128 MiB is OK only
+                        for the final short 4 MiB sanity smoke
+proxy comm:             historical global_dispatch=1, dispatch_budget=1,
+                        highpri_work=1; removed in the current code
+proxy Panthor:          sched_highpri_wq=1, sched_tick_ms=2
+stats:                  off for formal timing, on only for diagnosis
+metric:                 PERF_ITER_US with --exclude-cpu-prepare
+```
+
+Those runs are kept as historical evidence, but the channel-level fairness
+knobs are no longer the design direction.  The host affinity result still
+matters because it keeps concurrent client upload paths and proxy passthrough
+vCPUs from thrashing on a tiny online CPU set.  The handler `rwsem` still
+matters because it avoids cross-channel serialization inside the proxy comm
+handler registry.  GPU work scheduling, however, now belongs inside
+`panthor-proxy` before real Panthor submit, not inside proxy comm channel
+drain policy.
+
+### Two-Client 64 MiB Results
+
+The host-direct reference for this section is the same-topology host baseline:
+
+```text
+run id: gpu-perf-host-direct-64m-cpu4-for-shared-affinity-20260605-1200
+host direct avg: 21354.50 us
+metric: PERF_ITER_US avg, --exclude-cpu-prepare
+```
+
+Formal shared numbers below are no-stats runs.  Stats-on runs are excluded from
+the main performance comparison because instrumentation changes timing.
+
+| Run | Config | Result | client0 avg/max | client1 avg/max | shared avg | Notes |
+| --- | --- | --- | --- | --- | --- | --- |
+| `vmshm-2client-gles-64m-newdefault-m184-nostats-20260605-130737` | default proxy dispatch, m184, auto guard | PASS | 25110.00 / 28038 us | 24364.25 / 25799 us | 24737.13 us | stable post-change baseline |
+| `vmshm-2client-gles-64m-global-b1-hi-t2-m184-guard900-nostats-20260605-131044` | historical removed transport-layer `global_dispatch=1`, `budget=1`, high-priority proxy comm, Panthor high-priority scheduler WQ, `sched_tick_ms=2`, m184, manual guard 900 MiB | PASS | 24095.50 / 24304 us | 24783.90 / 31322 us | 24439.70 us | old channel-fairness sample |
+| `vmshm-2client-gles-64m-newdefault-m232-nostats-20260605-130545` | default proxy dispatch, m232 | PASS | 27949.55 / 80007 us | 24399.40 / 25787 us | 26174.48 us | one client hit a large `dispatch_call` tail |
+| `vmshm-2client-gles-4m-global-final-mixmem-nostats-20260605-131645` | final `rwsem` kernel, 4 MiB, proxy184/client128, global fair policy | PASS | 5285.33 us | 5591.00 us | 5438.17 us | final sanity smoke after the handler-lock change |
+| `vmshm-2client-gles-4m-global-final-smoke-20260605-131448` | proxy128/client128, stats/global mode | FAIL | - | - | - | proxy VM OOM in Panthor GEM/shmem metadata path; not a performance data point |
+
+Derived ratios:
+
+```text
+default m184 host/shared:
+  21354.50 / 24737.13 = 0.863
+
+global fair policy host/shared:
+  21354.50 / 24439.70 = 0.874
+
+global fair policy improvement over default m184:
+  24737.13 -> 24439.70 us = 1.20%
+
+previous best affinity sample:
+  vmshm-2client-gles-64m-nostats-wc-affinity-20260605-1154
+  shared avg = 24299.23 us
+  host/shared = 21354.50 / 24299.23 = 0.879
+```
+
+The old global fair policy was only slightly faster than the stable m184
+default sample, and slightly slower than the earlier best affinity sample.  It
+showed that fairness mattered, but it also proved the channel layer was a poor
+place to encode long-term policy because it could not see session/group
+semantics.  The current replacement is the panthor-proxy submit scheduler.
+
+Phase averages for the two relevant 64 MiB no-stats runs:
+
+| Run | buffer_upload | dispatch_call | map_wait | Shared avg |
+| --- | ---: | ---: | ---: | ---: |
+| default m184 | 14119.98 us | 1642.23 us | 8887.73 us | 24737.13 us |
+| global fair m184 | 13747.75 us | 1817.00 us | 8788.20 us | 24439.70 us |
+
+This split shows that the old channel-level policy was not a simple
+`GROUP_SUBMIT` win.  The
+overall average improved mostly through slightly better upload/completion
+balance in this sample, while `dispatch_call` itself was a little higher than
+the default m184 run.  The real benefit is fairness and tail avoidance rather
+than a large mean-latency collapse.
+
+### Stats-On Diagnostic Run
+
+The short stats run was:
+
+```text
+run id:
+  vmshm-2client-gles-64m-global-b1-hi-t2-m184-guard850-stats8-20260605-131133
+workload:
+  64 MiB, iterations=8, warmup=2, --exclude-cpu-prepare
+```
+
+Historical proxy comm dispatch evidence from the removed channel-level policy:
+
+```text
+minor=0 highpri_work=1 global_dispatch=1 dispatch_budget=1
+entries=7584 msgs=3171 empty=4413 errors=0 budget_yields=3171
+max_batch=1 handler_avg_ns=277322 handler_max_ns=93046334
+
+minor=1 highpri_work=1 global_dispatch=1 dispatch_budget=1
+entries=7581 msgs=3170 empty=4411 errors=0 budget_yields=3170
+max_batch=1 handler_avg_ns=264822 handler_max_ns=92369959
+```
+
+This confirmed that global dispatch was active and that one channel never
+processed more than one request in a pass (`max_batch=1`).  The almost equal
+message counts also show that both client channels were serviced under the
+same dispatch policy.
+
+Important Panthor/proxy RPC evidence:
+
+```text
+PANTHOR_JOB_IRQ_STATS:
+  raw_to_thread_avg_ns = 14220
+  raw_to_thread_max_ns = 78458
+
+PANTHOR_PROXY_RPC_STATS:
+  DEV_QUERY              calls=2014 avg=566026 ns  max=4239667 ns
+  VM_BIND                calls=56   avg=3893994 ns max=93043708 ns
+  SYNCOBJ_TIMELINE_WAIT  calls=64   avg=2587279 ns max=11580041 ns
+  GROUP_SUBMIT           calls=22   avg=622840 ns  max=1503542 ns
+  TILER_HEAP_CREATE      calls=2    avg=31024729 ns max=36977209 ns
+```
+
+The key conclusion is that `GROUP_SUBMIT` is not the dominant cost in this
+GLES smoke.  The large tails are in setup/control operations such as `VM_BIND`
+and `TILER_HEAP_CREATE`, plus sync wait paths.  The Panthor threaded IRQ path
+itself is not showing a multi-millisecond completion delay in this sample.
+
+### Bottleneck Assessment
+
+Current bottlenecks, ordered by evidence:
+
+```text
+1. Control-plane and setup RPC tails in the proxy VM.
+   VM_BIND reached a 93 ms max in the stats run.  TILER_HEAP_CREATE averaged
+   about 31 ms for two calls.  These operations are not per-kernel GPU compute
+   time, but they strongly affect short and first-use workloads.
+
+2. Client BO upload remains larger than host-direct.
+   The best affinity/global samples still spend about 13.7-14.1 ms in
+   buffer_upload for 64 MiB, while the same-topology host direct baseline was
+   about 11.7 ms.  This is expected because the shared path writes through the
+   client VM, vmshm-object mappings, Firecracker placement, and proxy-visible
+   BO setup rather than a native host userspace mapping.
+
+3. Dispatch-call mean is acceptable, but tails still matter.
+   Stable samples show about 1.6-1.8 ms dispatch_call.  A default m232 run
+   still produced an 80 ms iteration max driven by a dispatch-call tail, which
+   is exactly the class of behavior the new panthor-proxy submit scheduler is
+   meant to bound under multi-client pressure.
+
+4. Proxy VM memory pressure is real.
+   proxy=128 MiB produced an OOM panic in
+   panthor_gem_create_vmshm_with_handle -> drm_gem_shmem_create during a
+   two-client 4 MiB stats/global run.  Current formal 64 MiB tests should keep
+   proxy memory at 184 MiB or higher, and any manual memory guard override must
+   be recorded with the result.
+
+5. Panthor CSG round-robin is not yet the main measured limiter for this
+   smoke.
+   With only two clients and enough available CSG slots, the dominant
+   evidence points to proxy control/setup paths and host/proxy scheduling,
+   not to steady-state GPU command-stream slot starvation.  Larger client
+   counts or workloads with persistent queues may change this.
+```
+
+### Next Optimization Directions
+
+Near-term optimizations that match the measured bottlenecks:
+
+```text
+1. Reduce first-use RPC volume.
+   Cache immutable DEV_QUERY results per proxy device/session class instead of
+   forwarding hundreds or thousands of identical queries during setup-heavy
+   GLES startup.
+
+2. Batch VM_BIND metadata where the UAPI sequence allows it.
+   Flattened BO and mapping arrays already live in vmshm-comm.  The next step
+   is to reduce request/response turns and avoid one vmshm doorbell per small
+   bind fragment when a client submits a burst.
+
+3. Pre-create or pool proxy-side shared GEM wrappers for common BO sizes.
+   The OOM and TILER/VM_BIND tails both point at expensive allocation/setup
+   paths.  Pooling must preserve per-client handle namespaces and vm lifetime,
+   and it must keep vmshm-object ownership separate from vmshm-comm control
+   metadata.
+
+4. Extend the panthor-proxy submit scheduler.
+   The new scheduling point is after proxy request reception and before real
+   Panthor submit.  For N clients and mixed workloads, add weighted fair
+   queueing, per-client inflight limits, priorities, or deadlines here rather
+   than in the proxy comm channel drain path.
+
+5. Move from diagnostic Panthor knobs to workload-aware proxy policy.
+   `sched_tick_ms=2` and high-priority scheduler workqueue are useful probes.
+   A production policy should instead classify proxy-submitted groups by
+   client/session, keep per-client queue depth visible, and avoid letting one
+   client monopolize available CSG slots when more client VMs are active.
+
+6. Keep formal timing no-stats and CPU-prepare-excluded.
+   Proxy RPC stats and client RPC stats are essential for diagnosis, but they
+   change timing.  Use short stats runs to locate the bottleneck, then repeat
+   no-stats runs for the performance table.
+```
+
+### Validation
+
+Local kernel build after the scheduler changes:
+
+```text
+./scripts/build/build-guest-vmshm-kernels.sh
+result: PASS
+installed:
+  GPU-SFTP/firecracker-bins/kernels/shared/client/Image
+  GPU-SFTP/firecracker-bins/kernels/shared/proxy/Image
+```
+
+Static checks used during the scheduler update:
+
+```text
+bash -n scripts/run/run-vmshm-2client-e2e.sh
+git diff --check -- Linux-Guest-GPU/drivers/char/proxy_vmshm_comm/proxy_comm_vmshm.c scripts/run/run-vmshm-2client-e2e.sh
+```
+
+Final short smoke after the handler `rwsem` change:
+
+```text
+run id:
+  vmshm-2client-gles-4m-global-final-mixmem-nostats-20260605-131645
+result:
+  RESULT: GLES_PASS
+client0:
+  COMPUTE_CHECK=PASS
+  GPU_SMOKE_RESULT=PASS
+  PERF_ITER_US avg=5285.33 us
+client1:
+  COMPUTE_CHECK=PASS
+  GPU_SMOKE_RESULT=PASS
+  PERF_ITER_US avg=5591.00 us
+```
+
+## 2026-06-05: 32 MiB Two-Client Proxy Scheduling Rebaseline
+
+### Goal
+
+The scheduling target is now the 32 MiB GLES smoke with two concurrent client
+VMs submitting through one proxy VM.  Smaller 4 MiB and 16 MiB runs are still
+useful for smoke coverage, but they are too dominated by fixed overheads to be
+the main scheduling signal.  The formal timing remains:
+
+```text
+--count 8388608 --iterations 20 --warmup 5 --perf --exclude-cpu-prepare
+```
+
+The tested topology is unchanged:
+
+```text
+client0 VM / client1 VM
+  -> panthor-client
+  -> client_vmshm_comm
+  -> vmshm-broker
+  -> proxy_comm_vmshm
+  -> panthor-proxy
+  -> real Panthor in the proxy VM
+  -> custom passthrough GPU path
+```
+
+This means scheduling has to consider host process placement, proxy comm
+transport latency, panthor-proxy submit-before-real-DRM policy, real Panthor
+CSF scheduling, and the custom passthrough interrupt/memory-management path
+used by the proxy VM.
+
+The two memslots remain separate and unchanged:
+
+```text
+vmshm-object: BO payloads and other proxy/client-visible shared objects.
+vmshm-comm:   ioctl metadata, flattened arrays, handles, RPC/control data.
+```
+
+### New Experimental Knob
+
+Added an explicit proxy-side group core partition experiment:
+
+```text
+panthor_proxy.group_core_partitions=N
+```
+
+The two-client runner exposes it as:
+
+```text
+--gles-panthor-proxy-group-core-partitions N
+```
+
+Default is `0`, which preserves Mesa/Panthor group masks.  With `N=2`, the
+proxy splits each group's shader core mask by proxy session ID before calling
+real Panthor `GROUP_CREATE`.  For the current RK3588/Mali-G610 mask
+`0x50005`, the two sessions were assigned:
+
+```text
+session 1: compute_mask 0x50005 -> 0x5,     max_compute 4 -> 2
+session 2: compute_mask 0x50005 -> 0x50000, max_compute 4 -> 2
+```
+
+This is intentionally an experiment, not a default scheduling policy.  It is
+useful for testing whether explicit proxy partitioning can outperform the real
+Panthor/FW scheduler when two client VMs submit concurrently.
+
+### Test Matrix
+
+All three runs used:
+
+```text
+proxy/client memory: proxy 184 MiB, each client 128 MiB
+vCPUs:               proxy 2, each client 1
+host CPUs online:    0-3
+broker/proxy CPUs:   0-1
+client CPUs:         client0 CPU 2, client1 CPU 3
+sync start:          60 seconds
+stats:               off
+metric:              PERF_ITER_US / iter_total, CPU prepare excluded
+```
+
+| Run | Proxy policy | Result | client0 avg/max | client1 avg/max | shared avg |
+| --- | --- | --- | ---: | ---: | ---: |
+| `vmshm-2client-gles-32m-corepart-baseline-20260605-150001` | historical transport-layer default, no Panthor/proxy knobs | PASS | 15700.75 / 19094 us | 15337.90 / 20646 us | 15519.33 us |
+| `vmshm-2client-gles-32m-corepart2-20260605-150103` | `group_core_partitions=2` | PASS | 22999.40 / 26489 us | 24476.20 / 29688 us | 23737.80 us |
+| `vmshm-2client-gles-32m-global-b1-hi-t2-recheck-20260605-150208` | historical removed transport-layer `global_dispatch=1`, `dispatch_budget=1`, high-priority proxy comm, Panthor high-priority scheduler WQ, `sched_tick_ms=2` | PASS | 15959.85 / 22524 us | 15477.05 / 18092 us | 15718.45 us |
+
+### Phase Evidence
+
+| Run | buffer_upload avg | dispatch_call avg | map_wait avg | shared avg |
+| --- | ---: | ---: | ---: | ---: |
+| historical transport default | 6960.65 us | 1799.10 us | 6669.78 us | 15519.33 us |
+| core partition 2 | 7561.10 us | 2276.68 us | 13795.20 us | 23737.80 us |
+| global b1 hi t2 | 6991.25 us | 1951.63 us | 6685.20 us | 15718.45 us |
+
+The core partition run is correctness-valid but performance-negative.  The
+regression is dominated by `map_wait`, which roughly doubled from about
+`6.67 ms` to `13.80 ms`.  That strongly suggests the compute kernel became
+slower because each client group was restricted to half the shader cores.  It
+does not look like a proxy RPC or `GROUP_SUBMIT` metadata win/loss.
+
+The global dispatch recheck was also correctness-valid, but it was slightly
+slower than the transport default at this workload size.  This historical
+result is why the channel-level global worker has been removed: it was fair in
+a narrow queueing sense, but it could not see GPU scheduling semantics and sync
+wait handlers could still block in the proxy.  The current design lets channel
+requests enter the proxy VM and schedules only `GROUP_SUBMIT` before real DRM
+submission.
+
+### Current 32 MiB Scheduling Policy
+
+For two-client 32 MiB shared-GPU performance runs, the current best policy is:
+
+```text
+host CPUs online:        0-3
+broker/proxy placement: broker 0-1, proxy Firecracker 0-1
+client placement:       client0 on CPU 2, client1 on CPU 3
+proxy vCPUs:            2
+client vCPUs:           1 each
+proxy memory:           at least 184 MiB
+client memory:          128 MiB for this 32 MiB smoke
+proxy comm:             fast transport only; no channel-level fairness knobs
+proxy submit scheduler: panthor-proxy per-session FIFO, global runnable-session
+                        round-robin before real Panthor GROUP_SUBMIT
+proxy Panthor knobs:    default scheduler tick/workqueue
+proxy group cores:      no manual partitioning
+stats:                  off for formal timing
+metric:                 PERF_ITER_US with --exclude-cpu-prepare
+```
+
+In short: keep the host/proxy/client CPU placement explicit, keep proxy comm as
+a transport, schedule GPU work at the panthor-proxy submit boundary, and let the
+real Panthor driver manage shader cores.  Do not reintroduce
+`global_dispatch=1`/`dispatch_budget=1` at the channel layer, and do not make
+`group_core_partitions=2` the default for 32 MiB.
+
+### Current Proxy Submit Scheduler Smoke
+
+After moving scheduling out of proxy comm and into `panthor-proxy`, the first
+32 MiB two-client smoke is:
+
+```text
+run id:
+  vmshm-2client-gles-32m-proxy-submit-sched-20260605-162753
+config:
+  host CPUs online 0-3
+  broker/proxy CPUs 0-1
+  client0 CPU 2, client1 CPU 3
+  proxy vCPUs 2, client vCPUs 1 each
+  proxy memory 184 MiB, client memory 128 MiB each
+  no proxy comm channel-level scheduling knobs
+  default Panthor scheduler tick/workqueue
+metric:
+  PERF_ITER_US, --exclude-cpu-prepare
+result:
+  RESULT: GLES_PASS
+```
+
+| Run | Proxy policy | Result | client0 avg/max | client1 avg/max | shared avg |
+| --- | --- | --- | ---: | ---: | ---: |
+| `vmshm-2client-gles-32m-proxy-submit-sched-20260605-162753` | panthor-proxy per-session submit scheduler before real Panthor submit | PASS | 14668.00 / 45731 us | 13232.45 / 16140 us | 13950.23 us |
+
+Phase averages:
+
+| Client | buffer_upload avg | dispatch_call avg | map_wait avg | iter_total avg |
+| --- | ---: | ---: | ---: | ---: |
+| client0 | 6768.30 us | 3896.60 us | 3921.30 us | 14668.00 us |
+| client1 | 6843.50 us | 2195.90 us | 4079.55 us | 13232.45 us |
+
+The smoke confirms that the new scheduling point is functional with two
+concurrent clients.  The mean result is better than the earlier 32 MiB
+transport-layer baseline (`15519.33 us`), but client0 still had one large
+`dispatch_call` tail (`38567 us`).  That means the direction is right, while
+the next policy work should add scheduler diagnostics and real per-client
+inflight/priority accounting inside `panthor-proxy`.
+
+### Design Conclusion
+
+The proxy VM should not try to "perfect" scheduling by hard-slicing shader
+cores for this workload.  The real Panthor scheduler and firmware are already
+better at exploiting the available G610 cores than the coarse proxy split.  The
+proxy should instead:
+
+```text
+1. Preserve per-client request order by queueing `GROUP_SUBMIT` per session.
+2. Keep blocking sync waits and setup RPCs out of the GPU submit scheduler.
+3. Maintain explicit host CPU placement for client upload, proxy passthrough,
+   and broker work.
+4. Use Panthor scheduler knobs and core partitioning only as diagnostics until
+   a workload proves they help.
+5. Optimize remaining overhead in BO upload, sync wait behavior, VM_BIND/setup
+   batching, and immutable DEV_QUERY caching rather than reducing GPU cores per
+   client.
+```
+
+### Validation
+
+Build and static checks:
+
+```text
+bash -n scripts/run/run-vmshm-2client-e2e.sh
+git diff --check -- scripts/run/run-vmshm-2client-e2e.sh \
+  docs/skills/gpu-shared-virtualization-autotest/SKILL.md \
+  docs/shared/PANTHOR_SHARED_VIRTUALIZATION_WORKLOG.md \
+  Linux-Guest-GPU/include/linux/vmshm_comm.h \
+  Linux-Guest-GPU/drivers/char/proxy_vmshm_comm/proxy_comm_vmshm.c \
+  Linux-Guest-GPU/drivers/gpu/drm/panthor-proxy/panthor_proxy_drv.c
+git -C Linux-Guest-GPU diff --check -- \
+  drivers/gpu/drm/panthor-proxy/panthor_proxy_drv.c \
+  drivers/char/proxy_vmshm_comm/proxy_comm_vmshm.c \
+  include/linux/vmshm_comm.h
+./scripts/build/build-guest-vmshm-kernels.sh
+```
+
+Current proxy-submit-scheduler 32 MiB smoke passed:
+
+```text
+run id: vmshm-2client-gles-32m-proxy-submit-sched-20260605-162753
+RESULT: GLES_PASS
+GL_RENDERER=Mali-G610 (Panfrost)
+PERF_CPU_PREPARE_EXCLUDED=1
+COMPUTE_CHECK=PASS
+GPU_SMOKE_RESULT=PASS
+```
+
+## 2026-06-05: 32 MiB Two-Client Clean-Memory Recheck
+
+### Goal
+
+Before committing the current shared virtualization scheduling work, clean the
+remote host memory as much as possible, rerun the formal two-client 32 MiB GLES
+smoke, and compute the `host/client` ratios with the CPU input-fill time
+excluded.
+
+### Cleanup
+
+The remote host was cleaned before the run:
+
+```text
+pkill firecracker/vmshm-broker
+sync
+drop_caches=3
+compact_memory=1
+```
+
+The manual cleanup raised the remote host free memory from about `1475 MiB` to
+about `1922 MiB`, and the runner preflight saw `MemAvailable=1902 MiB` before
+VM launch.  After the test, the host was cleaned again and returned to
+`MemAvailable=1822 MiB`; host CPUs were restored to `0-1`.
+
+### Test
+
+```text
+run id: vmshm-2client-gles-32m-cleanmem-20260605-165531
+result: RESULT: GLES_PASS
+workload: 32 MiB, count=8388608
+iterations: 20 measured, 5 warmup
+metric: PERF_ITER_US / iter_total, --exclude-cpu-prepare
+host direct baseline: gpu-perf-host-direct-32m-current-20260605-152347
+host direct avg: 11058.75 us
+```
+
+Placement and policy:
+
+```text
+host CPUs online:        0-3
+broker/proxy placement: 0-1
+client placement:       client0 CPU 2, client1 CPU 3
+proxy vCPUs:            2
+client vCPUs:           1 each
+proxy memory:           184 MiB
+client memory:          128 MiB each
+object memslot:         128 MiB for this 32 MiB workload
+proxy comm:             no channel-level scheduling knobs
+proxy submit scheduler: per-session FIFO plus global runnable-session
+                        round-robin before real Panthor GROUP_SUBMIT
+```
+
+### Result
+
+| Workload | Host direct | Client0 shared | Client1 shared | Shared avg | Host/client0 | Host/client1 | Host/shared avg |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 32 MiB | 11058.75 us | 13207.50 us | 13146.20 us | 13176.85 us | 0.837 | 0.841 | 0.839 |
+
+Phase detail:
+
+| Client | buffer_upload avg | dispatch_call avg | map_wait avg | iter_total avg/max |
+| --- | ---: | ---: | ---: | ---: |
+| client0 | 7118.70 us | 1777.20 us | 4230.65 us | 13207.50 / 15442 us |
+| client1 | 6732.75 us | 1866.40 us | 4450.20 us | 13146.20 / 17939 us |
+
+### Interpretation
+
+This clean-memory rerun is better than the first proxy-submit-scheduler sample
+(`13950.23 us` shared avg) and keeps the two clients very close:
+
+```text
+client delta: 13207.50 - 13146.20 = 61.30 us
+shared overhead vs host: 13176.85 / 11058.75 - 1 = about 19.2%
+```
+
+The important conclusion is not that the proxy scheduler is perfect, but that
+the current placement plus proxy-side submit scheduling is stable enough to use
+as the 32 MiB baseline.  The remaining overhead is still concentrated in
+`buffer_upload`, `dispatch_call`, and `map_wait`; the scheduler work should now
+focus on per-client inflight accounting, submit batching opportunities, and
+diagnostics for tail latency rather than reviving channel-level dispatch
+policy.
