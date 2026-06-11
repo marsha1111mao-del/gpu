@@ -330,7 +330,40 @@ sudo ./tools/rkdeveloptool wl 0 snapshot/opencca-image-rockchip-rock5b-rk3588.im
 sudo ./tools/rkdeveloptool rd
 ```
 
-## 10. 电源和重启控制
+## 10. 单独刷写 SD raw kernel slot
+
+如果 SD 镜像已经采用 raw kernel slot 布局，可以只更新内核而不重写 rootfs。这个流程仍然固定写 SD 卡，不写 eMMC。
+
+期望分区布局：
+
+```text
+loader1 start=0x40
+loader2 start=0x4000
+kernel start=0x8000 size>=0x40000 sectors
+root   start>=0x48000
+```
+
+控制机包装命令：
+
+```bash
+cd /home/mzh/RK3588/gpu/opencca
+./scripts/image/build-raw-kernel-image.sh
+OPENCCA_RPI_PASSWORD="$PI_PASSWORD" \
+OPENCCA_RPI_SUDO_PASSWORD="$PI_SUDO_PASSWORD" \
+OPENCCA_RK_PASSWORD="$RK_PASSWORD" \
+  ./scripts/firmware/flash-rk3588-via-pi.sh --flash-kernel --wait-rk
+```
+
+脚本会先通过 RK SSH 检查当前 SD 分区，再在树莓派侧用 `rkdeveloptool rl` 读取 GPT 二次校验。只有确认存在 `PARTLABEL=kernel` 且起始 LBA 是 `0x8000` 时，才会执行：
+
+```bash
+sudo ./tools/rkdeveloptool cs 2
+sudo ./tools/rkdeveloptool wl 0x8000 snapshot/kernel.img
+```
+
+旧布局中 `root` 从 `0x8000` 开始。此时单刷内核会覆盖 rootfs，所以 wrapper 会拒绝执行。2026-06-11 当前目标板仍是旧布局：`/dev/mmcblk1p3` 为 `PARTLABEL=root start=32768`，没有 `PARTLABEL=kernel`；必须先初始化为兼容 raw-kernel-slot 的 SD 镜像，之后才能使用 `--flash-kernel`。
+
+## 11. 电源和重启控制
 
 树莓派端 `flash.sh` 暴露了板级控制入口：
 
@@ -359,7 +392,7 @@ OPENCCA_RK_HOST="$RK_HOST" OPENCCA_RK_PASSWORD="$RK_PASSWORD" \
 
 树莓派端电源控制由 `/home/mzh/opencca-flash/board/` 决定，当前脚本会调用配置中的插座或 USB 供电控制。具体硬件配置在 `/home/mzh/opencca-flash/.env` 中。
 
-## 11. 常见排查
+## 12. 常见排查
 
 ### `rkdeveloptool ld` 看不到设备
 
@@ -422,6 +455,7 @@ sshpass -p "$PI_PASSWORD" ssh -t "$PI_HOST" \
 - `rkdeveloptool cs` 的 storage ID 是 `1=EMMC, 2=SD, 9=SPINOR`。
 - 本流程要求 SD 启动，`flash.sh mmc` 和 `flash.sh rootfs ... --yes` 必须配合 `OPENCCA_FIRMWARE_STORAGE_ID=2` 或 `OPENCCA_ROOTFS_STORAGE_ID=2`。
 - `flash.sh mmc` 会写 `idbloader.img` 和 `u-boot.itb`。
+- `--flash-kernel` 只允许写 SD raw kernel slot；旧 rootfs-at-0x8000 布局会被拒绝。
 - `flash.sh spi` 会写 SPI flash。
 - `flash.sh rootfs ... --yes` 会重写完整系统镜像。
 - `flash.sh clear` 会清空 flash，确认目标和恢复方案后再执行。
