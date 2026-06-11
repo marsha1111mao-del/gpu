@@ -736,7 +736,7 @@ gles_auto_min_available_mib() {
 	local comm_mib=64
 	local guard_mib=512
 
-	printf '%s\n' $((GLES_PROXY_MEM_MIB + GLES_CLIENT_MEM_MIB * 2 + object_mib + comm_mib + guard_mib))
+	printf '%s\n' $((GLES_PROXY_MEM_MIB + GLES_CLIENT_MEM_MIB * 2 + object_mib * 2 + comm_mib + guard_mib))
 }
 
 gles_preflight_host_memory() {
@@ -771,7 +771,7 @@ gles_preflight_host_memory() {
 		echo "gles_object_window_bytes=${GLES_OBJECT_WINDOW_BYTES}"
 		echo "gles_min_host_available_mib=${threshold}"
 		echo "gles_min_host_available_mode=${mode}"
-		echo "gles_mem_guard_formula=proxy + 2*client + ${GLES_OBJECT_WINDOW_MIB}(object) + 64(comm) + 512(guard)"
+		echo "gles_mem_guard_formula=proxy + 2*client + 2*${GLES_OBJECT_WINDOW_MIB}(object) + 64(comm) + 512(guard)"
 		echo "gles_mem_available_mib=${available}"
 		echo "gles_host_online_cpus=$(host_online_cpus)"
 		echo "gles_affinity_profile=${GLES_AFFINITY_PROFILE}"
@@ -1030,6 +1030,8 @@ prepare_gles_compute_client() {
 	local comm_socket="$2"
 	local dtb_name="$3"
 	local rootfs_path="$4"
+	local client_index="${client_id#client}"
+	local client_vmid=$((client_index + 1))
 	local config_out="${LOG_DIR}/${client_id}-gles-compute-config.json"
 	local client_stats_args=""
 	local client_mmap_args=""
@@ -1075,14 +1077,15 @@ prepare_gles_compute_client() {
   },
   "vmshm": [
     {
-      "socket_path": "/run/vmshm/vmshm-object.sock",
+      "socket_path": "/run/vmshm/vmshm-object-${client_id}.sock",
       "name": "vmshm-object-${client_id}",
       "role": "client",
       "guest_phys_addr": "0x30000000",
       "slot": 1,
       "expected_size": ${GLES_OBJECT_WINDOW_BYTES},
       "fdt_node_name": "client-vmshm-manager",
-      "fdt_compatible": "client-vmshm-manager"
+      "fdt_compatible": "client-vmshm-manager",
+      "client_vmid": ${client_vmid}
     },
     {
       "socket_path": "${comm_socket}",
@@ -1093,6 +1096,7 @@ prepare_gles_compute_client() {
       "expected_size": 33554432,
       "fdt_node_name": "client_comm_vmshm",
       "fdt_compatible": "client_comm_vmshm",
+      "client_vmid": ${client_vmid},
       "notify": {
         "doorbell_addr": "0x2f000000",
         "doorbell_size": "0x1000",
@@ -1147,14 +1151,26 @@ prepare_gles_compute_proxy() {
   },
   "vmshm": [
     {
-      "socket_path": "/run/vmshm/vmshm-object.sock",
-      "name": "vmshm-object-proxy",
+      "socket_path": "/run/vmshm/vmshm-object-client0.sock",
+      "name": "vmshm-object-client0-proxy",
       "role": "proxy",
       "guest_phys_addr": "0x30000000",
       "slot": 1,
       "expected_size": ${GLES_OBJECT_WINDOW_BYTES},
-      "fdt_node_name": "proxy-vmshm-manager",
-      "fdt_compatible": "proxy-vmshm-manager"
+      "fdt_node_name": "proxy-vmshm-manager-client0",
+      "fdt_compatible": "proxy-vmshm-manager",
+      "client_vmid": 1
+    },
+    {
+      "socket_path": "/run/vmshm/vmshm-object-client1.sock",
+      "name": "vmshm-object-client1-proxy",
+      "role": "proxy",
+      "guest_phys_addr": "0x38000000",
+      "slot": 4,
+      "expected_size": ${GLES_OBJECT_WINDOW_BYTES},
+      "fdt_node_name": "proxy-vmshm-manager-client1",
+      "fdt_compatible": "proxy-vmshm-manager",
+      "client_vmid": 2
     },
     {
       "socket_path": "/run/vmshm/vmshm-comm-client0.sock",
@@ -1165,6 +1181,7 @@ prepare_gles_compute_proxy() {
       "expected_size": 33554432,
       "fdt_node_name": "proxy_comm_vmshm_client0",
       "fdt_compatible": "proxy_comm_vmshm",
+      "client_vmid": 1,
       "notify": {
         "doorbell_addr": "0x2f100000",
         "doorbell_size": "0x1000",
@@ -1180,6 +1197,7 @@ prepare_gles_compute_proxy() {
       "expected_size": 33554432,
       "fdt_node_name": "proxy_comm_vmshm_client1",
       "fdt_compatible": "proxy_comm_vmshm",
+      "client_vmid": 2,
       "notify": {
         "doorbell_addr": "0x2f110000",
         "doorbell_size": "0x1000",
@@ -1199,9 +1217,16 @@ write_gles_broker_config() {
 socket_dir = "/run/vmshm"
 
 [[domains]]
-id = "vmshm-object"
-socket_path = "/run/vmshm/vmshm-object.sock"
-memfd_name = "vmshm-object-2client-gles-${RUN_ID}"
+id = "vmshm-object-client0"
+socket_path = "/run/vmshm/vmshm-object-client0.sock"
+memfd_name = "vmshm-object-client0-gles-${RUN_ID}"
+window_size = ${GLES_OBJECT_WINDOW_BYTES}
+seal = true
+
+[[domains]]
+id = "vmshm-object-client1"
+socket_path = "/run/vmshm/vmshm-object-client1.sock"
+memfd_name = "vmshm-object-client1-gles-${RUN_ID}"
 window_size = ${GLES_OBJECT_WINDOW_BYTES}
 seal = true
 
