@@ -330,9 +330,9 @@ sudo ./tools/rkdeveloptool wl 0 snapshot/opencca-image-rockchip-rock5b-rk3588.im
 sudo ./tools/rkdeveloptool rd
 ```
 
-## 10. 单独刷写 SD raw kernel slot
+## 10. 单独刷写 SD kernel slot
 
-如果 SD 镜像已经采用 raw kernel slot 布局，可以只更新内核而不重写 rootfs。这个流程仍然固定写 SD 卡，不写 eMMC。
+如果 SD 镜像已经采用 p3 `kernel` / p4 `root` 布局，可以只更新内核而不重写 rootfs。这个流程仍然固定写 SD 卡，不写 eMMC。当前工作区的 p3 是 ext4/extlinux boot 分区，不是旧 raw FIT 槽。
 
 期望分区布局：
 
@@ -347,21 +347,38 @@ root   start>=0x48000
 
 ```bash
 cd /home/mzh/RK3588/gpu/opencca
-./scripts/image/build-raw-kernel-image.sh
+./scripts/image/build-raw-kernel-image.sh \
+  --image /path/to/Image \
+  --initrd /path/to/initrd.img \
+  --dtb snapshot/rk3588-rock-5b.dtb \
+  --root PARTLABEL=root \
+  --version 6.12.0-opencca-pmthor \
+  --cmdline 'rootwait isolcpus=1,2,3 maxcpus=2 nohlt cpuidle.off=1 rcupdate.rcu_cpu_st ignore_loglevel initcall_debug' \
+  --output snapshot/kernel-pmthor-rootfs-matched-extlinux.img
 OPENCCA_RPI_PASSWORD="$PI_PASSWORD" \
 OPENCCA_RPI_SUDO_PASSWORD="$PI_SUDO_PASSWORD" \
 OPENCCA_RK_PASSWORD="$RK_PASSWORD" \
-  ./scripts/firmware/flash-rk3588-via-pi.sh --flash-kernel --wait-rk
+  ./scripts/firmware/flash-rk3588-via-pi.sh \
+  --kernel-image snapshot/kernel-pmthor-rootfs-matched-extlinux.img \
+  --flash-kernel --wait-rk
 ```
 
 脚本会先通过 RK SSH 检查当前 SD 分区，再在树莓派侧用 `rkdeveloptool rl` 读取 GPT 二次校验。只有确认存在 `PARTLABEL=kernel` 且起始 LBA 是 `0x8000` 时，才会执行：
 
 ```bash
 sudo ./tools/rkdeveloptool cs 2
-sudo ./tools/rkdeveloptool wl 0x8000 snapshot/kernel.img
+sudo ./tools/rkdeveloptool wl 0x8000 snapshot/kernel-pmthor-rootfs-matched-extlinux.img
 ```
 
-旧布局中 `root` 从 `0x8000` 开始。此时单刷内核会覆盖 rootfs，所以 wrapper 会拒绝执行。2026-06-11 当前目标板仍是旧布局：`/dev/mmcblk1p3` 为 `PARTLABEL=root start=32768`，没有 `PARTLABEL=kernel`；必须先初始化为兼容 raw-kernel-slot 的 SD 镜像，之后才能使用 `--flash-kernel`。
+旧布局中 `root` 从 `0x8000` 开始。此时单刷内核会覆盖 rootfs，所以 wrapper 会拒绝执行。2026-06-11 当前目标板已经初始化为兼容布局：
+
+```text
+/dev/mmcblk1p3 128M ext4 PARTLABEL=kernel
+/dev/mmcblk1p4 29.6G ext4 PARTLABEL=root mounted at /
+running kernel: 6.12.0-opencca-pmthor
+```
+
+pmthor GPU 测试不要在 extlinux cmdline 使用 `module_blacklist=panthor,pmthor`；那会阻止 host-direct 测试手动加载 `panthor`。当前做法是在 rootfs 中 `blacklist panthor`，并通过 `modules-load.d` 显式加载 `pmthor_drv`。
 
 ## 11. 电源和重启控制
 

@@ -20,6 +20,7 @@ FETCH_LOGS=1
 CLEAN_REMOTE_PROCS=1
 SYNC_ROOTFS=0
 GLES_COMPUTE_SMOKE=0
+GLES_REMOTE_BUILD=${GLES_REMOTE_BUILD:-1}
 GLES_SMOKE_ARGS=${GLES_SMOKE_ARGS:-"--count 64"}
 GLES_CLIENT_MEM_MIB=${GLES_CLIENT_MEM_MIB:-384}
 GLES_PROXY_MEM_MIB=${GLES_PROXY_MEM_MIB:-384}
@@ -59,6 +60,10 @@ Options:
                            rootfs after injecting the GLES compute payload
                            and run
                            /root/gpu-smoke.sh correctness/perf smoke
+  --skip-gles-remote-build
+                           In GLES mode, reuse an existing executable
+                           firecracker-bins/bin/gles-compute-smoke instead
+                           of compiling it on the remote host
   --gles-smoke-args ARGS   Arguments passed to /root/gpu-smoke.sh in GLES mode
   --gles-client-mem-mib N  Memory size for each GLES client VM. Default: ${GLES_CLIENT_MEM_MIB}
   --gles-proxy-mem-mib N   Memory size for the GLES proxy VM. Default: ${GLES_PROXY_MEM_MIB}
@@ -108,6 +113,7 @@ Options:
 Environment overrides:
   SFTP_ROOT SFTP_BINS SFTP_LOG_ROOT
   REMOTE_HOST REMOTE_USER REMOTE_PASS REMOTE_ROOT REMOTE_BINS REMOTE_LOG_ROOT RUN_ID
+  GLES_REMOTE_BUILD
 
 Default remote is ${REMOTE_USER}@${REMOTE_HOST}, logs go under:
   remote: ${REMOTE_LOG_ROOT}/shared/vmshm-2client/${RUN_ID}
@@ -131,6 +137,9 @@ while [[ $# -gt 0 ]]; do
 		;;
 	--gles-compute-smoke)
 		GLES_COMPUTE_SMOKE=1
+		;;
+	--skip-gles-remote-build)
+		GLES_REMOTE_BUILD=0
 		;;
 	--gles-smoke-args)
 		shift
@@ -378,7 +387,7 @@ sync_to_remote() {
 
 run_remote_test() {
 	local run_id_q remote_root_q remote_bins_q remote_log_root_q clean_q
-	local gles_compute_smoke_q gles_smoke_args_q
+	local gles_compute_smoke_q gles_remote_build_q gles_smoke_args_q
 	local gles_client_mem_mib_q gles_proxy_mem_mib_q
 	local gles_client_vcpus_q gles_proxy_vcpus_q
 	local gles_client_start_gap_sec_q
@@ -396,6 +405,7 @@ run_remote_test() {
 	remote_log_root_q=$(quote "${REMOTE_LOG_ROOT}")
 	clean_q=$(quote "${CLEAN_REMOTE_PROCS}")
 	gles_compute_smoke_q=$(quote "${GLES_COMPUTE_SMOKE}")
+	gles_remote_build_q=$(quote "${GLES_REMOTE_BUILD}")
 	gles_smoke_args_q=$(quote "${GLES_SMOKE_ARGS}")
 	gles_client_mem_mib_q=$(quote "${GLES_CLIENT_MEM_MIB}")
 	gles_proxy_mem_mib_q=$(quote "${GLES_PROXY_MEM_MIB}")
@@ -416,7 +426,7 @@ run_remote_test() {
 	gles_panthor_proxy_group_core_partitions_q=$(quote "${GLES_PANTHOR_PROXY_GROUP_CORE_PARTITIONS}")
 
 	log "Running remote 2-client vmshm test: ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_BINS}"
-	ssh_remote "RUN_ID=${run_id_q} REMOTE_ROOT=${remote_root_q} REMOTE_BINS=${remote_bins_q} REMOTE_LOG_ROOT=${remote_log_root_q} CLEAN_REMOTE_PROCS=${clean_q} GLES_COMPUTE_SMOKE=${gles_compute_smoke_q} GLES_SMOKE_ARGS=${gles_smoke_args_q} GLES_CLIENT_MEM_MIB=${gles_client_mem_mib_q} GLES_PROXY_MEM_MIB=${gles_proxy_mem_mib_q} GLES_CLIENT_VCPUS=${gles_client_vcpus_q} GLES_PROXY_VCPUS=${gles_proxy_vcpus_q} GLES_CLIENT_START_GAP_SEC=${gles_client_start_gap_sec_q} GLES_SYNC_START_DELAY_SEC=${gles_sync_start_delay_sec_q} GLES_MIN_HOST_AVAILABLE_MIB=${gles_min_host_available_mib_q} GLES_PROXY_PANTHOR_STATS=${gles_proxy_panthor_stats_q} GLES_CLIENT_BO_MMAP_CACHED=${gles_client_bo_mmap_cached_q} GLES_HOST_ONLINE_CPUS=${gles_host_online_cpus_q} GLES_BROKER_CPUS=${gles_broker_cpus_q} GLES_PROXY_CPUS=${gles_proxy_cpus_q} GLES_CLIENT0_CPUS=${gles_client0_cpus_q} GLES_CLIENT1_CPUS=${gles_client1_cpus_q} GLES_PANTHOR_SCHED_TICK_MS=${gles_panthor_sched_tick_ms_q} GLES_PANTHOR_SCHED_HIGHPRI_WQ=${gles_panthor_sched_highpri_wq_q} GLES_PANTHOR_PROXY_GROUP_CORE_PARTITIONS=${gles_panthor_proxy_group_core_partitions_q} bash -s" <<'REMOTE_SCRIPT'
+	ssh_remote "RUN_ID=${run_id_q} REMOTE_ROOT=${remote_root_q} REMOTE_BINS=${remote_bins_q} REMOTE_LOG_ROOT=${remote_log_root_q} CLEAN_REMOTE_PROCS=${clean_q} GLES_COMPUTE_SMOKE=${gles_compute_smoke_q} GLES_REMOTE_BUILD=${gles_remote_build_q} GLES_SMOKE_ARGS=${gles_smoke_args_q} GLES_CLIENT_MEM_MIB=${gles_client_mem_mib_q} GLES_PROXY_MEM_MIB=${gles_proxy_mem_mib_q} GLES_CLIENT_VCPUS=${gles_client_vcpus_q} GLES_PROXY_VCPUS=${gles_proxy_vcpus_q} GLES_CLIENT_START_GAP_SEC=${gles_client_start_gap_sec_q} GLES_SYNC_START_DELAY_SEC=${gles_sync_start_delay_sec_q} GLES_MIN_HOST_AVAILABLE_MIB=${gles_min_host_available_mib_q} GLES_PROXY_PANTHOR_STATS=${gles_proxy_panthor_stats_q} GLES_CLIENT_BO_MMAP_CACHED=${gles_client_bo_mmap_cached_q} GLES_HOST_ONLINE_CPUS=${gles_host_online_cpus_q} GLES_BROKER_CPUS=${gles_broker_cpus_q} GLES_PROXY_CPUS=${gles_proxy_cpus_q} GLES_CLIENT0_CPUS=${gles_client0_cpus_q} GLES_CLIENT1_CPUS=${gles_client1_cpus_q} GLES_PANTHOR_SCHED_TICK_MS=${gles_panthor_sched_tick_ms_q} GLES_PANTHOR_SCHED_HIGHPRI_WQ=${gles_panthor_sched_highpri_wq_q} GLES_PANTHOR_PROXY_GROUP_CORE_PARTITIONS=${gles_panthor_proxy_group_core_partitions_q} bash -s" <<'REMOTE_SCRIPT'
 set -euo pipefail
 
 cd "${REMOTE_BINS}"
@@ -425,6 +435,7 @@ mkdir -p /run/vmshm "${LOG_DIR}"
 GLES_SMOKE_SRC_DIR="${REMOTE_ROOT}/tests/gpu-compute-smoke"
 GLES_SMOKE_BIN="${REMOTE_BINS}/bin/gles-compute-smoke"
 GLES_CLIENT_RESULT_TIMEOUT_SEC=${GLES_CLIENT_RESULT_TIMEOUT_SEC:-900}
+GLES_REMOTE_BUILD=${GLES_REMOTE_BUILD:-1}
 GLES_CLIENT_MEM_MIB=${GLES_CLIENT_MEM_MIB:-384}
 GLES_PROXY_MEM_MIB=${GLES_PROXY_MEM_MIB:-384}
 GLES_CLIENT_VCPUS=${GLES_CLIENT_VCPUS:-1}
@@ -888,6 +899,15 @@ build_gles_compute_smoke() {
 		return 0
 	fi
 
+	if [[ "${GLES_REMOTE_BUILD}" != "1" ]]; then
+		if [[ ! -x "${GLES_SMOKE_BIN}" ]]; then
+			echo "missing executable ${GLES_SMOKE_BIN}; rerun without --skip-gles-remote-build" >&2
+			return 1
+		fi
+		echo "using existing ${GLES_SMOKE_BIN} (GLES_REMOTE_BUILD=0)" >&2
+		return 0
+	fi
+
 	echo "building current gles-compute-smoke from ${GLES_SMOKE_SRC_DIR}" >&2
 	[[ -f "${GLES_SMOKE_SRC_DIR}/gles_compute_smoke.c" ]] ||
 		{ echo "missing ${GLES_SMOKE_SRC_DIR}/gles_compute_smoke.c" >&2; return 1; }
@@ -1221,6 +1241,7 @@ if [[ "${GLES_COMPUTE_SMOKE}" == "1" ]]; then
 		GLES_ROOTFS_PATH=$(inject_gles_compute_payload)
 		echo "gles_client_mem_mib=${GLES_CLIENT_MEM_MIB}"
 		echo "gles_proxy_mem_mib=${GLES_PROXY_MEM_MIB}"
+		echo "gles_remote_build=${GLES_REMOTE_BUILD}"
 		echo "gles_client_vcpus=${GLES_CLIENT_VCPUS}"
 		echo "gles_proxy_vcpus=${GLES_PROXY_VCPUS}"
 		echo "gles_client_start_gap_sec=${GLES_CLIENT_START_GAP_SEC}"
@@ -1398,6 +1419,7 @@ fi
 	echo "Timestamp: $(date -Is)"
 	echo "Remote log dir: ${LOG_DIR}"
 	echo "GLES compute smoke: ${GLES_COMPUTE_SMOKE}"
+	echo "GLES remote build: ${GLES_REMOTE_BUILD}"
 	echo "GLES smoke args: ${GLES_SMOKE_ARGS}"
 	echo "GLES client BO mmap cached: ${GLES_CLIENT_BO_MMAP_CACHED}"
 	echo "GLES sync start delay sec: ${GLES_SYNC_START_DELAY_SEC}"
