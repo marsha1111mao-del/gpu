@@ -1,6 +1,6 @@
 ---
 name: gpu-passthrough-autotest
-description: Use when building, deploying, or testing the single-VM GPU passthrough path on the remote GPU host, including pmthor/Firecracker passthrough, guest or host Panthor kernel changes, GPA-to-HPA/page-table work, host-vs-passthrough GLES performance sweeps, passthrough diagnostics, run-log collection, and performance-result reporting.
+description: Use when running, debugging, or reporting the RK3588/OpenCCA single-VM GPU passthrough path, including host-vs-passthrough GLES performance, pmthor-to-panthor host-direct switching, Firecracker passthrough VM runs, SD-card kernel/rootfs flashing through the Raspberry Pi, hardware connection checks, and passthrough log collection on /home/mzh/RK3588/gpu.
 ---
 
 # GPU Passthrough Autotest
@@ -10,102 +10,187 @@ description: Use when building, deploying, or testing the single-VM GPU passthro
 Use this skill for the single-VM Mali/Panthor GPU passthrough path:
 
 ```text
-remote host pmthor / KVM / Firecracker
+OpenCCA host pmthor / KVM / Firecracker
   -> one passthrough VM
-  -> guest panthor driver owns the passed-through GPU view
-  -> GLES compute workload or passthrough probe test
+  -> guest Panthor owns the passed-through GPU view
+  -> GLES compute smoke/perf workload
 ```
 
-Do not use this skill for vmshm proxy/client GPU sharing. Use `gpu-shared-virtualization-autotest` for that path.
+Do not use this skill for vmshm proxy/client GPU sharing; use
+`gpu-shared-virtualization-autotest` for that path.
 
-## Fixed Environment
+## Current Environment
 
-Work from `/home/mzh/gpu` unless the user gives another checkout.
+Treat these as the current defaults unless the user gives a newer runbook:
 
-- Remote SSH target: `root@192.168.137.10`
-- Remote password: `root`
-- Local artifact root: `/home/mzh/gpu/GPU-SFTP`
+- Local workspace: `/home/mzh/RK3588/gpu`
+- OpenCCA wrapper workspace: `/home/mzh/RK3588/gpu/opencca`
+- Remote RK3588: `root@192.168.31.18`, password `root`
 - Remote artifact root: `/root/GPU-SFTP`
-- Local runtime artifact tree: `/home/mzh/gpu/GPU-SFTP/firecracker-bins`
-- Remote runtime artifact tree: `/root/GPU-SFTP/firecracker-bins`
-- Local perf logs: `/home/mzh/gpu/GPU-SFTP/log/passthrough/perf`
-- Remote perf logs: `/root/GPU-SFTP/log/passthrough/perf`
-- Local probe logs: `/home/mzh/gpu/GPU-SFTP/log/passthrough/probe`
-- Remote probe logs: `/root/GPU-SFTP/log/passthrough/probe`
-- Main guide: `/home/mzh/gpu/docs/passthrough/GPU_HOST_VS_PASSTHROUGH_PERF_TEST_GUIDE.md`
-- Artifact layout: `/home/mzh/gpu/docs/shared/GPU_SFTP_ARTIFACT_LAYOUT.md`
-- Design/lessons: `/home/mzh/gpu/docs/passthrough/GPU_PASSTHROUGH_IMPLEMENTATION_ANALYSIS.md`, `/home/mzh/gpu/docs/passthrough/GPU_PASSTHROUGH_EFFECTIVE_OPTIMIZATIONS.md`
+- Local artifact root: `/home/mzh/RK3588/gpu/GPU-SFTP`
+- Raspberry Pi flasher: `mzh@192.168.31.52`, password/sudo password `root`
+- Pi flash root: `/home/mzh/opencca-flash`
+- Rockchip storage IDs: `1=EMMC`, `2=SD`, `9=SPINOR`
+- This workflow targets SD-card boot only. Do not write eMMC.
+- Verified SD layout: p3 `kernel` ext4/extlinux at LBA `0x8000`, p4 `root`
+  mounted from `/dev/mmcblk1p4`.
+- Verified kernel/driver: `6.12.0-opencca-pmthor`, `/dev/pmthor`, platform
+  driver `pmthor`.
 
-Prefer the repo scripts over ad hoc SSH. If manual SSH is needed:
+Important docs to consult before changing hardware or flash behavior:
 
-```bash
-ssh -p 22 -oBatchMode=no -oStrictHostKeyChecking=accept-new root@192.168.137.10 '<command>'
+- `/home/mzh/RK3588/gpu/docs/start/RASPBERRY_PI_FLASH_RUNBOOK.md`
+- `/home/mzh/RK3588/gpu/opencca/docs/SD_CARD_FLASH_RUNBOOK.md`
+- `/home/mzh/RK3588/gpu/docs/kernel_flash_patches/README.md`
+- `/home/mzh/RK3588/gpu/docs/start/OPENCCA_SD_KERNEL_FLASH_AND_GPU_32M_REPORT_20260611.md`
+
+## Hardware And Pi Control
+
+Expected physical topology:
+
+```text
+control host -> LAN -> Raspberry Pi 192.168.31.52
+Raspberry Pi -> USB OTG/Maskrom -> RK3588
+Raspberry Pi -> optional USB-TTL UART -> RK3588 serial console
+Raspberry Pi -> power control -> RK3588 board power
 ```
 
-Use existing `setsid`/`SSH_ASKPASS` wrappers in scripts for noninteractive password auth.
-
-Current passthrough runtime layout under `GPU-SFTP/firecracker-bins/`:
-
-- `bin/firecracker`: Firecracker binary.
-- `configs/passthrough/gpu-panfrost-vm-config.json`: Panfrost/Mesa rootfs performance VM config.
-- `configs/passthrough/gpu-passthrough-vm-config.json`: lightweight passthrough probe VM config.
-- `kernels/passthrough/Image`: single passthrough guest kernel.
-- `rootfs/`: passthrough rootfs images such as `rootfs.ext2` and `rootfs-panfrost.ext4`.
-- `scripts/passthrough/`: VM launchers.
-
-Passthrough workload source lives at `GPU-SFTP/tests/gpu-compute-smoke`.
-Firecracker DTB dumps live under `GPU-SFTP/artifacts/dtb/` via optional
-`machine-config.dump_fdt_path`.
-
-## Build And Deploy Selection
-
-Rebuild only affected components.
-
-- Guest passthrough kernel work: use `scripts/build/build-guest-passthrough-kernel.sh`. It builds one ordinary guest `Image` and installs it to `GPU-SFTP/firecracker-bins/kernels/passthrough/Image`. Do not build vmshm proxy/client role kernels for passthrough perf iteration.
-- Host kernel work: use `/home/mzh/gpu/scripts/deploy/deploy-host-kernel-and-test.sh`. Prefer Image-only deployment unless module contents, module dependencies, or module install paths changed.
-- Firecracker passthrough changes: inspect/build through `scripts/build/build-firecracker-runtime.sh`; it installs `firecracker` under `GPU-SFTP/firecracker-bins/bin/`.
-- Passthrough config/script-only changes under `GPU-SFTP/firecracker-bins/configs/passthrough/` or `GPU-SFTP/firecracker-bins/scripts/passthrough/`: sync only unless the config uses a new Firecracker JSON field.
-- GLES smoke source changes under `GPU-SFTP/tests/gpu-compute-smoke/`: rebuild the remote smoke binary through the perf script; do not rebuild kernels or Firecracker.
-
-Fast host Image-only deployment:
+Quick checks:
 
 ```bash
-cd /home/mzh/gpu
-./scripts/deploy/deploy-host-kernel-and-test.sh \
-  --skip-firecracker-build \
-  --skip-tests \
-  --run-id-prefix host-image-only
+cd /home/mzh/RK3588/gpu
+sshpass -p root ssh -o StrictHostKeyChecking=accept-new mzh@192.168.31.52 \
+  'hostname; test -x /home/mzh/opencca-flash/flash.sh && echo flash.sh=ok; ls -l /dev/ttyUSB* /dev/serial/by-id/* 2>/dev/null || true'
+
+sshpass -p root ssh -o StrictHostKeyChecking=accept-new root@192.168.31.18 \
+  'hostname; uname -r; findmnt -no SOURCE,TARGET,FSTYPE /; basename "$(readlink -f /sys/bus/platform/devices/fb000000.gpu/driver)"; ls -l /dev/pmthor /dev/dri/card0 2>/dev/null || true'
 ```
 
-Selected host module deployment, only when a small `.ko` changed:
+Use the Pi wrapper for reboot/Maskrom/flash operations:
 
 ```bash
-cd /home/mzh/gpu
-./scripts/deploy/deploy-host-kernel-and-test.sh \
-  --skip-firecracker-build \
-  --skip-tests \
-  --host-modules drivers/gpu/drm/panthor/panthor.ko \
-  --run-id-prefix host-image-panthor-module
+cd /home/mzh/RK3588/gpu
+OPENCCA_RPI_HOST=mzh@192.168.31.52 \
+OPENCCA_RPI_PASSWORD=root \
+OPENCCA_RPI_SUDO_PASSWORD=root \
+OPENCCA_RK_HOST=root@192.168.31.18 \
+OPENCCA_RK_PASSWORD=root \
+  ./opencca/scripts/firmware/flash-rk3588-via-pi.sh --reboot --wait-rk
 ```
 
-Use full `--install-host-modules` only for broad module ABI/dependency/Kconfig/install-path changes.
-
-## Sync Policy
-
-Passthrough scripts sync `/home/mzh/gpu/GPU-SFTP/` to
-`root@192.168.137.10:/root/GPU-SFTP/` after relevant builds and exclude
-`log/`, old `firecracker-bins/run-logs/`, and `firecracker-bins/rootfs/` unless
-rootfs sync is explicitly requested. Do not send or overwrite historical logs
-during artifact sync. The repo sync scripts also run
-`scripts/lib/gpu_sftp_layout.sh` to migrate old remote top-level binaries,
-configs, kernels, rootfs images, tests, and DTB files into the semantic layout.
-
-## Formal Performance Test
-
-For host-vs-passthrough GLES compute performance work, follow the guide exactly. Formal baselines must keep no tracing and no diagnostic knobs:
+For serial logs:
 
 ```bash
-cd /home/mzh/gpu
+sshpass -p root ssh -t mzh@192.168.31.52 \
+  'cd /home/mzh/opencca-flash && ./flash.sh minicom'
+```
+
+If `/dev/ttyUSB0` is absent on the Pi, do not assume serial is connected. Check
+the USB-TTL wiring and the runbook before interpreting missing serial logs.
+
+## SD Flashing Guardrails
+
+For firmware/rootfs/kernel flashing, keep the storage target on SD:
+
+```text
+OPENCCA_FIRMWARE_STORAGE_ID=2
+OPENCCA_ROOTFS_STORAGE_ID=2
+OPENCCA_KERNEL_STORAGE_ID=2
+```
+
+SD firmware only:
+
+```bash
+cd /home/mzh/RK3588/gpu/opencca
+OPENCCA_RPI_PASSWORD=root OPENCCA_RPI_SUDO_PASSWORD=root OPENCCA_RK_PASSWORD=root \
+  ./scripts/firmware/flash-rk3588-via-pi.sh --flash-sd-firmware --wait-rk
+```
+
+Kernel-only p3 update after the compatible SD layout exists:
+
+```bash
+cd /home/mzh/RK3588/gpu/opencca
+./scripts/image/build-raw-kernel-image.sh \
+  --image /path/to/Image \
+  --initrd /path/to/initrd.img \
+  --dtb snapshot/rk3588-rock-5b.dtb \
+  --root PARTLABEL=root \
+  --version 6.12.0-opencca-pmthor \
+  --cmdline 'rootwait isolcpus=1,2,3 maxcpus=2 nohlt cpuidle.off=1 rcupdate.rcu_cpu_st ignore_loglevel initcall_debug' \
+  --output snapshot/kernel-pmthor-rootfs-matched-extlinux.img
+
+OPENCCA_RPI_PASSWORD=root OPENCCA_RPI_SUDO_PASSWORD=root OPENCCA_RK_PASSWORD=root \
+  ./scripts/firmware/flash-rk3588-via-pi.sh \
+  --kernel-image snapshot/kernel-pmthor-rootfs-matched-extlinux.img \
+  --flash-kernel --wait-rk
+```
+
+Do not put `module_blacklist=panthor,pmthor` in extlinux. That blocks the
+passthrough runner from manually loading `panthor` for the host-direct half.
+The current rootfs keeps boot on `pmthor` with:
+
+```text
+/etc/modprobe.d/opencca-gpu.conf: blacklist panthor
+/etc/modules-load.d/opencca-gpu.conf: pmthor_drv
+```
+
+## Passthrough Test Flow
+
+Before a run:
+
+```bash
+cd /home/mzh/RK3588/gpu
+sshpass -p root ssh root@192.168.31.18 '
+  uname -r
+  findmnt -no SOURCE,TARGET,FSTYPE /
+  basename "$(readlink -f /sys/bus/platform/devices/fb000000.gpu/driver)"
+  test -e /dev/pmthor
+  pkill -f firecracker || true
+  pkill -f vmshm-broker || true
+'
+```
+
+The RK rootfs may not have working build dependencies. For known-good 32 MiB
+runs, reuse the staged ARM64 smoke binary at
+`GPU-SFTP/firecracker-bins/bin/gles-compute-smoke` and pass
+`--skip-remote-build`.
+
+Primary 32 MiB host-vs-passthrough command:
+
+```bash
+cd /home/mzh/RK3588/gpu
+REMOTE_HOST=192.168.31.18 REMOTE_PASS=root \
+RUN_ID=gpu-perf-32m-opencca-pmthor-$(date +%Y%m%d-%H%M%S) \
+  ./scripts/run/run-host-vs-passthrough-gles-perf.sh \
+  --host-rootfs-userspace \
+  --skip-sync \
+  --skip-remote-build \
+  --skip-fetch-logs \
+  --count 8388608 \
+  --iterations 20 \
+  --warmup 5 \
+  --vm-timeout 900 \
+  --host-timeout 900
+```
+
+When `--skip-fetch-logs` is used, fetch the run manually:
+
+```bash
+RUN_ID=<run-id>
+sshpass -p root ssh root@192.168.31.18 \
+  "cd /root/GPU-SFTP/log/passthrough/perf && tar czf /tmp/${RUN_ID}.tar.gz ${RUN_ID}"
+sshpass -p root scp root@192.168.31.18:/tmp/${RUN_ID}.tar.gz /tmp/
+mkdir -p "/home/mzh/RK3588/gpu/GPU-SFTP/log/passthrough/perf/${RUN_ID}"
+tar xzf "/tmp/${RUN_ID}.tar.gz" \
+  -C /home/mzh/RK3588/gpu/GPU-SFTP/log/passthrough/perf
+```
+
+Formal broader sweeps can use the runner defaults for 4 MiB, 16 MiB, and
+64 MiB:
+
+```bash
+cd /home/mzh/RK3588/gpu
+REMOTE_HOST=192.168.31.18 REMOTE_PASS=root \
 RUN_ID=gpu-perf-host-vs-passthrough-$(date +%Y%m%d-%H%M%S) \
   ./scripts/run/run-host-vs-passthrough-gles-perf.sh \
   --host-rootfs-userspace \
@@ -118,72 +203,34 @@ RUN_ID=gpu-perf-host-vs-passthrough-$(date +%Y%m%d-%H%M%S) \
   --host-timeout 900
 ```
 
-Default formal sweep is 4 MiB, 16 MiB, and 64 MiB. Report the `Formal Host/VM performance ratio table`; values are `host/vm`, closer to `1.000` is better. Current formal runs exclude the per-iteration `input[]` CPU fill from `PERF_ITER_US` / `iter_total`; `cpu_prepare` is still printed as a phase, but the formal `metadata` group is `buffer_upload` only. Do not report old overhead tables unless the user explicitly asks.
+Use diagnostic flags such as `--guest-panthor-pt-timing`,
+`--pmthor-irq-stats`, `--guest-panthor-irq-stats`,
+`--guest-panthor-submit-stats`, `--vm-huge-pages-2m`, taskset, IRQ affinity, or
+perf tracing only when explaining an anomaly. Label those runs as diagnostic,
+not formal baselines.
 
-Do not enable these for a formal baseline: `--guest-panthor-pt-timing`, `--pmthor-irq-stats`, `--guest-panthor-irq-stats`, `--guest-panthor-submit-stats`, `--vm-huge-pages-2m`, `--vm-taskset-cpu`, `--pmthor-irq-affinity-cpu`, tracing wrappers, or perf-record.
+## Pass Criteria And Reporting
 
-## Diagnostic Runs
+Always inspect logs before reporting success. Required evidence:
 
-Use diagnostics only to explain a formal-result anomaly, and clearly label them as non-baseline.
+- `RESULT: PASS`
+- `GPU_SMOKE_RESULT=PASS` and `COMPUTE_CHECK=PASS`
+- Renderer is Mali/Panfrost, not a software renderer
+- No GPU fault, job timeout, panic, Oops, or Firecracker-killed symptom
+- The runner restored the host driver to `pmthor`
 
-Page-table timing:
+Verified 2026-06-11 32 MiB reference:
 
-```bash
-cd /home/mzh/gpu
-RUN_ID=gpu-perf-pttiming-vmonly-$(date +%Y%m%d-%H%M%S) \
-  ./scripts/run/run-host-vs-passthrough-gles-perf.sh \
-  --host-rootfs-userspace \
-  --exclude-cpu-prepare \
-  --skip-host \
-  --iterations 100 \
-  --warmup 5 \
-  --large-count-iterations 20 \
-  --large-count-warmup 5 \
-  --guest-panthor-pt-timing \
-  --vm-timeout 900
+```text
+run: GPU-SFTP/log/passthrough/perf/gpu-perf-32m-opencca-pmthor-20260611-234401
+host avg iter_total: 25471.05 us
+passthrough VM avg iter_total: 33016.80 us
+host/vm ratio: 0.771
+renderer: Mali-G610 (Panfrost)
+GL: OpenGL ES 3.1 Mesa 25.0.7-2
+restored driver: pmthor
 ```
 
-IRQ/completion timing:
-
-```bash
-cd /home/mzh/gpu
-RUN_ID=gpu-perf-irqstats-vmonly-$(date +%Y%m%d-%H%M%S) \
-  ./scripts/run/run-host-vs-passthrough-gles-perf.sh \
-  --host-rootfs-userspace \
-  --exclude-cpu-prepare \
-  --skip-host \
-  --iterations 100 \
-  --warmup 5 \
-  --large-count-iterations 20 \
-  --large-count-warmup 5 \
-  --pmthor-irq-stats \
-  --guest-panthor-irq-stats \
-  --vm-timeout 900
-```
-
-Before trusting IRQ/completion numbers, inspect host and guest logs for hot-path `printk/pr_info/dev_info` in IRQ, EOI, irqfd/resample, ACK notifier, submit, fence completion, and page-table map paths.
-
-## Rejected Defaults
-
-Do not reintroduce these as default or optional baseline optimizations unless the user asks for a new research attempt and the design is changed first:
-
-- BO preallocation/reuse/resident/bucket/capacity/lazy_unmap/suballocation.
-- Guest raw-unmask HVC.
-- Raw ack/raw prequeue/hardirq job IRQ fast path.
-- Guest Panthor IRQ thread boost.
-- `WQ_HIGHPRI`, `CPU_INTENSIVE`, deferred scheduler wake.
-- Firecracker `nice -10`, guest `nohlt`, or cpuidle-off boot.
-- Hot-path logging.
-
-## Reporting
-
-A good report includes:
-
-- Run ID and `RESULT: PASS/FAIL`.
-- Local log path.
-- Components rebuilt, deployed, synced, or deliberately skipped.
-- Active rootfs/config and userspace when relevant.
-- The formal Host/VM ratio table for performance runs.
-- First meaningful failure symptom and log file when a run fails.
-
-Always fetch and inspect local logs before reporting success. Do not infer success from exit code alone.
+A good final report includes the run ID, local log path, rebuilt/synced/skipped
+components, active rootfs/config, the Host/VM ratio table or 32 MiB numbers,
+and the first meaningful failure log if the run failed.

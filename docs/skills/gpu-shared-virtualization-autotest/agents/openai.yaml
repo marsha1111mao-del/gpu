@@ -1,0 +1,4 @@
+interface:
+  display_name: "GPU Shared Virtualization Autotest"
+  short_description: "Run RK3588 shared GPU tests"
+  default_prompt: "Use $gpu-shared-virtualization-autotest to run and report the RK3588 shared GPU virtualization test."

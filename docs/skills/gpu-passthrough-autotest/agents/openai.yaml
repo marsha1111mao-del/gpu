@@ -1,0 +1,4 @@
+interface:
+  display_name: "GPU Passthrough Autotest"
+  short_description: "Run RK3588 GPU passthrough tests"
+  default_prompt: "Use $gpu-passthrough-autotest to run and report the RK3588 GPU passthrough test."
