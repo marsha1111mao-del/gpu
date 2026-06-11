@@ -162,16 +162,22 @@ Rebuild only what changed:
 - Firecracker or `vmshm-broker`: run
   `scripts/build/build-firecracker-runtime.sh`.
 - IOCTL smoke source: run `scripts/build/build-panthor-ioctl-smoke.sh`.
+- vmshm lookup/isolation probe source: run
+  `scripts/build/build-vmshm-lookup-probe.sh`.
 - GLES smoke source only: prefer the existing ARM64
   `GPU-SFTP/firecracker-bins/bin/gles-compute-smoke`; if remote build deps are
-  unavailable, pass `--skip-gles-remote-build`.
+  unavailable, pass `--skip-gles-remote-build`. The current RK host does not
+  have `pkg-config`; do not expect remote GLES rebuilds to work until the build
+  dependencies are installed.
 - Config-only changes: regenerate/sync configs only.
 - Rootfs images are not part of ordinary runs; use `--sync-rootfs` only when
   seeding or intentionally replacing base images.
 
 The shared scripts sync `GPU-SFTP/` to `root@192.168.31.18:/root/GPU-SFTP/`
-and exclude logs and rootfs unless explicitly requested. Avoid ad hoc rsync
-that overwrites historical logs.
+and exclude logs and rootfs unless explicitly requested. The current RK host
+has `tar` but may not have `rsync`; the two-client runner has a tar-stream
+fallback and atomic `--sync-rootfs` file streaming. Avoid ad hoc sync commands
+that overwrite historical logs or rootfs images.
 
 ## Shared Test Flow
 
@@ -254,6 +260,11 @@ Useful two-client GLES knobs:
   `--gles-panthor-sched-highpri-wq`, and
   `--gles-panthor-proxy-group-core-partitions` change timing; label those runs
   as diagnostic.
+- `--gles-vmshm-isolation-probe` is the negative isolation harness. It keeps a
+  client0 vmshm-backed BO alive, extracts that `payload=0x...` handle from the
+  proxy log, and makes client1 try to look it up while spoofing VMID 1. Treat
+  the run as passing only when both clients pass GLES and client1 logs
+  `VMSHM_ISOLATION_RESULT=PASS`.
 
 Shared GLES runners reuse the remote base `rootfs-panfrost.ext4` and inject the
 payload immediately before VM launch. Do not create per-count rootfs variants;

@@ -107,6 +107,24 @@ apply_cmdline_overrides() {
 		GPU_SMOKE_START_UPTIME_MS="${value}"
 		export GPU_SMOKE_START_UPTIME_MS
 	fi
+
+	value="$(cmdline_value gpu_smoke_vmshm_probe_handle || true)"
+	if [ -n "${value}" ]; then
+		GPU_SMOKE_VMSHM_PROBE_HANDLE="${value}"
+		export GPU_SMOKE_VMSHM_PROBE_HANDLE
+	fi
+
+	value="$(cmdline_value gpu_smoke_vmshm_probe_expect || true)"
+	if [ -n "${value}" ]; then
+		GPU_SMOKE_VMSHM_PROBE_EXPECT="${value}"
+		export GPU_SMOKE_VMSHM_PROBE_EXPECT
+	fi
+
+	value="$(cmdline_value gpu_smoke_vmshm_probe_spoof_vmid || true)"
+	if [ -n "${value}" ]; then
+		GPU_SMOKE_VMSHM_PROBE_SPOOF_VMID="${value}"
+		export GPU_SMOKE_VMSHM_PROBE_SPOOF_VMID
+	fi
 }
 
 dump_perf_dmesg() {
@@ -142,6 +160,42 @@ dump_panthor_client_params() {
 
 	value="$(cat "${path}" 2>/dev/null || true)"
 	log "PANTHOR_CLIENT_BO_MMAP_CACHED=${value}"
+}
+
+run_vmshm_lookup_probe() {
+	local handle="${GPU_SMOKE_VMSHM_PROBE_HANDLE:-}"
+	local expect="${GPU_SMOKE_VMSHM_PROBE_EXPECT:-denied}"
+	local spoof="${GPU_SMOKE_VMSHM_PROBE_SPOOF_VMID:-}"
+	local rc
+
+	[ -n "${handle}" ] || return 0
+
+	if [ ! -x /root/vmshm_lookup_probe ]; then
+		log "missing /root/vmshm_lookup_probe for vmshm isolation probe"
+		echo "VMSHM_ISOLATION_RESULT=FAIL"
+		return 126
+	fi
+
+	if [ -n "${spoof}" ]; then
+		log "+ /root/vmshm_lookup_probe --handle ${handle} --expect ${expect} --spoof-vmid ${spoof}"
+		/root/vmshm_lookup_probe \
+			--handle "${handle}" \
+			--expect "${expect}" \
+			--spoof-vmid "${spoof}" 2>&1
+	else
+		log "+ /root/vmshm_lookup_probe --handle ${handle} --expect ${expect}"
+		/root/vmshm_lookup_probe \
+			--handle "${handle}" \
+			--expect "${expect}" 2>&1
+	fi
+	rc=$?
+
+	if [ "${rc}" -eq 0 ]; then
+		echo "VMSHM_ISOLATION_RESULT=PASS"
+	else
+		echo "VMSHM_ISOLATION_RESULT=FAIL rc=${rc}"
+	fi
+	return "${rc}"
 }
 
 wait_for_smoke_start_epoch() {
@@ -311,6 +365,13 @@ if [ ! -x /root/gles-compute-smoke ]; then
 fi
 
 dump_panthor_client_params
+
+if ! run_vmshm_lookup_probe; then
+	dump_client_comm_rpc_stats
+	dump_perf_dmesg
+	echo "GPU_SMOKE_RESULT=FAIL"
+	exit 126
+fi
 
 if [ "${GPU_SMOKE_QUIET_CONSOLE:-0}" = 1 ]; then
 	log "lowering console loglevel for performance run"

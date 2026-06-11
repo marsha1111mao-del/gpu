@@ -297,6 +297,7 @@ int main(int argc, char **argv)
     unsigned count = 64;
     unsigned iterations = 1;
     unsigned warmup = 0;
+    unsigned hold_after_check_sec = 0;
     unsigned alu_iters = 1;
     unsigned total_loops;
     uint32_t *input = NULL;
@@ -351,16 +352,20 @@ int main(int argc, char **argv)
         } else if (!strcmp(argv[i], "--alu-iters")) {
             if (++i >= argc || parse_uint_arg("--alu-iters", argv[i], &alu_iters))
                 return 2;
+        } else if (!strcmp(argv[i], "--hold-after-check-sec")) {
+            if (++i >= argc || parse_uint0_arg("--hold-after-check-sec", argv[i],
+                                               &hold_after_check_sec))
+                return 2;
         } else if (!strcmp(argv[i], "-h") || !strcmp(argv[i], "--help")) {
             fprintf(stderr,
-                    "usage: %s [--perf] [--exclude-cpu-prepare] [--alu-iters N] [--iterations N] [--warmup N] [--count N] [drm-node]\n",
+                    "usage: %s [--perf] [--exclude-cpu-prepare] [--alu-iters N] [--iterations N] [--warmup N] [--hold-after-check-sec N] [--count N] [drm-node]\n",
                     argv[0]);
             return 0;
         } else if (!requested_path) {
             requested_path = argv[i];
         } else {
             fprintf(stderr,
-                    "usage: %s [--perf] [--exclude-cpu-prepare] [--alu-iters N] [--iterations N] [--warmup N] [--count N] [drm-node]\n",
+                    "usage: %s [--perf] [--exclude-cpu-prepare] [--alu-iters N] [--iterations N] [--warmup N] [--hold-after-check-sec N] [--count N] [drm-node]\n",
                     argv[0]);
             return 2;
         }
@@ -738,6 +743,10 @@ int main(int argc, char **argv)
                (unsigned long long)(loop_end_us - loop_start_us));
         printf("PERF_TOTAL_US=%llu\n",
                (unsigned long long)(loop_end_us - program_start_us));
+    }
+    if (hold_after_check_sec) {
+        printf("HOLD_AFTER_CHECK_SEC=%u\n", hold_after_check_sec);
+        sleep(hold_after_check_sec);
     }
     rc = 0;
 

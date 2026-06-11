@@ -59,6 +59,7 @@
 # Built test payloads.
 /tests/panthor-ioctl-smoke/panthor_ioctl_smoke
 /tests/vmshm-test/vmshm_demo
+/tests/vmshm-lookup-probe/vmshm_lookup_probe
 
 # Host kernel deployment payloads are produced by ../scripts/deploy/deploy-host-kernel-and-test.sh.
 /linux-host-kernel/Image

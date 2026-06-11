@@ -5,6 +5,89 @@ virtualization plan. It intentionally separates tested designs from partial or
 incorrect designs so future work can reuse the stable pieces and avoid repeating
 dead ends.
 
+## 2026-06-12: VMID-Scoped Isolation Probe Harness And Runner Hardening
+
+### Goal
+
+Make the two-client shared-GPU path easier to validate as an isolation boundary:
+client0 creates a live vmshm-backed BO, client1 tries to look up that payload
+handle while spoofing `requester_vmid=1`, and the run passes only if the lookup
+is rejected with `EACCES`.
+
+### Implementation
+
+New pieces:
+
+- `GPU-SFTP/tests/vmshm-lookup-probe/vmshm_lookup_probe.c`
+  - opens `/dev/client_vmshm_manager`
+  - calls `CLIENT_VMSHM_MANAGER_IOC_GET_OBJECT`
+  - supports `--handle`, `--spoof-vmid`, and `--expect denied|success`
+  - treats `EACCES` as the required result for cross-VM lookup denial
+- `scripts/build/build-vmshm-lookup-probe.sh`
+  - cross-builds the probe as a static AArch64 binary
+  - installs it to `GPU-SFTP/firecracker-bins/bin/vmshm_lookup_probe`
+- `GPU-SFTP/tests/gpu-compute-smoke/gles_compute_smoke.c`
+  - adds `--hold-after-check-sec N` so client0 can keep the BO alive after
+    `COMPUTE_CHECK=PASS`
+- `GPU-SFTP/tests/gpu-compute-smoke/gpu-smoke.sh`
+  - reads `gpu_smoke_vmshm_probe_*` kernel cmdline keys
+  - runs `/root/vmshm_lookup_probe`
+  - emits `VMSHM_ISOLATION_RESULT=PASS|FAIL`
+- `scripts/run/run-vmshm-2client-e2e.sh`
+  - adds `--gles-vmshm-isolation-probe`
+  - holds client0's BO, extracts the first `session=1` `payload=0x...` handle
+    from `proxy.log`, then starts client1 with that handle and
+    `gpu_smoke_vmshm_probe_spoof_vmid=1`
+  - requires both normal GLES success and `VMSHM_ISOLATION_RESULT=PASS` when the
+    probe mode is enabled
+
+Runner hardening added at the same time:
+
+- The RK3588 target currently has `tar` but not `rsync`. The two-client runner
+  now falls back to a tar stream for normal source/runtime sync and log fetch.
+- `--sync-rootfs` uses explicit atomic file streaming for rootfs images instead
+  of coarse directory replacement.
+- The proxy-side client1 object window moved from GPA `0x38000000` to
+  `0x50000000`; `0x38000000` overlaps when the object window is 224 MiB.
+
+### Verification
+
+Static and build checks:
+
+```text
+bash -n scripts/run/run-vmshm-2client-e2e.sh
+sh -n GPU-SFTP/tests/gpu-compute-smoke/gpu-smoke.sh
+gcc -fsyntax-only -Wall -Wextra GPU-SFTP/tests/vmshm-lookup-probe/vmshm_lookup_probe.c
+./scripts/build/build-vmshm-lookup-probe.sh
+```
+
+The secure split path already passed after the GPA/tar fixes:
+
+```text
+run:
+GPU-SFTP/log/shared/vmshm-2client/vmshm-2client-gles-32m-secure-split-20260612-015506
+
+result:                 GLES_PASS
+client0 iter_total avg: 27474.45 us
+client1 iter_total avg: 27687.75 us
+shared mean:            27581.10 us
+host baseline:          25458.05 us
+host/share:             0.923
+```
+
+The new negative isolation probe is staged in the runner but still needs a full
+RK3588 run with a `gles-compute-smoke` binary that includes
+`--hold-after-check-sec`. The current RK host lacks `pkg-config`, and the local
+Panfrost sysroot library set is not link-compatible with the host cross-linker,
+so do not treat this entry as the final isolation pass.
+
+### Failed Design Blacklist
+
+- Do not reuse proxy client1 object GPA `0x38000000` for variable-size object
+  windows. It overlaps the client0 object window at the 224 MiB setting.
+- Do not stream rootfs images into the remote tree with non-atomic coarse tar
+  replacement. Use the runner's explicit `--sync-rootfs` atomic stream.
+
 ## 2026-06-12: 32 MiB Shared GLES Auto-Affinity Performance Pass
 
 ### Goal

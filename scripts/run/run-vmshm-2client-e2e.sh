@@ -41,6 +41,8 @@ GLES_CLIENT1_CPUS=${GLES_CLIENT1_CPUS:-}
 GLES_PANTHOR_SCHED_TICK_MS=${GLES_PANTHOR_SCHED_TICK_MS:-0}
 GLES_PANTHOR_SCHED_HIGHPRI_WQ=${GLES_PANTHOR_SCHED_HIGHPRI_WQ:-0}
 GLES_PANTHOR_PROXY_GROUP_CORE_PARTITIONS=${GLES_PANTHOR_PROXY_GROUP_CORE_PARTITIONS:-0}
+GLES_VMSHM_ISOLATION_PROBE=${GLES_VMSHM_ISOLATION_PROBE:-0}
+GLES_VMSHM_ISOLATION_HOLD_SEC=${GLES_VMSHM_ISOLATION_HOLD_SEC:-60}
 
 usage() {
 	cat <<EOF
@@ -113,6 +115,14 @@ Options:
                            each shared client's group shader core mask across
                            N partitions. 0 keeps the default Panthor/Mesa
                            group masks.
+  --gles-vmshm-isolation-probe
+                           Negative security test: keep client0's first GLES
+                           BO alive, then make client1 try to look up that
+                           payload handle. The run passes only if the lookup is
+                           rejected with EACCES.
+  --gles-vmshm-isolation-hold-sec N
+                           Seconds for client0 to hold the GLES BO alive while
+                           client1 runs the isolation probe. Default: ${GLES_VMSHM_ISOLATION_HOLD_SEC}
   --run-id ID              Use a fixed run log directory name
   -h, --help               Show this help
 
@@ -279,6 +289,17 @@ while [[ $# -gt 0 ]]; do
 		fi
 		GLES_PANTHOR_PROXY_GROUP_CORE_PARTITIONS=$1
 		;;
+	--gles-vmshm-isolation-probe)
+		GLES_VMSHM_ISOLATION_PROBE=1
+		;;
+	--gles-vmshm-isolation-hold-sec)
+		shift
+		if [[ $# -eq 0 ]]; then
+			echo "--gles-vmshm-isolation-hold-sec requires an argument" >&2
+			exit 2
+		fi
+		GLES_VMSHM_ISOLATION_HOLD_SEC=$1
+		;;
 	--run-id)
 		shift
 		if [[ $# -eq 0 ]]; then
@@ -374,6 +395,68 @@ rsync_remote() {
 		rsync "$@"
 }
 
+remote_has_cmd() {
+	local cmd="$1"
+
+	ssh_remote "command -v $(quote "${cmd}") >/dev/null 2>&1"
+}
+
+tar_sync_to_remote() {
+	local -a include_paths=(
+		ARTIFACTS.md
+		rootfs-manifest.json
+		artifacts
+		firecracker-bins/bin
+		firecracker-bins/configs
+		firecracker-bins/kernels
+		firecracker-bins/scripts
+		panthor_fw
+		tests
+	)
+
+	remote_has_cmd tar || die "remote host is missing both rsync and tar"
+
+	log "Remote rsync missing; syncing GPU-SFTP via tar stream"
+	ssh_remote "mkdir -p $(quote "${REMOTE_ROOT}") $(quote "${REMOTE_BINS}") && rm -rf $(quote "${REMOTE_BINS}/bin") $(quote "${REMOTE_BINS}/configs") $(quote "${REMOTE_BINS}/kernels") $(quote "${REMOTE_BINS}/scripts") $(quote "${REMOTE_ROOT}/tests") $(quote "${REMOTE_ROOT}/panthor_fw") $(quote "${REMOTE_ROOT}/artifacts")"
+	(
+		cd "${SFTP_ROOT}"
+		tar -cf - "${include_paths[@]}"
+	) | ssh_remote "cd $(quote "${REMOTE_ROOT}") && tar -xf -"
+}
+
+stream_file_to_remote_atomic() {
+	local rel_path="$1"
+	local src="${SFTP_ROOT}/${rel_path}"
+	local dst="${REMOTE_ROOT}/${rel_path}"
+	local dst_dir tmp
+
+	[[ -f "${src}" ]] || die "missing local file for rootfs sync: ${src}"
+
+	dst_dir=$(dirname -- "${dst}")
+	tmp="${dst}.tmp.$$"
+	log "Syncing ${rel_path} via atomic ssh stream"
+	ssh_remote "mkdir -p $(quote "${dst_dir}") && rm -f $(quote "${tmp}")"
+	cat "${src}" |
+		ssh_remote "cat > $(quote "${tmp}") && chmod 0644 $(quote "${tmp}") && mv -f $(quote "${tmp}") $(quote "${dst}")"
+}
+
+sync_rootfs_to_remote_atomic() {
+	stream_file_to_remote_atomic "firecracker-bins/rootfs/rootfs.ext2"
+	stream_file_to_remote_atomic "firecracker-bins/rootfs/rootfs-panfrost.ext4"
+}
+
+tar_fetch_logs() {
+	local remote_log="${REMOTE_LOG_ROOT}/shared/vmshm-2client/${RUN_ID}"
+	local local_log="${SFTP_LOG_ROOT}/shared/vmshm-2client/${RUN_ID}"
+
+	remote_has_cmd tar || die "remote host is missing both rsync and tar"
+
+	log "Remote rsync missing; fetching logs via tar stream"
+	mkdir -p "${local_log}"
+	ssh_remote "cd $(quote "${remote_log}") && tar -cf - ." |
+		tar -C "${local_log}" -xf -
+}
+
 # shellcheck source=scripts/lib/gpu_sftp_layout.sh
 source "${ROOT_DIR}/scripts/lib/gpu_sftp_layout.sh"
 
@@ -406,10 +489,17 @@ sync_to_remote() {
 	ssh_remote "rm -rf $(quote "${REMOTE_BINS}/run-logs")"
 
 	log "Syncing GPU-SFTP to ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_ROOT}"
-	rsync_remote -av --info=stats2,name1 \
-		"${excludes[@]}" \
-		"${SFTP_ROOT}/" \
-		"${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_ROOT}/"
+	if remote_has_cmd rsync; then
+		rsync_remote -av --info=stats2,name1 \
+			"${excludes[@]}" \
+			"${SFTP_ROOT}/" \
+			"${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_ROOT}/"
+	else
+		tar_sync_to_remote "${excludes[@]}"
+		if [[ "${SYNC_ROOTFS}" -eq 1 ]]; then
+			sync_rootfs_to_remote_atomic
+		fi
+	fi
 
 	migrate_remote_gpu_sftp_layout
 }
@@ -428,6 +518,7 @@ run_remote_test() {
 	local gles_client0_cpus_q gles_client1_cpus_q
 	local gles_panthor_sched_tick_ms_q gles_panthor_sched_highpri_wq_q
 	local gles_panthor_proxy_group_core_partitions_q
+	local gles_vmshm_isolation_probe_q gles_vmshm_isolation_hold_sec_q
 
 	run_id_q=$(quote "${RUN_ID}")
 	remote_root_q=$(quote "${REMOTE_ROOT}")
@@ -456,9 +547,11 @@ run_remote_test() {
 	gles_panthor_sched_tick_ms_q=$(quote "${GLES_PANTHOR_SCHED_TICK_MS}")
 	gles_panthor_sched_highpri_wq_q=$(quote "${GLES_PANTHOR_SCHED_HIGHPRI_WQ}")
 	gles_panthor_proxy_group_core_partitions_q=$(quote "${GLES_PANTHOR_PROXY_GROUP_CORE_PARTITIONS}")
+	gles_vmshm_isolation_probe_q=$(quote "${GLES_VMSHM_ISOLATION_PROBE}")
+	gles_vmshm_isolation_hold_sec_q=$(quote "${GLES_VMSHM_ISOLATION_HOLD_SEC}")
 
 	log "Running remote 2-client vmshm test: ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_BINS}"
-	ssh_remote "RUN_ID=${run_id_q} REMOTE_ROOT=${remote_root_q} REMOTE_BINS=${remote_bins_q} REMOTE_LOG_ROOT=${remote_log_root_q} CLEAN_REMOTE_PROCS=${clean_q} GLES_COMPUTE_SMOKE=${gles_compute_smoke_q} GLES_REMOTE_BUILD=${gles_remote_build_q} GLES_SMOKE_ARGS=${gles_smoke_args_q} GLES_CLIENT_MEM_MIB=${gles_client_mem_mib_q} GLES_PROXY_MEM_MIB=${gles_proxy_mem_mib_q} GLES_CLIENT_VCPUS=${gles_client_vcpus_q} GLES_PROXY_VCPUS=${gles_proxy_vcpus_q} GLES_CLIENT_START_GAP_SEC=${gles_client_start_gap_sec_q} GLES_SYNC_START_DELAY_SEC=${gles_sync_start_delay_sec_q} GLES_MIN_HOST_AVAILABLE_MIB=${gles_min_host_available_mib_q} GLES_PROXY_PANTHOR_STATS=${gles_proxy_panthor_stats_q} GLES_CLIENT_BO_MMAP_CACHED=${gles_client_bo_mmap_cached_q} GLES_AUTO_AFFINITY=${gles_auto_affinity_q} GLES_AFFINITY_PROFILE=${gles_affinity_profile_q} GLES_HOST_ONLINE_CPUS=${gles_host_online_cpus_q} GLES_BROKER_CPUS=${gles_broker_cpus_q} GLES_PROXY_CPUS=${gles_proxy_cpus_q} GLES_CLIENT0_CPUS=${gles_client0_cpus_q} GLES_CLIENT1_CPUS=${gles_client1_cpus_q} GLES_PANTHOR_SCHED_TICK_MS=${gles_panthor_sched_tick_ms_q} GLES_PANTHOR_SCHED_HIGHPRI_WQ=${gles_panthor_sched_highpri_wq_q} GLES_PANTHOR_PROXY_GROUP_CORE_PARTITIONS=${gles_panthor_proxy_group_core_partitions_q} bash -s" <<'REMOTE_SCRIPT'
+	ssh_remote "RUN_ID=${run_id_q} REMOTE_ROOT=${remote_root_q} REMOTE_BINS=${remote_bins_q} REMOTE_LOG_ROOT=${remote_log_root_q} CLEAN_REMOTE_PROCS=${clean_q} GLES_COMPUTE_SMOKE=${gles_compute_smoke_q} GLES_REMOTE_BUILD=${gles_remote_build_q} GLES_SMOKE_ARGS=${gles_smoke_args_q} GLES_CLIENT_MEM_MIB=${gles_client_mem_mib_q} GLES_PROXY_MEM_MIB=${gles_proxy_mem_mib_q} GLES_CLIENT_VCPUS=${gles_client_vcpus_q} GLES_PROXY_VCPUS=${gles_proxy_vcpus_q} GLES_CLIENT_START_GAP_SEC=${gles_client_start_gap_sec_q} GLES_SYNC_START_DELAY_SEC=${gles_sync_start_delay_sec_q} GLES_MIN_HOST_AVAILABLE_MIB=${gles_min_host_available_mib_q} GLES_PROXY_PANTHOR_STATS=${gles_proxy_panthor_stats_q} GLES_CLIENT_BO_MMAP_CACHED=${gles_client_bo_mmap_cached_q} GLES_AUTO_AFFINITY=${gles_auto_affinity_q} GLES_AFFINITY_PROFILE=${gles_affinity_profile_q} GLES_HOST_ONLINE_CPUS=${gles_host_online_cpus_q} GLES_BROKER_CPUS=${gles_broker_cpus_q} GLES_PROXY_CPUS=${gles_proxy_cpus_q} GLES_CLIENT0_CPUS=${gles_client0_cpus_q} GLES_CLIENT1_CPUS=${gles_client1_cpus_q} GLES_PANTHOR_SCHED_TICK_MS=${gles_panthor_sched_tick_ms_q} GLES_PANTHOR_SCHED_HIGHPRI_WQ=${gles_panthor_sched_highpri_wq_q} GLES_PANTHOR_PROXY_GROUP_CORE_PARTITIONS=${gles_panthor_proxy_group_core_partitions_q} GLES_VMSHM_ISOLATION_PROBE=${gles_vmshm_isolation_probe_q} GLES_VMSHM_ISOLATION_HOLD_SEC=${gles_vmshm_isolation_hold_sec_q} bash -s" <<'REMOTE_SCRIPT'
 set -euo pipefail
 
 cd "${REMOTE_BINS}"
@@ -487,6 +580,9 @@ GLES_CLIENT1_CPUS=${GLES_CLIENT1_CPUS:-}
 GLES_PANTHOR_SCHED_TICK_MS=${GLES_PANTHOR_SCHED_TICK_MS:-0}
 GLES_PANTHOR_SCHED_HIGHPRI_WQ=${GLES_PANTHOR_SCHED_HIGHPRI_WQ:-0}
 GLES_PANTHOR_PROXY_GROUP_CORE_PARTITIONS=${GLES_PANTHOR_PROXY_GROUP_CORE_PARTITIONS:-0}
+GLES_VMSHM_ISOLATION_PROBE=${GLES_VMSHM_ISOLATION_PROBE:-0}
+GLES_VMSHM_ISOLATION_HOLD_SEC=${GLES_VMSHM_ISOLATION_HOLD_SEC:-60}
+GLES_VMSHM_ISOLATION_HANDLE=0
 GLES_SMOKE_START_EPOCH=0
 GLES_SMOKE_START_UPTIME_MS=0
 SMOKE_MNT=""
@@ -713,8 +809,15 @@ validate_gles_proxy_sched() {
 	validate_uint_setting gles_panthor_sched_highpri_wq "${GLES_PANTHOR_SCHED_HIGHPRI_WQ}"
 	validate_uint_setting gles_panthor_proxy_group_core_partitions "${GLES_PANTHOR_PROXY_GROUP_CORE_PARTITIONS}"
 	validate_uint_setting gles_sync_start_delay_sec "${GLES_SYNC_START_DELAY_SEC}"
+	validate_uint_setting gles_vmshm_isolation_probe "${GLES_VMSHM_ISOLATION_PROBE}"
+	validate_uint_setting gles_vmshm_isolation_hold_sec "${GLES_VMSHM_ISOLATION_HOLD_SEC}"
 	case "${GLES_PANTHOR_SCHED_HIGHPRI_WQ}" in 0|1) ;; *)
 		echo "invalid gles_panthor_sched_highpri_wq: ${GLES_PANTHOR_SCHED_HIGHPRI_WQ}" >"${LOG_DIR}/result"
+		return 2
+		;;
+	esac
+	case "${GLES_VMSHM_ISOLATION_PROBE}" in 0|1) ;; *)
+		echo "invalid gles_vmshm_isolation_probe: ${GLES_VMSHM_ISOLATION_PROBE}" >"${LOG_DIR}/result"
 		return 2
 		;;
 	esac
@@ -912,6 +1015,45 @@ stop_pid_file() {
 	fi
 }
 
+extract_client_payload_handle() {
+	local session="$1"
+
+	grep -aoE "BO_CREATE vmshm-backed session=${session}[^[:cntrl:]]*payload=0x[0-9a-fA-F]+" \
+		"${LOG_DIR}/proxy.log" 2>/dev/null |
+		sed -n 's/.*payload=\(0x[0-9a-fA-F]\+\).*/\1/p' |
+		head -n 1
+}
+
+wait_for_isolation_payload_handle() {
+	local timeout="$1"
+	local i=0 handle
+
+	while [[ "${i}" -lt "${timeout}" ]]; do
+		handle=$(extract_client_payload_handle 1 || true)
+		if [[ -n "${handle}" ]]; then
+			GLES_VMSHM_ISOLATION_HANDLE="${handle}"
+			{
+				echo "gles_vmshm_isolation_handle=${GLES_VMSHM_ISOLATION_HANDLE}"
+				echo "gles_vmshm_isolation_handle_ts=$(date -Is)"
+			} >>"${LOG_DIR}/isolation.log"
+			return 0
+		fi
+		if grep -qaE "GPU_SMOKE_RESULT=FAIL|Kernel panic|Guest-boot failed|Oops|job timeout|mismatch|software renderer detected" \
+			"${LOG_DIR}/client0.log" 2>/dev/null; then
+			break
+		fi
+		i=$((i + 1))
+		sleep 1
+	done
+
+	{
+		echo "gles_vmshm_isolation_handle=missing"
+		echo "gles_vmshm_isolation_handle_timeout=${timeout}"
+		echo "gles_vmshm_isolation_handle_ts=$(date -Is)"
+	} >>"${LOG_DIR}/isolation.log"
+	return 1
+}
+
 cleanup_gles_rootfs() {
 	if [[ -n "${SMOKE_MNT}" && -d "${SMOKE_MNT}" ]]; then
 		umount "${SMOKE_MNT}" 2>/dev/null || true
@@ -965,10 +1107,11 @@ build_gles_compute_smoke() {
 }
 
 gles_smoke_args_tokens() {
+	local smoke_args="${1:-${GLES_SMOKE_ARGS}}"
 	local -a argv
 	local arg
 
-	read -r -a argv <<<"${GLES_SMOKE_ARGS}"
+	read -r -a argv <<<"${smoke_args}"
 	for arg in "${argv[@]}"; do
 		if [[ "${arg}" == *:* || "${arg}" == *[[:space:]]* || "${arg}" == *\"* || "${arg}" == *\\* ]]; then
 			echo "unsupported GLES smoke arg for kernel cmdline token transport: ${arg}" >&2
@@ -1013,6 +1156,13 @@ inject_gles_compute_payload() {
 	install -Dm0755 "${GLES_SMOKE_BIN}" "${SMOKE_MNT}/root/gles-compute-smoke"
 	install -Dm0755 "${GLES_SMOKE_SRC_DIR}/gpu-smoke.sh" "${SMOKE_MNT}/root/gpu-smoke.sh"
 	install -Dm0755 "${GLES_SMOKE_SRC_DIR}/init" "${SMOKE_MNT}/init"
+	if [[ -x "${REMOTE_BINS}/bin/vmshm_lookup_probe" ]]; then
+		install -Dm0755 "${REMOTE_BINS}/bin/vmshm_lookup_probe" \
+			"${SMOKE_MNT}/root/vmshm_lookup_probe"
+	elif [[ "${GLES_VMSHM_ISOLATION_PROBE}" == "1" ]]; then
+		echo "missing ${REMOTE_BINS}/bin/vmshm_lookup_probe for isolation probe" >&2
+		return 1
+	fi
 
 	cat >"${SMOKE_MNT}/root/gpu-smoke.env" <<EOF
 GPU_SMOKE_AFTER_RUN=shell
@@ -1036,11 +1186,16 @@ prepare_gles_compute_client() {
 	local client_stats_args=""
 	local client_mmap_args=""
 	local sync_start_args=""
+	local isolation_probe_args=""
+	local client_smoke_args="${GLES_SMOKE_ARGS}"
 	local smoke_arg_tokens
 
 	[[ -f "${rootfs_path}" ]] ||
 		{ echo "missing GLES rootfs ${rootfs_path}" >&2; return 1; }
-	smoke_arg_tokens=$(gles_smoke_args_tokens)
+	if [[ "${GLES_VMSHM_ISOLATION_PROBE}" == "1" && "${client_id}" == "client0" ]]; then
+		client_smoke_args+=" --hold-after-check-sec ${GLES_VMSHM_ISOLATION_HOLD_SEC}"
+	fi
+	smoke_arg_tokens=$(gles_smoke_args_tokens "${client_smoke_args}")
 
 	if [[ "${GLES_PROXY_PANTHOR_STATS}" == "1" ]]; then
 		client_stats_args=" client_comm_vmshm.rpc_stats=1"
@@ -1053,12 +1208,17 @@ prepare_gles_compute_client() {
 	elif [[ "${GLES_SMOKE_START_EPOCH}" != "0" ]]; then
 		sync_start_args=" gpu_smoke_start_epoch=${GLES_SMOKE_START_EPOCH}"
 	fi
+	if [[ "${GLES_VMSHM_ISOLATION_PROBE}" == "1" &&
+	      "${client_id}" == "client1" &&
+	      "${GLES_VMSHM_ISOLATION_HANDLE}" != "0" ]]; then
+		isolation_probe_args=" gpu_smoke_vmshm_probe_handle=${GLES_VMSHM_ISOLATION_HANDLE} gpu_smoke_vmshm_probe_expect=denied gpu_smoke_vmshm_probe_spoof_vmid=1"
+	fi
 
 	cat >"${config_out}" <<EOF
 {
   "boot-source": {
     "kernel_image_path": "${REMOTE_BINS}/kernels/shared/client/Image",
-    "boot_args": "console=ttyS0 root=/dev/vda ro rootfstype=ext4 init=/init panic=-1 print-fatal-signals=1 gpu_smoke_args_tokens=${smoke_arg_tokens} gpu_smoke_quiet_console=1 gpu_smoke_after_run=shell${client_stats_args}${client_mmap_args}${sync_start_args}"
+    "boot_args": "console=ttyS0 root=/dev/vda ro rootfstype=ext4 init=/init panic=-1 print-fatal-signals=1 gpu_smoke_args_tokens=${smoke_arg_tokens} gpu_smoke_quiet_console=1 gpu_smoke_after_run=shell${client_stats_args}${client_mmap_args}${sync_start_args}${isolation_probe_args}"
   },
   "drives": [
     {
@@ -1165,7 +1325,7 @@ prepare_gles_compute_proxy() {
       "socket_path": "/run/vmshm/vmshm-object-client1.sock",
       "name": "vmshm-object-client1-proxy",
       "role": "proxy",
-      "guest_phys_addr": "0x38000000",
+      "guest_phys_addr": "0x50000000",
       "slot": 4,
       "expected_size": ${GLES_OBJECT_WINDOW_BYTES},
       "fdt_node_name": "proxy-vmshm-manager-client1",
@@ -1334,13 +1494,22 @@ if [[ "${GLES_COMPUTE_SMOKE}" == "1" ]]; then
 			client0 /run/vmshm/vmshm-comm-client0.sock \
 			"vmshm-2client-client0-gles-${RUN_ID}.dtb" \
 			"${GLES_ROOTFS_PATH}")
-		CLIENT1_GLES_CONFIG=$(prepare_gles_compute_client \
-			client1 /run/vmshm/vmshm-comm-client1.sock \
-			"vmshm-2client-client1-gles-${RUN_ID}.dtb" \
-			"${GLES_ROOTFS_PATH}")
+		CLIENT1_GLES_CONFIG=""
+		if [[ "${GLES_VMSHM_ISOLATION_PROBE}" != "1" ]]; then
+			CLIENT1_GLES_CONFIG=$(prepare_gles_compute_client \
+				client1 /run/vmshm/vmshm-comm-client1.sock \
+				"vmshm-2client-client1-gles-${RUN_ID}.dtb" \
+				"${GLES_ROOTFS_PATH}")
+		fi
 		echo "proxy_config=${PROXY_GLES_CONFIG}"
 		echo "client0_config=${CLIENT0_GLES_CONFIG}"
-		echo "client1_config=${CLIENT1_GLES_CONFIG}"
+		if [[ -n "${CLIENT1_GLES_CONFIG}" ]]; then
+			echo "client1_config=${CLIENT1_GLES_CONFIG}"
+		else
+			echo "client1_config=pending-isolation-handle"
+		fi
+		echo "gles_vmshm_isolation_probe=${GLES_VMSHM_ISOLATION_PROBE}"
+		echo "gles_vmshm_isolation_hold_sec=${GLES_VMSHM_ISOLATION_HOLD_SEC}"
 	} >"${LOG_DIR}/gles-compute-rootfs.log" 2>&1
 fi
 
@@ -1432,11 +1601,31 @@ if [[ "${GLES_COMPUTE_SMOKE}" == "1" ]]; then
 			120 || true
 		sleep "${GLES_CLIENT_START_GAP_SEC}"
 	fi
+	if [[ "${GLES_VMSHM_ISOLATION_PROBE}" == "1" ]]; then
+		wait_for_log "${LOG_DIR}/client0.log" \
+			"COMPUTE_CHECK=PASS|GPU_SMOKE_RESULT=FAIL|Kernel panic|Guest-boot failed|Oops|job timeout|mismatch|software renderer detected" \
+			"${GLES_CLIENT_RESULT_TIMEOUT_SEC}" || true
+		wait_for_isolation_payload_handle 30 || true
+		if [[ "${GLES_VMSHM_ISOLATION_HANDLE}" != "0" ]]; then
+			CLIENT1_GLES_CONFIG=$(prepare_gles_compute_client \
+				client1 /run/vmshm/vmshm-comm-client1.sock \
+				"vmshm-2client-client1-gles-${RUN_ID}.dtb" \
+				"${GLES_ROOTFS_PATH}")
+			{
+				echo "gles_vmshm_isolation_handle=${GLES_VMSHM_ISOLATION_HANDLE}"
+				echo "client1_config=${CLIENT1_GLES_CONFIG}"
+			} >>"${LOG_DIR}/gles-compute-rootfs.log"
+		fi
+	fi
 else
 	wait_for_log "${LOG_DIR}/client0.log" "panthor-client: registered DRM frontend|Guest-boot failed" 60 || true
 fi
 
 if [[ "${GLES_COMPUTE_SMOKE}" == "1" ]]; then
+	if [[ -z "${CLIENT1_GLES_CONFIG}" ]]; then
+		echo "missing client1 GLES config; isolation_handle=${GLES_VMSHM_ISOLATION_HANDLE}" >>"${LOG_DIR}/isolation.log"
+		CLIENT1_GLES_CONFIG="${LOG_DIR}/missing-client1-gles-config.json"
+	fi
 	client1_cmd=(./bin/firecracker --no-api --no-seccomp --config-file "${CLIENT1_GLES_CONFIG}")
 	if [[ -n "${GLES_CLIENT1_CPUS}" ]]; then
 		client1_cmd=(taskset -c "${GLES_CLIENT1_CPUS}" "${client1_cmd[@]}")
@@ -1495,6 +1684,9 @@ fi
 	echo "GLES Panthor sched tick ms: ${GLES_PANTHOR_SCHED_TICK_MS}"
 	echo "GLES Panthor sched highpri wq: ${GLES_PANTHOR_SCHED_HIGHPRI_WQ}"
 	echo "GLES Panthor proxy group core partitions: ${GLES_PANTHOR_PROXY_GROUP_CORE_PARTITIONS}"
+	echo "GLES vmshm isolation probe: ${GLES_VMSHM_ISOLATION_PROBE}"
+	echo "GLES vmshm isolation hold sec: ${GLES_VMSHM_ISOLATION_HOLD_SEC}"
+	echo "GLES vmshm isolation handle: ${GLES_VMSHM_ISOLATION_HANDLE:-0}"
 	echo
 	echo "== Broker direct bridges =="
 	grep -aE "vmshm domain is listening|vmshm notify direct eventfd|sent vmshm memfd|vmshm connection failed" \
@@ -1518,6 +1710,11 @@ fi
 		sed -n '1,160p' "${LOG_DIR}/preflight.txt" || true
 		echo
 	fi
+	if [[ -f "${LOG_DIR}/isolation.log" ]]; then
+		echo "== vmshm isolation probe =="
+		sed -n '1,120p' "${LOG_DIR}/isolation.log" || true
+		echo
+	fi
 	if [[ -f "${LOG_DIR}/affinity.log" ]]; then
 		echo "== Host CPU affinity =="
 		grep -aE "== |online_cpus=|affinity_profile=|auto_affinity=|requested_online_cpus=|broker_cpus=|proxy_cpus=|client[01]_cpus=|launch_|before_restore=|after_restore=" \
@@ -1525,11 +1722,11 @@ fi
 		echo
 	fi
 	echo "== Client0 =="
-	grep -aE "client_comm_vmshm: perf selftest passed|CLIENT_COMM_RPC_STATS|PANTHOR_CLIENT_BO_MMAP_CACHED|panthor-client: BO mmap cached=|panthor-client: registered DRM frontend|panthor-client: MMAP .*attr=|GPU_SMOKE_RESULT|COMPUTE_CHECK|GL_RENDERER|GL_VENDOR|GL_VERSION|GBM_BACKEND|DRM_NODE|STAGE=|PERF_|gles-compute-smoke rc|mismatch|software renderer detected|job timeout|gpu fault|Oops|Unable to handle|Kernel panic|Guest-boot failed|ERROR|WARN" \
+	grep -aE "client_comm_vmshm: perf selftest passed|CLIENT_COMM_RPC_STATS|PANTHOR_CLIENT_BO_MMAP_CACHED|panthor-client: BO mmap cached=|panthor-client: registered DRM frontend|panthor-client: MMAP .*attr=|GPU_SMOKE_RESULT|COMPUTE_CHECK|GL_RENDERER|GL_VENDOR|GL_VERSION|GBM_BACKEND|DRM_NODE|STAGE=|PERF_|HOLD_AFTER_CHECK_SEC|VMSHM_LOOKUP_PROBE|VMSHM_ISOLATION_RESULT|gles-compute-smoke rc|mismatch|software renderer detected|job timeout|gpu fault|Oops|Unable to handle|Kernel panic|Guest-boot failed|ERROR|WARN" \
 		"${LOG_DIR}/client0.log" | tail -n 120 || true
 	echo
 	echo "== Client1 =="
-	grep -aE "client_comm_vmshm: perf selftest passed|CLIENT_COMM_RPC_STATS|PANTHOR_CLIENT_BO_MMAP_CACHED|panthor-client: BO mmap cached=|panthor-client: registered DRM frontend|panthor-client: MMAP .*attr=|GPU_SMOKE_RESULT|COMPUTE_CHECK|GL_RENDERER|GL_VENDOR|GL_VERSION|GBM_BACKEND|DRM_NODE|STAGE=|PERF_|gles-compute-smoke rc|mismatch|software renderer detected|job timeout|gpu fault|Oops|Unable to handle|Kernel panic|Guest-boot failed|ERROR|WARN" \
+	grep -aE "client_comm_vmshm: perf selftest passed|CLIENT_COMM_RPC_STATS|PANTHOR_CLIENT_BO_MMAP_CACHED|panthor-client: BO mmap cached=|panthor-client: registered DRM frontend|panthor-client: MMAP .*attr=|GPU_SMOKE_RESULT|COMPUTE_CHECK|GL_RENDERER|GL_VENDOR|GL_VERSION|GBM_BACKEND|DRM_NODE|STAGE=|PERF_|HOLD_AFTER_CHECK_SEC|VMSHM_LOOKUP_PROBE|VMSHM_ISOLATION_RESULT|gles-compute-smoke rc|mismatch|software renderer detected|job timeout|gpu fault|Oops|Unable to handle|Kernel panic|Guest-boot failed|ERROR|WARN" \
 		"${LOG_DIR}/client1.log" | tail -n 120 || true
 	echo
 
@@ -1545,9 +1742,15 @@ fi
 		! grep -qaE "software renderer detected|llvmpipe|softpipe|Software Rasterizer|COMPUTE_CHECK=FAIL|GPU_SMOKE_RESULT=FAIL|Kernel panic|Oops|job timeout|mismatch" "${log_file}"
 	}
 
+	gles_isolation_ok() {
+		[[ "${GLES_VMSHM_ISOLATION_PROBE}" == "1" ]] || return 0
+		grep -qa "VMSHM_ISOLATION_RESULT=PASS" "${LOG_DIR}/client1.log"
+	}
+
 	if [[ "${GLES_COMPUTE_SMOKE}" == "1" ]]; then
 		if gles_client_ok "${LOG_DIR}/client0.log" &&
-		   gles_client_ok "${LOG_DIR}/client1.log"; then
+		   gles_client_ok "${LOG_DIR}/client1.log" &&
+		   gles_isolation_ok; then
 			echo "RESULT: GLES_PASS"
 		else
 			echo "RESULT: GLES_FAIL"
@@ -1585,9 +1788,13 @@ REMOTE_SCRIPT
 fetch_logs() {
 	log "Fetching logs back to ${SFTP_LOG_ROOT}/shared/vmshm-2client/${RUN_ID}"
 	mkdir -p "${SFTP_LOG_ROOT}/shared/vmshm-2client"
-	rsync_remote -av --info=stats2,name1 \
-		"${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_LOG_ROOT}/shared/vmshm-2client/${RUN_ID}/" \
-		"${SFTP_LOG_ROOT}/shared/vmshm-2client/${RUN_ID}/"
+	if remote_has_cmd rsync; then
+		rsync_remote -av --info=stats2,name1 \
+			"${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_LOG_ROOT}/shared/vmshm-2client/${RUN_ID}/" \
+			"${SFTP_LOG_ROOT}/shared/vmshm-2client/${RUN_ID}/"
+	else
+		tar_fetch_logs
+	fi
 }
 
 show_summary() {
@@ -1605,8 +1812,8 @@ show_summary() {
 }
 
 require_cmd ssh
-require_cmd rsync
 require_cmd setsid
+require_cmd tar
 
 install_configs
 if [[ "${SYNC_TO_REMOTE}" -eq 1 ]]; then
