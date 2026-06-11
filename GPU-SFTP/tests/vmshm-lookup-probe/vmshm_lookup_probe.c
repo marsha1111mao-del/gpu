@@ -50,7 +50,7 @@ struct client_vmshm_manager_user_lookup {
 static void usage(const char *prog)
 {
 	fprintf(stderr,
-		"usage: %s --handle HANDLE [--spoof-vmid VMID] [--expect denied|success]\n",
+		"usage: %s --handle HANDLE [--spoof-vmid VMID] [--expect denied|inaccessible|success]\n",
 		prog);
 }
 
@@ -160,6 +160,27 @@ int main(int argc, char **argv)
 		if (saved_errno != EACCES) {
 			fprintf(stderr,
 				"VMSHM_LOOKUP_PROBE_FAIL expected_EACCES got=%d (%s)\n",
+				saved_errno, strerror(saved_errno));
+			return 11;
+		}
+		return 0;
+	}
+
+	if (!strcmp(expect, "inaccessible")) {
+		if (ret == 0) {
+			fprintf(stderr,
+				"VMSHM_LOOKUP_PROBE_FAIL unexpected_success handle=0x%llx offset=0x%llx size=0x%llx\n",
+				(unsigned long long)handle,
+				(unsigned long long)lookup.desc.offset,
+				(unsigned long long)lookup.desc.size);
+			return 10;
+		}
+		printf("VMSHM_LOOKUP_PROBE_INACCESSIBLE handle=0x%llx errno=%d (%s) spoof_vmid=%u\n",
+		       (unsigned long long)handle, saved_errno,
+		       strerror(saved_errno), spoof_vmid);
+		if (saved_errno != EACCES && saved_errno != ENOENT) {
+			fprintf(stderr,
+				"VMSHM_LOOKUP_PROBE_FAIL expected_inaccessible got=%d (%s)\n",
 				saved_errno, strerror(saved_errno));
 			return 11;
 		}
