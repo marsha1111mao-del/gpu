@@ -578,12 +578,28 @@ proxy_comm_vmshm 将接收 channel 绑定到 client_vmid。
 panthor_proxy_session 记录 owner_vmid。
 proxy_vmshm_manager 按 owner_vmid 分 domain/object lookup。
 跨 VM lookup 会返回 -EACCES，即使 client spoof requester_vmid。
+panthor-proxy 所有 session 操作按 channel VMID lookup，不信任 raw RPC body。
+跨 VM raw DEV_QUERY/CLOSE_SESSION 会记录 SESSION_ACCESS_DENIED。
 ```
 
 2026-06-12 live-BO probe 已验证：client0 持有 32 MiB vmshm-backed BO
 payload `0x100000001` 时，client1 以 spoofed `requester_vmid=1` 查询该
 handle，`/dev/client_vmshm_manager` 返回 `EACCES`，随后 client1 仍能完成自己的
 Panfrost GLES compute smoke。
+
+同日 raw vmshm RPC probe 进一步验证：client1 直接写
+`/dev/client_comm_vmshm`，用 client0 的 `session=2` 发送 forged
+`DEV_QUERY` 和 `CLOSE_SESSION`。proxy 消费了两条消息，但分别输出：
+
+```text
+SESSION_ACCESS_DENIED op=lookup session=2 owner_vmid=1 requester_vmid=2
+SESSION_ACCESS_DENIED op=destroy session=2 owner_vmid=1 requester_vmid=2
+```
+
+client0 的 60 秒 BO holder 继续完成 `PANTHOR_BO_HOLD_SMOKE=PASS`，client1
+继续完成 `VMSHM_ISOLATION_RESULT=PASS` 和 Mali-G610/Panfrost GLES compute
+smoke。因此当前跨 VM session 攻击面不是由 client 可控的 session id 决定，
+而是由 proxy comm channel 的 VMID 决定。
 
 ## 9. Real Panthor 集成
 
@@ -1302,13 +1318,17 @@ fairness 和 inflight 控制。
 基础 VMID 隔离已经落地：`panthor_proxy_session` 绑定到创建它的
 channel/client identity，`vmshm-object` payload object 按 owner VMID 分域，
 跨 VM descriptor lookup 被拒绝。当前 live-BO 负向 probe 覆盖了 BO payload
-descriptor 泄漏风险。
+descriptor 泄漏风险；raw vmshm RPC 负向 probe 覆盖了绕过 `panthor-client`
+前端、直接向 comm ring 伪造 cross-session `DEV_QUERY`/`CLOSE_SESSION` 的攻击
+路径。
 
 还需要继续扩展的系统验证：
 
-- client0 不能使用 client1 的 VM/BO/syncobj/group/heap handle。
+- 更多 per-object 操作的恶意矩阵：client0 不能使用 client1 的
+  VM/BO/syncobj/group/heap handle。
 - stale handle generation 检查覆盖所有 object。
-- close/session cleanup 不影响其他 client。
+- close/session cleanup 不影响其他 client；当前 raw `CLOSE_SESSION` 负向
+  probe 已覆盖 live-session cross-VM close 攻击。
 - proxy reset/error path 不泄漏对象。
 
 ### 16.2 调度策略完善

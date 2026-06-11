@@ -137,6 +137,24 @@ apply_cmdline_overrides() {
 		GPU_SMOKE_IOCTL_ARGS="$(decode_cmdline_arg_tokens "${value}")"
 		export GPU_SMOKE_IOCTL_ARGS
 	fi
+
+	value="$(cmdline_value gpu_smoke_raw_rpc_probe_session || true)"
+	if [ -n "${value}" ]; then
+		GPU_SMOKE_RAW_RPC_PROBE_SESSION="${value}"
+		export GPU_SMOKE_RAW_RPC_PROBE_SESSION
+	fi
+
+	value="$(cmdline_value gpu_smoke_raw_rpc_probe_ops || true)"
+	if [ -n "${value}" ]; then
+		GPU_SMOKE_RAW_RPC_PROBE_OPS="${value}"
+		export GPU_SMOKE_RAW_RPC_PROBE_OPS
+	fi
+
+	value="$(cmdline_value gpu_smoke_raw_rpc_probe_timeout_ms || true)"
+	if [ -n "${value}" ]; then
+		GPU_SMOKE_RAW_RPC_PROBE_TIMEOUT_MS="${value}"
+		export GPU_SMOKE_RAW_RPC_PROBE_TIMEOUT_MS
+	fi
 }
 
 dump_perf_dmesg() {
@@ -206,6 +224,33 @@ run_vmshm_lookup_probe() {
 		echo "VMSHM_ISOLATION_RESULT=PASS"
 	else
 		echo "VMSHM_ISOLATION_RESULT=FAIL rc=${rc}"
+	fi
+	return "${rc}"
+}
+
+run_vmshm_raw_rpc_probe() {
+	local session="${GPU_SMOKE_RAW_RPC_PROBE_SESSION:-}"
+	local ops="${GPU_SMOKE_RAW_RPC_PROBE_OPS:-dev-query,close-session}"
+	local timeout_ms="${GPU_SMOKE_RAW_RPC_PROBE_TIMEOUT_MS:-1500}"
+	local rc
+
+	[ -n "${session}" ] || return 0
+
+	if [ ! -x /root/vmshm_raw_rpc_probe ]; then
+		log "missing /root/vmshm_raw_rpc_probe for raw vmshm RPC isolation probe"
+		echo "VMSHM_RAW_RPC_RESULT=FAIL"
+		return 126
+	fi
+
+	log "+ /root/vmshm_raw_rpc_probe --session ${session} --ops ${ops} --timeout-ms ${timeout_ms}"
+	/root/vmshm_raw_rpc_probe \
+		--session "${session}" \
+		--ops "${ops}" \
+		--timeout-ms "${timeout_ms}" 2>&1
+	rc=$?
+
+	if [ "${rc}" -ne 0 ]; then
+		echo "VMSHM_RAW_RPC_RESULT=FAIL rc=${rc}"
 	fi
 	return "${rc}"
 }
@@ -393,6 +438,13 @@ fi
 if ! apply_cmdline_overrides; then
 	echo "GPU_SMOKE_RESULT=FAIL"
 	exit 125
+fi
+
+if ! run_vmshm_raw_rpc_probe; then
+	dump_client_comm_rpc_stats
+	dump_perf_dmesg
+	echo "GPU_SMOKE_RESULT=FAIL"
+	exit 126
 fi
 
 if [ -x /root/panthor_ioctl_smoke ]; then

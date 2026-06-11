@@ -12,7 +12,11 @@ dead ends.
 Make the two-client shared-GPU path easier to validate as an isolation boundary:
 client0 creates a live vmshm-backed BO, client1 tries to look up that payload
 handle while spoofing `requester_vmid=1`, and the run passes only if the lookup
-is rejected with `EACCES`.
+is rejected with `EACCES`. The same probe now also covers a stronger malicious
+client model: client1 writes raw Panthor RPC messages directly into
+`/dev/client_comm_vmshm`, bypassing the `panthor-client` DRM frontend, and tries
+to use client0's session for both a read-style `DEV_QUERY` and a destructive
+`CLOSE_SESSION`.
 
 ### Implementation
 
@@ -36,16 +40,31 @@ New pieces:
   - reads `gpu_smoke_vmshm_probe_*` kernel cmdline keys
   - runs `/root/vmshm_lookup_probe`
   - emits `VMSHM_ISOLATION_RESULT=PASS|FAIL`
+  - reads `gpu_smoke_raw_rpc_probe_*` keys and runs the raw vmshm RPC probe
+    before normal GLES setup
   - reads `gpu_smoke_ioctl_mode=holder` and
     `gpu_smoke_ioctl_args_tokens=...` so client0 can run the IOCTL holder
     instead of GLES during the negative isolation probe
+- `GPU-SFTP/tests/vmshm-raw-rpc-probe/vmshm_raw_rpc_probe.c`
+  - opens `/dev/client_comm_vmshm`
+  - parses the shared comm queue layout
+  - writes raw `PANTHOR_VMSHM_MSG_DEV_QUERY_REQ` and
+    `PANTHOR_VMSHM_MSG_CLOSE_SESSION_REQ` messages with client0's session id
+  - verifies proxy consumption through the C2P used ring
+  - uses a normal Panthor `DEV_QUERY` as a doorbell kick in irq-notify mode; the
+    kick does not participate in the security decision
+- `Linux-Guest-GPU/drivers/gpu/drm/panthor-proxy/panthor_proxy_drv.c`
+  - logs `SESSION_ACCESS_DENIED op=lookup|destroy session=... owner_vmid=...
+    requester_vmid=...` when a channel tries to access a session owned by
+    another VMID
 - `scripts/run/run-vmshm-2client-e2e.sh`
   - adds `--gles-vmshm-isolation-probe`
   - in probe mode, starts client0 as a 32 MiB IOCTL BO holder, extracts a live
-    `owner_vmid=1` `payload=0x...` handle from `proxy.log`, then starts
-    client1 with that handle and `gpu_smoke_vmshm_probe_spoof_vmid=1`
-  - requires both normal GLES success and `VMSHM_ISOLATION_RESULT=PASS` when the
-    probe mode is enabled
+    `owner_vmid=1` session id and `payload=0x...` handle from `proxy.log`, then
+    starts client1 with that handle and client0's session id
+  - requires normal GLES success, `VMSHM_ISOLATION_RESULT=PASS`,
+    `VMSHM_RAW_RPC_RESULT=PASS`, and proxy-side denied logs for both lookup and
+    destroy attempts when the probe mode is enabled
 
 Runner hardening added at the same time:
 
@@ -64,9 +83,12 @@ Static and build checks:
 bash -n scripts/run/run-vmshm-2client-e2e.sh
 sh -n GPU-SFTP/tests/gpu-compute-smoke/gpu-smoke.sh
 gcc -fsyntax-only -Wall -Wextra GPU-SFTP/tests/vmshm-lookup-probe/vmshm_lookup_probe.c
+gcc -fsyntax-only -Wall -Wextra GPU-SFTP/tests/vmshm-raw-rpc-probe/vmshm_raw_rpc_probe.c
 gcc -fsyntax-only -I/usr/include/drm -ILinux-Guest-GPU/include/uapi/drm GPU-SFTP/tests/panthor-ioctl-smoke/panthor_ioctl_smoke.c
 ./scripts/build/build-vmshm-lookup-probe.sh
+./scripts/build/build-vmshm-raw-rpc-probe.sh
 ./scripts/build/build-panthor-ioctl-smoke.sh
+TARGETS=Image ./scripts/build/build-guest-vmshm-kernels.sh
 ```
 
 The secure split path already passed after the GPA/tar fixes:
@@ -115,6 +137,43 @@ The probe now proves the intended negative property for a live object: even when
 client1 spoofs `requester_vmid=1`, proxy/client manager lookup returns
 `-EACCES` instead of exposing client0's BO descriptor.
 
+Raw vmshm RPC cross-session attack pass:
+
+```text
+command:
+REMOTE_HOST=192.168.31.18 REMOTE_PASS=root \
+RUN_ID=vmshm-2client-gles-isolation-rawrpc-kick-20260612-031721 \
+  ./scripts/run/run-vmshm-2client-e2e.sh \
+  --gles-compute-smoke \
+  --skip-gles-remote-build \
+  --gles-vmshm-isolation-probe \
+  --gles-smoke-args '--count 64 --iterations 1 --warmup 0' \
+  --gles-client-mem-mib 128 \
+  --gles-proxy-mem-mib 384
+
+run:
+GPU-SFTP/log/shared/vmshm-2client/vmshm-2client-gles-isolation-rawrpc-kick-20260612-031721
+
+result:                         GLES_PASS
+client0 holder:                 PANTHOR_BO_HOLD_SMOKE=PASS
+client0 live session/BO:        session=2, payload=0x100000001, size=0x2000000
+client1 raw DEV_QUERY:          VMSHM_RAW_RPC_CONSUMED, proxy denied lookup
+client1 raw CLOSE_SESSION:      VMSHM_RAW_RPC_CONSUMED, proxy denied destroy
+client1 raw marker:             VMSHM_RAW_RPC_RESULT=PASS
+client1 lookup result:          VMSHM_LOOKUP_PROBE_INACCESSIBLE errno=13 (EACCES)
+client1 isolation marker:       VMSHM_ISOLATION_RESULT=PASS
+client1 GLES correctness:       COMPUTE_CHECK=PASS, Mali-G610 (Panfrost)
+proxy evidence:
+  SESSION_ACCESS_DENIED op=lookup session=2 owner_vmid=1 requester_vmid=2
+  SESSION_ACCESS_DENIED op=destroy session=2 owner_vmid=1 requester_vmid=2
+```
+
+This proves the current session boundary is derived from the proxy comm channel
+VMID, not from the raw message body or the client DRM frontend. A malicious
+client1 can place forged requests in its own comm ring, but it cannot make the
+proxy query or close a live client0 session, and client0's 60-second holder still
+finishes normally after the attempted close-session attack.
+
 32 MiB normal-path regression after adding the holder harness:
 
 ```text
@@ -145,6 +204,10 @@ default performance path.
 - Do not depend on a newly rebuilt `gles-compute-smoke` for the hold window on
   the current RK3588 host. The target lacks `pkg-config`; use the static
   `panthor_ioctl_smoke --bo-hold` holder for this validation.
+- Do not assume raw userspace `pwrite()` to `/dev/client_comm_vmshm` wakes the
+  proxy in irq-notify mode. The proxy does not start the polling dispatcher when
+  notify is enabled; use a normal client DRM ioctl as a doorbell kick after
+  placing the raw request in the C2P queue.
 
 ## 2026-06-12: 32 MiB Shared GLES Auto-Affinity Performance Pass
 

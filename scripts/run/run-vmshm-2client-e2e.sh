@@ -44,6 +44,8 @@ GLES_PANTHOR_PROXY_GROUP_CORE_PARTITIONS=${GLES_PANTHOR_PROXY_GROUP_CORE_PARTITI
 GLES_VMSHM_ISOLATION_PROBE=${GLES_VMSHM_ISOLATION_PROBE:-0}
 GLES_VMSHM_ISOLATION_HOLDER_SEC=${GLES_VMSHM_ISOLATION_HOLDER_SEC:-60}
 GLES_VMSHM_ISOLATION_HOLDER_SIZE=${GLES_VMSHM_ISOLATION_HOLDER_SIZE:-33554432}
+GLES_VMSHM_ISOLATION_HANDLE=0
+GLES_VMSHM_ISOLATION_SESSION=0
 
 usage() {
 	cat <<EOF
@@ -1062,6 +1064,18 @@ extract_client_payload_handle() {
 }
 
 extract_client0_payload_handle() {
+	local pair
+
+	pair=$(extract_client0_session_payload || true)
+	if [[ -n "${pair}" ]]; then
+		printf '%s\n' "${pair#* }"
+		return 0
+	fi
+
+	return 1
+}
+
+extract_client0_session_payload() {
 	local sessions session handle
 
 	sessions=$(
@@ -1082,7 +1096,7 @@ extract_client0_payload_handle() {
 	for session in ${sessions}; do
 		handle=$(extract_client_payload_handle "${session}" || true)
 		if [[ -n "${handle}" ]]; then
-			printf '%s\n' "${handle}"
+			printf '%s %s\n' "${session}" "${handle}"
 			return 0
 		fi
 	done
@@ -1092,13 +1106,17 @@ extract_client0_payload_handle() {
 
 wait_for_isolation_payload_handle() {
 	local timeout="$1"
-	local i=0 handle
+	local i=0 pair handle session
 
 	while [[ "${i}" -lt "${timeout}" ]]; do
-		handle=$(extract_client0_payload_handle || true)
-		if [[ -n "${handle}" ]]; then
+		pair=$(extract_client0_session_payload || true)
+		if [[ -n "${pair}" ]]; then
+			session="${pair%% *}"
+			handle="${pair#* }"
+			GLES_VMSHM_ISOLATION_SESSION="${session}"
 			GLES_VMSHM_ISOLATION_HANDLE="${handle}"
 			{
+				echo "gles_vmshm_isolation_session=${GLES_VMSHM_ISOLATION_SESSION}"
 				echo "gles_vmshm_isolation_handle=${GLES_VMSHM_ISOLATION_HANDLE}"
 				echo "gles_vmshm_isolation_handle_ts=$(date -Is)"
 			} >>"${LOG_DIR}/isolation.log"
@@ -1236,6 +1254,13 @@ inject_gles_compute_payload() {
 		echo "missing ${REMOTE_BINS}/bin/panthor_ioctl_smoke for isolation holder" >&2
 		return 1
 	fi
+	if [[ -x "${REMOTE_BINS}/bin/vmshm_raw_rpc_probe" ]]; then
+		install -Dm0755 "${REMOTE_BINS}/bin/vmshm_raw_rpc_probe" \
+			"${SMOKE_MNT}/root/vmshm_raw_rpc_probe"
+	elif [[ "${GLES_VMSHM_ISOLATION_PROBE}" == "1" ]]; then
+		echo "missing ${REMOTE_BINS}/bin/vmshm_raw_rpc_probe for raw RPC isolation probe" >&2
+		return 1
+	fi
 
 	cat >"${SMOKE_MNT}/root/gpu-smoke.env" <<EOF
 GPU_SMOKE_AFTER_RUN=shell
@@ -1261,6 +1286,7 @@ prepare_gles_compute_client() {
 	local sync_start_args=""
 	local isolation_probe_args=""
 	local isolation_holder_args=""
+	local raw_rpc_probe_args=""
 	local ioctl_arg_tokens
 	local smoke_arg_tokens
 
@@ -1288,13 +1314,16 @@ prepare_gles_compute_client() {
 	      "${client_id}" == "client1" &&
 	      "${GLES_VMSHM_ISOLATION_HANDLE}" != "0" ]]; then
 		isolation_probe_args=" gpu_smoke_vmshm_probe_handle=${GLES_VMSHM_ISOLATION_HANDLE} gpu_smoke_vmshm_probe_expect=inaccessible gpu_smoke_vmshm_probe_spoof_vmid=1"
+		if [[ "${GLES_VMSHM_ISOLATION_SESSION}" != "0" ]]; then
+			raw_rpc_probe_args=" gpu_smoke_raw_rpc_probe_session=${GLES_VMSHM_ISOLATION_SESSION} gpu_smoke_raw_rpc_probe_ops=dev-query,close-session"
+		fi
 	fi
 
 	cat >"${config_out}" <<EOF
 {
   "boot-source": {
     "kernel_image_path": "${REMOTE_BINS}/kernels/shared/client/Image",
-    "boot_args": "console=ttyS0 root=/dev/vda ro rootfstype=ext4 init=/init panic=-1 print-fatal-signals=1 gpu_smoke_args_tokens=${smoke_arg_tokens} gpu_smoke_quiet_console=1 gpu_smoke_after_run=shell${client_stats_args}${client_mmap_args}${sync_start_args}${isolation_holder_args}${isolation_probe_args}"
+    "boot_args": "console=ttyS0 root=/dev/vda ro rootfstype=ext4 init=/init panic=-1 print-fatal-signals=1 gpu_smoke_args_tokens=${smoke_arg_tokens} gpu_smoke_quiet_console=1 gpu_smoke_after_run=shell${client_stats_args}${client_mmap_args}${sync_start_args}${isolation_holder_args}${isolation_probe_args}${raw_rpc_probe_args}"
   },
   "drives": [
     {
@@ -1686,6 +1715,7 @@ if [[ "${GLES_COMPUTE_SMOKE}" == "1" ]]; then
 				"vmshm-2client-client1-gles-${RUN_ID}.dtb" \
 				"${GLES_ROOTFS_PATH}")
 			{
+				echo "gles_vmshm_isolation_session=${GLES_VMSHM_ISOLATION_SESSION}"
 				echo "gles_vmshm_isolation_handle=${GLES_VMSHM_ISOLATION_HANDLE}"
 				echo "client1_config=${CLIENT1_GLES_CONFIG}"
 			} >>"${LOG_DIR}/gles-compute-rootfs.log"
@@ -1761,6 +1791,7 @@ fi
 	echo "GLES vmshm isolation probe: ${GLES_VMSHM_ISOLATION_PROBE}"
 	echo "GLES vmshm isolation holder sec: ${GLES_VMSHM_ISOLATION_HOLDER_SEC}"
 	echo "GLES vmshm isolation holder size: ${GLES_VMSHM_ISOLATION_HOLDER_SIZE}"
+	echo "GLES vmshm isolation session: ${GLES_VMSHM_ISOLATION_SESSION:-0}"
 	echo "GLES vmshm isolation handle: ${GLES_VMSHM_ISOLATION_HANDLE:-0}"
 	echo
 	echo "== Broker direct bridges =="
@@ -1772,7 +1803,7 @@ fi
 	sed -n '1,80p' "${LOG_DIR}/broker.perf" 2>/dev/null || true
 	echo
 	echo "== Proxy vmshm/panthor =="
-	grep -aE "registered vmshm notify|proxy_comm_vmshm .*irq notify enabled|proxy_comm_vmshm: selftest passed|PANTHOR_SUBMIT_STATS|PANTHOR_JOB_IRQ_STATS|PANTHOR_PROXY_RPC_STATS|DRM_SCHED_PUSH_STATS|DRM_SCHED_RUN_JOB_STATS|panthor-proxy: vmshm handler registered|panthor-proxy: OPEN_SESSION|panthor-proxy: VM_CREATE|panthor-proxy: BO_CREATE|panthor-proxy: VM_BIND|panthor-proxy: GROUP_CORE_PARTITION|panthor-proxy: GROUP_CREATE|panthor-proxy: GROUP_SUBMIT|panthor-proxy: GROUP_DESTROY|panthor-proxy: VM_DESTROY|panthor-proxy: CLOSE_SESSION|Guest-boot failed|ERROR|WARN" \
+	grep -aE "registered vmshm notify|proxy_comm_vmshm .*irq notify enabled|proxy_comm_vmshm: selftest passed|PANTHOR_SUBMIT_STATS|PANTHOR_JOB_IRQ_STATS|PANTHOR_PROXY_RPC_STATS|DRM_SCHED_PUSH_STATS|DRM_SCHED_RUN_JOB_STATS|panthor-proxy: vmshm handler registered|panthor-proxy: OPEN_SESSION|panthor-proxy: SESSION_ACCESS_DENIED|panthor-proxy: VM_CREATE|panthor-proxy: BO_CREATE|panthor-proxy: VM_BIND|panthor-proxy: GROUP_CORE_PARTITION|panthor-proxy: GROUP_CREATE|panthor-proxy: GROUP_SUBMIT|panthor-proxy: GROUP_DESTROY|panthor-proxy: VM_DESTROY|panthor-proxy: CLOSE_SESSION|Guest-boot failed|ERROR|WARN" \
 		"${LOG_DIR}/proxy.log" | tail -n 160 || true
 	echo
 	if [[ -f "${LOG_DIR}/gles-compute-rootfs.log" ]]; then
@@ -1797,11 +1828,11 @@ fi
 		echo
 	fi
 	echo "== Client0 =="
-	grep -aE "client_comm_vmshm: perf selftest passed|CLIENT_COMM_RPC_STATS|PANTHOR_CLIENT_BO_MMAP_CACHED|panthor-client: BO mmap cached=|panthor-client: registered DRM frontend|panthor-client: MMAP .*attr=|GPU_SMOKE_RESULT|COMPUTE_CHECK|GL_RENDERER|GL_VENDOR|GL_VERSION|GBM_BACKEND|DRM_NODE|STAGE=|PERF_|BO_HOLD_READY|PANTHOR_BO_HOLD_SMOKE|PANTHOR_IOCTL_SMOKE=BO_HOLD_PASS|VMSHM_LOOKUP_PROBE|VMSHM_ISOLATION_RESULT|panthor_ioctl_smoke rc|gles-compute-smoke rc|mismatch|software renderer detected|job timeout|gpu fault|Oops|Unable to handle|Kernel panic|Guest-boot failed|ERROR|WARN" \
+	grep -aE "client_comm_vmshm: perf selftest passed|CLIENT_COMM_RPC_STATS|PANTHOR_CLIENT_BO_MMAP_CACHED|panthor-client: BO mmap cached=|panthor-client: registered DRM frontend|panthor-client: MMAP .*attr=|GPU_SMOKE_RESULT|COMPUTE_CHECK|GL_RENDERER|GL_VENDOR|GL_VERSION|GBM_BACKEND|DRM_NODE|STAGE=|PERF_|BO_HOLD_READY|PANTHOR_BO_HOLD_SMOKE|PANTHOR_IOCTL_SMOKE=BO_HOLD_PASS|VMSHM_LOOKUP_PROBE|VMSHM_ISOLATION_RESULT|VMSHM_RAW_RPC|panthor_ioctl_smoke rc|gles-compute-smoke rc|mismatch|software renderer detected|job timeout|gpu fault|Oops|Unable to handle|Kernel panic|Guest-boot failed|ERROR|WARN" \
 		"${LOG_DIR}/client0.log" | tail -n 120 || true
 	echo
 	echo "== Client1 =="
-	grep -aE "client_comm_vmshm: perf selftest passed|CLIENT_COMM_RPC_STATS|PANTHOR_CLIENT_BO_MMAP_CACHED|panthor-client: BO mmap cached=|panthor-client: registered DRM frontend|panthor-client: MMAP .*attr=|GPU_SMOKE_RESULT|COMPUTE_CHECK|GL_RENDERER|GL_VENDOR|GL_VERSION|GBM_BACKEND|DRM_NODE|STAGE=|PERF_|BO_HOLD_READY|PANTHOR_BO_HOLD_SMOKE|PANTHOR_IOCTL_SMOKE=BO_HOLD_PASS|VMSHM_LOOKUP_PROBE|VMSHM_ISOLATION_RESULT|panthor_ioctl_smoke rc|gles-compute-smoke rc|mismatch|software renderer detected|job timeout|gpu fault|Oops|Unable to handle|Kernel panic|Guest-boot failed|ERROR|WARN" \
+	grep -aE "client_comm_vmshm: perf selftest passed|CLIENT_COMM_RPC_STATS|PANTHOR_CLIENT_BO_MMAP_CACHED|panthor-client: BO mmap cached=|panthor-client: registered DRM frontend|panthor-client: MMAP .*attr=|GPU_SMOKE_RESULT|COMPUTE_CHECK|GL_RENDERER|GL_VENDOR|GL_VERSION|GBM_BACKEND|DRM_NODE|STAGE=|PERF_|BO_HOLD_READY|PANTHOR_BO_HOLD_SMOKE|PANTHOR_IOCTL_SMOKE=BO_HOLD_PASS|VMSHM_LOOKUP_PROBE|VMSHM_ISOLATION_RESULT|VMSHM_RAW_RPC|panthor_ioctl_smoke rc|gles-compute-smoke rc|mismatch|software renderer detected|job timeout|gpu fault|Oops|Unable to handle|Kernel panic|Guest-boot failed|ERROR|WARN" \
 		"${LOG_DIR}/client1.log" | tail -n 120 || true
 	echo
 
@@ -1819,7 +1850,13 @@ fi
 
 	gles_isolation_ok() {
 		[[ "${GLES_VMSHM_ISOLATION_PROBE}" == "1" ]] || return 0
-		grep -qa "VMSHM_ISOLATION_RESULT=PASS" "${LOG_DIR}/client1.log"
+		grep -qa "VMSHM_ISOLATION_RESULT=PASS" "${LOG_DIR}/client1.log" || return 1
+		grep -qa "VMSHM_RAW_RPC_RESULT=PASS" "${LOG_DIR}/client1.log" || return 1
+		[[ "${GLES_VMSHM_ISOLATION_SESSION:-0}" != "0" ]] || return 1
+		grep -qa "panthor-proxy: SESSION_ACCESS_DENIED op=lookup session=${GLES_VMSHM_ISOLATION_SESSION} owner_vmid=1 requester_vmid=2" \
+			"${LOG_DIR}/proxy.log" || return 1
+		grep -qa "panthor-proxy: SESSION_ACCESS_DENIED op=destroy session=${GLES_VMSHM_ISOLATION_SESSION} owner_vmid=1 requester_vmid=2" \
+			"${LOG_DIR}/proxy.log" || return 1
 	}
 
 	gles_client0_ok() {
