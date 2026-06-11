@@ -31,6 +31,8 @@ GLES_SYNC_START_DELAY_SEC=${GLES_SYNC_START_DELAY_SEC:-0}
 GLES_MIN_HOST_AVAILABLE_MIB=${GLES_MIN_HOST_AVAILABLE_MIB:-auto}
 GLES_PROXY_PANTHOR_STATS=${GLES_PROXY_PANTHOR_STATS:-0}
 GLES_CLIENT_BO_MMAP_CACHED=${GLES_CLIENT_BO_MMAP_CACHED:-0}
+GLES_AUTO_AFFINITY=${GLES_AUTO_AFFINITY:-1}
+GLES_AFFINITY_PROFILE=${GLES_AFFINITY_PROFILE:-manual}
 GLES_HOST_ONLINE_CPUS=${GLES_HOST_ONLINE_CPUS:-}
 GLES_BROKER_CPUS=${GLES_BROKER_CPUS:-}
 GLES_PROXY_CPUS=${GLES_PROXY_CPUS:-}
@@ -88,6 +90,10 @@ Options:
                            In GLES mode, boot shared clients with
                            panthor_client.bo_mmap_cached=1 so BO payload
                            mmap uses cached WB instead of write-combine.
+  --no-gles-auto-affinity
+                           In GLES mode, do not apply the default 4-CPU
+                           broker/proxy/client split when no CPU placement
+                           knobs are explicitly provided.
   --gles-host-online-cpus LIST
                            Diagnostic mode: temporarily online host CPUs in
                            LIST before launching GLES VMs, then restore CPUs
@@ -211,6 +217,9 @@ while [[ $# -gt 0 ]]; do
 	--gles-client-bo-mmap-cached)
 		GLES_CLIENT_BO_MMAP_CACHED=1
 		;;
+	--no-gles-auto-affinity)
+		GLES_AUTO_AFFINITY=0
+		;;
 	--gles-host-online-cpus)
 		shift
 		if [[ $# -eq 0 ]]; then
@@ -290,6 +299,26 @@ while [[ $# -gt 0 ]]; do
 	esac
 	shift
 done
+
+apply_default_gles_affinity() {
+	[[ "${GLES_COMPUTE_SMOKE}" == "1" ]] || return 0
+	[[ "${GLES_AUTO_AFFINITY}" == "1" ]] || return 0
+
+	if [[ -z "${GLES_HOST_ONLINE_CPUS}" &&
+	      -z "${GLES_BROKER_CPUS}" &&
+	      -z "${GLES_PROXY_CPUS}" &&
+	      -z "${GLES_CLIENT0_CPUS}" &&
+	      -z "${GLES_CLIENT1_CPUS}" ]]; then
+		GLES_HOST_ONLINE_CPUS=0-3
+		GLES_BROKER_CPUS=0
+		GLES_PROXY_CPUS=1
+		GLES_CLIENT0_CPUS=2
+		GLES_CLIENT1_CPUS=3
+		GLES_AFFINITY_PROFILE=auto-4cpu-split
+	fi
+}
+
+apply_default_gles_affinity
 
 log() {
 	printf '\n==> %s\n' "$*"
@@ -393,7 +422,8 @@ run_remote_test() {
 	local gles_client_start_gap_sec_q
 	local gles_sync_start_delay_sec_q
 	local gles_min_host_available_mib_q gles_proxy_panthor_stats_q
-	local gles_client_bo_mmap_cached_q
+	local gles_client_bo_mmap_cached_q gles_auto_affinity_q
+	local gles_affinity_profile_q
 	local gles_host_online_cpus_q gles_broker_cpus_q gles_proxy_cpus_q
 	local gles_client0_cpus_q gles_client1_cpus_q
 	local gles_panthor_sched_tick_ms_q gles_panthor_sched_highpri_wq_q
@@ -416,6 +446,8 @@ run_remote_test() {
 	gles_min_host_available_mib_q=$(quote "${GLES_MIN_HOST_AVAILABLE_MIB}")
 	gles_proxy_panthor_stats_q=$(quote "${GLES_PROXY_PANTHOR_STATS}")
 	gles_client_bo_mmap_cached_q=$(quote "${GLES_CLIENT_BO_MMAP_CACHED}")
+	gles_auto_affinity_q=$(quote "${GLES_AUTO_AFFINITY}")
+	gles_affinity_profile_q=$(quote "${GLES_AFFINITY_PROFILE}")
 	gles_host_online_cpus_q=$(quote "${GLES_HOST_ONLINE_CPUS}")
 	gles_broker_cpus_q=$(quote "${GLES_BROKER_CPUS}")
 	gles_proxy_cpus_q=$(quote "${GLES_PROXY_CPUS}")
@@ -426,7 +458,7 @@ run_remote_test() {
 	gles_panthor_proxy_group_core_partitions_q=$(quote "${GLES_PANTHOR_PROXY_GROUP_CORE_PARTITIONS}")
 
 	log "Running remote 2-client vmshm test: ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_BINS}"
-	ssh_remote "RUN_ID=${run_id_q} REMOTE_ROOT=${remote_root_q} REMOTE_BINS=${remote_bins_q} REMOTE_LOG_ROOT=${remote_log_root_q} CLEAN_REMOTE_PROCS=${clean_q} GLES_COMPUTE_SMOKE=${gles_compute_smoke_q} GLES_REMOTE_BUILD=${gles_remote_build_q} GLES_SMOKE_ARGS=${gles_smoke_args_q} GLES_CLIENT_MEM_MIB=${gles_client_mem_mib_q} GLES_PROXY_MEM_MIB=${gles_proxy_mem_mib_q} GLES_CLIENT_VCPUS=${gles_client_vcpus_q} GLES_PROXY_VCPUS=${gles_proxy_vcpus_q} GLES_CLIENT_START_GAP_SEC=${gles_client_start_gap_sec_q} GLES_SYNC_START_DELAY_SEC=${gles_sync_start_delay_sec_q} GLES_MIN_HOST_AVAILABLE_MIB=${gles_min_host_available_mib_q} GLES_PROXY_PANTHOR_STATS=${gles_proxy_panthor_stats_q} GLES_CLIENT_BO_MMAP_CACHED=${gles_client_bo_mmap_cached_q} GLES_HOST_ONLINE_CPUS=${gles_host_online_cpus_q} GLES_BROKER_CPUS=${gles_broker_cpus_q} GLES_PROXY_CPUS=${gles_proxy_cpus_q} GLES_CLIENT0_CPUS=${gles_client0_cpus_q} GLES_CLIENT1_CPUS=${gles_client1_cpus_q} GLES_PANTHOR_SCHED_TICK_MS=${gles_panthor_sched_tick_ms_q} GLES_PANTHOR_SCHED_HIGHPRI_WQ=${gles_panthor_sched_highpri_wq_q} GLES_PANTHOR_PROXY_GROUP_CORE_PARTITIONS=${gles_panthor_proxy_group_core_partitions_q} bash -s" <<'REMOTE_SCRIPT'
+	ssh_remote "RUN_ID=${run_id_q} REMOTE_ROOT=${remote_root_q} REMOTE_BINS=${remote_bins_q} REMOTE_LOG_ROOT=${remote_log_root_q} CLEAN_REMOTE_PROCS=${clean_q} GLES_COMPUTE_SMOKE=${gles_compute_smoke_q} GLES_REMOTE_BUILD=${gles_remote_build_q} GLES_SMOKE_ARGS=${gles_smoke_args_q} GLES_CLIENT_MEM_MIB=${gles_client_mem_mib_q} GLES_PROXY_MEM_MIB=${gles_proxy_mem_mib_q} GLES_CLIENT_VCPUS=${gles_client_vcpus_q} GLES_PROXY_VCPUS=${gles_proxy_vcpus_q} GLES_CLIENT_START_GAP_SEC=${gles_client_start_gap_sec_q} GLES_SYNC_START_DELAY_SEC=${gles_sync_start_delay_sec_q} GLES_MIN_HOST_AVAILABLE_MIB=${gles_min_host_available_mib_q} GLES_PROXY_PANTHOR_STATS=${gles_proxy_panthor_stats_q} GLES_CLIENT_BO_MMAP_CACHED=${gles_client_bo_mmap_cached_q} GLES_AUTO_AFFINITY=${gles_auto_affinity_q} GLES_AFFINITY_PROFILE=${gles_affinity_profile_q} GLES_HOST_ONLINE_CPUS=${gles_host_online_cpus_q} GLES_BROKER_CPUS=${gles_broker_cpus_q} GLES_PROXY_CPUS=${gles_proxy_cpus_q} GLES_CLIENT0_CPUS=${gles_client0_cpus_q} GLES_CLIENT1_CPUS=${gles_client1_cpus_q} GLES_PANTHOR_SCHED_TICK_MS=${gles_panthor_sched_tick_ms_q} GLES_PANTHOR_SCHED_HIGHPRI_WQ=${gles_panthor_sched_highpri_wq_q} GLES_PANTHOR_PROXY_GROUP_CORE_PARTITIONS=${gles_panthor_proxy_group_core_partitions_q} bash -s" <<'REMOTE_SCRIPT'
 set -euo pipefail
 
 cd "${REMOTE_BINS}"
@@ -445,6 +477,8 @@ GLES_SYNC_START_DELAY_SEC=${GLES_SYNC_START_DELAY_SEC:-0}
 GLES_MIN_HOST_AVAILABLE_MIB=${GLES_MIN_HOST_AVAILABLE_MIB:-auto}
 GLES_PROXY_PANTHOR_STATS=${GLES_PROXY_PANTHOR_STATS:-0}
 GLES_CLIENT_BO_MMAP_CACHED=${GLES_CLIENT_BO_MMAP_CACHED:-0}
+GLES_AUTO_AFFINITY=${GLES_AUTO_AFFINITY:-0}
+GLES_AFFINITY_PROFILE=${GLES_AFFINITY_PROFILE:-manual}
 GLES_HOST_ONLINE_CPUS=${GLES_HOST_ONLINE_CPUS:-}
 GLES_BROKER_CPUS=${GLES_BROKER_CPUS:-}
 GLES_PROXY_CPUS=${GLES_PROXY_CPUS:-}
@@ -562,6 +596,8 @@ write_affinity_snapshot() {
 		echo "== ${label} =="
 		echo "ts=$(date -Is)"
 		echo "online_cpus=$(host_online_cpus)"
+		echo "affinity_profile=${GLES_AFFINITY_PROFILE}"
+		echo "auto_affinity=${GLES_AUTO_AFFINITY}"
 		echo "requested_online_cpus=${GLES_HOST_ONLINE_CPUS:-}"
 		echo "broker_cpus=${GLES_BROKER_CPUS:-}"
 		echo "proxy_cpus=${GLES_PROXY_CPUS:-}"
@@ -738,6 +774,8 @@ gles_preflight_host_memory() {
 		echo "gles_mem_guard_formula=proxy + 2*client + ${GLES_OBJECT_WINDOW_MIB}(object) + 64(comm) + 512(guard)"
 		echo "gles_mem_available_mib=${available}"
 		echo "gles_host_online_cpus=$(host_online_cpus)"
+		echo "gles_affinity_profile=${GLES_AFFINITY_PROFILE}"
+		echo "gles_auto_affinity=${GLES_AUTO_AFFINITY}"
 		echo "gles_host_online_cpus_requested=${GLES_HOST_ONLINE_CPUS:-}"
 		echo "gles_broker_cpus=${GLES_BROKER_CPUS:-}"
 		echo "gles_proxy_cpus=${GLES_PROXY_CPUS:-}"
@@ -1256,6 +1294,8 @@ if [[ "${GLES_COMPUTE_SMOKE}" == "1" ]]; then
 		echo "gles_smoke_start_epoch=${GLES_SMOKE_START_EPOCH}"
 		echo "gles_min_host_available_mib=${GLES_MIN_HOST_AVAILABLE_MIB}"
 		echo "gles_proxy_panthor_stats=${GLES_PROXY_PANTHOR_STATS}"
+		echo "gles_affinity_profile=${GLES_AFFINITY_PROFILE}"
+		echo "gles_auto_affinity=${GLES_AUTO_AFFINITY}"
 		echo "gles_panthor_sched_tick_ms=${GLES_PANTHOR_SCHED_TICK_MS}"
 		echo "gles_panthor_sched_highpri_wq=${GLES_PANTHOR_SCHED_HIGHPRI_WQ}"
 		echo "gles_panthor_proxy_group_core_partitions=${GLES_PANTHOR_PROXY_GROUP_CORE_PARTITIONS}"
@@ -1422,6 +1462,8 @@ fi
 	echo "GLES remote build: ${GLES_REMOTE_BUILD}"
 	echo "GLES smoke args: ${GLES_SMOKE_ARGS}"
 	echo "GLES client BO mmap cached: ${GLES_CLIENT_BO_MMAP_CACHED}"
+	echo "GLES affinity profile: ${GLES_AFFINITY_PROFILE}"
+	echo "GLES auto affinity: ${GLES_AUTO_AFFINITY}"
 	echo "GLES sync start delay sec: ${GLES_SYNC_START_DELAY_SEC}"
 	echo "GLES smoke start uptime ms: ${GLES_SMOKE_START_UPTIME_MS:-0}"
 	echo "GLES smoke start epoch: ${GLES_SMOKE_START_EPOCH:-0}"
@@ -1453,7 +1495,7 @@ fi
 	fi
 	if [[ -f "${LOG_DIR}/affinity.log" ]]; then
 		echo "== Host CPU affinity =="
-		grep -aE "== |online_cpus=|requested_online_cpus=|broker_cpus=|proxy_cpus=|client[01]_cpus=|launch_|before_restore=|after_restore=" \
+		grep -aE "== |online_cpus=|affinity_profile=|auto_affinity=|requested_online_cpus=|broker_cpus=|proxy_cpus=|client[01]_cpus=|launch_|before_restore=|after_restore=" \
 			"${LOG_DIR}/affinity.log" | tail -n 120 || true
 		echo
 	fi
