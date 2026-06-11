@@ -1,0 +1,1037 @@
+From 126468e35f7e7d43f0f181bc5d4d238e73c8d6ac Mon Sep 17 00:00:00 2001
+From: xander <xanderc@qq.com>
+Date: Fri, 29 May 2026 10:50:57 +0800
+Subject: [PATCH] opencca: support raw kernel and rootfs flashing
+
+---
+ .env.template                    |   3 +-
+ convert_prebuilt_image.py        | 249 +++++++++++++++++++++++++++++++
+ flash.sh                         | 119 +++++++++++++++
+ readme.md                        |  76 ++++++++--
+ test_convert_prebuilt_image.py   | 134 +++++++++++++++++
+ test_flash_script.py             |  27 ++++
+ test_validate_gpt_kernel_slot.py | 151 +++++++++++++++++++
+ validate_gpt_kernel_slot.py      | 136 +++++++++++++++++
+ 8 files changed, 882 insertions(+), 13 deletions(-)
+ create mode 100644 convert_prebuilt_image.py
+ create mode 100644 test_convert_prebuilt_image.py
+ create mode 100644 test_flash_script.py
+ create mode 100644 test_validate_gpt_kernel_slot.py
+ create mode 100644 validate_gpt_kernel_slot.py
+
+diff --git a/.env.template b/.env.template
+index b21cb56..d0eca62 100644
+--- a/.env.template
++++ b/.env.template
+@@ -8,6 +8,7 @@ readonly __root_dir__=$__script_dir__/
+ export OPENCCA_SNAPSHOT_DIR=$__root_dir__/snapshot
+ export OPENCCA_RKDEVELOP_TOOL="$__root_dir__/tools/rkdeveloptool"
+ export OPENCCA_SPL_LOADER="$__root_dir__/tools/rk3588/rk3588_spl_loader_v1.08.111.bin"
++export OPENCCA_ROOTFS_IMAGE="$OPENCCA_SNAPSHOT_DIR/opencca-rootfs-wip.ext4"
+ 
+ #
+ # OPENCCA_MASKROM_PIN: GPIO Pin on flash server
+@@ -52,4 +53,4 @@ export OPENCCA_MASKROM_RELEASE_DELAY=3
+ 
+ # OPENCCA_TTYUSB:
+ #  TTL to USB device
+-export OPENCCA_TTYUSB=/dev/ttyUSB0
+\ No newline at end of file
++export OPENCCA_TTYUSB=/dev/ttyUSB0
+diff --git a/convert_prebuilt_image.py b/convert_prebuilt_image.py
+new file mode 100644
+index 0000000..914c58d
+--- /dev/null
++++ b/convert_prebuilt_image.py
+@@ -0,0 +1,249 @@
++#!/usr/bin/env python3
++import argparse
++import json
++import os
++import shutil
++import subprocess
++import sys
++import tempfile
++from pathlib import Path
++
++
++SECTOR_SIZE = 512
++LOADER1_START = 64
++LOADER1_SIZE = 7105
++LOADER2_START = 0x4000
++LOADER2_SIZE = 0x2000
++KERNEL_START = 0x8000
++KERNEL_SIZE = 0x40000
++ROOT_START = 0x48000
++LINUX_TYPE = "linux"
++EFI_TYPE = "uefi"
++
++
++def run(args: list[str], **kwargs) -> subprocess.CompletedProcess:
++    return subprocess.run(args, check=True, text=True, **kwargs)
++
++
++def require_tool(name: str) -> None:
++    if shutil.which(name) is None:
++        raise SystemExit(f"Missing required tool: {name}")
++
++
++def sectors_for_bytes(size: int) -> int:
++    return (size + SECTOR_SIZE - 1) // SECTOR_SIZE
++
++
++def image_sectors(path: Path) -> int:
++    size = path.stat().st_size
++    if size % SECTOR_SIZE:
++        raise SystemExit(f"{path} size is not sector aligned")
++    return size // SECTOR_SIZE
++
++
++def partition_table(path: Path) -> list[dict]:
++    result = run(["sfdisk", "--json", str(path)], stdout=subprocess.PIPE)
++    data = json.loads(result.stdout)
++    return data["partitiontable"]["partitions"]
++
++
++def find_partition(parts: list[dict], name: str) -> dict:
++    matches = [part for part in parts if part.get("name") == name]
++    if len(matches) != 1:
++        raise SystemExit(f"Expected exactly one {name!r} partition, found {len(matches)}")
++    return matches[0]
++
++
++def copy_range(src: Path, dst: Path, src_sector: int, dst_sector: int, sectors: int) -> None:
++    run(
++        [
++            "dd",
++            f"if={src}",
++            f"of={dst}",
++            f"bs={SECTOR_SIZE}",
++            f"skip={src_sector}",
++            f"seek={dst_sector}",
++            f"count={sectors}",
++            "conv=notrunc",
++            "status=none",
++        ]
++    )
++
++
++def extract_range(src: Path, dst: Path, start: int, sectors: int) -> None:
++    run(
++        [
++            "dd",
++            f"if={src}",
++            f"of={dst}",
++            f"bs={SECTOR_SIZE}",
++            f"skip={start}",
++            f"count={sectors}",
++            "status=none",
++        ]
++    )
++
++
++def write_file_to_sector(src: Path, dst: Path, dst_sector: int) -> None:
++    run(
++        [
++            "dd",
++            f"if={src}",
++            f"of={dst}",
++            f"bs={SECTOR_SIZE}",
++            f"seek={dst_sector}",
++            "conv=notrunc",
++            "status=none",
++        ]
++    )
++
++
++def shrink_ext4(rootfs: Path) -> None:
++    run(["e2fsck", "-fy", str(rootfs)])
++    run(["resize2fs", "-M", str(rootfs)])
++    run(["e2fsck", "-fy", str(rootfs)])
++
++
++def make_partition_table(out: Path, total_sectors: int, root_type: str) -> int:
++    root_size = total_sectors - ROOT_START - 34
++    if root_size <= 0:
++        raise SystemExit(f"Output image is too small for root start sector {ROOT_START:#x}")
++
++    table = (
++        "label: gpt\n"
++        "unit: sectors\n"
++        "first-lba: 34\n"
++        "sector-size: 512\n"
++        f"start={LOADER1_START}, size={LOADER1_SIZE}, type={LINUX_TYPE}, name=loader1\n"
++        f"start={LOADER2_START}, size={LOADER2_SIZE}, type={LINUX_TYPE}, name=loader2\n"
++        f"start={KERNEL_START}, size={KERNEL_SIZE}, type={LINUX_TYPE}, name=kernel\n"
++        f"start={ROOT_START}, size={root_size}, type={root_type}, name=root\n"
++    )
++    run(["sfdisk", "--quiet", str(out)], input=table)
++    return root_size
++
++
++def maybe_patch_rootfs_modules(rootfs: Path, deb: Path | None) -> None:
++    if deb is None:
++        return
++    with tempfile.TemporaryDirectory(prefix="opencca-kernel-deb.") as tmp:
++        extract_dir = Path(tmp) / "deb"
++        extract_dir.mkdir()
++        run(["dpkg-deb", "-x", str(deb), str(extract_dir)])
++
++        commands = Path(tmp) / "debugfs.cmds"
++        with commands.open("w") as stream:
++            for directory in sorted(p for p in extract_dir.rglob("*") if p.is_dir()):
++                rel = "/" + directory.relative_to(extract_dir).as_posix()
++                if rel in {
++                    "/boot",
++                    "/etc",
++                    "/etc/kernel",
++                    "/etc/kernel/postinst.d",
++                    "/etc/kernel/postrm.d",
++                    "/etc/kernel/preinst.d",
++                    "/etc/kernel/prerm.d",
++                    "/lib",
++                    "/lib/modules",
++                    "/usr",
++                    "/usr/lib",
++                    "/usr/share",
++                    "/usr/share/doc",
++                }:
++                    continue
++                stream.write(f"mkdir {rel}\n")
++            for file_path in sorted(p for p in extract_dir.rglob("*") if p.is_file()):
++                rel = "/" + file_path.relative_to(extract_dir).as_posix()
++                stream.write(f"write {file_path} {rel}\n")
++        run(["debugfs", "-w", "-f", str(commands), str(rootfs)])
++        run(["e2fsck", "-fy", str(rootfs)])
++
++
++def convert_image(args: argparse.Namespace) -> None:
++    source = args.source.resolve()
++    output = args.output.resolve()
++    kernel = args.kernel.resolve()
++
++    if source == output:
++        raise SystemExit("Source and output image paths must differ")
++    if not source.is_file():
++        raise SystemExit(f"Missing source image: {source}")
++    if not kernel.is_file():
++        raise SystemExit(f"Missing kernel image: {kernel}")
++
++    source_sectors = image_sectors(source)
++    kernel_sectors = sectors_for_bytes(kernel.stat().st_size)
++    if kernel_sectors > KERNEL_SIZE:
++        raise SystemExit(
++            f"Kernel image too large: {kernel.stat().st_size} bytes > "
++            f"{KERNEL_SIZE * SECTOR_SIZE} bytes"
++        )
++
++    parts = partition_table(source)
++    loader1 = find_partition(parts, "loader1")
++    loader2 = find_partition(parts, "loader2")
++    root = find_partition(parts, "root")
++
++    if int(root["start"]) >= ROOT_START:
++        raise SystemExit(f"{source} already appears to use the compatible root layout")
++
++    root_type = root.get("type") or EFI_TYPE
++    with tempfile.TemporaryDirectory(prefix="opencca-convert.") as tmp:
++        rootfs = Path(tmp) / "rootfs.ext4"
++        extract_range(source, rootfs, int(root["start"]), int(root["size"]))
++        maybe_patch_rootfs_modules(rootfs, args.linux_image_deb.resolve() if args.linux_image_deb else None)
++        shrink_ext4(rootfs)
++        rootfs_sectors = sectors_for_bytes(rootfs.stat().st_size)
++        output_sectors = max(source_sectors, ROOT_START + rootfs_sectors + 34)
++        root_capacity = output_sectors - ROOT_START - 34
++        if rootfs_sectors > root_capacity:
++            raise SystemExit(
++                f"Rootfs is too large after shrink: {rootfs_sectors} sectors > "
++                f"{root_capacity} sectors"
++            )
++
++        output.parent.mkdir(parents=True, exist_ok=True)
++        shutil.copyfile(source, output)
++        run(["truncate", "-s", str(output_sectors * SECTOR_SIZE), str(output)])
++
++        root_capacity = make_partition_table(output, output_sectors, root_type)
++        copy_range(source, output, int(loader1["start"]), LOADER1_START, int(loader1["size"]))
++        copy_range(source, output, int(loader2["start"]), LOADER2_START, int(loader2["size"]))
++        write_file_to_sector(kernel, output, KERNEL_START)
++        write_file_to_sector(rootfs, output, ROOT_START)
++
++    print(f"Wrote compatible image: {output}")
++    print(f"Kernel slot: start={KERNEL_START:#x}, sectors={KERNEL_SIZE:#x}")
++    print(f"Rootfs: start={ROOT_START:#x}, capacity_sectors={root_capacity:#x}")
++
++
++def main() -> None:
++    for tool in ("sfdisk", "dd", "truncate", "e2fsck", "resize2fs"):
++        require_tool(tool)
++
++    parser = argparse.ArgumentParser(
++        description="Convert an older OpenCCA Rockchip image to the raw-kernel-slot layout"
++    )
++    parser.add_argument("source", type=Path)
++    parser.add_argument("output", type=Path)
++    parser.add_argument("--kernel", type=Path, default=Path("snapshot/kernel.img"))
++    parser.add_argument(
++        "--linux-image-deb",
++        type=Path,
++        help="Optional linux-image .deb to inject into the rootfs before shrinking",
++    )
++    args = parser.parse_args()
++
++    if args.linux_image_deb:
++        for tool in ("debugfs", "dpkg-deb"):
++            require_tool(tool)
++
++    try:
++        convert_image(args)
++    except subprocess.CalledProcessError as exc:
++        print(f"Command failed: {' '.join(exc.cmd)}", file=sys.stderr)
++        raise SystemExit(exc.returncode)
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/flash.sh b/flash.sh
+index 41624a6..cd984b0 100755
+--- a/flash.sh
++++ b/flash.sh
+@@ -36,6 +36,11 @@ MINICOM_SCRIPT=$SCRIPT_DIR/minicom.sh
+ 
+ FLASH_MMC_IDBLOADER=$SNAPSHOT_DIR/idbloader.img
+ FLASH_MMC_UBOOT=$SNAPSHOT_DIR/u-boot.itb
++FLASH_MMC_KERNEL=$SNAPSHOT_DIR/kernel.img
++FLASH_MMC_KERNEL_OFFSET=0x8000
++FLASH_MMC_KERNEL_MAX_SECTORS=0x40000
++FLASH_MMC_ROOTFS=${OPENCCA_ROOTFS_IMAGE:-$SNAPSHOT_DIR/opencca-rootfs-wip.ext4}
++FLASH_MMC_ROOTFS_OFFSET=0x48000
+ FLASH_SPI_BIN=$SNAPSHOT_DIR/u-boot-rockchip-spi.bin 
+ 
+ #
+@@ -47,6 +52,8 @@ Usage: $0 <command>
+ Commands:
+   spi                   - Flash via SPI
+   mmc                   - Flash via MMC
++  mmc-kernel            - Flash MMC firmware and kernel without updating rootfs
++  mmc-rootfs [image]    - Flash MMC rootfs without updating firmware or kernel
+   clear                 - Clear the SPI flash memory
+   maskrom               - Put device into Maskrom mode and flash memory driver
+   device                - Put device into Maskrom mode but do not flash memory driver
+@@ -104,17 +111,54 @@ function cmd_flash_spi {
+ }
+ 
+ function cmd_flash_mmc {
++    require_file "$FLASH_MMC_IDBLOADER"
++    require_file "$FLASH_MMC_UBOOT"
++
++    wait_for_device_or_die
++    enable_verbose_output
++    transfer_loader
++
++    $CMD wl 0x40 $FLASH_MMC_IDBLOADER
++    $CMD wl 0x4000 $FLASH_MMC_UBOOT
++    $CMD rd
++
++    disable_verbose_output
++}
++
++function cmd_flash_mmc_kernel {
++    require_file "$FLASH_MMC_IDBLOADER"
++    require_file "$FLASH_MMC_UBOOT"
++    require_file "$FLASH_MMC_KERNEL"
++    require_kernel_fits_slot
++
+     wait_for_device_or_die
+     enable_verbose_output
+     transfer_loader
++    require_mmc_kernel_layout
+ 
+     $CMD wl 0x40 $FLASH_MMC_IDBLOADER
+     $CMD wl 0x4000 $FLASH_MMC_UBOOT
++    $CMD wl $FLASH_MMC_KERNEL_OFFSET $FLASH_MMC_KERNEL
+     $CMD rd
+ 
+     disable_verbose_output
+ }
+ 
++function cmd_flash_mmc_rootfs {
++    local rootfs_image="${1:-$FLASH_MMC_ROOTFS}"
++
++    require_file "$rootfs_image"
++
++    wait_for_device_or_die
++    enable_verbose_output
++    transfer_loader
++    require_mmc_rootfs_layout "$rootfs_image"
++
++    $CMD wl $FLASH_MMC_ROOTFS_OFFSET "$rootfs_image"
++
++    disable_verbose_output
++}
++
+ function cmd_clear_flash {
+     wait_for_device_or_die
+     enable_verbose_output
+@@ -221,6 +265,79 @@ function wait_for_device_or_die {
+     done
+ }
+ 
++function require_file {
++    local file=$1
++
++    if [[ ! -f "$file" ]]; then
++        echo "Missing required file: $file" >&2
++        exit 1
++    fi
++}
++
++function require_kernel_fits_slot {
++    local max_bytes=$(( FLASH_MMC_KERNEL_MAX_SECTORS * 512 ))
++    local kernel_bytes
++
++    kernel_bytes=$(stat -c%s "$FLASH_MMC_KERNEL")
++    if (( kernel_bytes > max_bytes )); then
++        echo "Kernel image too large: $kernel_bytes bytes > $max_bytes bytes" >&2
++        exit 1
++    fi
++}
++
++function require_mmc_kernel_layout {
++    local gpt_dump
++    local gpt_tmpdir
++
++    gpt_tmpdir=$(mktemp -d "${TMPDIR:-/tmp}/opencca-gpt.XXXXXX")
++    gpt_dump="$gpt_tmpdir/gpt.bin"
++    if ! $CMD rl 0 34 "$gpt_dump"; then
++        rm -rf "$gpt_tmpdir"
++        echo "Failed to read eMMC GPT; refusing to write raw kernel slot" >&2
++        exit 1
++    fi
++
++    if ! python3 "$SCRIPT_DIR/validate_gpt_kernel_slot.py" \
++        "$gpt_dump" "$FLASH_MMC_KERNEL_OFFSET" "$FLASH_MMC_KERNEL_MAX_SECTORS"
++    then
++        rm -rf "$gpt_tmpdir"
++        echo "eMMC layout is not compatible with mmc-kernel; refusing to update kernel slot" >&2
++        exit 1
++    fi
++
++    rm -rf "$gpt_tmpdir"
++}
++
++function require_mmc_rootfs_layout {
++    local rootfs_image=$1
++    local rootfs_bytes
++    local rootfs_sectors
++    local gpt_dump
++    local gpt_tmpdir
++
++    rootfs_bytes=$(stat -c%s "$rootfs_image")
++    rootfs_sectors=$(( (rootfs_bytes + 511) / 512 ))
++
++    gpt_tmpdir=$(mktemp -d "${TMPDIR:-/tmp}/opencca-gpt.XXXXXX")
++    gpt_dump="$gpt_tmpdir/gpt.bin"
++    if ! $CMD rl 0 34 "$gpt_dump"; then
++        rm -rf "$gpt_tmpdir"
++        echo "Failed to read eMMC GPT; refusing to write rootfs" >&2
++        exit 1
++    fi
++
++    if ! python3 "$SCRIPT_DIR/validate_gpt_kernel_slot.py" \
++        "$gpt_dump" "$FLASH_MMC_ROOTFS_OFFSET" "$rootfs_sectors" \
++        --name root --required-bytes "$rootfs_bytes"
++    then
++        rm -rf "$gpt_tmpdir"
++        echo "eMMC layout is not compatible with mmc-rootfs; refusing to update rootfs" >&2
++        exit 1
++    fi
++
++    rm -rf "$gpt_tmpdir"
++}
++
+ function transfer_loader {
+     local cwd=$PWD
+ 
+@@ -254,6 +371,8 @@ case "$1" in
+     minicom) cmd_minicom_connect ;;
+     spi) cmd_flash_spi ;;
+     mmc) cmd_flash_mmc ;;
++    mmc-kernel) cmd_flash_mmc_kernel ;;
++    mmc-rootfs) cmd_flash_mmc_rootfs "${2:-}" ;;
+     clear) cmd_clear_flash ;;
+     device)
+         wait_for_device_or_die
+diff --git a/readme.md b/readme.md
+index a496a70..5ce6304 100644
+--- a/readme.md
++++ b/readme.md
+@@ -140,16 +140,18 @@ A Docker container sets up all dependencies (`./docker/`).
+ Usage: ./flash.sh <command>
+ 
+ Commands:
+-  spi       - Flash via SPI
+-  mmc       - Flash via MMC
+-  clear     - Clear the SPI flash memory
+-  maskrom   - Put device into maskrom mode and flash memory driver.
+-  device    - Alias for maskrom
+-  on        - Power on the board
+-  off       - Power off the board
+-  reboot    - Reboot the board
+-  minicom   - Connect to board with ttyusb
+-  help      - Show this help message
++  spi        - Flash via SPI
++  mmc        - Flash via MMC
++  mmc-kernel - Flash MMC firmware and kernel without updating rootfs
++  mmc-rootfs - Flash MMC rootfs without updating firmware or kernel
++  clear      - Clear the SPI flash memory
++  maskrom    - Put device into maskrom mode and flash memory driver.
++  device     - Alias for maskrom
++  on         - Power on the board
++  off        - Power off the board
++  reboot     - Reboot the board
++  minicom    - Connect to board with ttyusb
++  help       - Show this help message
+ ```
+ 
+ Copy `.env.template` to `.env` and configure it before use.
+@@ -159,7 +161,58 @@ Copy `.env.template` to `.env` and configure it before use.
+ ```sh
+ ./flash.sh mmc
+ ```
+-Flashes assets from the snapshot/ directory to eMMC.
++Flashes firmware assets from the snapshot/ directory to eMMC.
++
++## Flash firmware and kernel to eMMC
++
++```sh
++./flash.sh mmc-kernel
++```
++
++Flashes `idbloader.img`, `u-boot.itb`, and `kernel.img` from the snapshot/
++directory to eMMC. The root filesystem partition is not updated.
++Build `kernel.img` with `./linux.mk kernel` from `opencca-build/buildconf`.
++
++This command verifies that the target eMMC has the OpenCCA raw `kernel`
++partition at sector `0x8000` before writing. If the board was initialized with
++an older image whose root partition starts at sector `0x8000`, reflash the full
++rootfs image first so the kernel slot exists.
++
++## Flash rootfs to eMMC
++
++```sh
++./flash.sh mmc-rootfs
++```
++
++Flashes `opencca-rootfs-wip.ext4` from the snapshot/ directory to the rootfs
++partition at sector `0x48000`. Firmware and kernel partitions are not updated,
++and the board is not reset after the write.
++
++This command verifies that the target eMMC has a `root` partition at sector
++`0x48000` and that the selected image fits before writing.
++
++Use an explicit path to flash another ext4 image:
++
++```sh
++./flash.sh mmc-rootfs /path/to/rootfs.ext4
++```
++
++The default image path can also be set with `OPENCCA_ROOTFS_IMAGE`.
++
++## Convert older prebuilt image layout
++
++```sh
++python3 convert_prebuilt_image.py \
++  ../opencca-image-rockchip-rock5b-rk3588.img \
++  ../opencca-image-rockchip-rock5b-rk3588-compatible.img \
++  --kernel ../snapshot/kernel.img
++```
++
++This converts an older prebuilt image whose `root` partition starts at sector
++`0x8000` into the compatible layout used by `mmc-kernel` and `mmc-rootfs`.
++The output image contains a raw `kernel` partition at sector `0x8000` and moves
++the rootfs to sector `0x48000`. If the rootfs cannot shrink enough to fit after
++being shifted, the output image is expanded while preserving the rootfs.
+ 
+ ## Flash to SPI
+ 
+@@ -173,4 +226,3 @@ Flashes assets from the snapshot/ directory to SPI.
+ ```sh
+ ./flash.sh minicom
+ ```
+-
+diff --git a/test_convert_prebuilt_image.py b/test_convert_prebuilt_image.py
+new file mode 100644
+index 0000000..fdbb45e
+--- /dev/null
++++ b/test_convert_prebuilt_image.py
+@@ -0,0 +1,134 @@
++#!/usr/bin/env python3
++import subprocess
++import sys
++import tempfile
++import unittest
++from pathlib import Path
++
++
++SECTOR_SIZE = 512
++KERNEL_START = 0x8000
++ROOT_START = 0x48000
++
++
++class ConvertPrebuiltImageTest(unittest.TestCase):
++    def test_rebuilds_old_layout_with_kernel_partition(self):
++        script = Path(__file__).with_name("convert_prebuilt_image.py")
++
++        with tempfile.TemporaryDirectory() as tmp:
++            tmpdir = Path(tmp)
++            src = tmpdir / "old.img"
++            out = tmpdir / "new.img"
++            rootfs = tmpdir / "root.ext4"
++            kernel = tmpdir / "kernel.img"
++
++            subprocess.run(
++                ["mkfs.ext4", "-q", "-L", "root", "-d", str(tmpdir), str(rootfs), "32M"],
++                check=True,
++            )
++            kernel.write_bytes(b"KERNEL".ljust(1024 * 1024, b"\0"))
++            subprocess.run(["truncate", "-s", str(256 * 1024 * 1024), str(src)], check=True)
++            subprocess.run(
++                [
++                    "sfdisk",
++                    "--quiet",
++                    str(src),
++                ],
++                input=(
++                    "label: gpt\n"
++                    "unit: sectors\n"
++                    "first-lba: 34\n"
++                    "sector-size: 512\n"
++                    "start=64, size=7105, type=linux, name=loader1\n"
++                    "start=16384, size=8192, type=linux, name=loader2\n"
++                    f"start={KERNEL_START}, size={src.stat().st_size // SECTOR_SIZE - KERNEL_START - 34}, type=uefi, name=root\n"
++                ),
++                text=True,
++                check=True,
++            )
++            subprocess.run(
++                ["dd", f"if={rootfs}", f"of={src}", "bs=512", f"seek={KERNEL_START}", "conv=notrunc", "status=none"],
++                check=True,
++            )
++
++            subprocess.run(
++                [
++                    sys.executable,
++                    str(script),
++                    str(src),
++                    str(out),
++                    "--kernel",
++                    str(kernel),
++                ],
++                check=True,
++            )
++
++            table = subprocess.run(
++                ["sfdisk", "-d", str(out)],
++                check=True,
++                stdout=subprocess.PIPE,
++                text=True,
++            ).stdout
++            self.assertIn('start=       32768, size=      262144', table)
++            self.assertIn('name="kernel"', table)
++            self.assertIn('start=      294912', table)
++            self.assertIn('name="root"', table)
++
++            data = out.read_bytes()
++            self.assertEqual(data[KERNEL_START * SECTOR_SIZE : KERNEL_START * SECTOR_SIZE + 6], b"KERNEL")
++            self.assertEqual(data[ROOT_START * SECTOR_SIZE + 0x438 : ROOT_START * SECTOR_SIZE + 0x43A], b"\x53\xef")
++
++    def test_grows_output_when_shifted_rootfs_exceeds_source_size(self):
++        script = Path(__file__).with_name("convert_prebuilt_image.py")
++
++        with tempfile.TemporaryDirectory() as tmp:
++            tmpdir = Path(tmp)
++            src = tmpdir / "old.img"
++            out = tmpdir / "new.img"
++            rootfs = tmpdir / "root.ext4"
++            kernel = tmpdir / "kernel.img"
++
++            subprocess.run(
++                ["mkfs.ext4", "-q", "-L", "root", "-d", str(tmpdir), str(rootfs), "64M"],
++                check=True,
++            )
++            kernel.write_bytes(b"KERNEL".ljust(1024 * 1024, b"\0"))
++            old_root_sectors = rootfs.stat().st_size // SECTOR_SIZE
++            old_image_sectors = KERNEL_START + old_root_sectors + 34
++            subprocess.run(["truncate", "-s", str(old_image_sectors * SECTOR_SIZE), str(src)], check=True)
++            subprocess.run(
++                ["sfdisk", "--quiet", str(src)],
++                input=(
++                    "label: gpt\n"
++                    "unit: sectors\n"
++                    "first-lba: 34\n"
++                    "sector-size: 512\n"
++                    "start=64, size=7105, type=linux, name=loader1\n"
++                    "start=16384, size=8192, type=linux, name=loader2\n"
++                    f"start={KERNEL_START}, size={old_root_sectors}, type=uefi, name=root\n"
++                ),
++                text=True,
++                check=True,
++            )
++            subprocess.run(
++                ["dd", f"if={rootfs}", f"of={src}", "bs=512", f"seek={KERNEL_START}", "conv=notrunc", "status=none"],
++                check=True,
++            )
++
++            subprocess.run(
++                [sys.executable, str(script), str(src), str(out), "--kernel", str(kernel)],
++                check=True,
++            )
++
++            self.assertGreater(out.stat().st_size, src.stat().st_size)
++            table = subprocess.run(
++                ["sfdisk", "-d", str(out)],
++                check=True,
++                stdout=subprocess.PIPE,
++                text=True,
++            ).stdout
++            self.assertIn('start=      294912', table)
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/test_flash_script.py b/test_flash_script.py
+new file mode 100644
+index 0000000..f0fb316
+--- /dev/null
++++ b/test_flash_script.py
+@@ -0,0 +1,27 @@
++#!/usr/bin/env python3
++import unittest
++from pathlib import Path
++
++
++class FlashScriptTest(unittest.TestCase):
++    def test_gpt_dump_path_is_not_precreated_in_sticky_tmp(self):
++        script = Path(__file__).with_name("flash.sh").read_text()
++
++        self.assertIn('mktemp -d "${TMPDIR:-/tmp}/opencca-gpt.XXXXXX"', script)
++        self.assertIn('gpt_dump="$gpt_tmpdir/gpt.bin"', script)
++
++    def test_mmc_rootfs_command_flashes_rootfs_partition_only(self):
++        script = Path(__file__).with_name("flash.sh").read_text()
++
++        self.assertIn("mmc-rootfs", script)
++        self.assertIn("OPENCCA_ROOTFS_IMAGE", script)
++        self.assertIn("FLASH_MMC_ROOTFS_OFFSET=0x48000", script)
++        self.assertIn("function cmd_flash_mmc_rootfs {", script)
++        self.assertIn('local rootfs_image="${1:-$FLASH_MMC_ROOTFS}"', script)
++        self.assertIn('require_mmc_rootfs_layout "$rootfs_image"', script)
++        self.assertIn('$CMD wl $FLASH_MMC_ROOTFS_OFFSET "$rootfs_image"', script)
++        self.assertIn("mmc-rootfs) cmd_flash_mmc_rootfs", script)
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/test_validate_gpt_kernel_slot.py b/test_validate_gpt_kernel_slot.py
+new file mode 100644
+index 0000000..9a215a6
+--- /dev/null
++++ b/test_validate_gpt_kernel_slot.py
+@@ -0,0 +1,151 @@
++#!/usr/bin/env python3
++import argparse
++import struct
++import subprocess
++import sys
++import tempfile
++import uuid
++from pathlib import Path
++
++
++SECTOR_SIZE = 512
++KERNEL_START = 0x8000
++KERNEL_SECTORS = 0x40000
++KERNEL_END = KERNEL_START + KERNEL_SECTORS - 1
++
++
++def add_partition(entry: bytearray, index: int, name: str, first_lba: int, last_lba: int) -> None:
++    offset = 2 * SECTOR_SIZE + index * 128
++    entry[offset : offset + 16] = uuid.UUID("0fc63daf-8483-4772-8e79-3d69d8477de4").bytes_le
++    entry[offset + 16 : offset + 32] = uuid.uuid4().bytes_le
++    struct.pack_into("<Q", entry, offset + 32, first_lba)
++    struct.pack_into("<Q", entry, offset + 40, last_lba)
++    entry[offset + 56 : offset + 128] = name.encode("utf-16le").ljust(72, b"\x00")
++
++
++def make_gpt(partitions: list[tuple[str, int, int]]) -> bytes:
++    data = bytearray(34 * SECTOR_SIZE)
++    header = SECTOR_SIZE
++    data[header : header + 8] = b"EFI PART"
++    struct.pack_into("<Q", data, header + 72, 2)
++    struct.pack_into("<I", data, header + 80, 128)
++    struct.pack_into("<I", data, header + 84, 128)
++
++    for index, (name, first_lba, last_lba) in enumerate(partitions):
++        add_partition(data, index, name, first_lba, last_lba)
++
++    return bytes(data)
++
++
++def run_case(
++    script: Path,
++    image: bytes,
++    expected_code: int,
++    *,
++    start: int = KERNEL_START,
++    sectors: int = KERNEL_SECTORS,
++    extra_args: tuple[str, ...] = (),
++) -> None:
++    with tempfile.NamedTemporaryFile() as gpt:
++        gpt.write(image)
++        gpt.flush()
++        result = subprocess.run(
++            [
++                sys.executable,
++                str(script),
++                gpt.name,
++                hex(start),
++                hex(sectors),
++                *extra_args,
++            ],
++            check=False,
++            stdout=subprocess.PIPE,
++            stderr=subprocess.PIPE,
++            text=True,
++        )
++    if result.returncode != expected_code:
++        raise AssertionError(
++            f"expected {expected_code}, got {result.returncode}\n"
++            f"stdout:\n{result.stdout}\nstderr:\n{result.stderr}"
++        )
++
++
++def main() -> None:
++    parser = argparse.ArgumentParser()
++    parser.add_argument(
++        "--validator",
++        type=Path,
++        default=Path(__file__).with_name("validate_gpt_kernel_slot.py"),
++    )
++    args = parser.parse_args()
++
++    run_case(
++        args.validator,
++        make_gpt(
++            [
++                ("loader1", 0x40, 0x1C00),
++                ("loader2", 0x4000, 0x5FFF),
++                ("kernel", KERNEL_START, KERNEL_END),
++                ("root", 0x48000, 0x100000),
++            ]
++        ),
++        0,
++    )
++    run_case(
++        args.validator,
++        make_gpt(
++            [
++                ("loader1", 0x40, 0x1C00),
++                ("loader2", 0x4000, 0x5FFF),
++                ("root", KERNEL_START, 0x100000),
++            ]
++        ),
++        1,
++    )
++    run_case(
++        args.validator,
++        make_gpt(
++            [
++                ("loader1", 0x40, 0x1C00),
++                ("loader2", 0x4000, 0x5FFF),
++                ("kernel", 0x9000, KERNEL_END),
++                ("root", 0x48000, 0x100000),
++            ]
++        ),
++        1,
++    )
++    run_case(
++        args.validator,
++        make_gpt(
++            [
++                ("loader1", 0x40, 0x1C00),
++                ("loader2", 0x4000, 0x5FFF),
++                ("kernel", KERNEL_START, KERNEL_END),
++                ("root", 0x48000, 0x100000),
++            ]
++        ),
++        0,
++        start=0x48000,
++        sectors=0x1000,
++        extra_args=("--name", "root", "--required-bytes", "0x100000"),
++    )
++    run_case(
++        args.validator,
++        make_gpt(
++            [
++                ("loader1", 0x40, 0x1C00),
++                ("loader2", 0x4000, 0x5FFF),
++                ("kernel", KERNEL_START, KERNEL_END),
++                ("root", 0x48000, 0x480FF),
++            ]
++        ),
++        1,
++        start=0x48000,
++        sectors=0x1000,
++        extra_args=("--name", "root", "--required-bytes", "0x100000"),
++    )
++    print("GPT slot validation tests passed")
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/validate_gpt_kernel_slot.py b/validate_gpt_kernel_slot.py
+new file mode 100644
+index 0000000..3fbcbda
+--- /dev/null
++++ b/validate_gpt_kernel_slot.py
+@@ -0,0 +1,136 @@
++#!/usr/bin/env python3
++import argparse
++import struct
++import sys
++from pathlib import Path
++
++
++SECTOR_SIZE = 512
++GPT_HEADER_LBA = 1
++GPT_SIGNATURE = b"EFI PART"
++PARTITION_NAME_OFFSET = 56
++PARTITION_NAME_SIZE = 72
++MIN_GPT_ENTRY_SIZE = 128
++
++
++def parse_int(value: str) -> int:
++    return int(value, 0)
++
++
++def fail(message: str) -> None:
++    print(message, file=sys.stderr)
++    raise SystemExit(1)
++
++
++def partition_name(entry: bytes) -> str:
++    name = entry[
++        PARTITION_NAME_OFFSET : PARTITION_NAME_OFFSET + PARTITION_NAME_SIZE
++    ]
++    return name.decode("utf-16le", errors="ignore").rstrip("\x00")
++
++
++def validate_named_slot(
++    gpt_path: Path,
++    partition_name_expected: str,
++    expected_start: int,
++    slot_sectors: int,
++    required_bytes: int | None = None,
++) -> None:
++    expected_end = expected_start + slot_sectors - 1
++    data = gpt_path.read_bytes()
++
++    if len(data) < (GPT_HEADER_LBA + 1) * SECTOR_SIZE:
++        fail("GPT read was shorter than the primary header")
++
++    header_offset = GPT_HEADER_LBA * SECTOR_SIZE
++    header = data[header_offset : header_offset + SECTOR_SIZE]
++    if header[:8] != GPT_SIGNATURE:
++        fail("No GPT header found on eMMC")
++
++    entries_lba = struct.unpack_from("<Q", header, 72)[0]
++    entry_count = struct.unpack_from("<I", header, 80)[0]
++    entry_size = struct.unpack_from("<I", header, 84)[0]
++    if entry_size < MIN_GPT_ENTRY_SIZE:
++        fail(f"Unsupported GPT entry size {entry_size}")
++
++    entries_offset = entries_lba * SECTOR_SIZE
++    entries_end = entries_offset + entry_count * entry_size
++    if entries_end > len(data):
++        fail("GPT partition entries extend beyond the read buffer")
++
++    slot_ok = False
++    bad_slot_entries: list[str] = []
++    overlaps: list[str] = []
++
++    for index in range(entry_count):
++        offset = entries_offset + index * entry_size
++        entry = data[offset : offset + entry_size]
++        if len(entry) < MIN_GPT_ENTRY_SIZE or entry[:16] == b"\x00" * 16:
++            continue
++
++        first_lba = struct.unpack_from("<Q", entry, 32)[0]
++        last_lba = struct.unpack_from("<Q", entry, 40)[0]
++        if last_lba < first_lba:
++            continue
++
++        name = partition_name(entry)
++        overlaps_slot = first_lba <= expected_end and last_lba >= expected_start
++
++        if name == partition_name_expected:
++            if first_lba != expected_start:
++                bad_slot_entries.append(f"{name} [{first_lba:#x}-{last_lba:#x}]")
++                continue
++            if required_bytes is not None:
++                available_bytes = (last_lba - first_lba + 1) * SECTOR_SIZE
++                if available_bytes < required_bytes:
++                    fail(
++                        f"{name} partition is too small: {available_bytes} bytes "
++                        f"< {required_bytes} bytes"
++                    )
++            if last_lba >= expected_end:
++                slot_ok = True
++            else:
++                bad_slot_entries.append(f"{name} [{first_lba:#x}-{last_lba:#x}]")
++        elif overlaps_slot:
++            overlaps.append(f"{name or '<unnamed>'} [{first_lba:#x}-{last_lba:#x}]")
++
++    if not slot_ok:
++        detail = f" Found: {', '.join(bad_slot_entries)}." if bad_slot_entries else ""
++        fail(
++            f"Expected GPT {partition_name_expected} partition at {expected_start:#x} "
++            f"covering at least {slot_sectors:#x} sectors.{detail}"
++        )
++
++    if overlaps:
++        fail(
++            f"{partition_name_expected} slot overlaps other partitions: "
++            + ", ".join(overlaps)
++        )
++
++
++def validate_kernel_slot(gpt_path: Path, expected_start: int, slot_sectors: int) -> None:
++    validate_named_slot(gpt_path, "kernel", expected_start, slot_sectors)
++
++
++def main() -> None:
++    parser = argparse.ArgumentParser(
++        description="Validate that an eMMC GPT dump has an OpenCCA partition slot"
++    )
++    parser.add_argument("gpt_dump", type=Path)
++    parser.add_argument("kernel_start", type=parse_int)
++    parser.add_argument("kernel_sectors", type=parse_int)
++    parser.add_argument("--name", default="kernel")
++    parser.add_argument("--required-bytes", type=parse_int)
++    args = parser.parse_args()
++
++    validate_named_slot(
++        args.gpt_dump,
++        args.name,
++        args.kernel_start,
++        args.kernel_sectors,
++        args.required_bytes,
++    )
++
++
++if __name__ == "__main__":
++    main()
+-- 
+2.34.1
+

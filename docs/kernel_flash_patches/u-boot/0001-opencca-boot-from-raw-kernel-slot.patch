@@ -1,0 +1,24 @@
+From c717e4c3663f13343fea40ceb350942deec117d1 Mon Sep 17 00:00:00 2001
+From: xander <xanderc@qq.com>
+Date: Fri, 29 May 2026 10:50:57 +0800
+Subject: [PATCH] opencca: boot from raw kernel slot
+
+---
+ rk3588_fragment.config | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/rk3588_fragment.config b/rk3588_fragment.config
+index 7203883802..4258800cd5 100644
+--- a/rk3588_fragment.config
++++ b/rk3588_fragment.config
+@@ -4,4 +4,5 @@ CONFIG_DEBUG=y
+ CONFIG_HIDE_MEMORY_INFO=n
+ CONFIG_RMM_ELF_ADJUST_BASE=0x201000
+ CONFIG_ATF_NO_PLATFORM_PARAM=n
+-CONFIG_BOOTARGS_OVERWRITE=" maxcpus=2"
+\ No newline at end of file
++CONFIG_BOOTARGS_OVERWRITE=" maxcpus=2"
++CONFIG_BOOTCOMMAND="mmc dev 0; if mmc read 0x50000000 0x8000 0x40000; then setenv bootargs root=PARTLABEL=root rootwait isolcpus=1,2,3 maxcpus=2 nohlt cpuidle.off=1 rcupdate.rcu_cpu_st; bootm 0x50000000; fi; bootflow scan"
+-- 
+2.34.1
+

@@ -7,148 +7,204 @@ Flash host: Raspberry Pi at `mzh@192.168.31.52`
 
 ## Summary
 
-- The OpenCCA workspace now has an SD-only raw kernel slot workflow. It builds a
-  fixed 128 MiB FIT `snapshot/kernel.img`, syncs it to the Raspberry Pi, and
-  refuses to write it unless the SD GPT contains `PARTLABEL=kernel` at LBA
-  `0x8000`.
-- The current SD card on the target board was restored successfully by flashing
-  the full OpenCCA rootfs image back to SD. The board is online again, booted
-  from `/dev/mmcblk1p3`.
-- The current SD image still uses the old layout where `root` starts at
-  `0x8000`. Single-kernel flashing is therefore intentionally blocked until the
-  SD card is initialized with a compatible raw-kernel-slot image.
-- The 32 MiB GPU comparison could not produce valid shared/passthrough/host
-  numbers. The board restored to the stock OpenCCA `panthor` kernel; no
-  `/dev/pmthor` exists, and the attempted `pmthor` host kernel boot did not
-  return over SSH.
+- The OpenCCA SD image now separates kernel boot content and rootfs:
+  `p3 kernel` starts at LBA `0x8000`, and `p4 root` starts at LBA `0x48000`.
+- The kernel slot is a 128 MiB ext4 boot partition with extlinux, vmlinuz,
+  initrd, and `rk3588-rock-5b.dtb`. This replaced the earlier raw FIT attempt
+  because the extlinux/initrd path matches the known-working OpenCCA Debian boot.
+- A one-time full SD flash initialized the new layout, and a later kernel-only
+  flash wrote only the `kernel` partition on SD storage ID `2`.
+- The board is currently online from SD with root mounted from `/dev/mmcblk1p4`.
+- Two pmthor host-kernel boot attempts were made through the kernel-only p3
+  workflow. Both flashed successfully but did not return SSH, so the board was
+  recovered by flashing only the known-good stock p3 kernel partition.
+- GPU performance testing remains blocked by the custom host `pmthor` boot path.
+  The recovered kernel exposes stock `panthor` and no `/dev/pmthor`, so shared
+  and passthrough measurements must not be treated as valid yet.
+- GitHub repositories `marsha1111mao-del/gpu`, `marsha1111mao-del/opencca`,
+  `marsha1111mao-del/tf-rmm`, and `marsha1111mao-del/vmshm-broker` were checked
+  on 2026-06-11 22:24 CST and are public (`isPrivate=false`).
 
 ## Implemented OpenCCA Changes
 
 OpenCCA submodule:
 
 - `scripts/image/build-raw-kernel-image.sh`
-  Builds `snapshot/kernel.img` from a Linux `Image` and `rk3588-rock-5b.dtb`.
+  Builds `snapshot/kernel-extlinux.img`, a fixed-size ext4 kernel boot
+  partition. The script name is retained for compatibility with the earlier
+  patch notes.
+- `scripts/image/convert-opencca-image-to-raw-kernel-layout.py`
+  Converts an old root-at-`0x8000` OpenCCA image into the separated layout by
+  writing the kernel boot partition at p3 and moving rootfs to p4.
 - `scripts/firmware/flash-raw-kernel-on-pi.sh`
-  Pi-side SD raw kernel writer. It enters Maskrom, selects storage ID `2`, reads
-  GPT, validates the kernel partition, writes LBA `0x8000`, releases Maskrom,
-  and resets the board.
+  Pi-side SD kernel-slot writer. It enters Maskrom, selects Rockchip storage ID
+  `2`, validates GPT, writes only LBA `0x8000`, releases Maskrom, and resets the
+  board.
 - `scripts/firmware/validate-gpt-slot.py`
   Validates that the GPT dump has a non-overlapping `kernel` partition at the
   expected LBA and size.
-- `scripts/image/convert-opencca-image-to-raw-kernel-layout.py`
-  Converts an old root-at-`0x8000` OpenCCA image into the raw-kernel-slot layout
-  by moving root to `0x48000`.
 - `scripts/firmware/configure-raw-kernel-slot-sources.sh`
-  Optional local source patch helper for U-Boot and debian-image-recipes.
+  Patches U-Boot to `CONFIG_BOOTCOMMAND="bootflow scan"` and updates
+  `debian-image-recipes` to generate p3 `kernel` plus p4 `root`.
 - `scripts/firmware/flash-rk3588-via-pi.sh`
   Adds `--build-kernel-image`, `--sync-kernel`, `--flash-kernel`, and
   `--kernel-image`.
 
-Parent repo docs:
+Nested source changes applied in the current local worktree and reproducible by
+`opencca/scripts/firmware/configure-raw-kernel-slot-sources.sh`:
 
-- `docs/start/RASPBERRY_PI_FLASH_RUNBOOK.md`
-  Documents that this workflow flashes SD, not eMMC, and records the raw kernel
-  slot preflight/refusal behavior.
+- `opencca/u-boot/rk3588_fragment.config`
+  Uses `bootflow scan`.
+- `opencca/debian-image-recipes/opencca-image-rockchip-rk3588.yaml`
+  Defines p3 `kernel` ext4 and p4 `root` ext4.
 
-## Verification
+## Verified Kernel/Rootfs Split
 
-Kernel artifact build:
-
-- `snapshot/kernel.img` was generated locally.
-- Size: `134217728` bytes.
-- SHA-256:
-  `eaae4126a077a5bd00f87febec59263027c38de04fab1144d7fc699f895f041d`.
-- The same hash was confirmed after syncing to the Raspberry Pi.
-
-Script checks:
-
-- `bash -n` passed for the modified shell scripts.
-- `python3 -m py_compile` passed for the Python helpers.
-- `--flash-kernel --dry-run` on the current board refused before entering
-  Maskrom:
+Converted image:
 
 ```text
-OPENCCA_KERNEL_PREFLIGHT_INCOMPATIBLE=1
-Expected PARTLABEL=kernel start=32768 sectors>=262144.
-mmcblk1p1 label=loader1 start=64 sectors=7105
-mmcblk1p2 label=loader2 start=16384 sectors=8192
-mmcblk1p3 label=root start=32768 sectors=62301144
+rootfs/opencca-image-rockchip-rock5b-rk3588-extlinux-kernel.img
+size=4134218240 bytes
 ```
 
-Board recovery after the failed `pmthor` kernel boot attempt:
+GPT:
+
+```text
+loader1 start=64     size=7105
+loader2 start=16384  size=8192
+kernel start=32768   size=262144  label=kernel
+root   start=294912  size=7779699 label=root
+```
+
+Known-good kernel boot partition:
+
+```text
+snapshot/kernel-extlinux.img
+size=134217728 bytes
+sha256=5b41a8d86bdc52722ca20c4d81a2e9fc4db230b4de4b19c44430beae81ccbc2e
+```
+
+Input artifact hashes:
+
+```text
+vmlinuz-6.12.0-opencca-wip sha256=6c4e7dbd7afd5680d30437a84baa1a307fc29c11e74c4039724932e1c60494d6
+initrd.img-6.12.0-opencca-wip sha256=535902f4aec8a8f2b7afff6ca0c93c6ab74e3265ef32dbb025798ac7ed5111cd
+rk3588-rock-5b.dtb sha256=2a186c6e0511daaab791ee53e83feb4f58078c1342b4aae56037e9337b5fecaf
+```
+
+Kernel-only flash command verified:
+
+```bash
+OPENCCA_RPI_PASSWORD=root OPENCCA_RPI_SUDO_PASSWORD=root OPENCCA_RK_PASSWORD=root \
+  ./scripts/firmware/flash-rk3588-via-pi.sh \
+  --kernel-image snapshot/kernel-extlinux.img \
+  --flash-kernel --wait-rk
+```
+
+Current RK evidence after the kernel-only flash:
 
 ```text
 opencca-rock5b-rk3588
 Linux opencca-rock5b-rk3588 6.12.0-opencca-wip #wip SMP PREEMPT Thu Jul 31 08:44:48 UTC 2025 aarch64
-/dev/mmcblk1p3 / ext4
-mmcblk1p1 loader1
-mmcblk1p2 loader2
-mmcblk1p3 root /
+root=PARTLABEL=root rootwait isolcpus=1,2,3 maxcpus=2 nohlt cpuidle.off=1 rcupdate.rcu_cpu_st maxcpus=2
+/dev/mmcblk1p4 / ext4
+mmcblk1p3 128M ext4 kernel kernel
+mmcblk1p4 3.7G ext4 root   root /
 ```
 
-GPU driver state after recovery:
-
-```text
-/dev/dri/card0
-/dev/dri/card1
-/dev/dri/renderD128
-panthor loaded
-no /dev/pmthor
-```
-
-## GPU 32MiB Reproduction Attempt
+## GPU 32MiB Status
 
 Requested workload size: 32 MiB, represented by `--count 8388608` uint32
 elements.
 
-What was attempted:
+Current host GPU state:
 
-- Baseline stock OpenCCA boot was confirmed from SD with `panthor`.
-- Dependencies were installed once before the kernel experiment.
-- A host `pmthor` kernel image from `GPU-SFTP/linux-host-kernel/Image` was
-  deployed to `/boot/vmlinuz-6.12.0-opencca-wip`.
-- After reboot, SSH did not return within the configured wait window. The
-  Raspberry Pi had no serial device available for boot log capture, and the
-  board was not visible in Maskrom. The board was recovered by flashing the full
-  OpenCCA SD rootfs image again.
-- After recovery, a low-risk host-only `panthor` 32 MiB smoke attempt was made.
-  The clean rootfs no longer had `gcc/pkg-config`; dependency installation from
-  Debian stalled before `gcc-14-aarch64-linux-gnu` downloaded, so no valid
-  host-only measurement was produced.
+```text
+no /dev/pmthor
+/dev/dri/card0
+/dev/dri/card1
+/dev/dri/renderD128
+panthor loaded
+```
 
-Invalid data excluded from comparison:
+The shared and passthrough paths require the custom host `pmthor` driver because
+Proxy VM passthrough depends on host-side pmthor IRQ/MMIO handling. Therefore
+the current stock OpenCCA boot cannot produce a valid shared/passthrough/Host
+comparison.
 
-- `GPU-SFTP/log/shared/vmshm-2client/vmshm-2client-gles-32m-rk31-20260611-144824`
-  is not a performance result. It failed before workload execution because the
-  remote host had no compiler and `gles-compute-smoke` was missing.
+The pmthor host kernel source artifact used for both attempts was:
 
-Result table:
+```text
+GPU-SFTP/linux-host-kernel/Image
+sha256=628413abab5b03cdbf8c5bf719650bb08f2d410c62d3d5d525aa68f5d5ec1fc8
+Linux version 6.12.0-opencca-wip #2 SMP PREEMPT Thu Jun 11 15:07:12 CST 2026
+```
+
+Attempt 1 built and flashed:
+
+```text
+snapshot/kernel-pmthor-extlinux.img
+sha256=3e29aff748388b5bdde6a81a2fa707b51a3eaea3b56d97f6da7d14c211606a81
+```
+
+Result: p3 SD write completed, board reset, but SSH did not return. Independent
+checks showed `ssh: No route to host`; Pi-side `rkdeveloptool ld` also reported
+`not found any devices!`.
+
+Attempt 2 added diagnostic cmdline options:
+`module_blacklist=panthor ignore_loglevel initcall_debug`.
+
+```text
+snapshot/kernel-pmthor-blacklist-extlinux.img
+sha256=622958c41c92395235cbd2a9aec5e0d6f23953a76652985b6046dc75837c1e86
+```
+
+Result: p3 SD write completed, board reset, but SSH again did not return. The
+board was recovered with a kernel-only stock p3 flash:
+
+```bash
+OPENCCA_RPI_PASSWORD=root OPENCCA_RPI_SUDO_PASSWORD=root OPENCCA_RK_PASSWORD=root \
+  ./scripts/firmware/flash-rk3588-via-pi.sh \
+  --kernel-image snapshot/kernel-extlinux.img \
+  --flash-kernel --wait-rk
+```
+
+After recovery, the board returned to:
+
+```text
+opencca-rock5b-rk3588
+Linux opencca-rock5b-rk3588 6.12.0-opencca-wip #wip SMP PREEMPT Thu Jul 31 08:44:48 UTC 2025 aarch64
+/dev/mmcblk1p4 / ext4 root
+no /dev/pmthor
+panthor fb000000.gpu: [drm] CSF FW v1.1.0
+```
+
+The clean OpenCCA rootfs also lacks the GPU test workspace and build tools:
+`/root/GPU-SFTP` is absent, `rsync`, `gcc`, `cc`, and `pkg-config` are missing,
+and EGL/GLES headers such as `/usr/include/EGL/egl.h` are not installed. A
+fresh 32 MiB comparison should install or stage those prerequisites only after
+the pmthor host kernel reaches SSH and exposes `/dev/pmthor`.
+
+## Result Table
+
+No valid 32 MiB comparison numbers have been produced after the layout change
+yet.
 
 | Mode | 32MiB result |
 | --- | --- |
-| Shared VM GPU | Not measured. Requires booted `pmthor` host path. |
-| Passthrough VM GPU | Not measured. Requires `/dev/pmthor`. |
-| Host direct GPU | Not measured. Host-only retry was blocked by dependency install after full SD recovery. |
+| Shared VM GPU | Not measured. Blocked by pmthor host-kernel boot failure. |
+| Passthrough VM GPU | Not measured. Blocked by missing `/dev/pmthor`. |
+| Host direct GPU | Not measured in the final set; rootfs test prerequisites are absent after recovery. |
 
-## Current Blockers
+## Remaining Work
 
-- The current SD card lacks a raw `kernel` GPT partition; `--flash-kernel` is
-  correctly blocked to avoid overwriting rootfs.
-- Shared and passthrough GPU tests require the custom host `pmthor` path. The
-  tested host kernel image did not return over SSH when installed as the boot
-  kernel.
-- No serial console was available on the Raspberry Pi (`/dev/ttyUSB0` absent),
-  so the failed `pmthor` boot could not be diagnosed safely.
-- The stock OpenCCA command line includes `maxcpus=2`, so the old multi-core
-  CPU-affinity assumptions in prior GPU logs are not valid for this boot.
-
-## Next Safe Steps
-
-1. Convert or rebuild the SD image with the raw-kernel-slot layout, then full
-   flash that image once. After that, use `--flash-kernel` for kernel-only
-   updates.
-2. Attach serial logging before retrying the `pmthor` host kernel.
-3. Rebuild/deploy the `pmthor` kernel together with any required modules or
-   rootfs payload, then verify `/dev/pmthor` before running VM tests.
-4. Re-run exactly one 32 MiB set only after `/dev/pmthor` is present:
-   shared VM GPU, passthrough VM GPU, and host direct GPU.
+1. Diagnose why the local pmthor host kernel does not return SSH when booted
+   from the extlinux p3 kernel slot. Serial capture or a kernel/modules/initrd
+   rebuild with matching pmthor dependencies is needed.
+2. Keep using the stock `snapshot/kernel-extlinux.img` as the SD p3 recovery
+   path while iterating.
+3. After `/dev/pmthor` is present, deploy or install the missing GPU test
+   prerequisites on the fresh rootfs.
+4. Run one 32 MiB set with the formal `--exclude-cpu-prepare`口径:
+   shared VM GPU, passthrough VM GPU, and Host direct GPU.
+5. Parse the logs and append the final comparison table and analysis.

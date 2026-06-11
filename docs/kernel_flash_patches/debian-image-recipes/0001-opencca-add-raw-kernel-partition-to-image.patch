@@ -1,0 +1,40 @@
+From b17280bbaded05473298838835147f9675b03490 Mon Sep 17 00:00:00 2001
+From: xander <xanderc@qq.com>
+Date: Wed, 10 Jun 2026 16:07:23 +0800
+Subject: [PATCH] opencca: add raw kernel partition to image
+
+---
+ opencca-image-rockchip-rk3588.yaml | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/opencca-image-rockchip-rk3588.yaml b/opencca-image-rockchip-rk3588.yaml
+index 9331bef..a38a570 100644
+--- a/opencca-image-rockchip-rk3588.yaml
++++ b/opencca-image-rockchip-rk3588.yaml
+@@ -30,9 +30,13 @@ actions:
+         fs: none
+         start: 16384s
+         end: 24575s
++      - name: kernel
++        fs: none
++        start: 32768s  # 16M
++        end: 294911s
+       - name: root
+         fs: ext4
+-        start: 32768s  # 16M
++        start: 294912s  # 144M
+         end: 100%
+         flags: [ boot ]
+ 
+@@ -142,7 +146,7 @@ actions:
+       IMAGE="$ARTIFACTDIR/{{ $image }}.img"
+       OUTPUT="$ARTIFACTDIR/vm-rootfs.ext4"
+       SECTOR_SIZE=512
+-      ROOT_START_SECTOR=32768
++      ROOT_START_SECTOR=294912
+       dd if="$IMAGE" of="$OUTPUT" bs=$SECTOR_SIZE skip=$ROOT_START_SECTOR status=progress
+ 
+   - action: run
+-- 
+2.34.1
+
