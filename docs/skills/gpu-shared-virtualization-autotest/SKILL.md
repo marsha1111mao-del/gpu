@@ -185,8 +185,8 @@ sshpass -p root ssh root@192.168.31.18 '
   basename "$(readlink -f /sys/bus/platform/devices/fb000000.gpu/driver)"
   test -e /dev/pmthor
   test -x /root/GPU-SFTP/firecracker-bins/bin/gles-compute-smoke
-  pkill -f firecracker || true
-  pkill -f vmshm-broker || true
+  pkill -x firecracker || true
+  pkill -x vmshm-broker || true
 '
 ```
 
@@ -217,6 +217,20 @@ RUN_ID=vmshm-2client-gles-32m-opencca-pmthor-$(date +%Y%m%d-%H%M%S) \
   --gles-proxy-mem-mib 384
 ```
 
+For GLES mode, this runner applies the verified default `auto-4cpu-split` when
+no explicit CPU placement knobs are supplied:
+
+```text
+temporary host online CPUs: 0-3
+broker:                     CPU 0
+proxy VM:                   CPU 1
+client0 VM:                 CPU 2
+client1 VM:                 CPU 3
+```
+
+The runner restores the previous online CPU mask on exit. Pass
+`--no-gles-auto-affinity` only for a deliberate diagnostic run.
+
 When `--skip-fetch-logs` is used, fetch the run manually:
 
 ```bash
@@ -234,8 +248,8 @@ Useful two-client GLES knobs:
 - `--gles-min-host-available-mib auto` is the normal OOM guard. Use `0` only
   for a deliberate diagnostic run.
 - `--gles-host-online-cpus`, `--gles-broker-cpus`, `--gles-proxy-cpus`,
-  `--gles-client0-cpus`, and `--gles-client1-cpus` are diagnostic scheduling
-  controls, not default functional behavior.
+  `--gles-client0-cpus`, and `--gles-client1-cpus` override the default
+  `auto-4cpu-split`. Treat alternate placement as diagnostic.
 - `--gles-proxy-panthor-stats`, `--gles-panthor-sched-tick-ms`,
   `--gles-panthor-sched-highpri-wq`, and
   `--gles-panthor-proxy-group-core-partitions` change timing; label those runs
@@ -253,19 +267,25 @@ Always inspect logs before reporting success. Required evidence:
 - `GPU_SMOKE_RESULT=PASS` and `COMPUTE_CHECK=PASS` for GLES runs
 - Both clients show Mali/Panfrost renderer, not a software renderer
 - `rootfs_payload_inject_done payload=gles-compute` in rootfs-prep logs
+- For the default 32 MiB shared run, `GLES affinity profile: auto-4cpu-split`
+  and CPU restore evidence in `affinity.log`
 - No GPU fault, job timeout, panic, Oops, host OOM, or Firecracker-killed symptom
 
-Verified 2026-06-11 32 MiB reference:
+Verified 2026-06-12 32 MiB default reference:
 
 ```text
-run: GPU-SFTP/log/shared/vmshm-2client/vmshm-2client-gles-32m-opencca-pmthor-20260611-234503
+run: GPU-SFTP/log/shared/vmshm-2client/vmshm-2client-gles-32m-autoaffinity-20260612-010111
 result: GLES_PASS
 GLES remote build: 0
+GLES affinity profile: auto-4cpu-split
 renderer: Mali-G610 (Panfrost)
 GL: OpenGL ES 3.1 Mesa 25.0.7-2
-client0 avg iter_total: 48595.90 us
-client1 avg iter_total: 52102.55 us
-shared average: 50349.23 us
+client0 avg iter_total: 27311.35 us
+client1 avg iter_total: 27453.75 us
+shared average: 27382.55 us
+host baseline: 25458.05 us
+host/share: 0.930
+target: >= 0.85
 ```
 
 A good final report includes the run ID, local log path, rebuilt/synced/skipped

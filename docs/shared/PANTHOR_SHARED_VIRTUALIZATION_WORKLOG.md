@@ -5,6 +5,168 @@ virtualization plan. It intentionally separates tested designs from partial or
 incorrect designs so future work can reuse the stable pieces and avoid repeating
 dead ends.
 
+## 2026-06-12: 32 MiB Shared GLES Auto-Affinity Performance Pass
+
+### Goal
+
+Bring the two-client shared-GPU 32 MiB GLES smoke above the required
+`host/share >= 0.85` performance ratio, using the same workload size and timing
+metric as the OpenCCA pmthor host baseline:
+
+```text
+workload:    --count 8388608, 32 MiB, 20 measured iterations, 5 warmup
+metric:      host iter_total avg / shared two-client mean iter_total avg
+pass gate:   GLES_PASS, COMPUTE_CHECK=PASS on both clients, host/share >= 0.85
+```
+
+### Bottleneck Analysis
+
+The 2026-06-11 OpenCCA pmthor shared baseline ran the proxy VM, two client VMs,
+and broker on a host booted with only CPUs `0-1` online:
+
+```text
+shared baseline:
+GPU-SFTP/log/shared/vmshm-2client/vmshm-2client-gles-32m-opencca-pmthor-20260611-234503
+
+client0 iter_total avg: 48595.90 us
+client1 iter_total avg: 52102.55 us
+shared mean:            50349.23 us
+host baseline:          25471.05 us
+host/share:             0.506
+```
+
+The phase split showed that the expensive part was not GPU execution itself. The
+dominant overhead was CPU-side client work and host scheduling pressure:
+
+| phase | old shared mean | 4-CPU split mean |
+| --- | ---: | ---: |
+| cpu_prepare | 27267.55 us | 14610.85 us |
+| buffer_upload | 14239.45 us | 6859.48 us |
+| dispatch_call | 4335.95 us | 1632.25 us |
+| memory_barrier | 90.23 us | 83.15 us |
+| map_wait | 4409.58 us | 4054.55 us |
+| unmap | 6.48 us | 2.90 us |
+| iter_total | 50349.23 us | 27243.18 us |
+
+This points at CPU placement and concurrent VM scheduling as the first-order
+bottleneck. With only two host CPUs online, both clients were contending while
+filling and uploading the 32 MiB buffer, and the proxy/broker path also shared
+those CPUs.
+
+### Passing Design
+
+The shared two-client GLES runner now applies a default 4-CPU split when all of
+the following are true:
+
+- `--gles-compute-smoke` is active.
+- `GLES_AUTO_AFFINITY=1`, the default.
+- No explicit GLES CPU placement knobs were provided.
+
+The default placement is:
+
+```text
+temporary host online CPUs: 0-3
+broker:                     CPU 0
+proxy Firecracker VM:        CPU 1
+client0 Firecracker VM:      CPU 2
+client1 Firecracker VM:      CPU 3
+profile label:               auto-4cpu-split
+```
+
+The runner records the profile in `result`, `rootfs-prep.log`,
+`memory-preflight.log`, and `affinity.log`, and restores the original online CPU
+mask when the run exits. `--no-gles-auto-affinity` disables this default for
+diagnostics or scheduler experiments.
+
+Implementation:
+
+```text
+scripts/run/run-vmshm-2client-e2e.sh
+```
+
+### Verification
+
+Manual 4-CPU diagnostic pass:
+
+```text
+run:
+GPU-SFTP/log/shared/vmshm-2client/vmshm-2client-gles-32m-4cpu-affinity-20260612-005258
+
+result:                 GLES_PASS
+client0 iter_total avg: 27249.95 us
+client1 iter_total avg: 27236.40 us
+shared mean:            27243.18 us
+host baseline:          25458.05 us
+host/share:             0.934
+speedup vs old shared:  1.85x
+```
+
+Default-command auto-affinity pass after the runner change:
+
+```text
+command:
+REMOTE_HOST=192.168.31.18 REMOTE_PASS=root \
+RUN_ID=vmshm-2client-gles-32m-autoaffinity-20260612-010111 \
+  ./scripts/run/run-vmshm-2client-e2e.sh \
+  --skip-sync \
+  --skip-fetch-logs \
+  --gles-compute-smoke \
+  --skip-gles-remote-build \
+  --gles-smoke-args '--count 8388608 --iterations 20 --warmup 5 --perf' \
+  --gles-client-mem-mib 128 \
+  --gles-proxy-mem-mib 384
+
+run:
+GPU-SFTP/log/shared/vmshm-2client/vmshm-2client-gles-32m-autoaffinity-20260612-010111
+
+result:                 GLES_PASS
+affinity profile:       auto-4cpu-split
+client0 iter_total avg: 27311.35 us
+client1 iter_total avg: 27453.75 us
+shared mean:            27382.55 us
+host baseline:          25458.05 us
+host/share:             0.930
+speedup vs old shared:  1.84x
+post-run CPU online:    restored to 0-1
+```
+
+Host comparison baseline:
+
+```text
+run:
+GPU-SFTP/log/passthrough/perf/gpu-host-32m-4cpu-baseline-20260612-005518
+
+result:                 PASS
+host renderer:          Mali-G610 (Panfrost)
+host iter_total avg:    25458.05 us
+```
+
+The tested default path therefore meets the requested performance target:
+
+```text
+host/share = 25458.05 / 27382.55 = 0.930 >= 0.85
+```
+
+### Failed Design Blacklist
+
+Do not use client BO cached mmap as the default 32 MiB optimization:
+
+```text
+run:
+GPU-SFTP/log/shared/vmshm-2client/vmshm-2client-gles-32m-cached-diagnostic-20260612-005235
+
+result:                 GLES_PASS
+client0 iter_total avg: 50062.30 us
+client1 iter_total avg: 52749.80 us
+shared mean:            51406.05 us
+host/share:             0.495
+```
+
+Although correctness passed, cached client BO mmap was slower than the old
+write-combine path for this workload. Keep it blacklisted for the performance
+default unless the data-plane is redesigned with explicit coherency and cache
+maintenance support.
+
 ## 2026-06-03: BO_CREATE Control-Plane Foundation
 
 ### Goal
