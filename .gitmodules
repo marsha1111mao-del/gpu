@@ -13,3 +13,6 @@
 [submodule "firecracker/vmshm-broker"]
 	path = firecracker/vmshm-broker
 	url = https://github.com/marsha1111mao-del/vmshm-broker.git
+[submodule "opencca"]
+	path = opencca
+	url = https://github.com/marsha1111mao-del/opencca.git
