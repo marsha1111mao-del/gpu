@@ -472,7 +472,7 @@ sshpass -p "$PI_PASSWORD" ssh -t "$PI_HOST" \
 - `rkdeveloptool cs` 的 storage ID 是 `1=EMMC, 2=SD, 9=SPINOR`。
 - 本流程要求 SD 启动，`flash.sh mmc` 和 `flash.sh rootfs ... --yes` 必须配合 `OPENCCA_FIRMWARE_STORAGE_ID=2` 或 `OPENCCA_ROOTFS_STORAGE_ID=2`。
 - `flash.sh mmc` 会写 `idbloader.img` 和 `u-boot.itb`。
-- `--flash-kernel` 只允许写 SD raw kernel slot；旧 rootfs-at-0x8000 布局会被拒绝。
+- `--flash-kernel` 只允许写 SD p3 kernel slot；旧 rootfs-at-0x8000 布局会被拒绝。
 - `flash.sh spi` 会写 SPI flash。
 - `flash.sh rootfs ... --yes` 会重写完整系统镜像。
 - `flash.sh clear` 会清空 flash，确认目标和恢复方案后再执行。
