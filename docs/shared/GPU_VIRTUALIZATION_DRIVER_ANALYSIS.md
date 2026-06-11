@@ -570,14 +570,20 @@ closing/refcnt
 不会因为一个全局 Panthor-proxy mutex 而被强制串行化。真实 Panthor driver
 内部仍会按自己的锁和 scheduler 规则处理资源。
 
-当前需要继续强化的隔离点：
+当前已经强化的隔离点：
 
 ```text
-session_id 当前是请求里携带的全局标识。受控测试中每个 client 只使用自己
-OPEN_SESSION 返回的 session_id，但更严格的 multi-tenant 设计应该把
-panthor_proxy_session 绑定到创建它的 proxy_comm channel/client identity，
-并拒绝其他 channel 使用该 session_id。
+Firecracker 为每个 client 注入 client_vmid。
+proxy_comm_vmshm 将接收 channel 绑定到 client_vmid。
+panthor_proxy_session 记录 owner_vmid。
+proxy_vmshm_manager 按 owner_vmid 分 domain/object lookup。
+跨 VM lookup 会返回 -EACCES，即使 client spoof requester_vmid。
 ```
+
+2026-06-12 live-BO probe 已验证：client0 持有 32 MiB vmshm-backed BO
+payload `0x100000001` 时，client1 以 spoofed `requester_vmid=1` 查询该
+handle，`/dev/client_vmshm_manager` 返回 `EACCES`，随后 client1 仍能完成自己的
+Panfrost GLES compute smoke。
 
 ## 9. Real Panthor 集成
 
@@ -1293,10 +1299,12 @@ fairness 和 inflight 控制。
 
 ### 16.1 多 client 隔离
 
-需要把 `panthor_proxy_session` 与创建它的 channel/client identity 绑定，防止
-其他 client 猜测或复用 session_id。
+基础 VMID 隔离已经落地：`panthor_proxy_session` 绑定到创建它的
+channel/client identity，`vmshm-object` payload object 按 owner VMID 分域，
+跨 VM descriptor lookup 被拒绝。当前 live-BO 负向 probe 覆盖了 BO payload
+descriptor 泄漏风险。
 
-还需要系统验证：
+还需要继续扩展的系统验证：
 
 - client0 不能使用 client1 的 VM/BO/syncobj/group/heap handle。
 - stale handle generation 检查覆盖所有 object。

@@ -5,6 +5,7 @@
 #include <fcntl.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <sys/ioctl.h>
@@ -44,13 +45,30 @@ enum smoke_mode {
 	SMOKE_GROUP_LIFECYCLE,
 	SMOKE_GROUP_SUBMIT_SYNCPOINT,
 	SMOKE_TILER_HEAP_LIFECYCLE,
+	SMOKE_BO_HOLD,
 };
 
 static void usage(const char *prog)
 {
 	fprintf(stderr,
-		"usage: %s [--basic|--vm-create|--bo-create|--bo-lifecycle|--bo-mmap|--vm-bind|--vm-bind-async-sync|--vm-state-flush|--syncobj-lifecycle|--syncobj-wait|--syncobj-transfer|--syncobj-timeline-wait|--syncobj-signal-query|--group-lifecycle|--group-submit-syncpoint|--tiler-heap-lifecycle] [drm-node]\n",
+		"usage: %s [--basic|--vm-create|--bo-create|--bo-lifecycle|--bo-mmap|--bo-hold|--hold-sec N|--bo-size BYTES|--vm-bind|--vm-bind-async-sync|--vm-state-flush|--syncobj-lifecycle|--syncobj-wait|--syncobj-transfer|--syncobj-timeline-wait|--syncobj-signal-query|--group-lifecycle|--group-submit-syncpoint|--tiler-heap-lifecycle] [drm-node]\n",
 		prog);
+}
+
+static int parse_u64_arg(const char *arg, uint64_t *out, const char *name)
+{
+	char *end = NULL;
+	unsigned long long value;
+
+	errno = 0;
+	value = strtoull(arg, &end, 0);
+	if (errno || !end || *end) {
+		fprintf(stderr, "invalid %s: %s\n", name, arg);
+		return -1;
+	}
+
+	*out = value;
+	return 0;
 }
 
 static int64_t abs_timeout_after_ns(int64_t delta_ns)
@@ -392,6 +410,79 @@ out_destroy_vm:
 
 	if (!ret)
 		printf("PANTHOR_BO_CREATE_SMOKE=PASS\n");
+	return ret;
+}
+
+static int bo_hold_check(int fd, uint64_t hold_sec, uint64_t bo_size)
+{
+	struct drm_panthor_vm_create vm = { 0 };
+	struct drm_panthor_bo_create bo = {
+		.size = bo_size ? bo_size : 4096,
+	};
+	struct drm_panthor_vm_destroy destroy = { 0 };
+	struct drm_gem_close gem_close = { 0 };
+	uint64_t remaining = hold_sec;
+	int ret = -1;
+
+	if (ioctl(fd, DRM_IOCTL_PANTHOR_VM_CREATE, &vm) < 0) {
+		fprintf(stderr, "VM_CREATE for BO hold smoke failed: %s\n",
+			strerror(errno));
+		return -1;
+	}
+
+	printf("VM_CREATE id=%u user_va_range=0x%llx\n",
+	       vm.id, (unsigned long long)vm.user_va_range);
+
+	if (!vm.id || !vm.user_va_range) {
+		fprintf(stderr, "VM_CREATE returned invalid id/range\n");
+		goto out_destroy_vm;
+	}
+
+	if (ioctl(fd, DRM_IOCTL_PANTHOR_BO_CREATE, &bo) < 0) {
+		fprintf(stderr, "BO_CREATE hold failed: %s\n", strerror(errno));
+		goto out_destroy_vm;
+	}
+
+	printf("BO_HOLD_READY handle=%u size=0x%llx hold_sec=%llu\n",
+	       bo.handle, (unsigned long long)bo.size,
+	       (unsigned long long)hold_sec);
+	fflush(stdout);
+
+	while (remaining) {
+		unsigned int chunk = remaining > 3600 ? 3600 : (unsigned int)remaining;
+		unsigned int unslept = sleep(chunk);
+
+		if (unslept)
+			remaining -= chunk - unslept;
+		else
+			remaining -= chunk;
+	}
+
+	ret = 0;
+
+	if (bo.handle) {
+		gem_close.handle = bo.handle;
+		if (ioctl(fd, DRM_IOCTL_GEM_CLOSE, &gem_close) < 0) {
+			fprintf(stderr, "GEM_CLOSE hold handle=%u failed: %s\n",
+				bo.handle, strerror(errno));
+			ret = -1;
+		} else {
+			printf("GEM_CLOSE handle=%u\n", bo.handle);
+		}
+	}
+
+out_destroy_vm:
+	destroy.id = vm.id;
+	if (vm.id && ioctl(fd, DRM_IOCTL_PANTHOR_VM_DESTROY, &destroy) < 0) {
+		fprintf(stderr, "VM_DESTROY id=%u failed: %s\n",
+			vm.id, strerror(errno));
+		ret = -1;
+	} else if (vm.id) {
+		printf("VM_DESTROY id=%u\n", vm.id);
+	}
+
+	if (!ret)
+		printf("PANTHOR_BO_HOLD_SMOKE=PASS\n");
 	return ret;
 }
 
@@ -2465,6 +2556,8 @@ int main(int argc, char **argv)
 	};
 	enum smoke_mode mode = SMOKE_BASIC;
 	const char *path = NULL;
+	uint64_t bo_size = 4096;
+	uint64_t hold_sec = 60;
 	int fd = -1;
 	size_t i;
 
@@ -2479,6 +2572,16 @@ int main(int argc, char **argv)
 			mode = SMOKE_BO_LIFECYCLE;
 		} else if (!strcmp(argv[i], "--bo-mmap")) {
 			mode = SMOKE_BO_MMAP;
+		} else if (!strcmp(argv[i], "--bo-hold")) {
+			mode = SMOKE_BO_HOLD;
+		} else if (!strcmp(argv[i], "--hold-sec")) {
+			if (++i >= (size_t)argc ||
+			    parse_u64_arg(argv[i], &hold_sec, "hold-sec"))
+				return 2;
+		} else if (!strcmp(argv[i], "--bo-size")) {
+			if (++i >= (size_t)argc ||
+			    parse_u64_arg(argv[i], &bo_size, "bo-size"))
+				return 2;
 		} else if (!strcmp(argv[i], "--vm-bind")) {
 			mode = SMOKE_VM_BIND;
 		} else if (!strcmp(argv[i], "--vm-bind-async-sync")) {
@@ -2537,36 +2640,40 @@ int main(int argc, char **argv)
 
 	if (basic_checks(fd) ||
 	    (mode == SMOKE_VM_CREATE && vm_create_check(fd)) ||
-		    (mode == SMOKE_BO_CREATE && bo_create_check(fd)) ||
-		    (mode == SMOKE_BO_LIFECYCLE && bo_lifecycle_check(fd)) ||
-		    (mode == SMOKE_BO_MMAP && bo_mmap_check(fd)) ||
-		    (mode == SMOKE_VM_BIND && vm_bind_check(fd)) ||
-		    (mode == SMOKE_VM_BIND_ASYNC_SYNC &&
-		     vm_bind_async_sync_check(fd)) ||
-		    (mode == SMOKE_VM_STATE_FLUSH &&
-		     vm_state_flush_check(fd)) ||
-		    (mode == SMOKE_SYNCOBJ_LIFECYCLE &&
-		     syncobj_lifecycle_check(fd)) ||
-		    (mode == SMOKE_SYNCOBJ_WAIT &&
-		     syncobj_wait_check(fd)) ||
-		    (mode == SMOKE_SYNCOBJ_TRANSFER &&
-		     syncobj_transfer_check(fd)) ||
-			    (mode == SMOKE_SYNCOBJ_TIMELINE_WAIT &&
-			     syncobj_timeline_wait_check(fd)) ||
-				    (mode == SMOKE_SYNCOBJ_SIGNAL_QUERY &&
-				     syncobj_signal_query_check(fd)) ||
-					    (mode == SMOKE_GROUP_LIFECYCLE &&
-					     group_lifecycle_check(fd)) ||
-					    (mode == SMOKE_GROUP_SUBMIT_SYNCPOINT &&
-					     group_submit_syncpoint_check(fd)) ||
-					    (mode == SMOKE_TILER_HEAP_LIFECYCLE &&
-					     tiler_heap_lifecycle_check(fd))) {
+	    (mode == SMOKE_BO_CREATE && bo_create_check(fd)) ||
+	    (mode == SMOKE_BO_LIFECYCLE && bo_lifecycle_check(fd)) ||
+	    (mode == SMOKE_BO_MMAP && bo_mmap_check(fd)) ||
+	    (mode == SMOKE_BO_HOLD &&
+	     bo_hold_check(fd, hold_sec, bo_size)) ||
+	    (mode == SMOKE_VM_BIND && vm_bind_check(fd)) ||
+	    (mode == SMOKE_VM_BIND_ASYNC_SYNC &&
+	     vm_bind_async_sync_check(fd)) ||
+	    (mode == SMOKE_VM_STATE_FLUSH &&
+	     vm_state_flush_check(fd)) ||
+	    (mode == SMOKE_SYNCOBJ_LIFECYCLE &&
+	     syncobj_lifecycle_check(fd)) ||
+	    (mode == SMOKE_SYNCOBJ_WAIT &&
+	     syncobj_wait_check(fd)) ||
+	    (mode == SMOKE_SYNCOBJ_TRANSFER &&
+	     syncobj_transfer_check(fd)) ||
+	    (mode == SMOKE_SYNCOBJ_TIMELINE_WAIT &&
+	     syncobj_timeline_wait_check(fd)) ||
+	    (mode == SMOKE_SYNCOBJ_SIGNAL_QUERY &&
+	     syncobj_signal_query_check(fd)) ||
+	    (mode == SMOKE_GROUP_LIFECYCLE &&
+	     group_lifecycle_check(fd)) ||
+	    (mode == SMOKE_GROUP_SUBMIT_SYNCPOINT &&
+	     group_submit_syncpoint_check(fd)) ||
+	    (mode == SMOKE_TILER_HEAP_LIFECYCLE &&
+	     tiler_heap_lifecycle_check(fd))) {
 		close(fd);
 		return 1;
 	}
 
 	close(fd);
-	if (mode == SMOKE_TILER_HEAP_LIFECYCLE)
+	if (mode == SMOKE_BO_HOLD)
+		printf("PANTHOR_IOCTL_SMOKE=BO_HOLD_PASS\n");
+	else if (mode == SMOKE_TILER_HEAP_LIFECYCLE)
 		printf("PANTHOR_IOCTL_SMOKE=TILER_HEAP_LIFECYCLE_PASS\n");
 	else if (mode == SMOKE_GROUP_SUBMIT_SYNCPOINT)
 		printf("PANTHOR_IOCTL_SMOKE=GROUP_SUBMIT_SYNCPOINT_PASS\n");

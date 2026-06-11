@@ -125,6 +125,18 @@ apply_cmdline_overrides() {
 		GPU_SMOKE_VMSHM_PROBE_SPOOF_VMID="${value}"
 		export GPU_SMOKE_VMSHM_PROBE_SPOOF_VMID
 	fi
+
+	value="$(cmdline_value gpu_smoke_ioctl_mode || true)"
+	if [ -n "${value}" ]; then
+		GPU_SMOKE_IOCTL_MODE="${value}"
+		export GPU_SMOKE_IOCTL_MODE
+	fi
+
+	value="$(cmdline_value gpu_smoke_ioctl_args_tokens || true)"
+	if [ -n "${value}" ]; then
+		GPU_SMOKE_IOCTL_ARGS="$(decode_cmdline_arg_tokens "${value}")"
+		export GPU_SMOKE_IOCTL_ARGS
+	fi
 }
 
 dump_perf_dmesg() {
@@ -194,6 +206,39 @@ run_vmshm_lookup_probe() {
 		echo "VMSHM_ISOLATION_RESULT=PASS"
 	else
 		echo "VMSHM_ISOLATION_RESULT=FAIL rc=${rc}"
+	fi
+	return "${rc}"
+}
+
+run_panthor_ioctl_holder() {
+	local rc
+
+	case "${GPU_SMOKE_IOCTL_MODE:-}" in
+	holder | bo-hold)
+		;;
+	*)
+		return 1
+		;;
+	esac
+
+	if [ ! -x /root/panthor_ioctl_smoke ]; then
+		log "missing /root/panthor_ioctl_smoke for ioctl holder"
+		echo "GPU_SMOKE_RESULT=FAIL"
+		return 126
+	fi
+
+	wait_for_smoke_start
+	log "+ /root/panthor_ioctl_smoke ${GPU_SMOKE_IOCTL_ARGS:-}"
+	# shellcheck disable=SC2086
+	/root/panthor_ioctl_smoke ${GPU_SMOKE_IOCTL_ARGS:-} 2>&1
+	rc=$?
+	log "panthor_ioctl_smoke rc=${rc}"
+	dump_client_comm_rpc_stats
+	dump_perf_dmesg
+	if [ "${rc}" -eq 0 ]; then
+		echo "GPU_SMOKE_RESULT=PASS"
+	else
+		echo "GPU_SMOKE_RESULT=FAIL"
 	fi
 	return "${rc}"
 }
@@ -353,6 +398,13 @@ fi
 if [ -x /root/panthor_ioctl_smoke ]; then
 	run_optional /root/panthor_ioctl_smoke
 fi
+
+case "${GPU_SMOKE_IOCTL_MODE:-}" in
+holder | bo-hold)
+	run_panthor_ioctl_holder
+	exit $?
+	;;
+esac
 
 if command -v eglinfo >/dev/null 2>&1; then
 	run_optional eglinfo -B

@@ -59,9 +59,11 @@ Mesa/Panfrost compute workload。该 workload 证明了非零 `GROUP_SUBMIT`、
 vmshm-backed BO、proxy 真实 Panthor `VM_BIND`、syncobj/timeline wait 和 CPU
 readback 可以串起来工作。
 
-当前仍然没有证明多 client 隔离/公平性、reset recovery、长期资源泄漏自由、
-大内存压力性能，或 cross-VM fd/dma-buf/eventfd transport。PRIME 和 syncobj
-fd/eventfd 相关 ioctl 目前应继续显式拒绝，而不是裸转发 fd 数字。
+两 client 32 MiB GLES 路径已经完成性能验证；VMID-scoped vmshm-object 分域和
+live-BO 负向 lookup probe 已经证明 client1 不能查询 client0 的 live BO
+payload descriptor。仍待继续证明的是更长时间运行、reset/fault recovery、资源
+泄漏自由、大内存压力，以及 cross-VM fd/dma-buf/eventfd transport。PRIME 和
+syncobj fd/eventfd 相关 ioctl 目前应继续显式拒绝，而不是裸转发 fd 数字。
 
 ## 2. 设计原则
 

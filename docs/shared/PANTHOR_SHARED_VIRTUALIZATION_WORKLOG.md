@@ -21,23 +21,29 @@ New pieces:
 - `GPU-SFTP/tests/vmshm-lookup-probe/vmshm_lookup_probe.c`
   - opens `/dev/client_vmshm_manager`
   - calls `CLIENT_VMSHM_MANAGER_IOC_GET_OBJECT`
-  - supports `--handle`, `--spoof-vmid`, and `--expect denied|success`
-  - treats `EACCES` as the required result for cross-VM lookup denial
+  - supports `--handle`, `--spoof-vmid`, and
+    `--expect denied|inaccessible|success`
+  - treats `EACCES` as the required result for strict cross-VM lookup denial;
+    `inaccessible` also accepts `ENOENT` for stale/non-live handles
 - `scripts/build/build-vmshm-lookup-probe.sh`
   - cross-builds the probe as a static AArch64 binary
   - installs it to `GPU-SFTP/firecracker-bins/bin/vmshm_lookup_probe`
-- `GPU-SFTP/tests/gpu-compute-smoke/gles_compute_smoke.c`
-  - adds `--hold-after-check-sec N` so client0 can keep the BO alive after
-    `COMPUTE_CHECK=PASS`
+- `GPU-SFTP/tests/panthor-ioctl-smoke/panthor_ioctl_smoke.c`
+  - adds `--bo-hold --hold-sec N --bo-size BYTES`
+  - creates a Panthor BO, prints `BO_HOLD_READY`, keeps the BO live for the
+    requested window, then closes it
 - `GPU-SFTP/tests/gpu-compute-smoke/gpu-smoke.sh`
   - reads `gpu_smoke_vmshm_probe_*` kernel cmdline keys
   - runs `/root/vmshm_lookup_probe`
   - emits `VMSHM_ISOLATION_RESULT=PASS|FAIL`
+  - reads `gpu_smoke_ioctl_mode=holder` and
+    `gpu_smoke_ioctl_args_tokens=...` so client0 can run the IOCTL holder
+    instead of GLES during the negative isolation probe
 - `scripts/run/run-vmshm-2client-e2e.sh`
   - adds `--gles-vmshm-isolation-probe`
-  - holds client0's BO, extracts the first `session=1` `payload=0x...` handle
-    from `proxy.log`, then starts client1 with that handle and
-    `gpu_smoke_vmshm_probe_spoof_vmid=1`
+  - in probe mode, starts client0 as a 32 MiB IOCTL BO holder, extracts a live
+    `owner_vmid=1` `payload=0x...` handle from `proxy.log`, then starts
+    client1 with that handle and `gpu_smoke_vmshm_probe_spoof_vmid=1`
   - requires both normal GLES success and `VMSHM_ISOLATION_RESULT=PASS` when the
     probe mode is enabled
 
@@ -58,7 +64,9 @@ Static and build checks:
 bash -n scripts/run/run-vmshm-2client-e2e.sh
 sh -n GPU-SFTP/tests/gpu-compute-smoke/gpu-smoke.sh
 gcc -fsyntax-only -Wall -Wextra GPU-SFTP/tests/vmshm-lookup-probe/vmshm_lookup_probe.c
+gcc -fsyntax-only -I/usr/include/drm -ILinux-Guest-GPU/include/uapi/drm GPU-SFTP/tests/panthor-ioctl-smoke/panthor_ioctl_smoke.c
 ./scripts/build/build-vmshm-lookup-probe.sh
+./scripts/build/build-panthor-ioctl-smoke.sh
 ```
 
 The secure split path already passed after the GPA/tar fixes:
@@ -75,11 +83,54 @@ host baseline:          25458.05 us
 host/share:             0.923
 ```
 
-The new negative isolation probe is staged in the runner but still needs a full
-RK3588 run with a `gles-compute-smoke` binary that includes
-`--hold-after-check-sec`. The current RK host lacks `pkg-config`, and the local
-Panfrost sysroot library set is not link-compatible with the host cross-linker,
-so do not treat this entry as the final isolation pass.
+Live-BO negative isolation pass:
+
+```text
+command:
+REMOTE_HOST=192.168.31.18 REMOTE_PASS=root \
+RUN_ID=vmshm-2client-gles-isolation-holder2-20260612-024226 \
+  ./scripts/run/run-vmshm-2client-e2e.sh \
+  --gles-compute-smoke \
+  --skip-gles-remote-build \
+  --gles-vmshm-isolation-probe \
+  --gles-smoke-args '--count 64 --iterations 1 --warmup 0' \
+  --gles-client-mem-mib 128 \
+  --gles-proxy-mem-mib 384
+
+run:
+GPU-SFTP/log/shared/vmshm-2client/vmshm-2client-gles-isolation-holder2-20260612-024226
+
+result:                         GLES_PASS
+client0 holder:                 PANTHOR_BO_HOLD_SMOKE=PASS
+client0 live payload:           0x100000001, size=0x2000000
+client1 lookup result:          VMSHM_LOOKUP_PROBE_INACCESSIBLE errno=13 (EACCES)
+client1 isolation marker:       VMSHM_ISOLATION_RESULT=PASS
+client1 GLES correctness:       COMPUTE_CHECK=PASS, Mali-G610 (Panfrost)
+proxy evidence:
+  session=2 owner_vmid=1 BO_CREATE payload=0x100000001 payload_size=0x2000000
+  session=4 owner_vmid=2 runs GLES while session=2 remains live
+```
+
+The probe now proves the intended negative property for a live object: even when
+client1 spoofs `requester_vmid=1`, proxy/client manager lookup returns
+`-EACCES` instead of exposing client0's BO descriptor.
+
+32 MiB normal-path regression after adding the holder harness:
+
+```text
+run:
+GPU-SFTP/log/shared/vmshm-2client/vmshm-2client-gles-32m-security-regression-20260612-024422
+
+result:                 GLES_PASS
+client0 iter_total avg: 27735.80 us
+client1 iter_total avg: 27872.90 us
+shared mean:            27804.35 us
+host baseline:          25458.05 us
+host/share:             0.916
+```
+
+The security harness therefore does not regress the already-passing 32 MiB
+default performance path.
 
 ### Failed Design Blacklist
 
@@ -87,6 +138,13 @@ so do not treat this entry as the final isolation pass.
   windows. It overlaps the client0 object window at the 224 MiB setting.
 - Do not stream rootfs images into the remote tree with non-atomic coarse tar
   replacement. Use the runner's explicit `--sync-rootfs` atomic stream.
+- Do not hard-code `session=1` when extracting a client0 payload handle.
+  `gpu-smoke.sh` runs an optional basic IOCTL smoke first, so the live holder can
+  be `session=2` or later. Extract sessions from `OPEN_SESSION ... owner_vmid=1`
+  and then find a matching live BO payload.
+- Do not depend on a newly rebuilt `gles-compute-smoke` for the hold window on
+  the current RK3588 host. The target lacks `pkg-config`; use the static
+  `panthor_ioctl_smoke --bo-hold` holder for this validation.
 
 ## 2026-06-12: 32 MiB Shared GLES Auto-Affinity Performance Pass
 
