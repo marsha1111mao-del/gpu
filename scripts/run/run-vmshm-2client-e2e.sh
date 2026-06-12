@@ -41,6 +41,9 @@ GLES_CLIENT1_CPUS=${GLES_CLIENT1_CPUS:-}
 GLES_PANTHOR_SCHED_TICK_MS=${GLES_PANTHOR_SCHED_TICK_MS:-0}
 GLES_PANTHOR_SCHED_HIGHPRI_WQ=${GLES_PANTHOR_SCHED_HIGHPRI_WQ:-0}
 GLES_PANTHOR_PROXY_GROUP_CORE_PARTITIONS=${GLES_PANTHOR_PROXY_GROUP_CORE_PARTITIONS:-0}
+GLES_REALM=${GLES_REALM:-0}
+GLES_CLIENT_REALM=${GLES_CLIENT_REALM:-0}
+GLES_PROXY_REALM=${GLES_PROXY_REALM:-0}
 GLES_VMSHM_ISOLATION_PROBE=${GLES_VMSHM_ISOLATION_PROBE:-0}
 GLES_VMSHM_ISOLATION_HOLDER_SEC=${GLES_VMSHM_ISOLATION_HOLDER_SEC:-60}
 GLES_VMSHM_ISOLATION_HOLDER_SIZE=${GLES_VMSHM_ISOLATION_HOLDER_SIZE:-33554432}
@@ -118,6 +121,11 @@ Options:
                            each shared client's group shader core mask across
                            N partitions. 0 keeps the default Panthor/Mesa
                            group masks.
+  --gles-realm             Blocked ARM CCA Realm mode for this GPU-owning
+                           shared stack. Exits locally before touching RK3588.
+  --gles-client-realm      Blocked until the CCA-safe GPU shared-buffer ABI is
+                           implemented and validated end-to-end.
+  --gles-proxy-realm       Blocked because the proxy owns the physical GPU.
   --gles-vmshm-isolation-probe
                            Negative security test: start client0 first, wait
                            until the proxy logs a live client0 vmshm-backed BO
@@ -296,6 +304,17 @@ while [[ $# -gt 0 ]]; do
 		fi
 		GLES_PANTHOR_PROXY_GROUP_CORE_PARTITIONS=$1
 		;;
+	--gles-realm)
+		GLES_REALM=1
+		GLES_CLIENT_REALM=1
+		GLES_PROXY_REALM=1
+		;;
+	--gles-client-realm)
+		GLES_CLIENT_REALM=1
+		;;
+	--gles-proxy-realm)
+		GLES_PROXY_REALM=1
+		;;
 	--gles-vmshm-isolation-probe)
 		GLES_VMSHM_ISOLATION_PROBE=1
 		;;
@@ -355,6 +374,20 @@ apply_default_gles_affinity() {
 }
 
 apply_default_gles_affinity
+
+apply_gles_realm_mode() {
+	[[ "${GLES_REALM}" == "1" ]] || return 0
+
+	GLES_CLIENT_REALM=1
+	GLES_PROXY_REALM=1
+}
+
+apply_gles_realm_mode
+
+if [[ "${GLES_REALM}" == "1" || "${GLES_CLIENT_REALM}" == "1" || "${GLES_PROXY_REALM}" == "1" ]]; then
+	echo "error: shared GLES Realm modes are blocked. CCA-safe GPU task support first needs explicit shared/device-reachable GPU BO pools, page-table pages, cache maintenance, MMIO policy, and IRQ delivery adaptation." >&2
+	exit 1
+fi
 
 log() {
 	printf '\n==> %s\n' "$*"

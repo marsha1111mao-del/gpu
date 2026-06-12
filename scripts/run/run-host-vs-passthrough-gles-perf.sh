@@ -32,6 +32,7 @@ ROOTFS_IMAGE=${ROOTFS_IMAGE:-rootfs/rootfs-panfrost.ext4}
 HOST_USE_ROOTFS_USERSPACE=${HOST_USE_ROOTFS_USERSPACE:-0}
 ALU_ITERS=${ALU_ITERS:-1}
 VM_HUGE_PAGES_2M=${VM_HUGE_PAGES_2M:-0}
+VM_REALM=${VM_REALM:-0}
 VM_TASKSET_CPU=${VM_TASKSET_CPU:-}
 PMTHOR_IRQ_AFFINITY_CPU=${PMTHOR_IRQ_AFFINITY_CPU:-}
 PMTHOR_IRQ_AFFINITY_LABELS=${PMTHOR_IRQ_AFFINITY_LABELS:-pmthor-job}
@@ -71,6 +72,9 @@ Options:
   --host-rootfs-userspace    Run host direct smoke inside the VM rootfs userspace
   --alu-iters N              Diagnostic mode: shader ALU loop iterations per element, default: ${ALU_ITERS}
   --vm-huge-pages-2m         Diagnostic mode: run the passthrough VM with 2M hugetlbfs memory
+  --vm-realm                 Blocked diagnostic mode for ARM CCA Realm GPU passthrough.
+                             This exits before touching the remote board until the
+                             trusted-GPU Realm model is implemented.
   --vm-taskset-cpu CPU       Diagnostic mode: run Firecracker/launcher with taskset -c CPU
   --pmthor-irq-affinity-cpu CPU
                               Diagnostic mode: pin selected host pmthor IRQs during VM workload
@@ -99,6 +103,7 @@ Environment overrides:
   LARGE_COUNT_THRESHOLD LARGE_COUNT_ITERATIONS LARGE_COUNT_WARMUP
   VM_TIMEOUT HOST_TIMEOUT PASSTHROUGH_VM_RUNNER PASSTHROUGH_VM_CONFIG
   ROOTFS_IMAGE HOST_USE_ROOTFS_USERSPACE ALU_ITERS VM_HUGE_PAGES_2M
+  VM_REALM
   VM_TASKSET_CPU PMTHOR_IRQ_AFFINITY_CPU
   PMTHOR_IRQ_AFFINITY_LABELS PMTHOR_IRQ_STATS GUEST_PANTHOR_IRQ_STATS
   GUEST_PANTHOR_SUBMIT_STATS GUEST_PANTHOR_PT_TIMING EXCLUDE_CPU_PREPARE
@@ -149,6 +154,9 @@ while [[ $# -gt 0 ]]; do
 		;;
 	--vm-huge-pages-2m)
 		VM_HUGE_PAGES_2M=1
+		;;
+	--vm-realm)
+		VM_REALM=1
 		;;
 	--vm-taskset-cpu)
 		shift; [[ $# -gt 0 ]] || { echo "--vm-taskset-cpu requires an argument" >&2; exit 2; }
@@ -223,6 +231,11 @@ while [[ $# -gt 0 ]]; do
 	shift
 done
 
+if [[ "${VM_REALM}" == "1" ]]; then
+	echo "error: --vm-realm is blocked. Realm GPU passthrough still needs the local trusted-GPU Realm model: guestmemfd/private-memory guards, explicit shared/device-reachable GPU buffers, MMIO policy, and IRQ delivery." >&2
+	exit 1
+fi
+
 log() {
 	printf '\n==> %s\n' "$*"
 }
@@ -278,6 +291,47 @@ rsync_remote() {
 		rsync "$@"
 }
 
+remote_has_cmd() {
+	local cmd="$1"
+
+	ssh_remote "command -v $(quote "${cmd}") >/dev/null 2>&1"
+}
+
+tar_sync_to_remote() {
+	local -a include_paths=(
+		ARTIFACTS.md
+		rootfs-manifest.json
+		artifacts
+		firecracker-bins/bin
+		firecracker-bins/configs
+		firecracker-bins/kernels
+		firecracker-bins/scripts
+		panthor_fw
+		tests
+	)
+
+	remote_has_cmd tar || die "remote host is missing both rsync and tar"
+
+	log "Remote rsync missing; syncing GPU-SFTP via tar stream"
+	ssh_remote "mkdir -p $(quote "${REMOTE_ROOT}") $(quote "${REMOTE_BINS}") && rm -rf $(quote "${REMOTE_BINS}/bin") $(quote "${REMOTE_BINS}/configs") $(quote "${REMOTE_BINS}/kernels") $(quote "${REMOTE_BINS}/scripts") $(quote "${REMOTE_ROOT}/tests") $(quote "${REMOTE_ROOT}/panthor_fw") $(quote "${REMOTE_ROOT}/artifacts")"
+	(
+		cd "${SFTP_ROOT}"
+		tar -cf - "${include_paths[@]}"
+	) | ssh_remote "cd $(quote "${REMOTE_ROOT}") && tar -xf -"
+}
+
+tar_fetch_logs() {
+	local remote_log="${REMOTE_LOG_ROOT}/passthrough/perf/${RUN_ID}"
+	local local_log="${SFTP_LOG_ROOT}/passthrough/perf/${RUN_ID}"
+
+	remote_has_cmd tar || die "remote host is missing both rsync and tar"
+
+	log "Remote rsync missing; fetching logs via tar stream"
+	mkdir -p "${local_log}"
+	ssh_remote "cd $(quote "${remote_log}") && tar -cf - ." |
+		tar -C "${local_log}" -xf -
+}
+
 # shellcheck source=scripts/lib/gpu_sftp_layout.sh
 source "${ROOT_DIR}/scripts/lib/gpu_sftp_layout.sh"
 
@@ -298,11 +352,15 @@ sync_to_remote() {
 	log "Removing obsolete remote firecracker-bins/run-logs"
 	ssh_remote "rm -rf $(quote "${REMOTE_BINS}/run-logs")"
 
-	log "Syncing GPU-SFTP to ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_ROOT}"
-	rsync_remote -av --info=stats2,name1 \
-		"${excludes[@]}" \
-		"${SFTP_ROOT}/" \
-		"${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_ROOT}/"
+	if remote_has_cmd rsync; then
+		log "Syncing GPU-SFTP to ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_ROOT}"
+		rsync_remote -av --info=stats2,name1 \
+			"${excludes[@]}" \
+			"${SFTP_ROOT}/" \
+			"${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_ROOT}/"
+	else
+		tar_sync_to_remote
+	fi
 
 	migrate_remote_gpu_sftp_layout
 }
@@ -1083,7 +1141,7 @@ run_vm_workload() {
 		echo "iterations=${COUNT_ITERATIONS}"
 		echo "warmup=${COUNT_WARMUP}"
 		echo "timeout_status=${VM_STATUS}"
-			grep -aE 'GPU_SMOKE_RESULT|COMPUTE_CHECK|GL_RENDERER|GL_VERSION|PERF_|PANTHOR_PT_STATS|PANTHOR_PT_TIMING|PANTHOR_JOB_IRQ_STATS|PANTHOR_SUBMIT_STATS|DRM_SCHED_PUSH_STATS|DRM_SCHED_RUN_JOB_STATS|GPA2HPA|gles-compute-smoke rc|mismatch|Killed|Oops|Unable to handle|job timeout|Initialized panthor|CSF FW' "${vm_log}" || true
+			grep -aE 'vcpu inited|Successfully started microvm|RME:|Realm|GPU_SMOKE_RESULT|COMPUTE_CHECK|GL_RENDERER|GL_VERSION|PERF_|PANTHOR_PT_STATS|PANTHOR_PT_TIMING|PANTHOR_JOB_IRQ_STATS|PANTHOR_SUBMIT_STATS|DRM_SCHED_PUSH_STATS|DRM_SCHED_RUN_JOB_STATS|GPA2HPA|gles-compute-smoke rc|mismatch|Killed|Oops|Unable to handle|job timeout|Initialized panthor|CSF FW' "${vm_log}" || true
 	} >"${vm_summary}"
 
 	if [[ "${suffix}" == "count${COUNT}" ]]; then
@@ -1503,14 +1561,18 @@ REMOTE_SCRIPT
 fetch_logs() {
 	log "Fetching logs to ${SFTP_LOG_ROOT}/passthrough/perf/${RUN_ID}"
 	mkdir -p "${SFTP_LOG_ROOT}/passthrough/perf"
-	rsync_remote -av --info=stats2,name1 \
-		"${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_LOG_ROOT}/passthrough/perf/${RUN_ID}/" \
-		"${SFTP_LOG_ROOT}/passthrough/perf/${RUN_ID}/" || true
+	if remote_has_cmd rsync; then
+		rsync_remote -av --info=stats2,name1 \
+			"${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_LOG_ROOT}/passthrough/perf/${RUN_ID}/" \
+			"${SFTP_LOG_ROOT}/passthrough/perf/${RUN_ID}/" || true
+	else
+		tar_fetch_logs
+	fi
 }
 
 require_cmd ssh
-require_cmd rsync
 require_cmd setsid
+require_cmd tar
 
 [[ -d "${SFTP_ROOT}" ]] || die "missing SFTP root: ${SFTP_ROOT}"
 

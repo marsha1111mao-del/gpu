@@ -408,6 +408,7 @@ RESULT: PASS
 | 默认固定 affinity | VM/IRQ 分核对部分小中 workload 有帮助，但 64 MiB 回退，跨 workload 不稳定。 | 可作为诊断工具；正式 baseline 不固定 affinity，除非实验明确研究拓扑。 |
 | 单纯增加 shader ALU workload | `--alu-iters 64` 没有摊薄虚拟化开销，反而让 completion 行为更差。 | 只能作为单独 workload 轴分析，不用它证明默认 passthrough 优化有效。 |
 | 只靠远端临时 hugepage 申请验证 2 MiB block PTE | 远端 hugepage 可用性受内存碎片影响，曾因需要 `960` 个 2M hugepages 但只有 `108` 个而失败，不能直接得出性能结论。 | 若继续追真实 2 MiB block PTE，需要提前规划 guest memory/backing 对齐或缩小 VM memory，再正式测试。 |
+| 直接给 GPU passthrough VM 添加 `realm_config` | 2026-06-12 的 `gpu-passthrough-realm-smoke-20260612-075604` 证明这种做法会让 Realm VM 启动到 `Successfully started microvm` 后卡住 RK3588，需要人工重启。虽然 Firecracker Realm 主内存路径已经使用 guestmemfd 和 `KVM_MEMORY_ATTRIBUTE_PRIVATE`，但 GPU passthrough 还没有完成本地可信 GPU 的 Realm 设备模型：GPU DMA buffer 必须显式作为 shared/device-reachable memory 管理，MMIO/IRQ 注入和 GPU page-table HPA 翻译也要按 Realm 语义审计。 | 禁止。`run-host-vs-passthrough-gles-perf.sh --vm-realm` 会在本地退出，Firecracker VMM 也拒绝 `realm_config && gpu_passthrough`，避免手写 JSON 重复触发。后续必须先实现可信 GPU Realm memory/IRQ 适配，再重开受控测试。 |
 
 ## 后续优先方向
 

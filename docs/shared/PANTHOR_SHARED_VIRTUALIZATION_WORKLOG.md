@@ -5,6 +5,175 @@ virtualization plan. It intentionally separates tested designs from partial or
 incorrect designs so future work can reuse the stable pieces and avoid repeating
 dead ends.
 
+## 2026-06-12: ARM CCA Realm GPU Sharing Decomposition
+
+### Current conclusion
+
+Do not treat `realm_config + gpu_passthrough=true` as a valid shortcut for
+confidential GPU passthrough. The project now has enough negative evidence to
+blacklist that route until the local trusted-GPU device-memory and interrupt
+model is implemented.
+
+Evidence:
+
+- `GPU-SFTP/log/passthrough/perf/gpu-passthrough-realm-smoke-20260612-075604`
+  started a single GPU-owning passthrough VM as a Realm. Firecracker created the
+  Realm, initialized both vCPUs, mapped the GPU MMIO aperture, and printed
+  `Successfully started microvm`, but the board then stopped making useful
+  progress and required a manual reboot.
+- `GPU-SFTP/log/shared/vmshm-2client/vmshm-2client-gles-realm-smoke-20260612-033031`
+  and
+  `GPU-SFTP/log/shared/vmshm-2client/vmshm-2client-gles-realm-sha512-smoke-20260612-074227`
+  show the same unsafe direction in the full shared stack: a GPU-owning proxy
+  Realm plus vmshm windows reaches early Realm/GPU setup and then hangs.
+- `GPU-SFTP/log/shared/vmshm-2client/vmshm-2client-gles-client-realm-smoke-20260612-074826`
+  is a useful partial diagnostic only. Client Realms booted and reached the
+  proxy through the vmshm control path; basic Panthor IOCTLs passed, but GLES
+  failed at GBM device creation. This does not satisfy the requirement that each
+  real GPU task can run in a confidential VM.
+
+The important implementation fact is that Firecracker already has the Realm main
+memory scaffold:
+
+- `VmResources::allocate_guest_memory()` selects guestmemfd-backed memory when
+  `machine_config.realm_config` is present.
+- `Vm::set_kvm_memory_regions2()` registers the memslot with
+  `KVM_MEM_GUEST_MEMFD`.
+- `config_realm()` sets `KVM_MEMORY_ATTRIBUTE_PRIVATE` over the guest memory.
+
+That is necessary but not sufficient for a non-secure physical GPU. The GPU is
+not an RME-aware Realm device, so its DMA-visible buffers, MMIO aperture, IRQ
+delivery, and passthrough GPU page tables must be explicitly adapted. In
+particular:
+
+- GPU command/data BO pages that the physical GPU reads or writes cannot remain
+  ordinary private Realm memory. They need a shared/device-reachable allocation
+  model with explicit ownership, lifetime, and cache maintenance.
+- The current passthrough GPU page-table path writes HPA into GPU PTEs. For
+  Realm-owned BOs, this HPA must correspond to pages that have been safely
+  shared or otherwise delegated for non-secure device access; translating private
+  Realm IPA/HPA is not enough.
+- GPU MMIO and IRQ injection need a Realm-aware policy. The existing pmthor
+  irqfd/resample path proves useful for normal VMs but does not by itself prove
+  safe interrupt delivery into a Realm.
+- vmshm memfd windows are explicitly shared mappings and must stay outside the
+  private Realm memory model. Their slots, notification doorbells, and client
+  access policy need to be reasoned about separately from guestmemfd RAM.
+
+The current safety net is intentionally conservative:
+
+- Firecracker rejects `realm_config && gpu_passthrough=true` before KVM VM
+  memory, pmthor IRQ, or GPU MMIO setup.
+- The host `GPA_TO_HPA` hypercall rejects Realm private GPA via
+  `kvm_mem_is_private(kvm, gfn)`. GPU PTE construction can only receive HPA for
+  normal/shared GPA, not private guestmemfd pages.
+- Runner flags that would create a GPU-owning Realm exit locally before SSH.
+
+### Blacklisted direction
+
+The following direction is blacklisted:
+
+```text
+Take a normal GPU passthrough or shared proxy VM config,
+add machine-config.realm_config,
+and run it as a GPU-owning Realm without changing the memory/IRQ/device model.
+```
+
+The runners now reflect this:
+
+- `scripts/run/run-host-vs-passthrough-gles-perf.sh --vm-realm` refuses to run
+  before it touches the remote board.
+- `scripts/run/run-vmshm-2client-e2e.sh --gles-realm` and
+  `--gles-proxy-realm` refuse to run for the same reason.
+- `scripts/run/run-vmshm-2client-e2e.sh --gles-client-realm` is also blocked
+  for now. The earlier client-only Realm diagnostic is useful evidence about
+  the control path, but it is not an end-to-end confidential GPU task and should
+  not be rerun as if it proved the design.
+- Firecracker also rejects a direct JSON/API boot with both `realm_config` and
+  `gpu_passthrough=true`, so this is blocked below the runner layer too.
+
+### Required design path
+
+The next implementation work should proceed in this order:
+
+1. Define a CCA-safe GPU shared-buffer ABI for Realm GPU BO payloads. This is
+   the core blocker: GPU-visible pages must be shared/device-accessible by
+   construction rather than accidentally backed by private guestmemfd memory.
+2. Keep the host GPA-to-HPA hypercall as a hard gate: it must reject private
+   Realm GPA and accept only normal/shared GPA from the explicit shared GPU BO
+   pool.
+3. Convert every GPU-visible proxy BO class to that pool, including user BO
+   payloads, firmware/shared sections, command queues, syncwait buffers,
+   suspend buffers, tiler heaps, and page-table pages.
+4. Audit pmthor IRQ injection and GPU MMIO mapping against the local trusted-GPU
+   Realm model, including reset and teardown when a Realm exits or faults.
+5. Only after those pieces exist, rerun a single GPU-owning proxy-equivalent
+   Realm smoke with a tiny GPU task.
+6. Re-enter the shared path: normal client to proxy Realm, client Realm to
+   normal proxy, then full client Realm to proxy Realm.
+
+### GPU-visible memory audit
+
+This is the current inventory of objects that can be consumed by the physical
+GPU or its page-table walker in the shared stack. Anything listed as ordinary
+shmem or kernel page allocation is not CCA-safe for a GPU-owning Realm until it
+is moved to an explicit shared/device-reachable pool.
+
+| Object class | Current backing/path | CCA status |
+| --- | --- | --- |
+| Client BO payloads in the shared path | `panthor_proxy_session_bo_create()` obtains a `proxy_vmshm_object`; `panthor_gem_create_vmshm_with_handle()` stores it as `bo->vmshm_payload`; VM_BIND maps it through `panthor_vm_map_vmshm_spans()` using vmshm GPA spans. | This is the right direction for payload data because the GPU-visible bytes come from explicit vmshm windows, not from the proxy Realm's private RAM. It still needs a formal CCA ABI, cache policy, and lifetime rules. |
+| Ordinary Panthor user BOs | `panthor_gem_create_with_handle()` uses `drm_gem_shmem_create()` and `panthor_vm_map_pages()` maps the resulting pages into GPU PTEs. | Unsafe for a GPU-owning Realm. These pages would be normal guest allocations and can become private guestmemfd memory. |
+| Proxy BO metadata for vmshm-backed BOs | The GEM object is still shmem, but VM_BIND bypasses those shmem pages when `bo->vmshm_payload` is present. | CPU metadata can remain private if the GPU never maps it. The payload mapping path must keep rejecting accidental fallback to shmem. |
+| Firmware sections and FW shared interface | `panthor_fw_load_section_entry()` and `panthor_fw_alloc_queue_iface_mem()` allocate `panthor_kernel_bo_create()` objects backed by `drm_gem_shmem_create()`. | Unsafe. Firmware-visible shared sections and queue interfaces must be allocated from the CCA-safe GPU shared pool. |
+| Queue ring buffers | `group_create_queue()` allocates `queue->ringbuf` with `panthor_kernel_bo_create()`. | Unsafe. Command buffers read by the GPU/FW cannot be private Realm pages. |
+| Suspend and protected-mode suspend buffers | `panthor_fw_alloc_suspend_buf_mem()` returns `panthor_kernel_bo_create()` memory. | Unsafe until moved to shared/device-reachable memory. |
+| Group sync objects | `panthor_group_create()` allocates `group->syncobjs` with `panthor_kernel_bo_create()`. | Unsafe. The GPU/FW observes these synchronization structures. |
+| Tiler heap contexts and chunks | `panthor_heap_pool_create()` and `panthor_alloc_heap_chunk()` allocate kernel BOs through `panthor_kernel_bo_create()`. | Unsafe. Heap context and chunk headers are GPU-consumed data structures. |
+| GPU page-table pages, including PGD | `panthor_mmu.c` uses `alloc_pt()` with ordinary pages or `pt_cache`; `io-pgtable-arm.c` translates PGD/table GPA to HPA for TTBR and descriptors. | Unsafe for a Realm unless page-table pages themselves come from shared/device-reachable memory. The host `GPA_TO_HPA` rejection of private GPA is a guardrail, not the full implementation. |
+| vmshm communication windows and doorbells | Firecracker maps vmshm memfd windows as shared KVM memory slots, not guestmemfd private RAM. | Keep separate from private guest memory. The existing VMID/session isolation tests cover cross-client access, but Realm use still needs explicit ABI and reset/teardown policy. |
+
+The likely implementation shape is a VMM-provided GPU shared pool, separate from
+guest private RAM, exposed through FDT to the GPU-owning guest and registered as
+normal/shared KVM memory. The Panthor proxy side should allocate all
+GPU-visible kernel BOs and page-table pages from that pool, while CPU-only
+metadata can stay private. The existing vmshm object path can be the payload
+model, but it must be tightened into an ABI rather than relying on ordinary GEM
+fallback behavior.
+
+Follow-up design note:
+
+- `docs/shared/CCA_CONFIDENTIAL_GPU_SHARING_DESIGN.md` records the current
+  trusted-GPU boundary for RK3588. The GPU is not behind an SMMU/GPC-capable
+  stage-2 path, so OpenCCA per-Realm GPT view switching can protect CPU access
+  but cannot, by itself, protect GPU DMA. The first implementation stage marks
+  GPU-visible Panthor pages as explicit Realm shared memory and keeps direct
+  Realm GPU boot blocked until a trusted GPU owner/domain model is added.
+
+### First implementation stage
+
+The first memory adaptation stage is now implemented in `Linux-Guest-GPU`:
+
+- `drivers/gpu/drm/panthor/panthor_gem.c` pins ordinary shmem BOs for their
+  lifetime in a Realm and converts their pages with `set_memory_decrypted()`
+  before userspace receives a handle. This avoids the broken ordering where a
+  user writes private Realm pages and the driver later converts them to shared
+  memory during VM_BIND.
+- `panthor_kernel_bo_create()` uses the same conversion path before firmware,
+  queue, suspend, sync, and heap kernel BOs are mapped into GPU VA space.
+- `drivers/gpu/drm/panthor/panthor_mmu.c` converts Panthor GPU page-table pages
+  before writing descriptors. Teardown converts them back with
+  `set_memory_encrypted()`; if protection fails, the page table is leaked rather
+  than returned to the allocator in an unknown security state.
+- `drivers/iommu/io-pgtable-arm.c` converts the `GPA_TO_HPA` batch exchange
+  page before passing its GPA to the host hypercall and protects it again on
+  teardown.
+
+This stage is a correctness gate for Realm GPU bring-up under the local trusted
+GPU assumption. It still makes those pages normal/shared from the Realm point of
+view, so it does not claim host-confidential GPU payloads. The final
+host-confidential design still needs an OpenCCA trusted GPU device domain or a
+protected multi-Realm guestmemfd object model.
+
 ## 2026-06-12: VMID-Scoped Isolation Probe Harness And Runner Hardening
 
 ### Goal

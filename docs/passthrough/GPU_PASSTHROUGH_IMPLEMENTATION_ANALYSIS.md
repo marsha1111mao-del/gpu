@@ -242,16 +242,27 @@ gpa_array_gpa = smccc_get_arg1(vcpu)
 count = smccc_get_arg2(vcpu)
 validate count 1..512
 validate array GPA 8-byte aligned
+validate the array stays within the mapped page
+reject the array page if it is Realm private memory
 
 for each element:
     kvm_read_guest(kvm, element_gpa, &current_gpa, 8)
     require current_gpa page-aligned
+    reject current_gpa if it is Realm private memory
     pfn = gfn_to_pfn_prot(kvm, current_gpa >> PAGE_SHIFT, true, &writable)
     hpa = PFN_PHYS(pfn)
     kvm_write_guest(kvm, element_gpa, &hpa, 8)
 
 return SMCCC_RET_SUCCESS
 ```
+
+The last two checks are important for ARM CCA. `GPA_TO_HPA` is only valid for
+normal VM memory and explicit shared/non-secure windows such as vmshm. It must
+not translate Realm private guestmemfd pages into GPU-visible HPA, because the
+physical GPU is not an RME Realm device and would DMA outside the private Realm
+access model. In the current host kernel this is enforced with
+`kvm_mem_is_private(kvm, gfn)` in
+`Linux-Host-GPU/arch/arm64/kvm/hypercalls.c`.
 
 当前 host handler 要求数组里的每个 `current_gpa` 是 page base。guest 如果原始地址有页内 offset，会先传 page base 给 host，收到 HPA page base 后自己把 offset OR 回去。
 
@@ -1584,7 +1595,7 @@ VM exits
    - `x1 = GPA of u64 array`
    - `x2 = count`
    - array in-place 从 GPA page base 变成 HPA page base
-11. host `kvm_gpa_to_hpa()` 当前要求数组里的 GPA page-aligned，guest 负责传 page base 并在返回后恢复页内 offset。
+11. host `kvm_gpa_to_hpa()` 当前要求数组里的 GPA page-aligned，guest 负责传 page base 并在返回后恢复页内 offset；CCA Realm 下还必须拒绝 private GPA，只允许 normal/shared GPA 进入 GPU PTE。
 12. GPU 页表的 TTBR、non-leaf table descriptor、leaf PTE 三者都必须写 HPA；只修 leaf PTE 不够。
 13. guest CPU 维护 panthor 页表时不能对 HPA 使用 `__va()`，必须通过 `panthor_table_pte_map` 做 `HPA -> GVA` lookup。
 14. guest panthor VM_BIND map/unmap 必须按 4K 粒度处理，不能把 guest 连续 GPA 假设成 host 连续 HPA。
