@@ -12,9 +12,11 @@ host|client|proxy|passthrough) roles=("${ROLE}") ;;
 *) echo "Usage: $0 [all|host|client|proxy|passthrough]" >&2; exit 2 ;;
 esac
 for role in "${roles[@]}"; do
+	extra_make=()
 	if [[ "${role}" == host ]]; then
 		source_dir="${ROOT_DIR}/Linux-Host-GPU"
 		destination="${ROOT_DIR}/GPU-SFTP/linux-host-kernel/Image"
+		extra_make+=(LOCALVERSION=-opencca-pmthor)
 	else
 		source_dir="${ROOT_DIR}/Linux-Guest-GPU"
 		if [[ "${role}" == passthrough ]]; then
@@ -31,9 +33,9 @@ for role in "${roles[@]}"; do
 	mkdir -p "${out}" "$(dirname "${destination}")"
 	cp "${ROOT_DIR}/configs/verified-20261015/${role}.config" "${out}/.config"
 	make -C "${source_dir}" O="${out}" ARCH=arm64 \
-		CROSS_COMPILE="${CROSS_COMPILE:-aarch64-linux-gnu-}" olddefconfig
+		CROSS_COMPILE="${CROSS_COMPILE:-aarch64-linux-gnu-}" "${extra_make[@]}" olddefconfig
 	make -C "${source_dir}" O="${out}" ARCH=arm64 \
-		CROSS_COMPILE="${CROSS_COMPILE:-aarch64-linux-gnu-}" -j"${JOBS}" Image
+		CROSS_COMPILE="${CROSS_COMPILE:-aarch64-linux-gnu-}" "${extra_make[@]}" -j"${JOBS}" Image
 	install -m0644 "${out}/arch/arm64/boot/Image" "${destination}"
 	echo "Installed ${role}: ${destination}"
 done
