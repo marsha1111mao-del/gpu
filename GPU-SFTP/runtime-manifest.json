@@ -1,0 +1,753 @@
+{
+  "schema_version": 1,
+  "baseline": "2026-10-15 Host #10 ordinary VM sharing",
+  "artifacts": [
+    {
+      "archive": "GPU-SFTP/runtime/arm64-userspace-20261015.tar.gz",
+      "sha256": "1787a7f32b54e8cb7e2957eb6c7d4dea9ca1880c10e9412233894b5add80d1e7",
+      "size": 27169412,
+      "files": {
+        "artifacts/glmark2-arm64/rootfs-null-noop/BUILD.txt": {
+          "size": 848,
+          "sha256": "70d51562345f86df9fe981511d7f2c4ca1e1718337c27fb6ac49e18a7a40de59"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/bin/glmark2-es2-null-noop": {
+          "size": 12560536,
+          "sha256": "2251afb6b792c08181e14205756a29c13f8dd15d5a3eb8ab6652efe55a65bb2c"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/lib/aarch64-linux-gnu/libgcc_s.so.1": {
+          "size": 133768,
+          "sha256": "9a146967dc38c3820c5dc21c3209812655f66b6551264072b187bd0e787947e0"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/lib/aarch64-linux-gnu/libjpeg.so.62": {
+          "size": 395344,
+          "sha256": "c16e513a19cbc9a5a296d71000cf59b0221c66ae3c0d0305110a44662a4b9b87"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/lib/aarch64-linux-gnu/libpng16.so.16": {
+          "size": 264200,
+          "sha256": "41715da71b74e9dc84731aa71d28919d6d6314943c7fe84a94ebf1bc110d10b5"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/lib/aarch64-linux-gnu/libudev.so.1": {
+          "size": 330440,
+          "sha256": "bcf309a103288b263adfffded7db309ed393643acc5f60e8daf1962103e3a113"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/README.shaders": {
+          "size": 268,
+          "sha256": "07418b0cb29adf171a62b7f3ed92b7e47dc9e1b159ba7eff674caf29dc9b6111"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/buffer-wireframe.frag": {
+          "size": 563,
+          "sha256": "d2e3a6eee54e2c25ff71c650bd3dea5a87bf1ffde80bc14eba0e86e01490e02d"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/buffer-wireframe.vert": {
+          "size": 2181,
+          "sha256": "d0d0ef2148fe192b2f556e8238f4ace7ffab9af83c2be7ea2b78a2583b5166a6"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/bump-height.frag": {
+          "size": 2183,
+          "sha256": "67ac4beda3cb5f0134d7e8cf68f693d7fb35f2369b207db43d797a1c26cf3f4a"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/bump-height.vert": {
+          "size": 914,
+          "sha256": "189b99f7012547ee8854ae42ee93539c5ebe19c50b7ad06f2a5f915fff0e8ad7"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/bump-normals-tangent.frag": {
+          "size": 1886,
+          "sha256": "03ce6a9e93a66e0ed2f1df9f1a1e586fa98aa50bfc92f63d612518c09bb33f49"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/bump-normals-tangent.vert": {
+          "size": 1501,
+          "sha256": "b99b420c256ec339425892ffb98b7469eb64b6500c470b4f00016b798aa72a3c"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/bump-normals.frag": {
+          "size": 1849,
+          "sha256": "c599bd6c8602a7378d1e70bb1b3b7dd38fbfd53c19609b601cb1583242dd8b79"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/bump-normals.vert": {
+          "size": 287,
+          "sha256": "6712adf4f05b253db428e4b76519020fe5b30b73eebc67d6fdd5d5c880df3d63"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/bump-poly.frag": {
+          "size": 1311,
+          "sha256": "4458727f96e6f46cfb1a06a6c54b445e7fa89da22287512d6bd98058c47bb3b9"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/bump-poly.vert": {
+          "size": 388,
+          "sha256": "ebc8a83c5ee0800082fec6b057782bddfdd16a1acce52b3eca8d7764db806114"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/conditionals-step-conditional.all": {
+          "size": 83,
+          "sha256": "c4abfa1a0fb2148c8cbbe9b88837fb770d3eb0a77ad653371e1b41d741634b19"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/conditionals-step-simple.all": {
+          "size": 24,
+          "sha256": "4aea58864ff92f0e18d8c23b1e1cd177f6ce329101e56628bb2d271f42f65498"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/conditionals.frag": {
+          "size": 338,
+          "sha256": "5764e6aa924622e0ac228742778b7196e9e2e6bdacc2b06f54ca70115d6f92b9"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/conditionals.vert": {
+          "size": 518,
+          "sha256": "8a820a95ff556d566b2605b56621ccddb86963d1bfa4eea824e72aecdb6022d3"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/depth.frag": {
+          "size": 76,
+          "sha256": "b8c97a2e3a528cccdf3128a61f6f9e5fde68126fd06565a249bd12f4d7add6df"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/depth.vert": {
+          "size": 220,
+          "sha256": "4f29ced7c8095feba0d2a26b3617479bdd69414ffcd6d4ba534eabc7ec499a8f"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/desktop-blur.frag": {
+          "size": 157,
+          "sha256": "b62d22ba163e5fddc438e2e11f85c1a84f0c2460347e9f69c19b7e64c3818e35"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/desktop.frag": {
+          "size": 172,
+          "sha256": "c5a46536f65af7c7e07582d69a61e42e71481ff6dddc692d44b66e848e8bf58f"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/desktop.vert": {
+          "size": 173,
+          "sha256": "953f056aaee2ca6aa3276ae7f6b12e0cbb8d4962e59a2f72be5ff57738c18ca8"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/effect-2d-convolution.frag": {
+          "size": 156,
+          "sha256": "cec0cebba7dd34bcf418d20110b83ddbebf30825037b465d503c6f977627922b"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/effect-2d.vert": {
+          "size": 158,
+          "sha256": "ecd75aefe91a7e34580c76cc55392353bfb8778175912777d75fcc2e33a20d52"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/function-call.all": {
+          "size": 20,
+          "sha256": "73358e602aa98004068ba741a0024faf536d0b93f40b07310402ec1100669ee5"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/function-step-low.all": {
+          "size": 24,
+          "sha256": "4aea58864ff92f0e18d8c23b1e1cd177f6ce329101e56628bb2d271f42f65498"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/function-step-medium.all": {
+          "size": 65,
+          "sha256": "b377aafecaf6ebfbded9af25e5b91894766b69ea92bda408e2750bf22aecfda3"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/function.frag": {
+          "size": 389,
+          "sha256": "4f7133a6ba17e1b3212c443500edf1aeb30b43b08c126c3a80a8373bdf16fd6d"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/function.vert": {
+          "size": 577,
+          "sha256": "f723433157aea876ae736fd1985f05dbdfcb09386ddfc7f945009150986439b2"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/gradient.frag": {
+          "size": 165,
+          "sha256": "99fa8a779324abea62ddba2c2e1dab8b6587f1de90c1c8b0a7fb1793d34fb702"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/gradient.vert": {
+          "size": 140,
+          "sha256": "94ffc17712563befc309b196b0350f3ffc6d75f0ebcf1f17aea71d0725783b8e"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/ideas-lamp-lit.frag": {
+          "size": 2280,
+          "sha256": "dc38503c9d11e0173e5ca068fdce05b627b990e62f7eee8914bfcb7eedb94b35"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/ideas-lamp-lit.vert": {
+          "size": 745,
+          "sha256": "624373a30b8aa73c90193eb7320211070680c8998763396387483bb95ca6623d"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/ideas-lamp-unlit.frag": {
+          "size": 63,
+          "sha256": "47c7c02aa826316d4e0dfa8dda0e91f56b13b3b152ba4893d972964007047a82"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/ideas-lamp-unlit.vert": {
+          "size": 263,
+          "sha256": "c16ade6fc518de3d439b1e2156c8b3ecd406b89f4206da9cbe9c3db830a531de"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/ideas-logo-flat.frag": {
+          "size": 71,
+          "sha256": "437d77f064ac8949e715873d710d9bfd1458cdc8170d003dae3ecefecfb72aeb"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/ideas-logo-flat.vert": {
+          "size": 205,
+          "sha256": "f4059183bcd71479f1d1d8f02fe377e71db943691d1507d98951423f5bf7d7f2"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/ideas-logo-shadow.frag": {
+          "size": 189,
+          "sha256": "30c264927febb9d8e114fc1df4b9a5e76f0d12785f1bcc4f6dd6eec12511a9d4"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/ideas-logo-shadow.vert": {
+          "size": 205,
+          "sha256": "f4059183bcd71479f1d1d8f02fe377e71db943691d1507d98951423f5bf7d7f2"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/ideas-logo.frag": {
+          "size": 1285,
+          "sha256": "9bcd554caa675176f3ec19f6a0bf59c82e533b515343386f102a4db3eb5adab6"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/ideas-logo.vert": {
+          "size": 745,
+          "sha256": "624373a30b8aa73c90193eb7320211070680c8998763396387483bb95ca6623d"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/ideas-paper.frag": {
+          "size": 63,
+          "sha256": "47c7c02aa826316d4e0dfa8dda0e91f56b13b3b152ba4893d972964007047a82"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/ideas-paper.vert": {
+          "size": 707,
+          "sha256": "4c3aa8152a63f01faa002715eeee4c48c9db79008bc55b848b53a5c343e99f64"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/ideas-table.frag": {
+          "size": 63,
+          "sha256": "47c7c02aa826316d4e0dfa8dda0e91f56b13b3b152ba4893d972964007047a82"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/ideas-table.vert": {
+          "size": 695,
+          "sha256": "4ef52760cbd860d1042541e89e01dd4292bc8bd48336b8cdba9a4c0c849c69dd"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/ideas-text.frag": {
+          "size": 63,
+          "sha256": "47c7c02aa826316d4e0dfa8dda0e91f56b13b3b152ba4893d972964007047a82"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/ideas-text.vert": {
+          "size": 454,
+          "sha256": "6daac9b635a7c5e1ef0a5e589d26589182aa53afc451bee75bd0104a75b057b1"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/ideas-under-table.frag": {
+          "size": 63,
+          "sha256": "47c7c02aa826316d4e0dfa8dda0e91f56b13b3b152ba4893d972964007047a82"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/ideas-under-table.vert": {
+          "size": 263,
+          "sha256": "894788b582dab56969618810219182e213ee4af98cd93f0aa468554c278ede22"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/jellyfish.frag": {
+          "size": 580,
+          "sha256": "ac6d5fe050298cf529b8bacc7c0904e224b905cb4b32d2f08233091d59f75b03"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/jellyfish.vert": {
+          "size": 1872,
+          "sha256": "2c0fa04c7302432a215fe4c1001f89f9f95db25c636b90bc7fe891b479272cc1"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/light-advanced.frag": {
+          "size": 1328,
+          "sha256": "8532f015b3d2eab7bfaf7b93186c9a91b34d435bf79a04d702c8a8fc446ca169"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/light-advanced.vert": {
+          "size": 388,
+          "sha256": "ebc8a83c5ee0800082fec6b057782bddfdd16a1acce52b3eca8d7764db806114"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/light-basic-tex-bilinear.frag": {
+          "size": 927,
+          "sha256": "b90115d2326634d70227d5466821c8da2a7c2a080a24e1418063f5bfbd0ff5ed"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/light-basic-tex.frag": {
+          "size": 200,
+          "sha256": "0ec582ee4c2707450fb2a1d03a38e97ffb19fdbd479806b50fa05d1886988321"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/light-basic-texgen.vert": {
+          "size": 990,
+          "sha256": "40a2da8c576b4394c90a2ebf9c2fb6afe2c9394be872bebb5a6c953f66209dce"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/light-basic.frag": {
+          "size": 94,
+          "sha256": "49942f9e79a8f856cfe363a3b2fc6e9f9992ef39ce79528cc8de4099d0f29946"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/light-basic.vert": {
+          "size": 913,
+          "sha256": "45b986a32e42e5702697c1bbfa394c12e9cee46e3b582495707da4429ee4b250"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/light-cel.frag": {
+          "size": 2471,
+          "sha256": "3f6ebeefcab388a9304348aad4fbb9bea52c166a94619bdfc8db7e6e72485062"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/light-phong.frag": {
+          "size": 1175,
+          "sha256": "87d06398e1cec6f50a906d5a5b9478d8e13e72a0e7f50bb2b3311f45397f95ba"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/light-phong.vert": {
+          "size": 633,
+          "sha256": "8fcc96b66863adae3ec6f11e1f251fd54ce6b32b39400ebb390d23ef0122dbea"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/light-refract.frag": {
+          "size": 2326,
+          "sha256": "5d60dd85933ef77a7bc89eb5d567fb9791fd9b14170ce82b06985da718a5e001"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/light-refract.vert": {
+          "size": 799,
+          "sha256": "ed59834a19207b9d19073032d94984968ca76ae195cde9587305bbece5d6d118"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/loop-step-loop.all": {
+          "size": 67,
+          "sha256": "199138ad3900102d848db56ccd20330d24c6cd63f578d285bf8626d560a0ab76"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/loop-step-simple.all": {
+          "size": 24,
+          "sha256": "4aea58864ff92f0e18d8c23b1e1cd177f6ce329101e56628bb2d271f42f65498"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/loop.frag": {
+          "size": 365,
+          "sha256": "a6c0e233abaf77c4c7432cc0998b85d10ce6fb6aadf8fd49aee8a7b08978cb2a"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/loop.vert": {
+          "size": 543,
+          "sha256": "71412183a5556e4f0997eb34c022e521f03bed06737d73749931a173588c6ab1"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/pulsar-light.vert": {
+          "size": 878,
+          "sha256": "2e6cd0b91f402316df0e77d5492313aa1fb9e82bf057155aacb9a036b0227d19"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/pulsar.vert": {
+          "size": 378,
+          "sha256": "4ac9ddb6d1d73680bbe0e3dd6a37eb4497e1a227d83e570f968f959ff12bd557"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/shadow.frag": {
+          "size": 458,
+          "sha256": "7077ca148b89fec91add2e1c3a82d79e24df57752c2159f62aec9025878d9fdf"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/shadow.vert": {
+          "size": 318,
+          "sha256": "be423184e75b84ff7bc836eaab86cf77fb14376d1f73e7e04347ffba1b49272e"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/terrain-blur.frag": {
+          "size": 177,
+          "sha256": "a3ef832f150d04d0bd3afeac188b26c8c332f367a928fec80e0a6a9dc262ecca"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/terrain-luminance.frag": {
+          "size": 241,
+          "sha256": "10c70f5b0150b89cea335f7a0d92ad5deab302eb41b5303215457017cd802061"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/terrain-noise.frag": {
+          "size": 2986,
+          "sha256": "245322c7730e1af05b3efa5616e237bf82c94214f2e9f2c4eb39f9408a0d30c8"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/terrain-normalmap.frag": {
+          "size": 427,
+          "sha256": "4fdbdff3f3c3ef32a947d2de5ce00dd58b9b6db6b2acdaaf8eb37a2166a473ce"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/terrain-overlay.frag": {
+          "size": 166,
+          "sha256": "ff11b561309eb87989b39e5530bcf9031a3ea809e3cb557d574bbad4d39ee8ec"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/terrain-texture.vert": {
+          "size": 224,
+          "sha256": "6d74d19db50e8a1323ea183d2bcd7fe216d32175dfc247eec950b9f715ce65d3"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/terrain.frag": {
+          "size": 3732,
+          "sha256": "efc2c1cd2ab3ad01e9d42430f427e6ba441f2e3311fb9afe5aaafe25b503a8d2"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/terrain.vert": {
+          "size": 1296,
+          "sha256": "f07ac9490a748428ce9e1df9c5896f61659f927e99c1aa5334f926f4b013c76a"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/text-renderer.frag": {
+          "size": 156,
+          "sha256": "c319f2bf5b641a909d1eabc9930249186085f018084bc2930d7346718ae15575"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/shaders/text-renderer.vert": {
+          "size": 172,
+          "sha256": "b031fab79c55f12fbd63970f4420c50b98e000fe73f68a671857f0ed73eb782e"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/asteroid-height-map.png": {
+          "size": 210524,
+          "sha256": "98ce36937dd6d1f53f99ccfabf5483c9a675b67f7904b1652c2a94b70049ba3d"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/asteroid-normal-map-tangent.png": {
+          "size": 453013,
+          "sha256": "34ea039571deb6bbeb8957b6ff1cbf00912bd7f0de4ad94c136efcef38e65d65"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/asteroid-normal-map.png": {
+          "size": 531099,
+          "sha256": "39005045f8de4c81ac786f859471d451b0fe066311bd84d3cc44b53a8bdf04f1"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/crate-base.png": {
+          "size": 500819,
+          "sha256": "9af033e63469abe2dcbcea7518bd71597d78b5caf22db78d03e01368a81603c5"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/desktop-shadow-corner.png": {
+          "size": 1200,
+          "sha256": "2e9d5367e75537987337f807ca1e958cf5367622b538da9535377269102dea32"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/desktop-shadow.png": {
+          "size": 259,
+          "sha256": "f1ecc94df4710979f0eeea12103c88b05a81ff133a6e65a05d8cc6a5d5d273fd"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/desktop-window.png": {
+          "size": 45536,
+          "sha256": "b7e275701a9f40f50c887ca2a2b79b63e09cd106adfa506d21ebf3da3ce8d917"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/effect-2d.png": {
+          "size": 12663,
+          "sha256": "d4c20048e4c73ca9935751cc44153c8c0ef0a4382c96be900d5219dcfc7d7145"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/glyph-atlas.png": {
+          "size": 27829,
+          "sha256": "15e86a0ce8318a575db8ab007cd1e5bf91b21b20ab6d003fc516d5f54694e445"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-01.png": {
+          "size": 47113,
+          "sha256": "9dd558088e28f2a3411fd732f94a47091a8a5aee74243c8d376c9d82f329fa10"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-02.png": {
+          "size": 47495,
+          "sha256": "ee1e20cdf36adb618089548bb454ef242c0aee14a4826114d1fe4ea35d49e7bb"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-03.png": {
+          "size": 47491,
+          "sha256": "5c23079e967a57667b5a8d6024314a60fce23903524056d7b9efe009e2036da8"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-04.png": {
+          "size": 47595,
+          "sha256": "c735ba1fc89608bcff3cdf62174afa9d874b7fcc4411da19071945a03695fe5d"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-05.png": {
+          "size": 47630,
+          "sha256": "a0f63475cce412b98bc0f374f1a2c1a158c4562eb3b965b42c5d8d9f3baa2030"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-06.png": {
+          "size": 47480,
+          "sha256": "9db24028547bb949be4c06e69e7d7345bc0b34377330c5b082abfd2a6faeb597"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-07.png": {
+          "size": 47113,
+          "sha256": "4f72a3fb3ace63db6fa5a984b014d34abe80abc012bb55096d918eeca9a6c75f"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-08.png": {
+          "size": 47496,
+          "sha256": "45e6e682e732f21ce07bdf68a1f8656c100f724730361291d2d86e535bb10c65"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-09.png": {
+          "size": 47323,
+          "sha256": "9ca126a408e8f95da5fe0d8f64596c1e37ca2853967d525f5293435f32da7956"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-10.png": {
+          "size": 47593,
+          "sha256": "38e1bd9e3cdd1903767af60431bd434ecdc8abb49646137a6635027ad5507dd9"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-11.png": {
+          "size": 47184,
+          "sha256": "b383f994c47723c9f88e630981959050eb2fb789a6ef9d3517393a599a3bf985"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-12.png": {
+          "size": 47485,
+          "sha256": "cf7713676a2e78f80728568a9178f19c6bca95d604ba2fd91678e5ace57cc168"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-13.png": {
+          "size": 47249,
+          "sha256": "c5a8fe36463f7a6c37d48f08cc9bfdab71365880caeaec12e6b381b10c7f4559"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-14.png": {
+          "size": 47546,
+          "sha256": "47ac55cf5bdeae7c0b87b0e311498c59ca360a57ffcbbc6d00c18bbe03c15bb7"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-15.png": {
+          "size": 47426,
+          "sha256": "63c0f0f185e6332eb63f031c7262216500f6429a33df53b5d1cb5c429e7cf023"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-16.png": {
+          "size": 47710,
+          "sha256": "bf47295c4ba423fa7064c302935af5011f582877f4d62a750d568199896d5a39"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-17.png": {
+          "size": 47378,
+          "sha256": "76561f5bcefb6040adfc5639e07582258f46d070aae30e983c82c6a05ca26576"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-18.png": {
+          "size": 47731,
+          "sha256": "826ac9d0076d8afdf6ec9819c72682da035d38d7604b1068db7b376bfd916c56"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-19.png": {
+          "size": 47619,
+          "sha256": "d470b746cb3ed731ecd52a874095777bd9608e55fa9477772e8fcdf81d15bb30"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-20.png": {
+          "size": 47470,
+          "sha256": "6fb1fd2ebd7637e4868569ef19816d14f3b6e8449d97ab9e427293714d5cf20f"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-21.png": {
+          "size": 47768,
+          "sha256": "2ea930b1dd4715d0683517fab6a19fae21b0afedc1604c878b29f9d6951bcbde"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-22.png": {
+          "size": 47256,
+          "sha256": "c22af6b84eb970d0ae185a4916b61b24ce15f7f70073c02328a0c82d44aa886a"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-23.png": {
+          "size": 47139,
+          "sha256": "1eb83d948cd0415fcea83cefba43c58101734aeb17a80953911e825d9c36d37f"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-24.png": {
+          "size": 47310,
+          "sha256": "751ef9a2bd00ca67e3f5f5e943bd8f372cf123af0468c707465c7473fd59e931"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-25.png": {
+          "size": 47605,
+          "sha256": "bf4f81f3a93343508787d729bb64ed63e6bf1b0b73e41d9d3f29502261560d97"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-26.png": {
+          "size": 47689,
+          "sha256": "efcd2ccbe7a6a3d11821815a9d5b2fb5672eb82e25682e5dcf462baf60b2051e"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-27.png": {
+          "size": 46790,
+          "sha256": "dc81ad48de85b5eab29692609ccdb6d643d245e24ba144a4b777cb6ca4a169da"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-28.png": {
+          "size": 47518,
+          "sha256": "4b60304952aa8915449ef988aa5a3e17a66447227ed2d3803f5148655de8a842"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-29.png": {
+          "size": 47425,
+          "sha256": "47025b01befd9432ec1f6c986189b897c47f89dbcb7048d3b27d991c5a578d94"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-30.png": {
+          "size": 47381,
+          "sha256": "f4736577b710d5201ee2b305aafeaaa30e94cc15d535c268da43760a53e06be6"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-31.png": {
+          "size": 47188,
+          "sha256": "670cf633b8d9db014f197e664fbe0e14d948f2c3ea94d2922a015eecd0dfc1a9"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish-caustics-32.png": {
+          "size": 47416,
+          "sha256": "c0d5ff52199834a7ab2b8d873ea977a4c18fad570269d48acc4d8f7a65647ae7"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/jellyfish256.png": {
+          "size": 154259,
+          "sha256": "f22ee4c18b6d2be25e0025c3292f7f94fe3677881c0b6f045c84416cf961fc31"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/nasa1.png": {
+          "size": 418040,
+          "sha256": "28682a0aaa5c40c47a11657dc0524a0024058927f7236a8a1559d377ca0f97a0"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/nasa2.png": {
+          "size": 425190,
+          "sha256": "50cb23a279219b6746f289560ac46410034e58aa9aab87738b774374fff0a9b2"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/nasa3.png": {
+          "size": 615684,
+          "sha256": "5fb8d700e7da219747f4999b0d4ee71f6ab7653f338564f554f9ec5ad7d2d497"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/terrain-backgrounddetailed6.jpg": {
+          "size": 79044,
+          "sha256": "56774f4ad62a3a34cb1481deea2a0c11454cf58beff121a7f833b6504398e662"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/terrain-grasslight-512-nm.jpg": {
+          "size": 146828,
+          "sha256": "bd7e0eeff8fc0f8a558278a85b468bff6bfbe92e7b84c7423141303c068d1638"
+        },
+        "artifacts/glmark2-arm64/rootfs-null-noop/usr/share/glmark2/textures/terrain-grasslight-512.jpg": {
+          "size": 137557,
+          "sha256": "f3ee02c26c9c559e518aed2a99728e67fbd89759ea810a4444adb698a1126cc3"
+        },
+        "artifacts/ncnn-arm64/rootfs-ncnn/bin/benchncnn": {
+          "size": 10238704,
+          "sha256": "199b2f97f80286d3378a92a354b7a90cea7ef024f34294d58e81505ddd17a260"
+        },
+        "artifacts/ncnn-arm64/rootfs-ncnn/bin/ncnn-vk-probe": {
+          "size": 9767608,
+          "sha256": "5449cb26f4306a1f69a39e8327006a33ce840986984c946ce19638d05668d8e7"
+        },
+        "artifacts/ncnn-arm64/rootfs-ncnn/libs/libX11-xcb.so.1": {
+          "size": 67296,
+          "sha256": "3827c0df48c2fbcaecc42531a90cda1ce20744e9bad813170b1e3bcf2413e094"
+        },
+        "artifacts/ncnn-arm64/rootfs-ncnn/libs/libXau.so.6": {
+          "size": 67752,
+          "sha256": "66ba1611449064d4beb81d33d9200eed4cfad41771dbbf38895774690c29bb26"
+        },
+        "artifacts/ncnn-arm64/rootfs-ncnn/libs/libXdmcp.so.6": {
+          "size": 67728,
+          "sha256": "d2374e9168c2d221a527088b18781cd11da9735b8053b8231359f4fe11428298"
+        },
+        "artifacts/ncnn-arm64/rootfs-ncnn/libs/libdrm.so.2": {
+          "size": 133976,
+          "sha256": "537fa6aaa3f5f9337739aa8719a9aa30b3bd0424524e54c862d732ffe3e24803"
+        },
+        "artifacts/ncnn-arm64/rootfs-ncnn/libs/libexpat.so.1": {
+          "size": 198792,
+          "sha256": "46fcd57623ecc066642df372ffc6a480f4eb6298b124e0b7ff96b280e962b45f"
+        },
+        "artifacts/ncnn-arm64/rootfs-ncnn/libs/libffi.so.8": {
+          "size": 68088,
+          "sha256": "f0527ef7efeaf85fc2f5855d68fddb63bf7b3b90f1228c6b49fb6020b0dca490"
+        },
+        "artifacts/ncnn-arm64/rootfs-ncnn/libs/libgcc_s.so.1": {
+          "size": 133768,
+          "sha256": "9a146967dc38c3820c5dc21c3209812655f66b6551264072b187bd0e787947e0"
+        },
+        "artifacts/ncnn-arm64/rootfs-ncnn/libs/libgomp.so.1": {
+          "size": 331528,
+          "sha256": "a2286e5fa0f7601afdfae2a750536f409bc8c3cc5b0bb9e93a4afc5c3779a510"
+        },
+        "artifacts/ncnn-arm64/rootfs-ncnn/libs/libm.so.6": {
+          "size": 591960,
+          "sha256": "a8afb2d1f4a0c5e14c0fc82f794ec839eafe29738907aa92895410f57630bbe2"
+        },
+        "artifacts/ncnn-arm64/rootfs-ncnn/libs/libmvec.so.1": {
+          "size": 198736,
+          "sha256": "87847301be4eea8ea5497ad0c67addda471a5951d605d58d7db3493ddec9fa03"
+        },
+        "artifacts/ncnn-arm64/rootfs-ncnn/libs/libstdc++.so.6": {
+          "size": 2502136,
+          "sha256": "fff1f0050a33ddf29c44634c7639ac16e2573a61e3daab4fcc4c007b432ccf19"
+        },
+        "artifacts/ncnn-arm64/rootfs-ncnn/libs/libvulkan_panfrost.so": {
+          "size": 10318192,
+          "sha256": "8c84721328137cfb57153d507f57fe07293e689270a8abadf7f1984491bb6523"
+        },
+        "artifacts/ncnn-arm64/rootfs-ncnn/libs/libwayland-client.so.0": {
+          "size": 69016,
+          "sha256": "0c9584043ee044fbd6e23b00c3e04ec05c195a60fcec689a275065f15cb96670"
+        },
+        "artifacts/ncnn-arm64/rootfs-ncnn/libs/libxcb-dri3.so.0": {
+          "size": 67688,
+          "sha256": "666d74ad91142bb36be01a8bbe358e762e7d78e750272ffaae1a3c0e74f80bdc"
+        },
+        "artifacts/ncnn-arm64/rootfs-ncnn/libs/libxcb-present.so.0": {
+          "size": 67640,
+          "sha256": "8c99c56e0e4224588aa87c641989af38d99363b19e4c8a914749b55b395a5ae9"
+        },
+        "artifacts/ncnn-arm64/rootfs-ncnn/libs/libxcb-randr.so.0": {
+          "size": 67888,
+          "sha256": "1893abee0152e989e0df7f98e342f2e3f786d003470f4a63e1462fe6bc62f343"
+        },
+        "artifacts/ncnn-arm64/rootfs-ncnn/libs/libxcb-shm.so.0": {
+          "size": 67656,
+          "sha256": "70176ec6e656846387f537996bd5fdfabfcc174da6ba815f579f0ec98cc5fca0"
+        },
+        "artifacts/ncnn-arm64/rootfs-ncnn/libs/libxcb-sync.so.1": {
+          "size": 67728,
+          "sha256": "a85a58cebf2fe248ef49991d2302d34f8aa4b3cb96f4eee2afb630159a734561"
+        },
+        "artifacts/ncnn-arm64/rootfs-ncnn/libs/libxcb-xfixes.so.0": {
+          "size": 67648,
+          "sha256": "ea47ff0969f4df4a507b4ada5fc144a0511a00e1a54cd32044d92ae18d6bc441"
+        },
+        "artifacts/ncnn-arm64/rootfs-ncnn/libs/libxcb.so.1": {
+          "size": 199640,
+          "sha256": "e8ede627b1ff9101854931904ee57a7c19ed2a359fa7bc2fb9522cf923950210"
+        },
+        "artifacts/ncnn-arm64/rootfs-ncnn/libs/libxshmfence.so.1": {
+          "size": 67640,
+          "sha256": "5f201d5fb65642fb898a7d89591e1bbd72a71a16ef9295f45c09ea029a44917c"
+        },
+        "artifacts/ncnn-arm64/rootfs-ncnn/libs/libz.so.1": {
+          "size": 133600,
+          "sha256": "6fe00acadf8119ff245855e5dcc7f26c6c0ffaf4bfa2baa88feab58f23727d65"
+        },
+        "artifacts/ncnn-arm64/rootfs-ncnn/libs/libzstd.so.1": {
+          "size": 723048,
+          "sha256": "1279c4edfbfb08878b5b7fb40d392c1bdc9b30100d9b7a019d4aefaf10d2046c"
+        },
+        "artifacts/ncnn-arm64/rootfs-ncnn/models/mobilenet_v2.param": {
+          "size": 12648,
+          "sha256": "0da0b999a7c2c8332c639eee659864c13aa18132792540a72feaaa94a64729e2"
+        },
+        "artifacts/ncnn-arm64/rootfs-ncnn/models/mobilenet_v3.param": {
+          "size": 14794,
+          "sha256": "4643a84eaa2d6244ce1819b37819c19b3425c653f5095dd6da447ed3b4efea1a"
+        },
+        "artifacts/ncnn-arm64/rootfs-ncnn/models/resnet50.param": {
+          "size": 15849,
+          "sha256": "fd5882c2e3816507712189820097996b3821db33d6a6aa06045c9cdf9687dac9"
+        },
+        "firecracker-bins/bin/firecracker": {
+          "size": 4554160,
+          "sha256": "f21f02354b41bed40e961af34de4191ba791d81f3c8f53109b0703696cdc4925"
+        },
+        "firecracker-bins/bin/gles-compute-smoke": {
+          "size": 32752,
+          "sha256": "b653a3a05f4e404703367618a95ba0f2bb98503d7e99f48189b014a26d06a6a0"
+        },
+        "firecracker-bins/bin/gles-ml-smoke": {
+          "size": 74544,
+          "sha256": "0890cb77d3c11a951d23ff904388e262678e05f42a3ff9215d1027c572e02c05"
+        },
+        "firecracker-bins/bin/panthor_ioctl_smoke": {
+          "size": 693912,
+          "sha256": "311db7db00eb2e380d08c11bc5adf52b767a2f55743a1cf882686cdff4a09ac3"
+        },
+        "firecracker-bins/bin/pmthor-pfn-lifetime": {
+          "size": 651728,
+          "sha256": "c1d3f7783d717afb71466ef8e9ed067aabab409d75e1f46584eaa5dadd6b1fad"
+        },
+        "firecracker-bins/bin/vmshm-broker": {
+          "size": 2155664,
+          "sha256": "ccbd8a2350b16ca2c95f0cc37093efe29a57dd6e27b7732cb5d84ae1bc891d77"
+        },
+        "firecracker-bins/bin/vmshm-client-test": {
+          "size": 2156232,
+          "sha256": "4aed716a802df76f9aba2e91f8bf4eba5cde0fa05b6da66dcaf3d7198e17b471"
+        },
+        "firecracker-bins/bin/vmshm_lookup_probe": {
+          "size": 646192,
+          "sha256": "cfd78b07d989bfc5f61f479262154481e12d84e0b68827ab224302bcea78cc3a"
+        },
+        "firecracker-bins/bin/vmshm_raw_rpc_probe": {
+          "size": 655848,
+          "sha256": "adbf445b05c9278d68561ef27d5c76a3a09004e90ef23bba90d3a913650fb5c0"
+        },
+        "tests/vulkan-bench/bin/raw-vk-probe": {
+          "size": 512456,
+          "sha256": "66bcf0e7d90e282f3f6b9f4ab10d108779c600f1ca97896c76c5107b3f53c240"
+        }
+      }
+    },
+    {
+      "archive": "GPU-SFTP/runtime/arm64-passthrough-20261015.tar.gz",
+      "size": 14835121,
+      "sha256": "fb28c4c4ce7335089fbf5158dd67a63d22d8c751475fdf7ecc13e3b1c12b46ee",
+      "files": {
+        "firecracker-bins/kernels/passthrough/Image": {
+          "size": 46909952,
+          "sha256": "88ee94c6810eb7dde06d16ae81d5a1a413b250b40e3e954cbaebbfd4f2a61ec0"
+        }
+      }
+    },
+    {
+      "archive": "GPU-SFTP/runtime/arm64-client-20261015.tar.gz",
+      "size": 14743385,
+      "sha256": "f650242ed562cdb36da19eb7665a67b6a74b2714adc225ef0855e8f4c08d5b27",
+      "files": {
+        "firecracker-bins/kernels/shared/client/Image": {
+          "size": 46647808,
+          "sha256": "e797e3180e65407eecb5cfed894725f9e5f8b31f822f1089feb38a820062e68f"
+        }
+      }
+    },
+    {
+      "archive": "GPU-SFTP/runtime/arm64-proxy-20261015.tar.gz",
+      "size": 14843861,
+      "sha256": "5521cb55b8bf1b787f29576282bae726cf329987ccf929a31bc6b8aa771d9b3b",
+      "files": {
+        "firecracker-bins/kernels/shared/proxy/Image": {
+          "size": 46912000,
+          "sha256": "24e213e91b4ecc2ce2c4e6dece0b1bad15d445d3b7207e8701f4f70da5922b55"
+        }
+      }
+    },
+    {
+      "archive": "GPU-SFTP/runtime/arm64-host-20261015.tar.gz",
+      "size": 16293034,
+      "sha256": "f981e344b8672f1ce1302e025a5a51072cabd39a8e2b8b9d676fa767299df001",
+      "files": {
+        "linux-host-kernel/Image": {
+          "size": 52566528,
+          "sha256": "ca8fb02a1ca95b588ef1e2fcd3191865c98ab3b1b758d586d3b36e90c88c3f6c"
+        }
+      }
+    }
+  ],
+  "source_archives": [
+    {
+      "archive": "GPU-SFTP/runtime/glmark2-null-noop-source.tar.gz",
+      "size": 9343004,
+      "sha256": "92ba061a197ee73012cd4421682334a8ab090866ea60f56a7e50bbafd8a36907"
+    },
+    {
+      "archive": "GPU-SFTP/runtime/ncnn-source-20260526.tar.gz",
+      "size": 19247096,
+      "sha256": "d83d03c31f3bba012cfff3df6e8065c50fb14c6db80e317309da3cb37c170b2e"
+    }
+  ]
+}

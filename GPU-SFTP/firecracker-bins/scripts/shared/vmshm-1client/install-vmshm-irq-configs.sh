@@ -7,6 +7,8 @@ CONFIG_DIR="${BINS_DIR}/configs/shared/vmshm-1client"
 
 mkdir -p "${CONFIG_DIR}"
 
+# Both guests open the same base image. Keep it read-only in the guest and
+# VMM so one VM cannot dirty its ext4 journal underneath the other VM.
 cat >"${CONFIG_DIR}/broker-config.toml" <<'EOF'
 [broker]
 socket_dir = "/run/vmshm"
@@ -32,14 +34,14 @@ cat >"${CONFIG_DIR}/client-vm-config.json" <<'EOF'
 {
   "boot-source": {
     "kernel_image_path": "/root/GPU-SFTP/firecracker-bins/kernels/shared/client/Image",
-    "boot_args": "console=ttyS0 root=/dev/vda rw rootfstype=ext4 init=/bin/sh"
+    "boot_args": "console=ttyS0 root=/dev/vda ro rootfstype=ext4 init=/bin/sh"
   },
   "drives": [
     {
       "drive_id": "rootfs",
       "path_on_host": "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs.ext2",
       "is_root_device": false,
-      "is_read_only": false
+      "is_read_only": true
     }
   ],
   "machine-config": {
@@ -83,14 +85,14 @@ cat >"${CONFIG_DIR}/proxy-vm-config.json" <<'EOF'
 {
   "boot-source": {
     "kernel_image_path": "/root/GPU-SFTP/firecracker-bins/kernels/shared/proxy/Image",
-    "boot_args": "console=ttyS0 root=/dev/vda rw rootfstype=ext4 init=/bin/sh"
+    "boot_args": "console=ttyS0 root=/dev/vda ro rootfstype=ext4 init=/bin/sh"
   },
   "drives": [
     {
       "drive_id": "rootfs",
       "path_on_host": "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs.ext2",
       "is_root_device": false,
-      "is_read_only": false
+      "is_read_only": true
     }
   ],
   "machine-config": {

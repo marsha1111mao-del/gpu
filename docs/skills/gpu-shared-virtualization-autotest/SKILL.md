@@ -33,10 +33,11 @@ Treat these as the current defaults unless the user gives a newer runbook:
 - Remote artifact root: `/root/GPU-SFTP`
 - Local artifact root: `/home/mzh/RK3588/gpu/GPU-SFTP`
 - Runtime tree: `GPU-SFTP/firecracker-bins`
-- Raspberry Pi flasher: `mzh@192.168.31.52`, password/sudo password `root`
+- Raspberry Pi flasher: `mzh@192.168.31.189` wired (wireless fallback: `mzh@192.168.31.52`), password/sudo password `root`
 - Pi flash root: `/home/mzh/opencca-flash`
 - Rockchip storage IDs: `1=EMMC`, `2=SD`, `9=SPINOR`
-- This workflow targets SD-card boot only. Do not write eMMC.
+- This workflow targets SD-card boot only. Writing eMMC is forbidden: never
+  select storage ID `1` or run `rkdeveloptool cs 1`.
 - Verified SD layout: p3 `kernel` ext4/extlinux at LBA `0x8000`, p4 `root`
   mounted from `/dev/mmcblk1p4`.
 - Verified host kernel/driver: `6.12.0-opencca-pmthor`, `/dev/pmthor`,
@@ -69,7 +70,7 @@ behavior:
 Expected physical topology:
 
 ```text
-control host -> LAN -> Raspberry Pi 192.168.31.52
+control host -> LAN -> Raspberry Pi 192.168.31.189
 Raspberry Pi -> USB OTG/Maskrom -> RK3588
 Raspberry Pi -> optional USB-TTL UART -> RK3588 serial console
 Raspberry Pi -> power control -> RK3588 board power
@@ -79,18 +80,63 @@ Quick checks:
 
 ```bash
 cd /home/mzh/RK3588/gpu
-sshpass -p root ssh -o StrictHostKeyChecking=accept-new mzh@192.168.31.52 \
+sshpass -p root ssh -o StrictHostKeyChecking=accept-new mzh@192.168.31.189 \
   'hostname; test -x /home/mzh/opencca-flash/flash.sh && echo flash.sh=ok; ls -l /dev/ttyUSB* /dev/serial/by-id/* 2>/dev/null || true'
 
 sshpass -p root ssh -o StrictHostKeyChecking=accept-new root@192.168.31.18 \
   'hostname; uname -r; findmnt -no SOURCE,TARGET,FSTYPE /; basename "$(readlink -f /sys/bus/platform/devices/fb000000.gpu/driver)"; ls -l /dev/pmthor /dev/dri/card0 2>/dev/null || true'
 ```
 
+Complex LAN routing troubleshooting:
+
+- If the router UI shows the Pi/RK online but SSH/ping from the control host
+  times out, check route selection before assuming the boards are down:
+
+```bash
+ip -br addr
+ip route get 192.168.31.18
+ip route get 192.168.31.189
+ip route get 192.168.31.52
+ip neigh show dev eth5
+```
+
+- In the verified lab setup, `eth5=192.168.31.137/24` is the LAN interface and
+  routes to `192.168.31.18`, `192.168.31.189`, and `192.168.31.52` must select
+  it with source `192.168.31.137`. A stale or accidentally added more-specific
+  route through another interface can make SSH time out even though the router
+  lists the boards as connected.
+- Run discovery with an explicit `/24` so local `/32` or docker CIDRs do not
+  abort the helper:
+
+```bash
+cd /home/mzh/RK3588/gpu
+./scripts/net/discover-opencca-hosts.sh --cidr 192.168.31.0/24
+```
+
+- If `ip route get` sends the Pi/RK through the wrong interface, add temporary
+  host routes via the same LAN interface as the router. These do not modify the
+  repo and are not persistent across network restart/reboot:
+
+```bash
+LAN_IF=eth5
+LAN_SRC=$(ip -o -4 addr show dev "$LAN_IF" | awk '{print $4}' | cut -d/ -f1)
+printf '%s\n' root | sudo -S ip route replace 192.168.31.18/32 dev "$LAN_IF" src "$LAN_SRC" metric 1
+printf '%s\n' root | sudo -S ip route replace 192.168.31.189/32 dev "$LAN_IF" src "$LAN_SRC" metric 1
+printf '%s\n' root | sudo -S ip route replace 192.168.31.52/32 dev "$LAN_IF" src "$LAN_SRC" metric 1
+ip route get 192.168.31.18
+ip route get 192.168.31.189
+ip route get 192.168.31.52
+```
+
+- After the routes show `dev eth5 src 192.168.31.137`, retry SSH. Prefer the Pi
+  wired address `mzh@192.168.31.189` for wrapper operations when both Pi
+  addresses are present.
+
 Use the Pi wrapper for reboot/Maskrom/flash operations:
 
 ```bash
 cd /home/mzh/RK3588/gpu
-OPENCCA_RPI_HOST=mzh@192.168.31.52 \
+OPENCCA_RPI_HOST=mzh@192.168.31.189 \
 OPENCCA_RPI_PASSWORD=root \
 OPENCCA_RPI_SUDO_PASSWORD=root \
 OPENCCA_RK_HOST=root@192.168.31.18 \
@@ -101,7 +147,7 @@ OPENCCA_RK_PASSWORD=root \
 For serial logs:
 
 ```bash
-sshpass -p root ssh -t mzh@192.168.31.52 \
+sshpass -p root ssh -t mzh@192.168.31.189 \
   'cd /home/mzh/opencca-flash && ./flash.sh minicom'
 ```
 
@@ -117,6 +163,11 @@ OPENCCA_FIRMWARE_STORAGE_ID=2
 OPENCCA_ROOTFS_STORAGE_ID=2
 OPENCCA_KERNEL_STORAGE_ID=2
 ```
+
+These are hard guardrails, not tuning knobs. Storage ID `1` is eMMC; the
+current runtime boots from `/dev/mmcblk1p4` and does not use or require an
+eMMC target. SPI is the separate storage ID `9=SPINOR` and is outside normal
+SD firmware/kernel/rootfs updates.
 
 SD firmware only:
 
@@ -302,3 +353,46 @@ target: >= 0.85
 A good final report includes the run ID, local log path, rebuilt/synced/skipped
 components, rootfs/config paths, client0/client1 result summaries, and the first
 meaningful failure log if the run failed.
+
+## Current Raw Vulkan, NCNN, And glmark2 Triage Rules
+
+Use these boundaries for 2026-10-15 and later until a newer worklog entry says
+otherwise:
+
+- The corrected raw probe is
+  `GPU-SFTP/tests/vulkan-bench/bin/raw-vk-probe`.  Its SPIR-V decoder now
+  builds little-endian words, uses the supplied shader, and checks magic
+  `0x07230203`.  Do not reuse logs produced by the old invalid-magic decoder as
+  evidence against vmshm or the proxy.
+- A normal shared raw-Vulkan qualification is:
+
+```bash
+REMOTE_HOST=192.168.31.18 REMOTE_PASS=root \
+RUN_ID=shared-raw-vk-fixed-compute-full-1q-$(date +%Y%m%d-%H%M%S) \
+GLES_RAW_VK_QUEUE_COUNTS=1 \
+GLES_RAW_VK_SUBMIT_MODE=sequential \
+GLES_RAW_VK_CASES=compute-storage,full \
+  ./scripts/run/run-vmshm-e2e.sh \
+    --skip-build --skip-sync --gles-raw-vk-smoke \
+    --skip-gles-remote-build \
+    --gles-client-mem-mib 128 --gles-proxy-mem-mib 96
+```
+
+- For raw-Vulkan, require `RAW_VK_SUITE_RESULT=PASS`,
+  `RAW_VK_COMPUTE_CHECK=PASS` for the compute case, `GPU_SMOKE_RESULT=PASS`,
+  and `RESULT: PASS`.  The reference run is
+  `shared-raw-vk-fixed-compute-full-1q-128c96p-20261015-035655`.
+- `compute-storage-min` and `compute-storage-cache` can fail at native PanVK
+  compute-pipeline creation with result `-13`.  If native and shared fail the
+  same way, classify that as a PanVK/testcase boundary, not a shared-only
+  regression.
+- NCNN device qualification (`NCNN_BACKEND_QUALIFICATION=PASS`) is not a model
+  pass.  Models that print timing but also report `vkWaitForFences failed -4`
+  are diagnostic timing only.  A 192 MiB client still reproduced this boundary
+  in `shared-ncnn-fixed-rawvk-mobilenet_v2-1loop-192c96p-20261015-035855`.
+- ARM64 glmark2 payloads are already present under
+  `GPU-SFTP/artifacts/glmark2-arm64/`; do not stall other tests to download a
+  duplicate.  Native GBM/null-noop results are PASS, while current shared
+  glmark2 scores with EGL/GBM, BO allocation, VM_BIND, or scene-setup failures
+  are diagnostic only.  Continue ML-kernel, raw-Vulkan, and NCNN isolation in
+  parallel with the separate glmark2 frontend investigation.

@@ -8,6 +8,7 @@ SFTP_KERNEL_DIR="${SFTP_KERNEL_DIR:-"${ROOT_DIR}/GPU-SFTP/linux-host-kernel"}"
 MODULES_STAGING_DIR="${MODULES_STAGING_DIR:-"${SFTP_KERNEL_DIR}/modules-staging"}"
 JOBS="${JOBS:-16}"
 KERNELRELEASE="${KERNELRELEASE:-}"
+KERNEL_LOCALVERSION="${KERNEL_LOCALVERSION--opencca-pmthor}"
 INSTALL_MODULES="${INSTALL_MODULES:-0}"
 HOST_MODULES="${HOST_MODULES:-}"
 
@@ -17,21 +18,32 @@ log() {
 
 cd "${HOST_KERNEL_DIR}"
 
+if [[ ! -f .config ]]; then
+	log "Initializing the verified host configuration"
+	cp "${ROOT_DIR}/configs/verified-20261015/host.config" .config
+	make CROSS_COMPILE=aarch64-linux-gnu- ARCH=arm64 \
+		LOCALVERSION="${KERNEL_LOCALVERSION}" olddefconfig
+fi
+
 if [[ "${INSTALL_MODULES}" -eq 1 && -z "${HOST_MODULES}" ]]; then
 	log "Building Linux-Host-GPU arm64 kernel and modules"
-	make CROSS_COMPILE=aarch64-linux-gnu- ARCH=arm64 -j"${JOBS}"
+	make CROSS_COMPILE=aarch64-linux-gnu- ARCH=arm64 \
+		LOCALVERSION="${KERNEL_LOCALVERSION}" -j"${JOBS}"
 elif [[ "${INSTALL_MODULES}" -eq 1 ]]; then
 	read -r -a module_targets <<<"${HOST_MODULES}"
 	log "Building Linux-Host-GPU arm64 Image and selected modules: ${HOST_MODULES}"
 	make CROSS_COMPILE=aarch64-linux-gnu- ARCH=arm64 -j"${JOBS}" \
+		LOCALVERSION="${KERNEL_LOCALVERSION}" \
 		KBUILD_MODPOST_WARN=1 Image "${module_targets[@]}"
 else
 	log "Building Linux-Host-GPU arm64 Image only"
-	make CROSS_COMPILE=aarch64-linux-gnu- ARCH=arm64 -j"${JOBS}" Image
+	make CROSS_COMPILE=aarch64-linux-gnu- ARCH=arm64 \
+		LOCALVERSION="${KERNEL_LOCALVERSION}" -j"${JOBS}" Image
 fi
 
 if [[ -z "${KERNELRELEASE}" ]]; then
-	KERNELRELEASE=$(make -s ARCH=arm64 kernelrelease)
+	KERNELRELEASE=$(make -s ARCH=arm64 \
+		LOCALVERSION="${KERNEL_LOCALVERSION}" kernelrelease)
 fi
 
 log "Installing host kernel payload to ${SFTP_KERNEL_DIR}"
@@ -43,6 +55,7 @@ if [[ "${INSTALL_MODULES}" -eq 1 && -z "${HOST_MODULES}" ]]; then
 	rm -rf "${MODULES_STAGING_DIR}"
 	mkdir -p "${MODULES_STAGING_DIR}"
 	make CROSS_COMPILE=aarch64-linux-gnu- ARCH=arm64 \
+		LOCALVERSION="${KERNEL_LOCALVERSION}" \
 		INSTALL_MOD_PATH="${MODULES_STAGING_DIR}" modules_install
 elif [[ "${INSTALL_MODULES}" -eq 1 ]]; then
 	read -r -a selected_modules <<<"${HOST_MODULES}"

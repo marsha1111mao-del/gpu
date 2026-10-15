@@ -8,6 +8,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
+#include <signal.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -45,6 +46,52 @@ static void stage(const char *name)
 {
     printf("STAGE=%s\n", name);
     fflush(stdout);
+}
+
+static void dump_maps_for_signal(void)
+{
+    int fd = open("/proc/self/maps", O_RDONLY | O_CLOEXEC);
+    char buf[1024];
+    ssize_t n;
+
+    if (fd < 0) {
+        dprintf(STDERR_FILENO, "SIGBUS_MAPS_OPEN_ERR errno=%d\n", errno);
+        return;
+    }
+
+    dprintf(STDERR_FILENO, "SIGBUS_MAPS_BEGIN\n");
+    while ((n = read(fd, buf, sizeof(buf))) > 0) {
+        ssize_t written = write(STDERR_FILENO, buf, (size_t)n);
+
+        if (written < 0)
+            break;
+    }
+    dprintf(STDERR_FILENO, "SIGBUS_MAPS_END\n");
+    close(fd);
+}
+
+static void signal_handler(int sig, siginfo_t *si, void *ctx)
+{
+    (void)ctx;
+
+    dprintf(STDERR_FILENO,
+            "SIGNAL_DIAG sig=%d code=%d errno=%d addr=%p\n",
+            sig, si ? si->si_code : 0, si ? si->si_errno : 0,
+            si ? si->si_addr : NULL);
+    dump_maps_for_signal();
+    _exit(128 + sig);
+}
+
+static void install_signal_handlers(void)
+{
+    struct sigaction sa;
+
+    memset(&sa, 0, sizeof(sa));
+    sa.sa_sigaction = signal_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_SIGINFO;
+    sigaction(SIGBUS, &sa, NULL);
+    sigaction(SIGSEGV, &sa, NULL);
 }
 
 static uint64_t now_us(void)
@@ -332,6 +379,7 @@ int main(int argc, char **argv)
 
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stderr, NULL, _IONBF, 0);
+    install_signal_handlers();
 
     for (int i = 1; i < argc; i++) {
         if (!strcmp(argv[i], "--perf")) {

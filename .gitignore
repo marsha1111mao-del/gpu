@@ -25,3 +25,4 @@ log/
 
 # Local secrets. Commit examples instead of real machine credentials.
 **/.vscode/sftp.json
+/.vscode/

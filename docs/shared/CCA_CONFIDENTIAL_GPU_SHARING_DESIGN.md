@@ -1,156 +1,256 @@
-# CCA Confidential GPU Sharing Design
+# CCA Realm Direct GPU Memory Design
 
-Date: 2026-06-12
+Date: 2026-07-18
 
-This note records the current design for running Panthor GPU work from ARM CCA
-Realm VMs on RK3588/OpenCCA. It is intentionally explicit about what the
-hardware can and cannot enforce on this board.
+## Goal
 
-## Boundary
+Run Panthor directly in one Realm VM while keeping GPU buffers inaccessible to
+Host CPU software. Memory encryption and physical-memory attacks are outside
+the threat model.
 
-RK3588's Mali GPU uses its embedded GPU MMU. It is not behind an Arm SMMU that
-can enforce stage-2 translation, GPC ownership, or per-Realm DMA permissions.
-For this local platform, the GPU itself must therefore be treated as trusted
-while the host kernel, KVM userspace, and other VMs remain outside the Realm
-trust boundary.
-
-The immediate security target is:
-
-- a VM must not map or submit another VM's GPU objects;
-- host/KVM must not accidentally translate private Realm guestmemfd pages into
-  GPU-visible HPA;
-- a Realm guest must explicitly convert pages that the trusted GPU is allowed to
-  consume;
-- vmshm/session/object ownership stays VMID-scoped for shared GPU
-  virtualization.
-
-This does not yet mean that GPU-visible payload bytes are confidential from the
-host. Without SMMU/GPC enforcement, a page converted to normal shared memory is
-device-reachable and host-reachable. Full host-confidential GPU payloads require
-an OpenCCA model change that represents the trusted GPU as a protected device
-domain.
-
-## Design Options
-
-| Option | Description | Status |
-| --- | --- | --- |
-| A. Realm marks GPU-visible pages shared | The Panthor Realm guest uses `set_memory_decrypted()` for BO payloads, GPU page tables, and GPA-to-HPA exchange pages before those pages are given to the GPU or host translation hypercall. | Implemented as the first stage. It is the smallest correct step and prevents private guestmemfd pages from being used as GPU PTE targets. |
-| B. Per-Realm GPT view switching | Extend OpenCCA so EL3/RMM selects a CPU-local GPT view on Realm entry and restores the host view on exit. Each RD gets a GPT view, so one Realm cannot CPU-load another Realm's private pages. | Feasible in OpenCCA simulation. It protects CPU accesses but not GPU DMA on RK3588 unless combined with a trusted GPU/device view. |
-| C. Trusted GPU protected-device view | Add an OpenCCA software device domain for the Mali GPU. GPU-owned pages are visible to the trusted GPU and the owning Realm, but not to host CPU mappings or other Realms. | Required for the final host-confidential design. This is the correct replacement for missing SMMU/GPC hardware in the local simulator. |
-| D. Secure shared guestmemfd object | Change KVM/RMM guestmemfd so a protected object can be attached to multiple Realms by ACL while remaining unmappable by host userspace/KVM. | Useful for Realm-to-Realm proxy/client sharing. Larger ABI change: current guestmemfd is bound to one `struct kvm`. |
-| E. Encrypted or bounced GPU buffers | Keep private Realm memory encrypted and copy/encrypt around the GPU boundary. | Limited. A normal GPU cannot compute on ciphertext, so this only helps command transport or workloads designed for encrypted data. |
-
-## Per-Realm GPT View Shape
-
-The per-Realm GPT idea is valid in OpenCCA because the platform is simulated.
-The clean place to switch views is the RMM CPU world-switch path:
+The design uses an asymmetric access path:
 
 ```text
-host/non-secure world
-  -> RMM rec_run_loop()
-     save_ns_state()
-     opencca_gpt_select_realm_view(rd->opencca_gpt_view)
-     run_realm()
-     opencca_gpt_select_host_view()
-     restore_ns_state()
-  -> host/non-secure world
+Realm CPU -> Realm translation + GPC/GPT -> Realm HPA -> allowed
+Host CPU  -> NS translation    + GPC/GPT -> Realm HPA -> denied
+Mali DMA  -> GPU MMU HPA, bypassing GPC  -> DRAM      -> allowed
 ```
 
-TF-A's current GPT code uses one global `gpt_config` and one global table root.
-The OpenCCA extension should make this a set of view objects:
+This is not a new GPT memory type. GPU buffers remain ordinary delegated Realm
+granules (`GPT_GPI_REALM`). The isolation property comes from applying GPT to
+Host CPU accesses while the local Mali DMA path accesses physical DRAM without
+consuming a GPC identity.
 
-- host view: host pages are NS, Realm private pages are not host-accessible;
-- Realm view N: Realm N private pages are Realm-accessible, other Realm private
-  pages are not accessible;
-- trusted GPU view: GPU-visible objects are accessible to the GPU and the
-  owning Realm according to an OpenCCA ACL.
+## Platform Assumption
 
-Because GPT selection is CPU-local, this alone does not constrain RK3588 GPU
-DMA. Option B must therefore be paired with Option C before it is treated as a
-confidential GPU payload design.
-
-Concrete code landing points after source inspection:
-
-- TF-A GPT state lives in
-  `opencca/trusted-firmware-a/lib/gpt_rme/gpt_rme.c`. `gpt_config` is currently
-  one global instance, and `gpt_enable()` writes one L0 base to `GPTBR_EL3`.
-  A multi-view prototype should introduce a `gpt_view` table, copy or derive
-  L0/L1 roots per view, and add a CPU-local `gpt_select_view(view_id)` helper
-  that rewrites `GPTBR_EL3`, invalidates cached GPT/TLB state, and keeps
-  `GPCCR_EL3` policy unchanged.
-- RMM world switch lives in
-  `opencca/tf-rmm/runtime/core/run.c`. `rec_run_loop()` calls
-  `save_ns_state()`, `restore_realm_state()`, then `run_realm()`, and later
-  `save_realm_state()` and `restore_ns_state()`. The switch hook belongs
-  immediately before `run_realm()` and immediately after it returns.
-- Realm metadata lives in `opencca/tf-rmm/runtime/include/realm.h`. `struct rd`
-  can carry an OpenCCA-only `gpt_view_id` or trusted-device ACL handle; the
-  value is copied into each REC through `rec->realm_info` or looked up from
-  `rec->realm_info.g_rd`.
-- The existing RMM-to-EL3 transition path for granule delegate/undelegate is
-  handled by RMMD in
-  `opencca/trusted-firmware-a/services/std_svc/rmmd/rmmd_main.c`. A prototype
-  view-select call can follow this pattern as an OpenCCA-private RMM-EL3 SMC,
-  but it should not be exposed as normal guest ABI until the object model is
-  settled.
-
-The required ordering is:
+The design depends on this RK3588/OpenCCA integration assumption:
 
 ```text
-RMM before run_realm:
-  select Realm CPU GPT view
-  run Realm
-RMM immediately after run_realm returns:
-  select host CPU GPT view
-  handle exit
+Mali normal-memory transactions are not rejected by the CPU-side GPC/GPT path.
 ```
 
-For GPU work, a separate trusted-device view or object ACL must be updated when
-Panthor maps or unmaps a GPU object. CPU GPT view switching alone must not be
-used as proof of GPU payload confidentiality.
+The GPU does not need a Realm PAS tag, an SMMU stage-2, a protected-mode
+firmware feature, a GPC-exempt identity configured by this patch, or an EL3
+per-page allow-list. Its embedded MMU translates GPU VA to the HPA written by
+the guest Panthor driver, then accesses that HPA normally.
 
-## First Stage Implemented Now
+The absence of an SMMU is therefore not a blocker for the single-Realm direct
+path. It means there is no hardware per-VM DMA isolation, so this model must
+assign the whole GPU to one Realm at a time.
 
-The current code implements Option A and keeps the unsafe shortcut blacklisted.
+This assumption is now confirmed for a minimal compute workload. With the
+current Host RMI mapping, the Realm reads the real G610 ID, loads CSF firmware
+through HPA-backed Mali page tables, completes Panthor DRM initialization, and
+passes a 4096-element GLES compute check.
 
-Guest Panthor changes:
-
-- ordinary shmem GEM BOs are pinned and converted with
-  `set_memory_decrypted()` before the handle is returned to userspace;
-- Panthor kernel BOs are converted before VM_BIND maps them into the GPU address
-  space;
-- Panthor GPU page-table pages are converted before page-table entries are
-  written;
-- the private GPA-to-HPA batch page is converted before it is passed to the host
-  hypercall;
-- teardown calls `set_memory_encrypted()` before freeing those pages.
-
-Host KVM guard:
-
-- `GPA_TO_HPA` rejects the GPA array page and payload entries if they are still
-  private according to `kvm_mem_is_private(kvm, gfn)`.
-
-Runner/VMM guard:
-
-- direct `realm_config && gpu_passthrough=true` remains blocked. The first stage
-  fixes the memory class, but the project still needs a trusted GPU owner view,
-  MMIO policy, IRQ teardown policy, and a controlled enable switch before
-  hardware Realm GPU smokes should resume.
-
-## Final Direction
-
-The final local RK3588/OpenCCA design should be:
+Host CPU access to the same Realm HPA has also been tested on RK3588. The
+runtime probe returns `HOST_READ_SUCCEEDED`, which is expected for this
+OpenCCA-on-RK3588 experiment because RK3588 does not provide real hardware
+`GPC/GPT` enforcement and OpenCCA folds `Realm PAS` into `NS PAS` at the
+translation layer.
 
 ```text
-Realm client/proxy private RAM: guestmemfd private
-GPU-visible trusted objects: OpenCCA trusted-GPU domain, owner VMID/session ACL
-Host/KVM userspace: cannot map trusted-GPU objects
-Other Realms: cannot map objects unless an RMM/OpenCCA ACL grants them
-GPU: trusted consumer of its object domain
+run: GPU-SFTP/log/passthrough/perf/trusted-gpu-realm-host-deny-20260718-185436
+selected_hpa=0x000000003573a000
+COMPUTE_CHECK=PASS
+realm_host_access_probe: HOST_READ_SUCCEEDED hpa=0x3573a000 ...
 ```
 
-For shared GPU virtualization, the existing vmshm manager/session isolation is
-the right object-policy layer. The missing piece is replacing host-readable
-vmshm payload backing with protected shared guestmemfd/OpenCCA objects or with a
-trusted GPU domain object that both the owning Realm and the trusted GPU can
-access.
+The design-level Host denial claim is therefore checked from the simulated
+`GPT/GPC` model rather than by forcing Linux to reject the mapping. Use:
+
+```bash
+scripts/check/check-opencca-gpt-design-denial.sh
+```
+
+This check verifies the RMM-to-EL3 `GTSI_DELEGATE` path, the TF-A GPT model's
+`GPT_GPI_REALM` transition, and the RK3588/OpenCCA caveat that `GPCCR_EL3` and
+`GPTBR_EL3` are spoofed while `Realm PAS` is folded to `NS`.
+
+## Memory Lifecycle
+
+The intended mapping sequence is:
+
+```text
+1. Realm allocates a private BO or GPU page-table page.
+2. Host delegates its backing granule; GPT marks it Realm.
+3. Guest calls RSI_OPENCCA_GPA_TO_HPA with the Realm IPA.
+4. RMM walks the current Realm RTT and verifies that the IPA belongs to it.
+5. RMM returns the HPA and records a Realm-local mapping lease.
+6. Guest writes that HPA into the Mali page table and cleans CPU caches.
+7. Mali reads or writes the HPA directly.
+8. Guest quiesces GPU work, invalidates the Mali mapping, and releases the
+   mapping lease through RSI_OPENCCA_GPU_REVOKE.
+9. Realm teardown drops all remaining leases before the RD is destroyed.
+```
+
+`GPU_REVOKE` is retained as the existing experimental RSI ABI name. It now
+releases RMM bookkeeping only; it does not change GPT state or revoke a
+hardware GPU permission.
+
+## RMM Responsibilities
+
+`opencca/tf-rmm/runtime/rsi/opencca_gpu.c` is the trust-boundary component for
+address disclosure:
+
+- validate the exchange array as an IPA in the calling Realm;
+- walk every requested IPA through the current Realm's RTT;
+- return only an HPA backed by that Realm mapping;
+- reject the same active HPA being associated with a different RD;
+- refcount repeated mappings and clean all records on Realm destruction.
+
+The mapping table is a lifetime and ownership check. It is not an access-control
+table consumed by Mali. RMM no longer sends GPU grant/revoke SMCs to EL3, and
+TF-A does not maintain a parallel trusted-GPU grant table for this direct path.
+
+## Guest Panthor Responsibilities
+
+The Realm guest keeps BO payloads and GPU page tables private. It does not call
+`set_memory_decrypted()` for the direct path.
+
+`Linux-Guest-GPU/drivers/iommu/io-pgtable-arm.c` translates Realm GPAs through
+RMM before publishing Mali PTEs. Since Mali walks those page tables itself, all
+table descriptors and leaf entries visible to Mali must contain HPA values,
+not guest IPA values.
+
+The driver must also maintain non-coherent cache visibility:
+
+- clean command buffers, page tables, and CPU-produced BO data before submit;
+- invalidate CPU caches before reading GPU-produced sync objects or BO data;
+- publish PTEs before issuing the relevant Mali MMU/TLB operation;
+- drain queues and invalidate GPU translations before freeing backing pages.
+
+The private RSI exchange page is read and written by RMM through its protected
+mapping helpers; it is not converted to Host-shared memory.
+
+## MMIO And Interrupts
+
+GPU MMIO remains a non-secure device aperture. A Realm guest accesses it through
+the shared IPA alias, and Host KVM installs that alias with
+`RTT_MAP_UNPROTECTED`. This is separate from GPU buffer memory:
+
+```text
+GPU registers: shared/unprotected device mapping
+GPU buffers:   private Realm granules
+```
+
+The existing three GPU IRQ routes can remain attached to the Realm VM. Current
+diagnostics show that IRQ delivery and CS scheduling are active enough to debug
+the memory path.
+
+## Security Boundary
+
+Architectural GPT should protect Realm granules from direct Host CPU loads and
+stores. On this RK3588/OpenCCA branch that property is a design/model property:
+the GPT library can transition granules to `GPT_GPI_REALM`, but the hardware
+does not consume that state as a real GPC fault. GPT also does not constrain
+Mali DMA in this design. Consequently, the following additional condition is
+mandatory if a malicious Host is in the threat model:
+
+```text
+After assignment, Host software must not be able to program GPU MMIO, submit
+command streams, replace Mali page tables, or reset/reclaim the GPU until RMM
+has ended the Realm assignment.
+```
+
+Otherwise the Host can program the unrestricted GPU to read Realm HPAs and use
+it as a DMA oracle, bypassing the CPU-side GPT denial. Detaching the Host Panthor
+driver is operational exclusivity, but by itself does not defend against a
+malicious Host kernel. Strong Host-adversary protection needs a trusted device
+control plane, for example EL3/RMM-owned assignment and MMIO mediation.
+
+The current implementation target is therefore precise, and the demonstrated
+properties should be stated with this boundary:
+
+- **Demonstrated functional property:** Realm CPU and Mali can access Realm GPU
+  memory through RMM-validated HPA-backed Mali page tables.
+- **Design/model property:** simulated GPT transitions delegated granules to
+  `GPT_GPI_REALM`, which is the intended reason Host CPU access is denied in
+  an architectural CCA platform.
+- **Not architecturally achieved on RK3588/OpenCCA:** hardware `GPT/GPC` Host
+  CPU denial for live Host loads/stores; runtime Host probes can still read.
+- **Deployment property:** one Realm owns the whole GPU during a run.
+- **Not yet proven:** a malicious Host cannot reprogram Mali to DMA Realm
+  memory.
+- **Not supported by this model:** mutually distrusting Realms sharing one GPU
+  concurrently without an SMMU or trusted scheduler.
+
+## Hardware Status On 2026-07-18
+
+The current Host kernel maps the 2 MiB GPU aperture as:
+
+```text
+Realm shared IPA 0x40fb000000 -> NS HPA 0xfb000000
+RMI_RTT_MAP_UNPROTECTED, Device access selected by guest Stage-1 attributes
+```
+
+The following path is verified with one Realm vCPU and 512 MiB RAM:
+
+- all three GPU IRQs attach to GSIs 92-94;
+- the Realm reads G610 ID `0xa867` and the expected feature registers;
+- GPA-to-HPA RSI translation supplies HPA leaves to the Mali page tables;
+- CSF firmware v1.1.0 is parsed and initialized;
+- Panthor scheduler and DRM render node initialization complete;
+- the Realm reaches a shell and the Host remains responsive.
+- Mesa reports `Mali-G610 (Panfrost)` and OpenGL ES 3.1;
+- a 4096-element compute dispatch returns `COMPUTE_CHECK=PASS`;
+- `scripts/check/check-opencca-gpt-design-denial.sh` returns
+  `DESIGN_GPT_HOST_DENIAL_CHECK=PASS`.
+
+A 4 KiB-only MMIO diagnostic also reads the real GPU ID, then fails later when
+Panthor needs registers outside the first page. This confirms that the old
+whole-Host hang was caused by running an older Host kernel whose custom MMIO
+ioctl used the normal KVM Stage-2 mapper even for a Realm. It was not caused by
+GPC, GPU IRQ attachment, or a 2 MiB RMI block descriptor.
+
+The initial `EGL_NOT_INITIALIZED` result was a test-environment error: the
+minimal `init=/bin/sh` configuration had not mounted `/proc` and `/sys`, so
+Mesa could not correlate the DRM card and render nodes through sysfs. Mounting
+those filesystems made EGL initialize and the compute check pass. The earlier
+first-submit cache-clean fix is therefore functional for this minimal job, but
+larger repeated workloads and teardown/error paths still need coverage.
+
+Do not add another EL3 grant predicate to solve a data-path symptom: unless a
+real Mali transaction consumes that predicate, it is bookkeeping rather than
+an enforcement or visibility mechanism.
+
+The Host read-success result shows why this cannot be called a hardware GPT/GPC
+fix. In the current tree,
+`opencca/trusted-firmware-a/lib/xlat_tables_v2/aarch64/xlat_tables_arch.c`
+contains an OpenCCA path that treats `Realm PAS` as `NS`, and
+`opencca/trusted-firmware-a/opencca/include/opencca.h` uses dummy accessors for
+`GPCCR_EL3/GPTBR_EL3`. The repository therefore records Host denial as a
+design/model check, not as a runtime hardware-enforced property on RK3588.
+
+## Controlled Smoke Gate
+
+Firecracker continues to reject `realm_config` together with
+`gpu_passthrough=true` unless the process explicitly sets:
+
+```text
+FC_ALLOW_TRUSTED_GPU_REALM=1
+```
+
+The repository runner exposes this through
+`--vm-realm-trusted-gpu-experimental`. This gate limits accidental use while
+the data path and GPU control-plane boundary are still experimental.
+
+Firecracker also has default-off diagnostic switches:
+
+```text
+FC_TRUSTED_GPU_REALM_SKIP_IRQ=1
+FC_TRUSTED_GPU_REALM_SKIP_MMIO=1
+FC_TRUSTED_GPU_REALM_MMIO_4K=1
+```
+
+Run serial diagnostics directly on a PTY. Piping Firecracker through `tee` can
+buffer Guest serial output and produce a false impression that the REC did not
+start.
+
+For a minimal `init=/bin/sh` rootfs, mount kernel filesystems before running
+Mesa:
+
+```sh
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+```

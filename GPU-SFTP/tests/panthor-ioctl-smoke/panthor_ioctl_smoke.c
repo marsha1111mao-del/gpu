@@ -3,6 +3,8 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <linux/sync_file.h>
+#include <poll.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,6 +44,7 @@ enum smoke_mode {
 	SMOKE_SYNCOBJ_TRANSFER,
 	SMOKE_SYNCOBJ_TIMELINE_WAIT,
 	SMOKE_SYNCOBJ_SIGNAL_QUERY,
+	SMOKE_SYNC_FILE_SNAPSHOT,
 	SMOKE_GROUP_LIFECYCLE,
 	SMOKE_GROUP_SUBMIT_SYNCPOINT,
 	SMOKE_TILER_HEAP_LIFECYCLE,
@@ -51,7 +54,7 @@ enum smoke_mode {
 static void usage(const char *prog)
 {
 	fprintf(stderr,
-		"usage: %s [--basic|--vm-create|--bo-create|--bo-lifecycle|--bo-mmap|--bo-hold|--hold-sec N|--bo-size BYTES|--vm-bind|--vm-bind-async-sync|--vm-state-flush|--syncobj-lifecycle|--syncobj-wait|--syncobj-transfer|--syncobj-timeline-wait|--syncobj-signal-query|--group-lifecycle|--group-submit-syncpoint|--tiler-heap-lifecycle] [drm-node]\n",
+		"usage: %s [--basic|--vm-create|--bo-create|--bo-lifecycle|--bo-mmap|--bo-hold|--hold-sec N|--bo-size BYTES|--vm-bind|--vm-bind-async-sync|--vm-state-flush|--syncobj-lifecycle|--syncobj-wait|--syncobj-transfer|--syncobj-timeline-wait|--syncobj-signal-query|--sync-file-snapshot|--group-lifecycle|--group-submit-syncpoint|--tiler-heap-lifecycle] [drm-node]\n",
 		prog);
 }
 
@@ -760,7 +763,7 @@ static int vm_bind_check(int fd)
 {
 	struct drm_panthor_vm_create vm = { 0 };
 	struct drm_panthor_bo_create bo = {
-		.size = 4096,
+		.size = 2 * 1024 * 1024,
 	};
 	struct drm_panthor_vm_bind_op map_op = {
 		.flags = DRM_PANTHOR_VM_BIND_OP_TYPE_MAP,
@@ -835,6 +838,36 @@ static int vm_bind_check(int fd)
 	printf("VM_BIND_UNMAP vm=%u va=0x%llx size=0x%llx\n",
 	       vm.id, (unsigned long long)unmap_op.va,
 	       (unsigned long long)unmap_op.size);
+
+	/*
+	 * Small unmaps leave a lower-level page table allocated. Reusing this
+	 * VA for a 2 MiB map must replace that table instead of returning
+	 * EEXIST. Repeat after both 4 KiB and 64 KiB mapping generations.
+	 */
+	{
+		const uint64_t sizes[] = { 4096, 2 * 1024 * 1024,
+					  64 * 1024, 2 * 1024 * 1024 };
+
+		map_op.va = unmap_op.va = 0x200000;
+		for (unsigned i = 0; i < sizeof(sizes) / sizeof(sizes[0]); i++) {
+			map_op.size = unmap_op.size = sizes[i];
+			bind.ops.count = 1;
+			bind.ops.array = (uint64_t)(uintptr_t)&map_op;
+			if (ioctl(fd, DRM_IOCTL_PANTHOR_VM_BIND, &bind) < 0) {
+				fprintf(stderr, "VM_BIND size reuse MAP round=%u size=0x%llx failed: %s\n",
+					i, (unsigned long long)sizes[i], strerror(errno));
+				goto out_close_bo;
+			}
+			bind.ops.count = 1;
+			bind.ops.array = (uint64_t)(uintptr_t)&unmap_op;
+			if (ioctl(fd, DRM_IOCTL_PANTHOR_VM_BIND, &bind) < 0) {
+				fprintf(stderr, "VM_BIND size reuse UNMAP round=%u size=0x%llx failed: %s\n",
+					i, (unsigned long long)sizes[i], strerror(errno));
+				goto out_close_bo;
+			}
+		}
+		printf("PANTHOR_VM_BIND_SIZE_REUSE=PASS rounds=4\n");
+	}
 	ret = 0;
 
 out_close_bo:
@@ -2548,6 +2581,146 @@ out_destroy_vm:
 	return ret;
 }
 
+/*
+ * Exported sync_files must retain the exported fence across source reset,
+ * destruction, handle reuse, and closing the DRM file. Repeated exports also
+ * exercise independent snapshot cleanup. Run on native and client DRM nodes.
+ */
+static int sync_file_snapshot_check(int fd)
+{
+	int round, ret = -1, exported[128];
+	struct drm_syncobj_create src = { 0 }, reuse = { 0 }, dst = { 0 };
+	struct drm_syncobj_destroy destroy;
+	struct drm_syncobj_handle export = { 0 };
+	struct drm_syncobj_handle import = {
+		.flags = DRM_SYNCOBJ_FD_TO_HANDLE_FLAGS_IMPORT_SYNC_FILE,
+	};
+	uint32_t handle;
+	struct drm_syncobj_array reset = {
+		.handles = (uint64_t)(uintptr_t)&handle,
+		.count_handles = 1,
+	};
+
+	for (round = 0; round < 128; round++)
+		exported[round] = -1;
+
+	/* An empty syncobj contains no fence: exporting it must fail. */
+	if (ioctl(fd, DRM_IOCTL_SYNCOBJ_CREATE, &src) < 0)
+		goto out;
+	export.handle = src.handle;
+	export.flags = DRM_SYNCOBJ_HANDLE_TO_FD_FLAGS_EXPORT_SYNC_FILE;
+	export.fd = -1;
+	if (ioctl(fd, DRM_IOCTL_SYNCOBJ_HANDLE_TO_FD, &export) == 0) {
+		close(export.fd);
+		fprintf(stderr, "SYNC_FILE_SNAPSHOT empty export unexpectedly succeeded\n");
+		goto out;
+	}
+	if (errno != EINVAL) {
+		fprintf(stderr, "SYNC_FILE_SNAPSHOT empty export errno=%d expected=%d\n",
+			errno, EINVAL);
+		goto out;
+	}
+	destroy.handle = src.handle;
+	destroy.pad = 0;
+	if (ioctl(fd, DRM_IOCTL_SYNCOBJ_DESTROY, &destroy) < 0)
+		goto out;
+	src.handle = 0;
+
+	for (round = 0; round < 64; round++) {
+		src.flags = DRM_SYNCOBJ_CREATE_SIGNALED;
+		if (ioctl(fd, DRM_IOCTL_SYNCOBJ_CREATE, &src) < 0)
+			goto out;
+		export.handle = src.handle;
+		export.fd = -1;
+		if (ioctl(fd, DRM_IOCTL_SYNCOBJ_HANDLE_TO_FD, &export) < 0)
+			goto out;
+		exported[2 * round] = export.fd;
+		dst.flags = DRM_SYNCOBJ_CREATE_SIGNALED;
+		if (ioctl(fd, DRM_IOCTL_SYNCOBJ_CREATE, &dst) < 0)
+			goto out;
+		import.handle = dst.handle;
+		import.fd = export.fd;
+		if (ioctl(fd, DRM_IOCTL_SYNCOBJ_FD_TO_HANDLE, &import) < 0)
+			goto out;
+		export.handle = dst.handle;
+		export.fd = -1;
+		if (ioctl(fd, DRM_IOCTL_SYNCOBJ_HANDLE_TO_FD, &export) < 0)
+			goto out;
+		exported[2 * round + 1] = export.fd;
+		handle = dst.handle;
+		if (ioctl(fd, DRM_IOCTL_SYNCOBJ_RESET, &reset) < 0)
+			goto out;
+		destroy.handle = dst.handle;
+		if (ioctl(fd, DRM_IOCTL_SYNCOBJ_DESTROY, &destroy) < 0)
+			goto out;
+		dst.handle = 0;
+		handle = src.handle;
+		if (ioctl(fd, DRM_IOCTL_SYNCOBJ_RESET, &reset) < 0)
+			goto out;
+		destroy.handle = src.handle;
+		if (ioctl(fd, DRM_IOCTL_SYNCOBJ_DESTROY, &destroy) < 0)
+			goto out;
+		src.handle = 0;
+
+		reuse.flags = 0;
+		if (ioctl(fd, DRM_IOCTL_SYNCOBJ_CREATE, &reuse) < 0)
+			goto out;
+		destroy.handle = reuse.handle;
+		if (ioctl(fd, DRM_IOCTL_SYNCOBJ_DESTROY, &destroy) < 0)
+			goto out;
+		reuse.handle = 0;
+	}
+
+	/* No duplicate of this DRM FD is retained by the test process. */
+	close(fd);
+	fd = -1;
+	for (round = 0; round < 128; round++) {
+		struct pollfd pollfd = { .fd = exported[round], .events = POLLIN };
+		struct sync_file_info info = { 0 };
+		int ready;
+
+		do {
+			ready = poll(&pollfd, 1, 5000);
+		} while (ready < 0 && errno == EINTR);
+		if (ready != 1 || !(pollfd.revents & POLLIN) ||
+		    ioctl(exported[round], SYNC_IOC_FILE_INFO, &info) < 0 ||
+		    info.status != 1) {
+			fprintf(stderr, "SYNC_FILE_SNAPSHOT round=%d poll=%d revents=0x%x status=%d errno=%d\n",
+				round, ready, pollfd.revents, info.status, errno);
+			goto out;
+		}
+	}
+	ret = 0;
+	printf("PANTHOR_SYNC_FILE_SNAPSHOT_SMOKE=PASS exports=128 source_reset=1 source_destroy=1 drm_close=1\n");
+	printf("PANTHOR_SYNC_FILE_IMPORT_SMOKE=PASS imports=64 target_reset=1 target_destroy=1\n");
+out:
+	if (ret)
+		fprintf(stderr, "SYNC_FILE_SNAPSHOT failed errno=%d (%s)\n",
+			errno, strerror(errno));
+	if (fd >= 0) {
+		if (dst.handle) {
+			destroy.handle = dst.handle;
+			destroy.pad = 0;
+			ioctl(fd, DRM_IOCTL_SYNCOBJ_DESTROY, &destroy);
+		}
+		if (reuse.handle) {
+			destroy.handle = reuse.handle;
+			destroy.pad = 0;
+			ioctl(fd, DRM_IOCTL_SYNCOBJ_DESTROY, &destroy);
+		}
+		if (src.handle) {
+			destroy.handle = src.handle;
+			destroy.pad = 0;
+			ioctl(fd, DRM_IOCTL_SYNCOBJ_DESTROY, &destroy);
+		}
+		close(fd);
+	}
+	for (round = 0; round < 128; round++)
+		if (exported[round] >= 0)
+			close(exported[round]);
+	return ret;
+}
+
 int main(int argc, char **argv)
 {
 	const char *default_nodes[] = {
@@ -2598,6 +2771,8 @@ int main(int argc, char **argv)
 			mode = SMOKE_SYNCOBJ_TIMELINE_WAIT;
 		} else if (!strcmp(argv[i], "--syncobj-signal-query")) {
 			mode = SMOKE_SYNCOBJ_SIGNAL_QUERY;
+		} else if (!strcmp(argv[i], "--sync-file-snapshot")) {
+			mode = SMOKE_SYNC_FILE_SNAPSHOT;
 		} else if (!strcmp(argv[i], "--group-lifecycle")) {
 			mode = SMOKE_GROUP_LIFECYCLE;
 		} else if (!strcmp(argv[i], "--group-submit-syncpoint")) {
@@ -2637,6 +2812,16 @@ int main(int argc, char **argv)
 	}
 
 	printf("OPEN path=%s fd=%d\n", path, fd);
+
+	if (mode == SMOKE_SYNC_FILE_SNAPSHOT) {
+		/* This mode owns/consumes fd and intentionally skips client-only
+		 * capability checks so the same semantics can be tested natively.
+		 */
+		if (sync_file_snapshot_check(fd))
+			return 1;
+		printf("PANTHOR_IOCTL_SMOKE=SYNC_FILE_SNAPSHOT_PASS\n");
+		return 0;
+	}
 
 	if (basic_checks(fd) ||
 	    (mode == SMOKE_VM_CREATE && vm_create_check(fd)) ||

@@ -2,14 +2,29 @@
 
 本文只记录硬件层面的连接、上电、串口、Maskrom 和刷机流程。它不依赖容器运行时、上层应用或项目具体能力。
 
-当前 OpenCCA/RK3588 重刷流程固定写入 SD 卡启动，不写 eMMC。`rkdeveloptool --help` 对 Rockchip storage ID 的说明是：`1=EMMC, 2=SD, 9=SPINOR`。因此写 SD 启动固件或完整 rootfs 时必须显式使用 `OPENCCA_FIRMWARE_STORAGE_ID=2` 和 `OPENCCA_ROOTFS_STORAGE_ID=2`；不要把这两个变量设为 `1`，否则会写 eMMC。
+当前 OpenCCA/RK3588 重刷流程固定写入 SD 卡启动，不使用 eMMC。`rkdeveloptool --help` 对 Rockchip storage ID 的说明是：`1=EMMC, 2=SD, 9=SPINOR`。因此写 SD 启动固件、kernel slot 或完整 rootfs 时必须显式使用 `OPENCCA_FIRMWARE_STORAGE_ID=2`、`OPENCCA_KERNEL_STORAGE_ID=2` 和 `OPENCCA_ROOTFS_STORAGE_ID=2`；不要把任何一个变量设为 `1`，否则会写 eMMC。
+
+### 存储目标红线
+
+本项目当前是 SD-only 启动和运行：RK3588 的 rootfs 挂载在 `/dev/mmcblk1p4`，当前内核也没有枚举 eMMC 块设备。除非文档中的 SPI 专用流程明确要求 `flash.sh spi`，正常固件、kernel、rootfs 刷写一律只允许选择 storage ID `2=SD`。
+
+禁止执行以下操作：
+
+```text
+rkdeveloptool cs 1
+OPENCCA_FIRMWARE_STORAGE_ID=1
+OPENCCA_KERNEL_STORAGE_ID=1
+OPENCCA_ROOTFS_STORAGE_ID=1
+```
+
+`1=EMMC` 不是备用 SD 路径，也不是调试选项。SPI 是独立的 `9=SPINOR`，不要把 SPI 操作与 eMMC 混淆。
 
 ## 1. 机器角色
 
 | 设备 | 作用 | 当前环境 |
 | --- | --- | --- |
 | 控制机 | 发起 SSH、同步固件文件、调用刷机脚本 | `/home/mzh/RK3588/gpu` |
-| Raspberry Pi | 刷机/电源/串口控制机 | `mzh@192.168.31.52`，密码通过本地环境变量提供 |
+| Raspberry Pi | 刷机/电源/串口控制机 | 有线首选 `mzh@192.168.31.189`；无线备用 `mzh@192.168.31.52` |
 | RK3588/ROCK 5B | 被刷写的目标板 | SSH 常用地址 `root@192.168.31.18` |
 
 树莓派在硬件链路里承担三件事：
@@ -32,10 +47,50 @@ Raspberry Pi  -- USB OTG/Maskrom --> RK3588
 
 ## 2. 从控制机连接树莓派
 
+如果 DHCP 导致树莓派或 RK3588 地址变化，先从控制机运行发现脚本。它会扫描
+SSH 端口，用 `/home/mzh/opencca-flash/flash.sh` 识别树莓派，用
+`/dev/pmthor`、`fb000000.gpu` 或 `opencca-pmthor` 内核识别 RK3588：
+
+```bash
+cd /home/mzh/RK3588/gpu
+scripts/net/discover-opencca-hosts.sh --cidr 192.168.31.0/24
+```
+
+当前验证结果是 `PI_HOST=mzh@192.168.31.189`、`RK_HOST=root@192.168.31.18`。
+`192.168.31.52` 不是旧板子的独立地址，而是同一台树莓派的无线备用地址，不要把它
+从文档里整体删除或替换。只有将来发现新的长期地址时，才更新运行手册、技能文档和
+`opencca_paths.sh` 中的操作默认值，并保留无线备用地址说明。
+
+### IP 固定策略
+
+2026-10-15 起，两台设备都不依赖 DHCP 续租结果保持控制地址：
+
+| 设备 | 管理方式 | 持久配置 |
+| --- | --- | --- |
+| Raspberry Pi `eth0` | NetworkManager connection `netplan-eth0` | `192.168.31.189/24`，gateway/DNS `192.168.31.1`，route metric `100` |
+| Raspberry Pi `wlan0` | NetworkManager connection `XMMZH` | `192.168.31.52/24`，gateway/DNS `192.168.31.1`，route metric `600` |
+| RK3588 `enP4p65s0` | systemd-networkd `/etc/systemd/network/10-opencca-lan.network` | `192.168.31.18/24`，gateway/DNS `192.168.31.1` |
+
+有线 `.189` 是 Pi 的首选控制地址；无线 `.52` 只做有线链路失效时的备用入口。默认
+路由由 metric 保证优先走 `eth0`。路由器侧应把这两个 IP 从动态分配池中排除，或按
+Pi 的 `eth0`/`wlan0` MAC 做相同 IP 的 DHCP reservation，避免静态地址将来被分配给
+其他设备。地址扫描脚本只作为异常时兜底，不应替代这些固定默认值。
+
+2026-10-15 复核到的 reservation MAC 是：
+
+| 设备 | MAC |
+| --- | --- |
+| Raspberry Pi `eth0` / `.189` | `b8:27:eb:e2:3d:0a` |
+| Raspberry Pi `wlan0` / `.52` | `b8:27:eb:b7:68:5f` |
+| RK3588 `enP4p65s0` / `.18` | `00:e0:4c:0b:07:d5` |
+
+在路由器没有完成 reservation/exclusion 之前，`.18/.52/.189` 仍可能落入 DHCP pool；
+这属于当前网络配置的唯一已知持久性风险。
+
 建议先设置通用环境变量，后续命令可以复用：
 
 ```bash
-export PI_HOST=mzh@192.168.31.52
+export PI_HOST=mzh@192.168.31.189
 export PI_PASSWORD='<pi-ssh-password>'
 export PI_SUDO_PASSWORD='<pi-sudo-password>'
 export RK_HOST=root@192.168.31.18
@@ -80,6 +135,12 @@ sshpass -p "$PI_PASSWORD" ssh \
 | `/home/mzh/opencca-flash/snapshot/` | 待刷写的固件和镜像目录。 |
 | `/home/mzh/opencca-flash/board/` | 电源和 Maskrom 控制脚本。 |
 
+Pi 端 `.env` 必须显式选择当前推荐 SPL loader：
+
+```bash
+OPENCCA_SPL_LOADER=/home/mzh/opencca-flash/tools/rk3588/rk3588_spl_loader_v1.16.113.bin
+```
+
 常用固件文件：
 
 | 文件 | 用途 |
@@ -106,7 +167,7 @@ sshpass -p "$PI_PASSWORD" ssh \
 树莓派需要接入控制机可达的局域网。当前使用：
 
 ```text
-Raspberry Pi: 192.168.31.52
+Raspberry Pi: 192.168.31.189（有线首选）；192.168.31.52（无线备用）
 SSH:          mzh, password from PI_PASSWORD
 ```
 
@@ -211,7 +272,7 @@ OPENCCA_RPI_HOST="$PI_HOST" OPENCCA_RPI_PASSWORD="$PI_PASSWORD" \
 包装脚本目标目录：
 
 ```text
-mzh@192.168.31.52:/home/mzh/opencca-flash/snapshot/
+mzh@192.168.31.189:/home/mzh/opencca-flash/snapshot/
 ```
 
 ## 6. 进入 Maskrom
@@ -239,7 +300,7 @@ sshpass -p "$PI_PASSWORD" ssh -t "$PI_HOST" \
 
 ## 7. 刷写 SD 启动固件
 
-SD 固件刷写只更新启动相关位置，不重写完整 rootfs。当前流程不写 eMMC；Rockchip storage ID 必须保持 `2=SD`。
+SD 固件刷写只更新启动相关位置，不重写完整 rootfs。当前流程禁止写 eMMC；Rockchip storage ID 必须保持 `2=SD`。
 
 树莓派端命令：
 
@@ -332,7 +393,7 @@ sudo ./tools/rkdeveloptool rd
 
 ## 10. 单独刷写 SD kernel slot
 
-如果 SD 镜像已经采用 p3 `kernel` / p4 `root` 布局，可以只更新内核而不重写 rootfs。这个流程仍然固定写 SD 卡，不写 eMMC。当前工作区的 p3 是 ext4/extlinux boot 分区，不是旧 raw FIT 槽。
+如果 SD 镜像已经采用 p3 `kernel` / p4 `root` 布局，可以只更新内核而不重写 rootfs。这个流程仍然固定写 SD 卡，禁止写 eMMC。当前工作区的 p3 是 ext4/extlinux boot 分区，不是旧 raw FIT 槽。
 
 期望分区布局：
 
@@ -470,7 +531,7 @@ sshpass -p "$PI_PASSWORD" ssh -t "$PI_HOST" \
 ### 误刷风险
 
 - `rkdeveloptool cs` 的 storage ID 是 `1=EMMC, 2=SD, 9=SPINOR`。
-- 本流程要求 SD 启动，`flash.sh mmc` 和 `flash.sh rootfs ... --yes` 必须配合 `OPENCCA_FIRMWARE_STORAGE_ID=2` 或 `OPENCCA_ROOTFS_STORAGE_ID=2`。
+- 本流程要求 SD 启动，禁止选择 `1=EMMC`；`flash.sh mmc`、kernel slot 刷写和 `flash.sh rootfs ... --yes` 必须配合 `OPENCCA_FIRMWARE_STORAGE_ID=2`、`OPENCCA_KERNEL_STORAGE_ID=2` 或 `OPENCCA_ROOTFS_STORAGE_ID=2`。
 - `flash.sh mmc` 会写 `idbloader.img` 和 `u-boot.itb`。
 - `--flash-kernel` 只允许写 SD p3 kernel slot；旧 rootfs-at-0x8000 布局会被拒绝。
 - `flash.sh spi` 会写 SPI flash。

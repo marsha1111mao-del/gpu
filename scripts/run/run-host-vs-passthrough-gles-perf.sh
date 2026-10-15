@@ -33,6 +33,7 @@ HOST_USE_ROOTFS_USERSPACE=${HOST_USE_ROOTFS_USERSPACE:-0}
 ALU_ITERS=${ALU_ITERS:-1}
 VM_HUGE_PAGES_2M=${VM_HUGE_PAGES_2M:-0}
 VM_REALM=${VM_REALM:-0}
+VM_TRUSTED_GPU_REALM=${VM_TRUSTED_GPU_REALM:-0}
 VM_TASKSET_CPU=${VM_TASKSET_CPU:-}
 PMTHOR_IRQ_AFFINITY_CPU=${PMTHOR_IRQ_AFFINITY_CPU:-}
 PMTHOR_IRQ_AFFINITY_LABELS=${PMTHOR_IRQ_AFFINITY_LABELS:-pmthor-job}
@@ -40,6 +41,11 @@ PMTHOR_IRQ_STATS=${PMTHOR_IRQ_STATS:-0}
 GUEST_PANTHOR_IRQ_STATS=${GUEST_PANTHOR_IRQ_STATS:-0}
 GUEST_PANTHOR_SUBMIT_STATS=${GUEST_PANTHOR_SUBMIT_STATS:-0}
 GUEST_PANTHOR_PT_TIMING=${GUEST_PANTHOR_PT_TIMING:-0}
+GUEST_PANTHOR_SYNC_ONLY_DIAG=${GUEST_PANTHOR_SYNC_ONLY_DIAG:-0}
+GUEST_PANTHOR_RINGBUF_READ_PROBE=${GUEST_PANTHOR_RINGBUF_READ_PROBE:-0}
+REALM_HOST_ACCESS_PROBE=${REALM_HOST_ACCESS_PROBE:-0}
+REALM_HOST_ACCESS_PROBE_HOLD_SEC=${REALM_HOST_ACCESS_PROBE_HOLD_SEC:-20}
+REALM_HOST_ACCESS_PROBE_MODULE=${REALM_HOST_ACCESS_PROBE_MODULE:-bin/realm_host_access_probe.ko}
 EXCLUDE_CPU_PREPARE=${EXCLUDE_CPU_PREPARE:-0}
 
 SYNC_TO_REMOTE=1
@@ -74,7 +80,11 @@ Options:
   --vm-huge-pages-2m         Diagnostic mode: run the passthrough VM with 2M hugetlbfs memory
   --vm-realm                 Blocked diagnostic mode for ARM CCA Realm GPU passthrough.
                              This exits before touching the remote board until the
-                             trusted-GPU Realm model is implemented.
+                             explicit trusted-GPU Realm smoke gate is selected.
+  --vm-realm-trusted-gpu-experimental
+                             Explicit smoke gate for the local RK3588 trusted-GPU
+                             Realm model. Generates and syncs a temporary Realm
+                             config, then sets FC_ALLOW_TRUSTED_GPU_REALM=1.
   --vm-taskset-cpu CPU       Diagnostic mode: run Firecracker/launcher with taskset -c CPU
   --pmthor-irq-affinity-cpu CPU
                               Diagnostic mode: pin selected host pmthor IRQs during VM workload
@@ -84,6 +94,22 @@ Options:
   --guest-panthor-irq-stats   Diagnostic mode: enable guest Panthor job IRQ timing stats
   --guest-panthor-submit-stats Diagnostic mode: enable guest Panthor submit/vm-bind aggregate timing stats
   --guest-panthor-pt-timing    Diagnostic mode: enable guest passthrough page-table aggregate timing stats
+  --guest-panthor-sync-only-diag
+                             Diagnostic mode: Realm guest Panthor jobs only perform
+                             scheduler syncobj writeback, skipping userspace CS CALL.
+  --guest-panthor-ringbuf-read-probe
+                             Diagnostic mode: with sync-only diag, make the first
+                             Realm guest Panthor ringbuf instruction a WAIT probe.
+  --realm-host-access-probe  Diagnostic mode: while a trusted-GPU Realm GLES
+                             mapping is live, load the Host-side HPA read probe
+                             and report whether runtime HOST_READ_DENIED occurs.
+                             On RK3588/OpenCCA, HOST_READ_SUCCEEDED records the
+                             expected lack of hardware GPC enforcement; use
+                             scripts/check/check-opencca-gpt-design-denial.sh
+                             for the design/model Host-denial check.
+  --realm-host-access-probe-hold-sec SEC
+                             Guest hold window used by --realm-host-access-probe,
+                             default: ${REALM_HOST_ACCESS_PROBE_HOLD_SEC}
   --exclude-cpu-prepare       Exclude input[] CPU fill from PERF_ITER_US/iter_total
   --vm-timeout SEC           VM run timeout, default: ${VM_TIMEOUT}
   --host-timeout SEC         Host smoke timeout, default: ${HOST_TIMEOUT}
@@ -103,10 +129,13 @@ Environment overrides:
   LARGE_COUNT_THRESHOLD LARGE_COUNT_ITERATIONS LARGE_COUNT_WARMUP
   VM_TIMEOUT HOST_TIMEOUT PASSTHROUGH_VM_RUNNER PASSTHROUGH_VM_CONFIG
   ROOTFS_IMAGE HOST_USE_ROOTFS_USERSPACE ALU_ITERS VM_HUGE_PAGES_2M
-  VM_REALM
+  VM_REALM VM_TRUSTED_GPU_REALM
   VM_TASKSET_CPU PMTHOR_IRQ_AFFINITY_CPU
   PMTHOR_IRQ_AFFINITY_LABELS PMTHOR_IRQ_STATS GUEST_PANTHOR_IRQ_STATS
-  GUEST_PANTHOR_SUBMIT_STATS GUEST_PANTHOR_PT_TIMING EXCLUDE_CPU_PREPARE
+  GUEST_PANTHOR_SUBMIT_STATS GUEST_PANTHOR_PT_TIMING
+  GUEST_PANTHOR_SYNC_ONLY_DIAG GUEST_PANTHOR_RINGBUF_READ_PROBE
+  REALM_HOST_ACCESS_PROBE REALM_HOST_ACCESS_PROBE_HOLD_SEC
+  REALM_HOST_ACCESS_PROBE_MODULE EXCLUDE_CPU_PREPARE
 
 Logs:
   remote: ${REMOTE_LOG_ROOT}/passthrough/perf/${RUN_ID}
@@ -158,6 +187,10 @@ while [[ $# -gt 0 ]]; do
 	--vm-realm)
 		VM_REALM=1
 		;;
+	--vm-realm-trusted-gpu-experimental)
+		VM_REALM=1
+		VM_TRUSTED_GPU_REALM=1
+		;;
 	--vm-taskset-cpu)
 		shift; [[ $# -gt 0 ]] || { echo "--vm-taskset-cpu requires an argument" >&2; exit 2; }
 		VM_TASKSET_CPU=$1
@@ -181,6 +214,19 @@ while [[ $# -gt 0 ]]; do
 		;;
 	--guest-panthor-pt-timing)
 		GUEST_PANTHOR_PT_TIMING=1
+		;;
+	--guest-panthor-sync-only-diag)
+		GUEST_PANTHOR_SYNC_ONLY_DIAG=1
+		;;
+	--guest-panthor-ringbuf-read-probe)
+		GUEST_PANTHOR_RINGBUF_READ_PROBE=1
+		;;
+	--realm-host-access-probe)
+		REALM_HOST_ACCESS_PROBE=1
+		;;
+	--realm-host-access-probe-hold-sec)
+		shift; [[ $# -gt 0 ]] || { echo "--realm-host-access-probe-hold-sec requires an argument" >&2; exit 2; }
+		REALM_HOST_ACCESS_PROBE_HOLD_SEC=$1
 		;;
 	--exclude-cpu-prepare)
 		EXCLUDE_CPU_PREPARE=1
@@ -231,9 +277,53 @@ while [[ $# -gt 0 ]]; do
 	shift
 done
 
-if [[ "${VM_REALM}" == "1" ]]; then
+if [[ "${VM_REALM}" == "1" && "${VM_TRUSTED_GPU_REALM}" != "1" ]]; then
 	echo "error: --vm-realm is blocked. Realm GPU passthrough still needs the local trusted-GPU Realm model: guestmemfd/private-memory guards, explicit shared/device-reachable GPU buffers, MMIO policy, and IRQ delivery." >&2
 	exit 1
+fi
+if [[ "${VM_TRUSTED_GPU_REALM}" == "1" && "${VM_HUGE_PAGES_2M}" == "1" ]]; then
+	echo "error: trusted-GPU Realm smoke uses guestmemfd private memory; do not combine it with --vm-huge-pages-2m." >&2
+	exit 1
+fi
+if [[ "${GUEST_PANTHOR_SYNC_ONLY_DIAG}" == "1" && "${VM_TRUSTED_GPU_REALM}" != "1" ]]; then
+	echo "error: --guest-panthor-sync-only-diag is only meaningful with --vm-realm-trusted-gpu-experimental." >&2
+	exit 1
+fi
+if [[ "${GUEST_PANTHOR_RINGBUF_READ_PROBE}" == "1" &&
+      ( "${GUEST_PANTHOR_SYNC_ONLY_DIAG}" != "1" || "${VM_TRUSTED_GPU_REALM}" != "1" ) ]]; then
+	echo "error: --guest-panthor-ringbuf-read-probe requires --vm-realm-trusted-gpu-experimental and --guest-panthor-sync-only-diag." >&2
+	exit 1
+fi
+if [[ "${REALM_HOST_ACCESS_PROBE}" == "1" && "${VM_TRUSTED_GPU_REALM}" != "1" ]]; then
+	echo "error: --realm-host-access-probe requires --vm-realm-trusted-gpu-experimental." >&2
+	exit 1
+fi
+if [[ "${REALM_HOST_ACCESS_PROBE}" == "1" && "${ROOTFS_UPDATE}" -ne 1 ]]; then
+	echo "error: --realm-host-access-probe requires rootfs injection; do not combine it with --skip-rootfs-update." >&2
+	exit 1
+fi
+if [[ "${REALM_HOST_ACCESS_PROBE}" == "1" &&
+      ! "${REALM_HOST_ACCESS_PROBE_HOLD_SEC}" =~ ^[0-9]+$ ]]; then
+	echo "error: --realm-host-access-probe-hold-sec requires a numeric value." >&2
+	exit 1
+fi
+if [[ "${VM_TRUSTED_GPU_REALM}" == "1" ]]; then
+	if [[ -n "${COUNT_SWEEP}" ]]; then
+		echo "error: trusted-GPU Realm smoke requires an explicit tiny --count N; the default sweep is disabled for this mode." >&2
+		exit 1
+	fi
+	if [[ "${RUN_VM}" -ne 1 ]]; then
+		echo "error: trusted-GPU Realm smoke requires the VM workload; do not combine it with --skip-vm." >&2
+		exit 1
+	fi
+	if ! [[ "${COUNT}" =~ ^[0-9]+$ && "${ITERATIONS}" =~ ^[0-9]+$ && "${WARMUP}" =~ ^[0-9]+$ ]]; then
+		echo "error: trusted-GPU Realm smoke requires numeric --count/--iterations/--warmup values." >&2
+		exit 1
+	fi
+	if (( COUNT > 4096 || ITERATIONS > 3 || WARMUP > 1 )); then
+		echo "error: trusted-GPU Realm smoke is limited to count<=4096, iterations<=3, warmup<=1." >&2
+		exit 1
+	fi
 fi
 
 log() {
@@ -247,6 +337,43 @@ die() {
 
 quote() {
 	printf '%q' "$1"
+}
+
+prepare_local_trusted_gpu_realm_config() {
+	local src dst generated_rel
+
+	if [[ "${VM_TRUSTED_GPU_REALM}" != "1" ]]; then
+		return 0
+	fi
+	if [[ "${SYNC_TO_REMOTE}" -ne 1 ]]; then
+		die "trusted-GPU Realm smoke requires sync so the generated Realm config reaches the RK host"
+	fi
+
+	require_cmd python3
+	src="${SFTP_BINS}/${PASSTHROUGH_VM_CONFIG}"
+	[[ -f "${src}" ]] || die "missing local passthrough VM config: ${src}"
+
+	generated_rel="configs/passthrough/generated/${RUN_ID}-trusted-gpu-realm.json"
+	dst="${SFTP_BINS}/${generated_rel}"
+	log "Generating local trusted-GPU Realm VM config: ${dst}"
+	mkdir -p "$(dirname "${dst}")"
+	python3 - "${src}" "${dst}" <<'PY'
+import json
+import sys
+
+src, dst = sys.argv[1], sys.argv[2]
+with open(src, "r", encoding="utf-8") as f:
+    obj = json.load(f)
+machine = obj.setdefault("machine-config", {})
+machine["realm_config"] = {
+    "hash_algorithm": "SHA256",
+    "personalization_value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+}
+with open(dst, "w", encoding="utf-8") as f:
+    json.dump(obj, f, indent=2)
+    f.write("\n")
+PY
+	PASSTHROUGH_VM_CONFIG="${generated_rel}"
 }
 
 require_cmd() {
@@ -370,10 +497,13 @@ run_remote_perf() {
 	local iterations_q warmup_q count_q
 	local large_threshold_q large_iterations_q large_warmup_q
 	local vm_timeout_q host_timeout_q runner_q config_q rootfs_q
-	local count_sweep_q host_rootfs_q alu_iters_q vm_huge_pages_q
+	local count_sweep_q host_rootfs_q alu_iters_q vm_huge_pages_q vm_trusted_gpu_realm_q
 	local vm_taskset_cpu_q pmthor_irq_affinity_cpu_q pmthor_irq_affinity_labels_q pmthor_irq_stats_q
 	local guest_panthor_irq_stats_q guest_panthor_submit_stats_q
-	local guest_panthor_pt_timing_q exclude_cpu_prepare_q
+	local guest_panthor_pt_timing_q guest_panthor_sync_only_diag_q
+	local guest_panthor_ringbuf_read_probe_q realm_host_access_probe_q
+	local realm_host_access_probe_hold_sec_q realm_host_access_probe_module_q
+	local exclude_cpu_prepare_q
 	local sync_q build_q update_q run_vm_q run_host_q deps_q remote_status
 
 	run_id_q=$(quote "${RUN_ID}")
@@ -395,6 +525,7 @@ run_remote_perf() {
 	host_rootfs_q=$(quote "${HOST_USE_ROOTFS_USERSPACE}")
 	alu_iters_q=$(quote "${ALU_ITERS}")
 	vm_huge_pages_q=$(quote "${VM_HUGE_PAGES_2M}")
+	vm_trusted_gpu_realm_q=$(quote "${VM_TRUSTED_GPU_REALM}")
 	vm_taskset_cpu_q=$(quote "${VM_TASKSET_CPU}")
 	pmthor_irq_affinity_cpu_q=$(quote "${PMTHOR_IRQ_AFFINITY_CPU}")
 	pmthor_irq_affinity_labels_q=$(quote "${PMTHOR_IRQ_AFFINITY_LABELS}")
@@ -402,6 +533,11 @@ run_remote_perf() {
 	guest_panthor_irq_stats_q=$(quote "${GUEST_PANTHOR_IRQ_STATS}")
 	guest_panthor_submit_stats_q=$(quote "${GUEST_PANTHOR_SUBMIT_STATS}")
 	guest_panthor_pt_timing_q=$(quote "${GUEST_PANTHOR_PT_TIMING}")
+	guest_panthor_sync_only_diag_q=$(quote "${GUEST_PANTHOR_SYNC_ONLY_DIAG}")
+	guest_panthor_ringbuf_read_probe_q=$(quote "${GUEST_PANTHOR_RINGBUF_READ_PROBE}")
+	realm_host_access_probe_q=$(quote "${REALM_HOST_ACCESS_PROBE}")
+	realm_host_access_probe_hold_sec_q=$(quote "${REALM_HOST_ACCESS_PROBE_HOLD_SEC}")
+	realm_host_access_probe_module_q=$(quote "${REALM_HOST_ACCESS_PROBE_MODULE}")
 	exclude_cpu_prepare_q=$(quote "${EXCLUDE_CPU_PREPARE}")
 	sync_q=$(quote "${SYNC_TO_REMOTE}")
 	build_q=$(quote "${REMOTE_BUILD}")
@@ -412,7 +548,7 @@ run_remote_perf() {
 
 	log "Running remote host-vs-passthrough GLES perf test: ${RUN_ID}"
 	set +e
-	ssh_remote "RUN_ID=${run_id_q} REMOTE_ROOT=${remote_root_q} REMOTE_BINS=${remote_bins_q} REMOTE_LOG_ROOT=${remote_log_root_q} ITERATIONS=${iterations_q} WARMUP=${warmup_q} COUNT=${count_q} COUNT_SWEEP=${count_sweep_q} LARGE_COUNT_THRESHOLD=${large_threshold_q} LARGE_COUNT_ITERATIONS=${large_iterations_q} LARGE_COUNT_WARMUP=${large_warmup_q} VM_TIMEOUT=${vm_timeout_q} HOST_TIMEOUT=${host_timeout_q} PASSTHROUGH_VM_RUNNER=${runner_q} PASSTHROUGH_VM_CONFIG=${config_q} ROOTFS_IMAGE=${rootfs_q} HOST_USE_ROOTFS_USERSPACE=${host_rootfs_q} ALU_ITERS=${alu_iters_q} VM_HUGE_PAGES_2M=${vm_huge_pages_q} VM_TASKSET_CPU=${vm_taskset_cpu_q} PMTHOR_IRQ_AFFINITY_CPU=${pmthor_irq_affinity_cpu_q} PMTHOR_IRQ_AFFINITY_LABELS=${pmthor_irq_affinity_labels_q} PMTHOR_IRQ_STATS=${pmthor_irq_stats_q} GUEST_PANTHOR_IRQ_STATS=${guest_panthor_irq_stats_q} GUEST_PANTHOR_SUBMIT_STATS=${guest_panthor_submit_stats_q} GUEST_PANTHOR_PT_TIMING=${guest_panthor_pt_timing_q} EXCLUDE_CPU_PREPARE=${exclude_cpu_prepare_q} SYNC_TO_REMOTE=${sync_q} REMOTE_BUILD=${build_q} ROOTFS_UPDATE=${update_q} RUN_VM=${run_vm_q} RUN_HOST=${run_host_q} INSTALL_REMOTE_DEPS=${deps_q} bash -s" <<'REMOTE_SCRIPT'
+	ssh_remote "RUN_ID=${run_id_q} REMOTE_ROOT=${remote_root_q} REMOTE_BINS=${remote_bins_q} REMOTE_LOG_ROOT=${remote_log_root_q} ITERATIONS=${iterations_q} WARMUP=${warmup_q} COUNT=${count_q} COUNT_SWEEP=${count_sweep_q} LARGE_COUNT_THRESHOLD=${large_threshold_q} LARGE_COUNT_ITERATIONS=${large_iterations_q} LARGE_COUNT_WARMUP=${large_warmup_q} VM_TIMEOUT=${vm_timeout_q} HOST_TIMEOUT=${host_timeout_q} PASSTHROUGH_VM_RUNNER=${runner_q} PASSTHROUGH_VM_CONFIG=${config_q} ROOTFS_IMAGE=${rootfs_q} HOST_USE_ROOTFS_USERSPACE=${host_rootfs_q} ALU_ITERS=${alu_iters_q} VM_HUGE_PAGES_2M=${vm_huge_pages_q} VM_TRUSTED_GPU_REALM=${vm_trusted_gpu_realm_q} VM_TASKSET_CPU=${vm_taskset_cpu_q} PMTHOR_IRQ_AFFINITY_CPU=${pmthor_irq_affinity_cpu_q} PMTHOR_IRQ_AFFINITY_LABELS=${pmthor_irq_affinity_labels_q} PMTHOR_IRQ_STATS=${pmthor_irq_stats_q} GUEST_PANTHOR_IRQ_STATS=${guest_panthor_irq_stats_q} GUEST_PANTHOR_SUBMIT_STATS=${guest_panthor_submit_stats_q} GUEST_PANTHOR_PT_TIMING=${guest_panthor_pt_timing_q} GUEST_PANTHOR_SYNC_ONLY_DIAG=${guest_panthor_sync_only_diag_q} GUEST_PANTHOR_RINGBUF_READ_PROBE=${guest_panthor_ringbuf_read_probe_q} REALM_HOST_ACCESS_PROBE=${realm_host_access_probe_q} REALM_HOST_ACCESS_PROBE_HOLD_SEC=${realm_host_access_probe_hold_sec_q} REALM_HOST_ACCESS_PROBE_MODULE=${realm_host_access_probe_module_q} EXCLUDE_CPU_PREPARE=${exclude_cpu_prepare_q} SYNC_TO_REMOTE=${sync_q} REMOTE_BUILD=${build_q} ROOTFS_UPDATE=${update_q} RUN_VM=${run_vm_q} RUN_HOST=${run_host_q} INSTALL_REMOTE_DEPS=${deps_q} bash -s" <<'REMOTE_SCRIPT'
 set -euo pipefail
 
 LOG_DIR="${REMOTE_LOG_ROOT}/passthrough/perf/${RUN_ID}"
@@ -434,6 +570,8 @@ PMTHOR_IRQ_AFFINITY_RESTORE_FILE="${LOG_DIR}/pmthor-irq-affinity.restore"
 PMTHOR_IRQ_STATS_PARAM=
 PMTHOR_IRQ_STATS_ORIG=
 PMTHOR_IRQ_STATS_RESTORE_NEEDED=0
+REALM_HOST_ACCESS_PROBE_RAN=0
+REALM_HOST_ACCESS_PROBE_RESULT=SKIP
 
 mkdir -p "${LOG_DIR}"
 
@@ -929,6 +1067,29 @@ with open(dst, "w", encoding="utf-8") as f:
 PY
 }
 
+prepare_trusted_gpu_realm_config() {
+	if [[ "${VM_TRUSTED_GPU_REALM}" -ne 1 || "${RUN_VM}" -ne 1 ]]; then
+		return 0
+	fi
+
+	log "Preparing experimental trusted-GPU Realm passthrough VM config"
+	if [[ "${VM_HUGE_PAGES_2M}" -eq 1 ]]; then
+		write_failure_result "trusted-GPU Realm passthrough cannot be combined with 2M hugetlbfs memory"
+		exit 1
+	fi
+
+	ACTIVE_VM_CONFIG="${LOG_DIR}/gpu-panfrost-vm-config-trusted-gpu-realm.json"
+	if [[ ! -f "${REMOTE_BINS}/${PASSTHROUGH_VM_CONFIG}" ]]; then
+		write_failure_result "missing generated trusted-GPU Realm VM config: ${REMOTE_BINS}/${PASSTHROUGH_VM_CONFIG}"
+		exit 1
+	fi
+	if ! grep -qa '"realm_config"' "${REMOTE_BINS}/${PASSTHROUGH_VM_CONFIG}"; then
+		write_failure_result "generated trusted-GPU Realm VM config lacks machine-config.realm_config"
+		exit 1
+	fi
+	cp -f "${REMOTE_BINS}/${PASSTHROUGH_VM_CONFIG}" "${ACTIVE_VM_CONFIG}"
+}
+
 update_rootfs() {
 	local count="${1:-${COUNT}}"
 
@@ -977,12 +1138,17 @@ update_rootfs() {
 	if [[ "${EXCLUDE_CPU_PREPARE}" -eq 1 ]]; then
 		smoke_args="${smoke_args} --exclude-cpu-prepare"
 	fi
+	if [[ "${REALM_HOST_ACCESS_PROBE}" -eq 1 ]]; then
+		smoke_args="${smoke_args} --hold-after-check-sec ${REALM_HOST_ACCESS_PROBE_HOLD_SEC}"
+	fi
 	cat >"${MNT}/root/gpu-smoke.env" <<EOF
 GPU_SMOKE_ARGS="${smoke_args}"
 GPU_SMOKE_QUIET_CONSOLE=1
 GPU_SMOKE_GUEST_IRQ_STATS=${GUEST_PANTHOR_IRQ_STATS}
 GPU_SMOKE_GUEST_SUBMIT_STATS=${GUEST_PANTHOR_SUBMIT_STATS}
 GPU_SMOKE_GUEST_PT_TIMING=${GUEST_PANTHOR_PT_TIMING}
+GPU_SMOKE_GUEST_SYNC_ONLY_DIAG=${GUEST_PANTHOR_SYNC_ONLY_DIAG}
+GPU_SMOKE_GUEST_RINGBUF_READ_PROBE=${GUEST_PANTHOR_RINGBUF_READ_PROBE}
 GPU_SMOKE_AFTER_RUN=poweroff
 EOF
 	sync
@@ -1005,6 +1171,7 @@ write_preflight() {
 		echo "large_count_iterations=${LARGE_COUNT_ITERATIONS}"
 		echo "large_count_warmup=${LARGE_COUNT_WARMUP}"
 		echo "vm_huge_pages_2m=${VM_HUGE_PAGES_2M}"
+		echo "vm_trusted_gpu_realm=${VM_TRUSTED_GPU_REALM}"
 		echo "vm_taskset_cpu=${VM_TASKSET_CPU:-}"
 			echo "pmthor_irq_affinity_cpu=${PMTHOR_IRQ_AFFINITY_CPU:-}"
 			echo "pmthor_irq_affinity_labels=${PMTHOR_IRQ_AFFINITY_LABELS}"
@@ -1012,8 +1179,15 @@ write_preflight() {
 			echo "guest_panthor_irq_stats=${GUEST_PANTHOR_IRQ_STATS}"
 				echo "guest_panthor_submit_stats=${GUEST_PANTHOR_SUBMIT_STATS}"
 				echo "guest_panthor_pt_timing=${GUEST_PANTHOR_PT_TIMING}"
+				echo "guest_panthor_sync_only_diag=${GUEST_PANTHOR_SYNC_ONLY_DIAG}"
+				echo "guest_panthor_ringbuf_read_probe=${GUEST_PANTHOR_RINGBUF_READ_PROBE}"
+				echo "realm_host_access_probe=${REALM_HOST_ACCESS_PROBE}"
+				echo "realm_host_access_probe_hold_sec=${REALM_HOST_ACCESS_PROBE_HOLD_SEC}"
+				echo "realm_host_access_probe_module=${REALM_HOST_ACCESS_PROBE_MODULE}"
 				echo "guest_panthor_irq_stats_param=$(cat /sys/module/panthor/parameters/job_irq_stats 2>/dev/null || echo NA)"
 				echo "guest_panthor_submit_stats_param=$(cat /sys/module/panthor/parameters/submit_stats 2>/dev/null || echo NA)"
+				echo "guest_panthor_sync_only_diag_param=$(cat /sys/module/panthor/parameters/realm_sync_only_diag 2>/dev/null || echo NA)"
+				echo "guest_panthor_ringbuf_read_probe_param=$(cat /sys/module/panthor/parameters/realm_ringbuf_read_probe 2>/dev/null || echo NA)"
 				echo "guest_panthor_pt_timing_param=requested-in-vm"
 				echo "pmthor_irq_stats_param=${PMTHOR_IRQ_STATS_PARAM:-NA}"
 		if [[ -n "${PMTHOR_IRQ_STATS_PARAM}" ]]; then
@@ -1078,6 +1252,109 @@ write_preflight() {
 	fi
 }
 
+run_realm_host_access_probe() {
+	local vm_log="$1"
+	local probe_log="${LOG_DIR}/realm-host-access-probe.log"
+	local probe_module="${REMOTE_BINS}/${REALM_HOST_ACCESS_PROBE_MODULE}"
+	local hpa=
+	local hpa_norm=
+	local i
+	local insmod_status=0
+	local ready=0
+
+	REALM_HOST_ACCESS_PROBE_RAN=1
+	REALM_HOST_ACCESS_PROBE_RESULT=FAIL
+	{
+		echo "timestamp=$(date -Is)"
+		echo "probe_module=${probe_module}"
+		echo "vm_log=${vm_log}"
+		echo "hold_sec=${REALM_HOST_ACCESS_PROBE_HOLD_SEC}"
+	} >"${probe_log}"
+
+	if [[ ! -f "${probe_module}" ]]; then
+		echo "missing probe module; run scripts/build/build-realm-host-access-probe.sh and sync again" >>"${probe_log}"
+		return 1
+	fi
+
+	log "Waiting for Realm GLES compute pass before Host access probe"
+	for i in $(seq 1 $((VM_TIMEOUT * 5))); do
+		if grep -qa 'COMPUTE_CHECK=PASS' "${vm_log}" 2>/dev/null; then
+			ready=1
+			break
+		fi
+		if grep -qaE 'GPU_SMOKE_RESULT=FAIL|COMPUTE_CHECK=.*FAIL|Unable to handle|Oops|job timeout' "${vm_log}" 2>/dev/null; then
+			echo "guest failed before COMPUTE_CHECK=PASS appeared" >>"${probe_log}"
+			return 1
+		fi
+		sleep 0.2
+	done
+
+	if [[ "${ready}" -ne 1 ]]; then
+		echo "timed out waiting for COMPUTE_CHECK=PASS in VM log" >>"${probe_log}"
+		return 1
+	fi
+
+	hpa=$(
+		awk '
+			/GPA2HPA|PANTHOR_KBO_MAP|PANTHOR_SYNC_ADDR/ {
+				for (i = 1; i <= NF; i++) {
+					if ($i ~ /^(first_iova_hpa|sync_hpa|hpa)=0x[0-9a-fA-F]+/) {
+						value = $i;
+						sub(/^[^=]+=/, "", value);
+						sub(/[^0-9a-fA-Fx].*$/, "", value);
+						if (value ~ /^0x[0-9a-fA-F]+$/)
+							print value;
+					}
+				}
+			}
+		' "${vm_log}" 2>/dev/null |
+		while read -r candidate; do
+			[[ -n "${candidate}" && "$((candidate & 0xfff))" -eq 0 ]] &&
+				printf '%s\n' "${candidate}"
+		done |
+		tail -n 1
+	)
+
+	if [[ -z "${hpa}" ]]; then
+		echo "failed to select a page-aligned HPA after COMPUTE_CHECK=PASS" >>"${probe_log}"
+		return 1
+	fi
+	hpa_norm=$(printf '0x%x' "$((hpa))")
+
+	{
+		echo "selected_hpa=${hpa}"
+		echo
+		echo "== matching VM log lines =="
+		grep -aE 'GPA2HPA|PANTHOR_KBO_MAP|PANTHOR_SYNC_ADDR|COMPUTE_CHECK|HOLD_AFTER_CHECK_SEC' "${vm_log}" 2>/dev/null | tail -n 100 || true
+		echo
+		echo "== insmod =="
+	} >>"${probe_log}"
+
+	rmmod realm_host_access_probe >>"${probe_log}" 2>&1 || true
+	set +e
+	timeout -k 2 8 insmod "${probe_module}" "hpa=${hpa}" >>"${probe_log}" 2>&1
+	insmod_status=$?
+	set -e
+	echo "insmod_status=${insmod_status}" >>"${probe_log}"
+	sleep 0.5
+	{
+		echo
+		echo "== dmesg probe lines =="
+		dmesg | grep -a 'realm_host_access_probe:' | tail -n 40 || true
+	} >>"${probe_log}"
+	rmmod realm_host_access_probe >>"${probe_log}" 2>&1 || true
+
+	if grep -qa "HOST_READ_DENIED hpa=${hpa_norm}" "${probe_log}" &&
+	   ! grep -qa "HOST_READ_SUCCEEDED hpa=${hpa_norm}" "${probe_log}"; then
+		REALM_HOST_ACCESS_PROBE_RESULT=PASS
+		echo "REALM_HOST_ACCESS_PROBE_RESULT=PASS" >>"${probe_log}"
+		return 0
+	fi
+
+	echo "REALM_HOST_ACCESS_PROBE_RESULT=FAIL" >>"${probe_log}"
+	return 1
+}
+
 run_vm_workload() {
 	local count="$1"
 	local suffix="$2"
@@ -1088,6 +1365,7 @@ run_vm_workload() {
 	local vm_interrupts_before="${LOG_DIR}/vm-${suffix}-interrupts-before.txt"
 	local vm_interrupts_after="${LOG_DIR}/vm-${suffix}-interrupts-after.txt"
 	local vm_cmd=()
+	local vm_pid=
 
 	if [[ "${RUN_VM}" -ne 1 ]]; then
 		return 0
@@ -1107,6 +1385,9 @@ run_vm_workload() {
 	else
 		vm_cmd=(sh "./${PASSTHROUGH_VM_RUNNER}")
 	fi
+	if [[ "${VM_TRUSTED_GPU_REALM}" -eq 1 ]]; then
+		vm_cmd=(env FC_ALLOW_TRUSTED_GPU_REALM=1 "${vm_cmd[@]}")
+	fi
 	if [[ -n "${VM_TASKSET_CPU}" ]]; then
 		command -v taskset >/dev/null 2>&1 || {
 			write_failure_result "taskset is required for VM taskset diagnostics"
@@ -1124,8 +1405,17 @@ run_vm_workload() {
 		} >>"${LOG_DIR}/affinity.log"
 	fi
 	set +e
-	timeout -s INT -k 5 "${VM_TIMEOUT}" "${vm_cmd[@]}" </dev/null >"${vm_log}" 2>&1
-	VM_STATUS=$?
+	if [[ "${REALM_HOST_ACCESS_PROBE}" -eq 1 ]]; then
+		timeout -s INT -k 5 "${VM_TIMEOUT}" "${vm_cmd[@]}" </dev/null >"${vm_log}" 2>&1 &
+		vm_pid=$!
+		run_realm_host_access_probe "${vm_log}" || true
+		set +e
+		wait "${vm_pid}"
+		VM_STATUS=$?
+	else
+		timeout -s INT -k 5 "${VM_TIMEOUT}" "${vm_cmd[@]}" </dev/null >"${vm_log}" 2>&1
+		VM_STATUS=$?
+	fi
 	set -e
 
 	sleep 1
@@ -1141,7 +1431,10 @@ run_vm_workload() {
 		echo "iterations=${COUNT_ITERATIONS}"
 		echo "warmup=${COUNT_WARMUP}"
 		echo "timeout_status=${VM_STATUS}"
-			grep -aE 'vcpu inited|Successfully started microvm|RME:|Realm|GPU_SMOKE_RESULT|COMPUTE_CHECK|GL_RENDERER|GL_VERSION|PERF_|PANTHOR_PT_STATS|PANTHOR_PT_TIMING|PANTHOR_JOB_IRQ_STATS|PANTHOR_SUBMIT_STATS|DRM_SCHED_PUSH_STATS|DRM_SCHED_RUN_JOB_STATS|GPA2HPA|gles-compute-smoke rc|mismatch|Killed|Oops|Unable to handle|job timeout|Initialized panthor|CSF FW' "${vm_log}" || true
+			if [[ "${REALM_HOST_ACCESS_PROBE}" -eq 1 ]]; then
+				sed -n '1,200p' "${LOG_DIR}/realm-host-access-probe.log" 2>/dev/null || true
+			fi
+			grep -aE 'vcpu inited|Successfully started microvm|RME:|Realm|GPU_SMOKE_RESULT|COMPUTE_CHECK|GL_RENDERER|GL_VERSION|PERF_|PANTHOR_PT_STATS|PANTHOR_PT_TIMING|PANTHOR_JOB_IRQ_STATS|PANTHOR_SUBMIT_STATS|PANTHOR_(CSG|GROUP|QUEUE|CS|JOB)_DIAG|PANTHOR_JOB_INSTR|PANTHOR_SYNC_ONLY_DIAG|PANTHOR_JOB_TIMEOUT|PANTHOR_KBO_MAP|PANTHOR_SYNC_ADDR|DRM_SCHED_PUSH_STATS|DRM_SCHED_RUN_JOB_STATS|GPA2HPA|sync-only scheduler completion diagnostic|guest panthor sync-only|gles-compute-smoke rc|mismatch|Killed|Oops|Unable to handle|job timeout|Initialized panthor|CSF FW' "${vm_log}" || true
 	} >"${vm_summary}"
 
 	if [[ "${suffix}" == "count${COUNT}" ]]; then
@@ -1392,6 +1685,10 @@ write_sweep_result() {
 	if [[ "${RUN_HOST}" -eq 1 && "${restored_driver}" != "pmthor" ]]; then
 		overall=FAIL
 	fi
+	if [[ "${REALM_HOST_ACCESS_PROBE}" -eq 1 &&
+	      "${REALM_HOST_ACCESS_PROBE_RESULT}" != "PASS" ]]; then
+		overall=FAIL
+	fi
 	host_userspace=host-system
 	if [[ "${HOST_USE_ROOTFS_USERSPACE}" -eq 1 ]]; then
 		host_userspace=vm-rootfs
@@ -1414,6 +1711,7 @@ write_sweep_result() {
 		echo "VM config: ${PASSTHROUGH_VM_CONFIG}"
 		echo "VM active config: ${ACTIVE_VM_CONFIG}"
 		echo "VM huge pages 2M: ${VM_HUGE_PAGES_2M}"
+		echo "VM trusted-GPU Realm: ${VM_TRUSTED_GPU_REALM}"
 		echo "VM taskset CPU: ${VM_TASKSET_CPU:-}"
 		echo "ALU iters: ${ALU_ITERS}"
 		echo "pmthor IRQ affinity CPU: ${PMTHOR_IRQ_AFFINITY_CPU:-}"
@@ -1422,6 +1720,9 @@ write_sweep_result() {
 			echo "Guest Panthor IRQ stats: ${GUEST_PANTHOR_IRQ_STATS}"
 			echo "Guest Panthor submit stats: ${GUEST_PANTHOR_SUBMIT_STATS}"
 			echo "Guest Panthor page-table timing: ${GUEST_PANTHOR_PT_TIMING}"
+			echo "Guest Panthor sync-only diagnostic: ${GUEST_PANTHOR_SYNC_ONLY_DIAG}"
+			echo "Realm Host access probe: ${REALM_HOST_ACCESS_PROBE}"
+			echo "Realm Host access probe result: ${REALM_HOST_ACCESS_PROBE_RESULT}"
 			echo "Exclude CPU prepare from iter_total: ${EXCLUDE_CPU_PREPARE}"
 			echo "Rootfs: ${ROOTFS_PATH}"
 			echo
@@ -1519,6 +1820,9 @@ write_sweep_result() {
 		echo "Host GL version: ${host_version:-NA}"
 		echo "Restored GPU driver: ${restored_driver:-NA}"
 		echo "Diagnostic stats remain in per-count summaries/log files and are not part of the formal performance table."
+		if [[ "${REALM_HOST_ACCESS_PROBE}" -eq 1 ]]; then
+			echo "Realm Host access probe log: ${LOG_DIR}/realm-host-access-probe.log"
+		fi
 		echo
 		echo "== Per-count log files =="
 		sed -n '1,200p' "${LOG_DIR}/sweep-files.txt" 2>/dev/null || true
@@ -1538,6 +1842,7 @@ validate_workload_options
 install_remote_deps
 build_smoke
 prepare_hugepages_config
+prepare_trusted_gpu_realm_config
 write_preflight
 restore_pmthor
 while read -r sweep_count; do
@@ -1575,6 +1880,8 @@ require_cmd setsid
 require_cmd tar
 
 [[ -d "${SFTP_ROOT}" ]] || die "missing SFTP root: ${SFTP_ROOT}"
+
+prepare_local_trusted_gpu_realm_config
 
 if [[ "${SYNC_TO_REMOTE}" -eq 1 ]]; then
 	sync_to_remote

@@ -123,6 +123,8 @@ Options:
                            group masks.
   --gles-realm             Blocked ARM CCA Realm mode for this GPU-owning
                            shared stack. Exits locally before touching RK3588.
+                           Validate the smaller passthrough
+                           --vm-realm-trusted-gpu-experimental path first.
   --gles-client-realm      Blocked until the CCA-safe GPU shared-buffer ABI is
                            implemented and validated end-to-end.
   --gles-proxy-realm       Blocked because the proxy owns the physical GPU.
@@ -385,7 +387,7 @@ apply_gles_realm_mode() {
 apply_gles_realm_mode
 
 if [[ "${GLES_REALM}" == "1" || "${GLES_CLIENT_REALM}" == "1" || "${GLES_PROXY_REALM}" == "1" ]]; then
-	echo "error: shared GLES Realm modes are blocked. CCA-safe GPU task support first needs explicit shared/device-reachable GPU BO pools, page-table pages, cache maintenance, MMIO policy, and IRQ delivery adaptation." >&2
+	echo "error: shared GLES Realm modes are blocked. First validate the single-VM --vm-realm-trusted-gpu-experimental path, then add protected vmshm/guestmemfd sharing for proxy/client Realm GPU tasks." >&2
 	exit 1
 fi
 
@@ -433,13 +435,15 @@ ssh_remote() {
 	with_ssh_password ssh \
 		-oBatchMode=no \
 		-oStrictHostKeyChecking=accept-new \
+		-oServerAliveInterval=15 \
+		-oServerAliveCountMax=6 \
 		"${REMOTE_USER}@${REMOTE_HOST}" \
 		"$@"
 }
 
 rsync_remote() {
 	with_ssh_password env \
-		RSYNC_RSH="ssh -p 22 -oBatchMode=no -oStrictHostKeyChecking=accept-new" \
+		RSYNC_RSH="ssh -p 22 -oBatchMode=no -oStrictHostKeyChecking=accept-new -oServerAliveInterval=15 -oServerAliveCountMax=6" \
 		rsync "$@"
 }
 
@@ -1430,14 +1434,14 @@ prepare_gles_compute_proxy() {
 {
   "boot-source": {
     "kernel_image_path": "${REMOTE_BINS}/kernels/shared/proxy/Image",
-    "boot_args": "console=ttyS0 root=/dev/vda rw rootfstype=ext4 init=/bin/sh${panthor_stats_args}${proxy_sched_args}"
+    "boot_args": "console=ttyS0 root=/dev/vda ro rootfstype=ext4 init=/bin/sh${panthor_stats_args}${proxy_sched_args}"
   },
   "drives": [
     {
       "drive_id": "rootfs",
       "path_on_host": "${REMOTE_BINS}/rootfs/rootfs.ext2",
       "is_root_device": false,
-      "is_read_only": false
+      "is_read_only": true
     }
   ],
   "machine-config": {

@@ -15,6 +15,7 @@ BROKER_TARGET_DIR="${BROKER_TARGET_DIR:-"${BROKER_DIR}/build/cargo_target"}"
 BROKER_PROFILE_DIR="${BROKER_PROFILE_DIR:-"${BROKER_TARGET_DIR}/${TARGET}/${PROFILE}"}"
 BROKER_OUT="${BROKER_OUT:-"${BROKER_PROFILE_DIR}/vmshm-broker"}"
 CLIENT_TEST_OUT="${CLIENT_TEST_OUT:-"${BROKER_PROFILE_DIR}/vmshm-client-test"}"
+export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER="${LINKER}"
 
 if [[ "${PROFILE}" != "release" && "${PROFILE}" != "debug" ]]; then
 	echo "PROFILE must be 'release' or 'debug', got '${PROFILE}'" >&2
@@ -25,9 +26,9 @@ echo "==> Building Firecracker"
 (
 	cd "${FC_DIR}"
 	if [[ "${PROFILE}" == "release" ]]; then
-		TARGET="${TARGET}" cargo build --release --target "${TARGET}" --bins --examples
+		TARGET="${TARGET}" cargo build --locked --release --target "${TARGET}" --bins --examples
 	else
-		TARGET="${TARGET}" cargo build --target "${TARGET}" --bins --examples
+		TARGET="${TARGET}" cargo build --locked --target "${TARGET}" --bins --examples
 	fi
 )
 

@@ -61,6 +61,12 @@
 /tests/vmshm-test/vmshm_demo
 /tests/vmshm-lookup-probe/vmshm_lookup_probe
 /tests/vmshm-raw-rpc-probe/vmshm_raw_rpc_probe
+/tests/realm-host-access-probe/*.cmd
+/tests/realm-host-access-probe/*.ko
+/tests/realm-host-access-probe/*.mod
+/tests/realm-host-access-probe/*.mod.c
+/tests/realm-host-access-probe/Module.symvers
+/tests/realm-host-access-probe/modules.order
 
 # Host kernel deployment payloads are produced by ../scripts/deploy/deploy-host-kernel-and-test.sh.
 /linux-host-kernel/Image
@@ -80,3 +86,12 @@
 *.pid
 *.sock
 core
+
+# Downloaded/extracted experiments are caches, not source dependencies.
+/artifacts/gdb-arm64/
+/artifacts/glmark2-arm64/
+/artifacts/mesa-vulkan-arm64/
+/artifacts/ncnn-arm64/
+/firecracker-bins/configs/passthrough/generated/
+/tests/vulkan-bench/bin/
+/tests/pmthor-pfn-lifetime/pmthor-pfn-lifetime

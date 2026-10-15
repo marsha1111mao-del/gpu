@@ -149,6 +149,28 @@ Follow-up design note:
   GPU-visible Panthor pages as explicit Realm shared memory and keeps direct
   Realm GPU boot blocked until a trusted GPU owner/domain model is added.
 
+### Realm MMIO and smoke gate update
+
+Source inspection found that the old GPU MMIO path was still a normal-VM
+shortcut. `kvm_phys_addr_ioremap()` rejects Realms, and the local
+`KVM_SET_MMIO_REGION` implementation identity-mapped the device through the
+ordinary stage-2 page table. That is wrong for a Realm GPU task because the
+Realm guest `ioremap()` path marks non-protected MMIO as a shared/decrypted IPA
+alias.
+
+The host Realm path now maps GPU MMIO through RMM `RTT_MAP_UNPROTECTED` at
+`ipa | shared_bit` with device-nGnRE attributes. This aligns the host mapping
+with the guest MMIO alias and avoids installing the device aperture in the
+private/base IPA view.
+
+Firecracker remains conservative. A GPU-owning Realm still fails unless the VMM
+process has `FC_ALLOW_TRUSTED_GPU_REALM=1`. The passthrough runner now exposes a
+single explicit smoke gate, `--vm-realm-trusted-gpu-experimental`, which creates
+a temporary Realm JSON in the run log directory and passes that environment
+variable to Firecracker. The shared vmshm runner still blocks proxy/client Realm
+GPU modes; the single-VM passthrough Realm smoke must pass first, then protected
+vmshm or multi-Realm guestmemfd sharing can be designed on top.
+
 ### First implementation stage
 
 The first memory adaptation stage is now implemented in `Linux-Guest-GPU`:
@@ -6523,3 +6545,1851 @@ as the 32 MiB baseline.  The remaining overhead is still concentrated in
 focus on per-client inflight accounting, submit batching opportunities, and
 diagnostics for tail latency rather than reviving channel-level dispatch
 policy.
+
+## 2026-10-14: One-Client Native/Proxy ML And glmark2 Recheck
+
+This recheck answered a narrower question than a full ML/graphics qualification:
+with one vmshm client, do the two formal correctness-checked ML kernels retain
+correctness and near-native throughput, and where does glmark2 stop?  No SD or
+eMMC flashing was performed in this recheck.
+
+### Node selection and artifacts
+
+The one-client runner now defaults `GLES_DRM_NODE` to
+`/dev/dri/renderD128`.  An explicitly empty `GLES_DRM_NODE` still selects the
+old card-then-render-node discovery path.  `gpu-smoke.sh` consumes that value as
+`GPU_SMOKE_DRM_NODE` for both glmark2 renderer qualification and the ML
+workload, avoiding accidental double positional node arguments.
+
+glmark2 was no longer treated as a blocked prerequisite.  It was built natively
+on the RK3588 from upstream commit
+`22c527cb0556f3a1ac4445aaa52cc532760928d5` in these flavors:
+
+- stock GBM;
+- stock surfaceless null;
+- null-noop, which skips the invalid `eglSwapBuffers(EGL_NO_SURFACE)` call;
+- GBM render-only and render-only-debug diagnostic builds.
+
+Artifacts and build metadata are under `GPU-SFTP/artifacts/glmark2-arm64/`.
+
+### Interleaved proxy ML repeatability
+
+Eight one-client runs used 20 measured iterations and 5 warmup iterations.
+Client and proxy VM memory were both 512 MiB.  All runs passed `ML_CHECK` and
+`ML_RESULT`.
+
+| Kernel | DRM node | Runs | Mean iteration | Mean throughput | Result |
+| --- | --- | ---: | ---: | ---: | --- |
+| `conv2d_64x64x32_3x3_fp32` | `/dev/dri/card0` | 2 | 24747.15 us | 3.051 GOps/s | PASS |
+| `conv2d_64x64x32_3x3_fp32` | `/dev/dri/renderD128` | 2 | 25396.72 us | 2.976 GOps/s | PASS |
+| `depthwise_conv_128x128x128_3x3_fp32` | `/dev/dri/card0` | 2 | 17708.85 us | 2.132 GOps/s | PASS |
+| `depthwise_conv_128x128x128_3x3_fp32` | `/dev/dri/renderD128` | 2 | 18566.90 us | 2.033 GOps/s | PASS |
+
+Run family:
+
+```text
+shared-ml-{conv,depthwise}-{renderD128,card0}-repeat{1,2}-20261014-175633
+```
+
+The earlier one-order-of-magnitude slowdown attributed to proxy `card0` was not
+reproduced.  That historical sample remains a diagnostic observation, not an
+inherent node-selection result.
+
+### 100-iteration native/proxy comparison
+
+The native Panthor run temporarily replaced `pmthor` with `panthor`, ran both
+nodes, and restored the host to `pmthor`:
+
+```text
+native run: native-panthor-ml-conv-depthwise-repeat3-100it-20261014-180343
+restore:    RESTORE_FINAL=pmthor; PMTHOR_NODE=yes
+```
+
+| Path | Kernel | DRM node | Correctness | Avg iteration | Throughput | Run |
+| --- | --- | --- | --- | ---: | ---: | --- |
+| native Panthor | conv2d | renderD128 | PASS | 24193.37 us | 3.121 GOps/s | native repeat3 |
+| native Panthor | depthwise | renderD128 | PASS | 18796.35 us | 2.008 GOps/s | native repeat3 |
+| native Panthor | conv2d | card0 | PASS | 25318.33 us | 2.982 GOps/s | native repeat3 |
+| native Panthor | depthwise | card0 | PASS | 19286.89 us | 1.957 GOps/s | native repeat3 |
+| proxy one-client | conv2d | card0 | PASS | 25184.86 us | 2.998 GOps/s | `shared-ml-conv-default-repeat-100it-20261014-175948` |
+| proxy one-client | depthwise | card0 | PASS | 17060.03 us | 2.213 GOps/s | `shared-ml-depthwise-default-repeat-100it-20261014-175948` |
+| proxy one-client | conv2d | renderD128 | PASS | 24068.85 us | 3.137 GOps/s | `shared-ml-conv-renderd128-repeat-100it-20261014-180417` |
+| proxy one-client | depthwise | renderD128 | PASS | 19789.62 us | 1.908 GOps/s | `shared-ml-depthwise-renderd128-repeat-100it-20261014-180417` |
+
+Two earlier native attempts are not performance samples.  Their shell loop
+passed bare `renderD128`/`card0` names to the binary, which tried to open those
+strings as relative paths.  Both traps nevertheless restored `pmthor`.  The
+successful third attempt used absolute `/dev/dri/...` paths.
+
+Every proxy 100-iteration client log also contains exactly 110
+`MESA: error: export failed` messages: one per warmup or measured dispatch.
+This does not invalidate the ML correctness marker or timing, but the proxy ML
+path is not error-free and must not be described as a fully native-equivalent
+frontend.
+
+### glmark2 outcome
+
+| Path and configuration | Size | Result | Score | First meaningful failure or caveat |
+| --- | ---: | --- | ---: | --- |
+| native Panthor GBM | 800x600 | PASS | 2899 | none |
+| native Panthor GBM | 1280x720 | PASS | 2728 | none |
+| native Panthor null-noop + finish | 800x600 | PASS | 1672 | none |
+| native Panthor null-noop + finish | 1280x720 | PASS | 1499 | none |
+| native Panthor null-noop + none | 800x600 | FAIL | none | repeated `VM_BIND err=12`, then process killed (`rc=137`) |
+| proxy GBM | 800x600 | FAIL | none | SIGSEGV before renderer/score |
+| proxy upstream null | 800x600 | FAIL | none | validation reaches 26 success / 1 failure / 6 unknown, but refract setup hits `BO_CREATE err=12`; full run times out with 131401 export failures |
+| proxy null-noop + none | 800x600 | FAIL | none | 83381 `BO_CREATE err=12`, one `VM_BIND err=110`, then SIGSEGV; 768 MiB only delays it |
+| proxy null-noop + finish | 800x600 | diagnostic dirty run | raw 500 | `rc=0`, but 160460 export failures and 28 `VM_BIND err=17`; parser correctly does not promote it to PASS |
+| proxy null-noop + finish | 1280x720 | FAIL | none | 108080 export failures, `BO_CREATE err=12`, then SIGSEGV |
+| proxy GBM render-only | 800x600 | FAIL | none | early SIGSEGV |
+| proxy GBM render-only-debug | 800x600 | FAIL | none | GBM device, EGL display/config/surface/context creation succeed; SIGSEGV inside `eglMakeCurrent()` |
+
+Native fixed validation run:
+
+```text
+native-panthor-glmark2-gbm-validate-fixed-20261014-074620
+GLMARK_VALIDATE_RC=0
+GLMARK_VALIDATE_SUCCESS=26 FAILURE=1 UNKNOWN=6
+```
+
+The one deterministic validation mismatch is
+`[function] fragment-complexity=medium`; it is also present on native
+Panfrost/Panthor and is not evidence of a vmshm-client-only rendering defect.
+
+### Bounded conclusion
+
+For the two formal ML kernels and a single vmshm client, both DRM nodes are
+currently usable and throughput is close to the native Panthor samples; some
+proxy samples are faster and some slower, so this dataset bounds the path but
+does not establish a precise overhead percentage.  glmark2 does not yet pass
+through the proxy.  The failures converge on frontend resource lifecycle, fence
+export, `BO_CREATE`/`VM_BIND` exhaustion, or `eglMakeCurrent()`, rather than on
+the absence of the benchmark binary.
+
+The result must not be generalized to “all ML kernels pass”: at this checkpoint
+GEMM was still a diagnostic implementation, while reduction, softmax, and
+attention failed
+correctness on both native and proxy paths and are not vmshm attribution
+evidence.  `GPU_SMOKE_RESULT=PASS` also never overrides a failed glmark2
+summary.
+
+Final host state after the recheck:
+
+```text
+driver=pmthor
+pmthor_node=yes
+firecracker=none
+vmshm-broker=none
+gpu-smoke.sh sha256=de2069ec9fa9056a748bc4b6f15155efc554a5d7b80980708dfb9be74dc1c05a
+```
+
+## 2026-10-14: Post-reboot GEMM formalization and native 1080p glmark2
+
+This follow-up did not repeat the failed proxy glmark2 configurations or touch
+SD/eMMC storage.  It recovered the RK3588 host memory baseline with an ordinary
+SSH reboot, completed the larger GEMM formal comparisons, and reduced wasted
+wait time after a Firecracker client exits early.
+
+### Host memory recovery and runner behavior
+
+Before the reboot, with no Firecracker or `vmshm-broker` process alive, the host
+still reported only about 247–257 MiB `MemAvailable`, about 2.5 GiB
+`Active(anon)`, and no swap.  Under that state:
+
+| Run | Client/proxy memory | Result | First meaningful failure |
+| --- | ---: | --- | --- |
+| `shared-ml-v6-gemm256-formal-112c64p-20261014-193822` | 112/64 MiB | FAIL | proxy 64 MiB was too small for its kernel image; this configuration is not valid |
+| `shared-ml-v6-gemm256-formal-112c96p-20261014-194005` | 112/96 MiB | FAIL | client kernel reached `System is deadlocked on memory` |
+| `shared-ml-v6-gemm256-formal-128c96p-20261014-194239` | 128/96 MiB | FAIL | host OOM killed the client Firecracker before `gles-ml-smoke` printed a result |
+
+The ordinary reboot restored the SD-booted `6.12.0-opencca-pmthor` system to
+about 3.2 GiB `MemAvailable`.  The same 128/96 MiB VM configuration then
+passed.  Therefore the v6 GEMM failures are host/guest memory-capacity
+observations, not GPU-sharing performance data.
+
+`scripts/run/run-vmshm-e2e.sh` now has `wait_for_client_log()`, which checks the
+expected result marker while also checking `client.pid`.  If the client
+Firecracker process is OOM-killed or exits early, the run reports:
+
+```text
+client process exited before producing a result marker
+```
+
+The client smoke, glmark2, ML, compute, and DRM frontend waits use this helper,
+so an early client exit no longer consumes the full 900-second workload wait.
+The helper still does not watch a proxy process that exits first; that remains
+a useful follow-up improvement.
+
+### Native 1080p glmark2 completion
+
+The previously captured 1080p native sample was parsed and retained locally:
+
+| Path | Configuration | Size | Result | Score | Renderer | Restore |
+| --- | --- | ---: | --- | ---: | --- | --- |
+| native Panthor | stock GBM, `--off-screen=3` | 1920x1080 | PASS | 1960 | Mali-G610 (Panfrost) | `RESTORE_FINAL=pmthor; PMTHOR_NODE=yes` |
+
+Run and local artifact:
+
+```text
+remote run: native-panthor-glmark2-gbm-1080p-20261014-104006
+local log:  GPU-SFTP/log/native/native-panthor-glmark2-gbm-1080p-20261014-104006/
+source tar: /tmp/native-panthor-glmark2-gbm-1080p-20261014-104006.tar.gz
+```
+
+### Formal native/proxy GEMM comparison
+
+All rows below use the current v5 ML harness, 100 measured iterations, 10
+warmup iterations, and report `ML_CHECK=PASS` plus `ML_RESULT=PASS`.  Native
+rows temporarily switched `pmthor` to Panthor and then restored `pmthor`; proxy
+rows used one Firecracker client, one Firecracker proxy, 128 MiB client memory,
+and 96 MiB proxy memory.
+
+For the ratio column, the native baseline is the arithmetic mean of that
+kernel's successful renderD128 and `card0` samples.  The first post-reboot
+renderD128 proxy sample in each kernel is retained as a cold-start diagnostic:
+it is much slower than all following repeats and is not used for the stable
+overhead conclusion.
+
+| Kernel | Path and run phase | DRM node | Avg iteration | Throughput | Relative time vs native mean | Run |
+| --- | --- | --- | ---: | ---: | ---: | --- |
+| `gemm_256_fp32` | native Panthor | renderD128 | 3114.45 us | 10.774 GOps/s | 1.01x | `native-panthor-ml-gemm256-v5-100it-20261014-114641` |
+| `gemm_256_fp32` | native Panthor | card0 | 3043.35 us | 11.025 GOps/s | 0.99x | `native-panthor-ml-gemm256-v5-100it-20261014-114641` |
+| `gemm_256_fp32` | proxy one-client, post-reboot cold diagnostic | renderD128 | 12237.97 us | 2.742 GOps/s | 3.97x | `shared-ml-v7-gemm256-formal-128c96p-postreboot-20261014-194506` |
+| `gemm_256_fp32` | proxy one-client, warm repeat | card0 | 4993.91 us | 6.719 GOps/s | 1.62x | `shared-ml-v7-gemm256-formal-card0-128c96p-postreboot-20261014-194913` |
+| `gemm_256_fp32` | proxy one-client, warm repeat | renderD128 | 5013.85 us | 6.692 GOps/s | 1.63x | `shared-ml-v7-gemm256-formal-renderd128-r2-128c96p-postreboot-20261014-195008` |
+| `gemm_256_fp32` | proxy one-client, warm repeat | renderD128 | 5039.96 us | 6.658 GOps/s | 1.64x | `shared-ml-v7-gemm256-formal-renderd128-r3-128c96p-postreboot-20261014-195102` |
+| `gemm_512_fp32` | native Panthor | renderD128 | 20670.78 us | 12.986 GOps/s | 1.00x | `native-panthor-ml-gemm512-v5-100it-20261014-114743` |
+| `gemm_512_fp32` | native Panthor | card0 | 20695.01 us | 12.971 GOps/s | 1.00x | `native-panthor-ml-gemm512-v5-100it-20261014-114743` |
+| `gemm_512_fp32` | proxy one-client, post-reboot cold diagnostic | renderD128 | 59148.85 us | 4.538 GOps/s | 2.86x | `shared-ml-v7-gemm512-formal-128c96p-postreboot-20261014-194703` |
+| `gemm_512_fp32` | proxy one-client, warm repeat | card0 | 35752.40 us | 7.508 GOps/s | 1.73x | `shared-ml-v7-gemm512-formal-card0-128c96p-postreboot-20261014-194933` |
+| `gemm_512_fp32` | proxy one-client, warm repeat | renderD128 | 35656.24 us | 7.528 GOps/s | 1.72x | `shared-ml-v7-gemm512-formal-renderd128-r2-128c96p-postreboot-20261014-195027` |
+| `gemm_512_fp32` | proxy one-client, warm repeat | renderD128 | 35719.38 us | 7.515 GOps/s | 1.73x | `shared-ml-v7-gemm512-formal-renderd128-r3-128c96p-postreboot-20261014-195325` |
+
+Warm proxy aggregates are:
+
+| Kernel | Native two-node mean | Warm proxy mean | Warm relative time |
+| --- | ---: | ---: | ---: |
+| `gemm_256_fp32` | 3078.90 us | 5015.91 us | 1.63x |
+| `gemm_512_fp32` | 20682.90 us | 35709.34 us | 1.73x |
+
+The warm `renderD128` and `card0` proxy samples are close for both kernels.
+The cold-start samples are observations only; this dataset does not identify
+their cause.
+
+Every proxy GEMM client log contains exactly 110
+`MESA: error: export failed` messages: one per warmup or measured dispatch.
+The errors do not invalidate the explicit correctness and timing markers, but
+they confirm that the proxy ML frontend is not error-free.
+
+The native GEMM256 wrapper exited with rc=1 because its script initialized the
+aggregate `TEST_RC` to one and never changed it after both child-node runs
+passed.  Both child commands exited zero and produced `ML_CHECK=PASS`,
+`ML_ITER_US`, and `ML_RESULT=PASS`; the wrapper bug does not change the two
+performance samples.  The native GEMM512 wrapper corrected that aggregate
+result handling and exited zero.
+
+### Final state and bounded conclusion
+
+```text
+kernel: 6.12.0-opencca-pmthor
+root:   /dev/mmcblk1p4
+driver: pmthor
+pmthor: /dev/pmthor present
+firecracker/vmshm-broker: none
+MemAvailable after the final GEMM512 r3 run: about 2.91 GiB
+```
+
+With a recovered host memory baseline, the single-client proxy path formally
+passes the corrected GEMM256 and GEMM512 kernels.  Across the stable warm
+repeats, proxy time is about 1.63x native for GEMM256 and about 1.73x native
+for GEMM512; the much slower first post-reboot samples are cold-start
+diagnostics rather than the formal overhead estimate.  This is a different
+outcome from the near-native conv2d/depthwise results and should not be
+collapsed into one average “GPU-sharing overhead”: kernel size, dispatch
+pattern, buffer count, and frontend export/synchronization behavior all affect
+the ratio.
+
+### 2026-10-14 v7 softmax and attention completion
+
+The v7 harness corrected attention dispatch timing so that the reported
+iteration covers dispatch, fence, map, and readback.  All formal rows below use
+100 measured iterations, 10 warmup iterations, and explicit `ML_CHECK` markers.
+Native rows again restored `pmthor`; the proxy rows used one client VM at
+128 MiB and one proxy VM at 96 MiB.
+
+| Kernel | Path | Result | Avg iteration | Relative time | Run |
+| --- | --- | --- | ---: | ---: | --- |
+| `row_softmax_16384x256_fp32` | native, renderD128 | PASS | 14889.15 us | 0.98x vs native two-node mean | `native-panthor-ml-v7-softmax-formal-100it-20261014-202814` |
+| `row_softmax_16384x256_fp32` | native, card0 | PASS | 15468.79 us | 1.02x vs native two-node mean | `native-panthor-ml-v7-softmax-formal-100it-20261014-202814` |
+| `row_softmax_16384x256_fp32` | proxy one-client | PASS | 36881.74 us | 2.43x | `shared-ml-v7-softmax-formal-100it-128c96p-20261014-202734` |
+| `single_head_attention_256x64_fp32` | native, renderD128 | PASS | 542428.17 us | 1.00x vs native two-node mean | `native-panthor-ml-v7-attention-formal-100it-20261014-123038` |
+| `single_head_attention_256x64_fp32` | native, card0 | PASS | 540633.49 us | 1.00x vs native two-node mean | `native-panthor-ml-v7-attention-formal-100it-20261014-123038` |
+| `single_head_attention_256x64_fp32` | proxy one-client | FAIL | not valid | not valid | `shared-ml-v7-attention-correctness-128c96p-20261014-202528` |
+
+The native attention wrapper restored the expected runtime state:
+
+```text
+RESTORE_FINAL=pmthor; PMTHOR_NODE=yes; FIRECRACKER_COUNT=0; BROKER_COUNT=0
+```
+
+The proxy attention failure is a frontend synchronization/readback failure, not
+a benchmark-availability failure.  Its first meaningful errors are:
+
+```text
+MESA: error: export failed
+MESA: error: DMA_BUF_IOCTL_EXPORT_SYNC_FILE failed (err=-110)
+Attention mismatch d=0 got=0.000000 expected=1.112571
+ML_RESULT=FAIL
+```
+
+Do not report a proxy attention slowdown from that run: the output is zero at
+readback, so there is no valid comparable execution time.  Every passing proxy
+ML run in this set still emits 110 `MESA: error: export failed` messages, one
+per warmup/measured dispatch; the frontend is functional for those kernels but
+not error-free.
+
+## 2026-10-14: One-client configuration matrix and NCNN/ONNX completion
+
+This checkpoint stopped treating glmark2 availability as a prerequisite.  The
+missing benchmark was built locally on the RK3588, the GLES size/configuration
+matrix was completed, and testing moved on to NCNN and ONNX Runtime.  No SD or
+eMMC storage was written.
+
+### W1: one-client GLES compute size/configuration matrix
+
+All formal rows use the corrected compute workload with 20 measured iterations,
+5 warmup iterations, the Mali-G610/Panfrost renderer, `COMPUTE_CHECK=PASS`,
+and CPU input preparation excluded from `iter_total`.  Unless stated otherwise,
+client/proxy VM memory was 512/512 MiB and each VM had one vCPU.
+
+| Workload/configuration | Client/proxy memory | Object window | Avg `iter_total` | Result and boundary | Run |
+| --- | ---: | ---: | ---: | --- | --- |
+| 4 MiB, default placement | 512/512 MiB | default | 3557.25 us | PASS | `shared-gles-size-4m-default-20261014-181724` |
+| 16 MiB, default placement | 512/512 MiB | default | 5985.45 us | PASS | `shared-gles-size-16m-default-20261014-181916` |
+| 64 MiB, default placement | 512/512 MiB | default | 21067.15 us | PASS | `shared-gles-size-64m-default-20261014-181930` |
+| 64 MiB, proxy VM 384 MiB | 512/384 MiB | default | 21298.10 us | PASS; no improvement over default | `shared-gles-size-64m-proxy384-20261014-182310` |
+| 64 MiB, cached client BO mmap | 512/512 MiB | default | 20763.75 us | PASS; diagnostic configuration | `shared-gles-size-64m-cached-bo-20261014-182238` |
+| 64 MiB, broker/proxy/client CPUs 0/0/1 | 512/512 MiB | 128 MiB | 20129.65 us | PASS; best diagnostic placement | `shared-gles-size-64m-placement01-20261014-200409` |
+| 64 MiB, proxy VM 2 vCPUs | 512/512 MiB | 128 MiB | 20339.35 us | PASS after wait fix | `shared-gles-size-64m-proxy2vcpu-fixedwait-20261014-200643` |
+| 128 MiB, default object window | 512/512 MiB | default | not valid | FAIL: `DRM_IOCTL_PANTHOR_BO_CREATE err=12`, then `GL_OUT_OF_MEMORY` in `glBufferData` | `shared-gles-size-128m-default-20261014-181945` |
+| 128 MiB, enlarged object window | 512/512 MiB | 224 MiB | 39820.80 us | PASS | `shared-gles-size-128m-object224-default-20261014-200349` |
+
+The aborted `shared-gles-size-64m-placement-20261014-182307` attempt requested
+client CPU 2 while only CPUs 0-1 were online; it is an invalid harness
+configuration, not a GPU sample.  The first proxy-2-vCPU run reached
+`COMPUTE_CHECK=PASS` but its wrapper failed to wait for the final marker; the
+later `fixedwait` row is the formal sample.
+
+### W3 reduction completion and shared 1080p glmark2 boundary
+
+The v6 reduction result was completed with the same explicit
+`dispatch_barrier_map` timing phase and 100 measured/10 warmup iterations on
+both native and proxy paths:
+
+| Kernel | Path | DRM node | Correctness | Avg iteration | Throughput | Relative time vs native mean | Run |
+| --- | --- | --- | --- | ---: | ---: | ---: | --- |
+| `block_reduction_32mib_fp32` | native Panthor | renderD128 | PASS | 8076.82 us | 1.039 GOps/s | 1.00x | `native-panthor-ml-v6-rsa-formal-100it-20261014-121528` |
+| `block_reduction_32mib_fp32` | native Panthor | card0 | PASS | 8109.75 us | 1.035 GOps/s | 1.00x | same run |
+| `block_reduction_32mib_fp32` | proxy one-client | renderD128 | PASS | 20451.06 us | 0.410 GOps/s | 2.53x | `shared-ml-v6-reduction-formal-128c96p-20261014-201607` |
+
+The native two-node mean is 8093.29 us.  The proxy client used the
+Mali-G610/Panfrost renderer and passed `ML_CHECK`/`ML_RESULT`, but again
+emitted 110 `MESA: error: export failed` messages (one per warmup/measured
+dispatch).  Thus the timing is valid while the proxy frontend remains
+non-native-equivalent.
+
+The shared 1080p glmark2 run used null-noop with `--frame-end finish`, 512 MiB
+client/proxy memory, and `/dev/dri/renderD128`:
+
+```text
+run: shared-glmark2-1080p-null-noop-finish-20261014-185651
+payload qualification: Mali-G610/Panfrost, COMPUTE_CHECK=PASS, GLMARK_VERSION_RC=0
+formal result: FAIL, no score
+```
+
+After starting `glmark2-es2-null-noop --validate --off-screen=1 --size
+1920x1080`, the client emitted neither `GLMARK_VALIDATE` nor
+`GLMARK_RESULT`/score before the runner's 900-second wait expired.  Unlike the
+720p failures, this particular 1080p log has no `export failed`,
+`BO_CREATE`/`VM_BIND` errno, or SIGSEGV.  The proxy's final recorded activity
+is successful timeline-wait and BO teardown around guest time 27.74 s.  This is
+therefore a shared-frontend hang/no-progress boundary, not a valid performance
+sample or evidence of benchmark unavailability.
+
+### NCNN build and native topology benchmarks
+
+NCNN was downloaded and built on the RK3588 from source identified as tag
+`20260526`, commit `e54f7b1f88434e1d844ea0551b880a1cfb079ce1`, with:
+
+```text
+CMAKE_BUILD_TYPE=Release
+NCNN_VULKAN=ON
+NCNN_BUILD_BENCHMARK=ON
+NCNN_BUILD_TOOLS=OFF
+NCNN_BUILD_EXAMPLES=OFF
+NCNN_BUILD_TESTS=OFF
+NCNN_PYTHON=OFF
+```
+
+The build produced `libncnn.a` and `benchncnn`; the Vulkan device probe reused
+the actual link order from `benchmark/CMakeFiles/benchncnn.dir/link.txt`, rather
+than guessing Vulkan/StaticSPIRV dependencies.  Payload runtime libraries
+`libgomp.so.1`, `libm.so.6`, and `libmvec.so.1` were added to the injected
+rootfs payload.
+
+The native CPU run used 100 loops, two threads, `powersave=2`,
+`gpu_device=-1`, and `cooling_down=0`.  The native PanVK run also used 100
+loops and `gpu_device=0`, and first qualified exactly one discrete Vulkan
+device: Mali-G610, driver `panvk`, Vulkan API `4198705`.
+
+| Path | Model | Raw rc | Avg iteration | Evidence class | Run |
+| --- | --- | ---: | ---: | --- | --- |
+| native CPU | mobilenet_v2 | 0 | 40.86 ms | timing-valid topology benchmark | `native-ncnn-realmodels-cpu-formal-20261014-133939` |
+| native CPU | mobilenet_v3 | 0 | 36.16 ms | timing-valid topology benchmark | same run |
+| native CPU | resnet50 | 0 | 291.18 ms | timing-valid topology benchmark | same run |
+| native PanVK | mobilenet_v2 | 0 | 24.44 ms | timing-valid topology benchmark | `native-ncnn-realmodels-panvk-direct-20261014-134235` |
+| native PanVK | mobilenet_v3 | 0 | 23.05 ms | timing-valid topology benchmark | same run |
+| native PanVK | resnet50 | 0 | 1270.18 ms | timing-valid topology benchmark | same run |
+
+This is intentionally not called trained-model correctness testing: NCNN's
+`DataReaderFromEmpty::read()` fills every model-weight byte with zero.  It is
+an architecture/zero-weight execution benchmark.  The native result shows
+PanVK faster than CPU for the two MobileNet topologies but much slower for
+resnet50; that observation is topology-specific and must not be generalized.
+
+The original PanVK wrapper summary incorrectly marked MobileNet v2/v3 as
+`timing=none` because NCNN writes NUL bytes and the old `grep` treated the log
+as binary.  Raw model logs have valid `min/max/avg` lines and rc 0.  The parser
+now uses `grep -a`; `summary-corrected.log` records the correction without
+altering raw logs.  All three rows in the table above are timing-valid passes.
+
+### Shared NCNN: first meaningful frontend failure
+
+The first two shared payload attempts failed on missing runtime libraries and
+were fixed:
+
+| Probe | Result | Boundary |
+| --- | --- | --- |
+| `shared-ncnn-realmodels-panvk-probe-20261014-214715` | payload qualification FAIL | missing `libgomp.so.1`; not a GPU result |
+| `shared-ncnn-realmodels-panvk-probe2-20261014-214859` | payload qualification FAIL | missing `libmvec.so.1`; loader preflight then passed after adding `libm.so.6`/`libmvec.so.1` |
+| `shared-ncnn-realmodels-panvk-probe3-20261014-215123` | authoritative shared frontend FAIL | first meaningful Vulkan runtime failure |
+
+In probe 3, the client enumerated the expected Mali-G610/PanVK device, but
+creation of NCNN's valid `VulkanDevice` failed while initializing its dummy
+buffer/image workload:
+
+```text
+vkQueueSubmit failed -4
+VulkanDevice create_dummy_buffer_image failed -1
+NCNN_VK_PROBE_RESULT=FAIL reason=invalid-device
+NCNN_BACKEND_QUALIFICATION=FAIL rc=2
+NCNN_RESULT=FAIL reason=vulkan-device-qualification
+```
+
+Vulkan error `-4` is `VK_ERROR_DEVICE_LOST`.  The proxy log shows successful
+session, BO, VM bind, group submit, sync-object wait/reset, and cleanup
+activity around the probe, but no proxy-side errno directly explaining the
+client-side device-lost result.  Repeating this configuration would only
+reproduce the same qualification gate, so shared NCNN stopped at the first
+meaningful error.  There is no valid shared NCNN timing and therefore no
+native-versus-shared slowdown ratio for NCNN.
+
+### ONNX Runtime trained-model CPU fallback
+
+ONNX Runtime 1.21.0 exposed only
+`DnnlExecutionProvider,XnnpackExecutionProvider,CPUExecutionProvider`; there
+was no Panthor/PanVK/GLES GPU execution provider.  All rows below therefore
+have `ACTUAL_BACKEND=CPU` and `EXECUTION_FALLBACK_FROM_GPU=YES`.
+
+| Model | Loops/warmup/threads | Model bytes | Load time | Mean iteration | Output evidence | Run |
+| --- | --- | ---: | ---: | ---: | --- | --- |
+| mobilenetv2 | 100/10/2 | 13,964,571 | 472.577 ms | 621.759 ms | 1000 finite outputs, sum 0.137375584 | `native-onnxruntime-mobilenetv2-cpu-formal-20261014-2110` |
+| mobilenet_v3_large | 100/10/2 | 21,922,120 | 285.333 ms | 288.634 ms | 1000 finite outputs, sum -0.018742808 | `native-onnxruntime-mobilenetv3-cpu-formal-20261014-134029` |
+| resnet50-v2 | 30/5/2 | 102,442,452 | 624.296 ms | 1627.725 ms | 1000 finite outputs, sum 0.127615254 | `native-onnxruntime-resnet50-cpu-formal-20261014-134101` |
+
+These are trained real-model executions, unlike NCNN's zero-weight benchmark,
+but they are CPU fallback evidence only.  Finite logits prove numerical
+execution, not classification accuracy, and do not provide a GPU-sharing
+comparison.
+
+### Checkpoint evidence classification
+
+| Evidence | Classification |
+| --- | --- |
+| W1 4-128 MiB one-client compute rows | PASS or bounded capacity failure; valid for configuration comparison |
+| Native glmark2 GBM/null-noop-finish rows | PASS; 800x600, 1280x720, and 1920x1080 native samples completed |
+| Proxy glmark2 rows | frontend compatibility/resource-lifecycle failures; no valid score |
+| Conv2d/depthwise, reduction, GEMM256/512, softmax native-versus-proxy rows | correctness/timing PASS where marked; per-kernel overhead varies from near-native to 2.53x |
+| Proxy attention | correctness/readback FAIL; no valid timing or slowdown |
+| Native NCNN CPU/PanVK | architecture-only, zero-weight topology timing; not trained-model correctness |
+| Shared NCNN | frontend qualification FAIL at `VK_ERROR_DEVICE_LOST`; no timing |
+| ONNX Runtime | trained real model, CPU fallback only; no GPU comparison |
+
+The checkpoint must not be summarized as one average sharing overhead.  GL
+compute, glmark2, synthetic kernels, NCNN topologies, and ONNX CPU fallback
+exercise different frontend paths and have different validity boundaries.
+
+### Completion artifact audit
+
+After fetching the authoritative run logs, a 31-item artifact audit checked
+that each objective run exists and contains its expected terminal evidence
+(not necessarily a PASS marker):
+
+```text
+ARTIFACT_AUDIT_PASS=31 FAIL=0 TOTAL=31
+```
+
+The two initially ambiguous native conv/depthwise and softmax entries were
+resolved by checking their concrete per-node log files (`renderD128_conv.log`,
+`renderD128_depthwise.log`, and `test.log`) rather than nonexistent or
+kernel-less aggregate files.  Bounded failures such as default-placement
+128 MiB capacity exhaustion, shared glmark2, shared attention, and shared
+NCNN count as completed evidence when their authoritative error/result markers
+are present.
+
+Final runtime check after fetching and documenting the artifacts:
+
+```text
+kernel=6.12.0-opencca-pmthor
+root=/dev/mmcblk1p4
+driver=pmthor
+pmthor_node=yes
+online_cpus=0-1
+firecracker_count=0
+vmshm_broker_count=0
+```
+
+## 2026-10-15: NUL-safe parsing, 100-iteration ML suite, and NCNN failure isolation
+
+The shared payload parsers were repaired after observing that glmark2 and NCNN
+write NUL bytes into otherwise textual stdout/stderr.  The authoritative logs
+are now normalized with `tr -d '\000'` before renderer/score/timing parsing in
+`GPU-SFTP/tests/gpu-compute-smoke/gpu-smoke.sh`.  This fixes false `none`
+scores/timings only; it does not suppress a real Vulkan, Panthor, or EGL error.
+
+### Formal one-client ML kernels
+
+All native rows use `/dev/dri/renderD128`, 100 samples, and the Panfrost
+renderer.  The shared rows use one proxy and one client, client=128 MiB,
+proxy=96 MiB, and the submit-6 scheduler configuration.  The first three
+shared kernels came from one suite whose per-kernel correctness/timing markers
+are valid, although the suite wrapper ended with `ML_RESULT=FAIL rc=99`;
+reduction, softmax, and attention were then repeated as independent PASS runs.
+
+| Kernel | Native GOps/s | Shared GOps/s | Native/shared | Shared evidence |
+| --- | ---: | ---: | ---: | --- |
+| `gemm_512_fp32` | 12.986 | 3.654 | 3.55x | per-kernel PASS; suite rc=99 |
+| `conv2d_64x64x32_3x3_fp32` | 3.121 | 0.835 | 3.74x | per-kernel PASS; suite rc=99 |
+| `depthwise_conv_128x128x128_3x3_fp32` | 2.008 | 0.639 | 3.14x | per-kernel PASS; suite rc=99 |
+| `block_reduction_32mib_fp32` | 1.039 | 0.251 | 4.14x | independent run PASS |
+| `row_softmax_16384x256_fp32` | 1.409 | 0.400 | 3.52x | independent run PASS |
+| `single_head_attention_256x64_fp32` | 0.0313 | 0.0109 | 2.88x | independent run PASS |
+
+Representative runs:
+
+```text
+native-panthor-ml-gemm512-v5-100it-20261014-114743
+native-panthor-ml-conv-depthwise-repeat3-100it-20261014-180343
+native-panthor-ml-v6-rsa-formal-100it-20261014-121528
+native-panthor-ml-v7-softmax-formal-100it-20261014-122823
+native-panthor-ml-v7-attention-formal-100it-20261014-123038
+shared-ml-submit6-suite-r2-100it-gemm512-128c96p-20261015-003155
+shared-ml-submit6-reduction-100it-128c96p-20261015-003249
+shared-ml-submit6-softmax-100it-128c96p-20261015-003313
+shared-ml-submit6-attention-100it-128c96p-20261015-003345
+```
+
+The ratios describe this harness/configuration pair, not a universal sharing
+overhead.  Nevertheless, all six shared kernels passed correctness and landed
+at roughly native/2.9 through native/4.1 throughput.
+
+### NCNN 100-loop PanVK diagnostics
+
+The shared client qualified the real Mali-G610 device and `panvk` driver in
+every run, but the model benchmark itself is not a formal PASS:
+
+| Model | Qualification | Raw avg | Authoritative error | Result class |
+| --- | --- | ---: | --- | --- |
+| mobilenet_v2 | Mali-G610/panvk PASS | 19.92 ms | `vkWaitForFences failed -4` | diagnostic timing only |
+| mobilenet_v3 | Mali-G610/panvk PASS | 19.18 ms | `vkWaitForFences failed -4`; one `VM_BIND` err=110 | diagnostic timing only |
+| resnet50 | Mali-G610/panvk PASS | 19.53 ms | 110 `BO_CREATE` err=12 plus `vkWaitForFences failed -4` | timing invalid |
+
+The resnet50 timing cannot be compared with the native 1270.18 ms result: its
+19.53 ms average is associated with repeated resource-allocation failure and
+therefore likely measures a failed/degenerate graph rather than full execution.
+The mobile-net timings are useful diagnostics but remain FAIL because device
+loss was observed during synchronization.
+
+For comparison, shared NCNN CPU fallback completed 100 loops with mobilenet_v2
+43.08 ms, mobilenet_v3 37.86 ms, and (after raising the client to 256 MiB)
+resnet50 284.38 ms.  These are CPU rows and are not GPU-sharing performance.
+
+### Raw Vulkan fence/semaphore isolation
+
+The raw Vulkan probe narrows the NCNN failure boundary:
+
+```text
+device creation, buffer/image creation, command recording: PASS
+empty/barrier command submit without a fence:             PASS
+empty command submit with a fence:                        VK_ERROR_DEVICE_LOST
+barrier command submit with a fence:                      VK_ERROR_DEVICE_LOST
+empty command submit with a semaphore:                    VK_ERROR_DEVICE_LOST
+full case after the submit-6 scheduler update:             PASS in one later run
+```
+
+This result must not be flattened into a permanent pass/fail statement.  It
+shows that the shared frontend can create a PanVK device and forward ordinary
+submits, while signal-carrying submissions are the important fragile boundary;
+later scheduler state allowed one full case to pass.  NCNN and glmark2 exercise
+that same boundary much more heavily and can still fail or hang.
+
+### Current glmark2 and host-state boundary
+
+The parser-fixed shared null-noop `frame-end=none` retest did not produce a
+score.  The first attempt was stopped by the host memory guard, and the second
+hung while repeatedly logging `DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)`;
+it was manually terminated and classified FAIL.  The previous finish run did
+print a raw score of 53, but also had `VM_BIND` err=17, `GL_OUT_OF_MEMORY`, and
+failed shadow/refract setup, so 53 is diagnostic only.
+
+After cleanup there was no `firecracker` or `vmshm-broker` residue, but host
+`MemAvailable` remained near 0.5 GiB.  Do not attribute that state to a specific
+leak without a clean-reboot baseline and allocation audit.  Until then, treat
+it as a run-blocking resource-pressure observation.
+
+## 2026-10-15: raw Vulkan probe correction and continued NCNN isolation
+
+The earlier raw-Vulkan SIGSEGV investigation found two defects in the probe
+harness rather than in the vmshm RPC path:
+
+1. `decode_spirv_words()` decoded each four-byte SPIR-V group with the wrong
+   byte order.  The byte stream starts with `03 02 23 07`, whose little-endian
+   word is `0x07230203`; the old code constructed `0x03022307` and therefore
+   fed Mesa an invalid SPIR-V magic number.
+2. The minimal-shader path decoded the global full-shader constant instead of
+   its own `hex` argument, so `compute-storage-min` was not running the intended
+   minimal module.
+
+The function now decodes two hexadecimal characters as one byte, assembles each
+word little-endian, uses its argument, and rejects a non-`0x07230203` first
+word.  The corrected AArch64 binary is
+`GPU-SFTP/tests/vulkan-bench/bin/raw-vk-probe`, SHA-256
+`66bcf0e7d90e282f3f6b9f4ab10d108779c600f1ca97896c76c5107b3f53c240`.
+
+### Corrected native PanVK probe
+
+Run: `native-panthor-raw-vk-compute-fixed-r2-20261015-035613`
+
+The PanVK userspace is
+`GPU-SFTP/artifacts/ncnn-arm64/rootfs-ncnn-libs/libvulkan_panfrost.so`, SHA-256
+`8c84721328137cfb57153d507f57fe07293e689270a8abadf7f1984491bb6523`.
+
+| Case | Result | Boundary |
+| --- | --- | --- |
+| `compute-storage` | PASS | shader, compute pipeline, dispatch, fence wait, and output check all succeeded |
+| `full` | PASS | empty command submission with signal-carrying synchronization succeeded |
+| `compute-storage-min` | FAIL | shader module creation succeeded, then compute-pipeline creation returned `-13` |
+| `compute-storage-cache` | FAIL | same native `-13` boundary with an explicit pipeline cache |
+
+The important correction is that the prior SIGSEGV disappeared.  It was
+triggered by the probe's invalid SPIR-V input; Mesa's behavior while logging
+that invalid input is a separate robustness issue.  The minimal/cache `-13`
+result also reproduces on native PanVK, so it is not evidence of a shared-only
+regression.
+
+### Corrected shared one-client probe
+
+Run: `shared-raw-vk-fixed-compute-full-1q-128c96p-20261015-035655`
+
+Configuration: one queue, sequential submit, client=128 MiB, proxy=96 MiB,
+and guest render node `/dev/dri/renderD128`.
+
+| Case | Result | Authoritative marker |
+| --- | --- | --- |
+| `compute-storage` | PASS | `RAW_VK_CREATE_COMPUTE_PIPELINE=0`; `RAW_VK_COMPUTE_CHECK=PASS` |
+| `full` | PASS | `RAW_VK_CASE_RESULT=PASS` |
+
+The run summary records `RAW_VK_SUITE_RESULT=PASS cases=2`,
+`GPU_SMOKE_RESULT=PASS`, and `RESULT: PASS`.  This establishes that the
+corrected bounds-checked compute pipeline and the signal-carrying submit path
+can work through the current one-client vmshm/panthor-proxy path.  It does not
+claim that every NCNN graph or glmark2 scene is fixed.
+
+### NCNN memory diagnostic after the probe correction
+
+Run:
+`shared-ncnn-fixed-rawvk-mobilenet_v2-1loop-192c96p-20261015-035855`
+
+Raising the client from 128 MiB to 192 MiB did not clear the NCNN model error.
+Device qualification still passed with exactly one Mali-G610/panvk Vulkan
+device, but `benchncnn` reported `vkWaitForFences failed -4`, repeated
+subsequent submits with `-4`, and printed a diagnostic 18.96 ms timing.
+`NCNN_MODEL_RESULT=FAIL`, `NCNN_RESULT=FAIL`, and `RESULT: FAIL` remain the
+authoritative classification.  This narrows the remaining issue toward NCNN's
+heavier graph/resource/synchronization behavior rather than simple client-VM
+memory capacity or the now-passing basic raw compute/fence path.
+
+### glmark2 artifact audit and test priority
+
+No glmark2 download was needed: ARM64 payloads already exist under
+`GPU-SFTP/artifacts/glmark2-arm64/`, including `rootfs-gbm`,
+`rootfs-gbm-render-only`, `rootfs-gbm-render-only-debug`, `rootfs-null`, and
+`rootfs-null-noop`.  Native GBM/null-noop runs already have PASS evidence.
+Current shared glmark2 output remains diagnostic-only because it contains
+resource-lifecycle or EGL/GBM failures even when a partial score is printed.
+
+Do not block raw-Vulkan, ML-kernel, or NCNN diagnostics on first obtaining a
+formal shared glmark2 score.  Use glmark2 as a separate frontend stress track.
+
+Final state after the corrected shared run and NCNN diagnostic:
+
+```text
+kernel=6.12.0-opencca-pmthor
+driver=pmthor
+pmthor_node=yes
+firecracker_count=0
+vmshm_broker_count=0
+MemAvailable=1269172 kB
+```
+
+## 2026-10-15: Continue past glmark2 and isolate NCNN/raw-compute nondeterminism
+
+The ARM64 glmark2 payloads were already local, so no download was needed:
+
+```text
+GPU-SFTP/artifacts/glmark2-arm64/
+  rootfs-gbm
+  rootfs-gbm-render-only
+  rootfs-gbm-render-only-debug
+  rootfs-null
+  rootfs-null-noop
+```
+
+Shared glmark2 remains a separate frontend/resource-lifecycle stress track.
+Raw Vulkan and NCNN diagnostics were continued with `--skip-sync`, one fresh
+proxy/client session per run, client=192 MiB, proxy=96 MiB, and one vCPU per
+guest.  No flashing, reboot, or eMMC access occurred.
+
+### Native/shared NCNN prefix8 control
+
+The same `mobilenet_v2_prefix8_out96` graph passed on native PanVK in
+`GPU-SFTP/log/native/native-ncnn-prefix8-out96-panvk-r1-20261014-215154`:
+
+```text
+DRIVER_BEFORE=pmthor
+DRIVER_TEST=panthor
+NCNN_VK_PROBE_RESULT=PASS
+NCNN_BACKEND_QUALIFICATION=PASS
+NCNN_MODEL_RESULT=PASS
+NATIVE_OUT96_RC=0
+avg=14.27 ms
+```
+
+The client qualified Mali-G610 through the shared path, but the cached-WB
+variant of the same model failed in
+`GPU-SFTP/log/shared/vmshm-1client/shared-ncnn-prefix8-out96-cached-1loop-192c96p-r1-20261015-054057`.
+The first meaningful GPU event was a read translation fault at VA `0x8` after
+a six-job `GROUP_SUBMIT`; `vkWaitForFences failed -4` followed it.  Therefore
+the model file and direct PanVK userspace are not the primary boundary.  The
+fault is in the shared client/proxy execution path.
+
+### Prefix8 output/shape reduction is timing-dominated
+
+Each first-pass variant used one model, one loop, one thread, and one fresh VM:
+
+| Variant | First-pass result | Repeat evidence | Interpretation |
+| --- | ---: | ---: | --- |
+| `prefix8_out16` | FAIL | FAIL/PASS/FAIL | Intermittent; output-buffer size is not a stable boundary |
+| `prefix8_out32` | FAIL | one sample | FAIL |
+| `prefix8_out48` | PASS | PASS/FAIL/FAIL | Same graph can pass and fail |
+| `prefix8_s28` | FAIL | one sample | FAIL |
+| `prefix8_in48` | PASS | one sample | PASS |
+| `prefix8_k3` | FAIL | one sample | FAIL |
+
+The failure mode also changes between independent sessions:
+
+```text
+prefix8_out16 r1: job-timeout, no page fault
+prefix8_out16 r3: cs-fatal, no page fault
+prefix8_k3:       WRITE TRANSLATION_FAULT_1 at VA 0x04980000, then cs-fault
+```
+
+Consequently, a single NCNN pass/fail must not be interpreted as a stable
+graph-size threshold.  Prefix8-class execution is nondeterministic through the
+current shared path, with submit/fence completion, ring progress, and GPU VA
+validity all capable of becoming the first visible failure.
+
+### Corrected raw-compute repeats
+
+The corrected `compute-storage` case passed three consecutive independent solo
+runs:
+
+```text
+shared-raw-vk-fixed-compute-solo-r1-1q-192c96p-20261015-055815 PASS
+shared-raw-vk-fixed-compute-solo-r2-1q-192c96p-20261015-055831 PASS
+shared-raw-vk-fixed-compute-solo-r3-1q-192c96p-20261015-055847 PASS
+```
+
+The five-case sequential matrix also passed 5/5 in
+`shared-raw-vk-fixed-sequential-5case-1q-192c96p-20261015-060207`, and a second
+concurrent-labeled matrix passed 5/5 in
+`shared-raw-vk-fixed-concurrent-5case-r2-1q-192c96p-20261015-060227`.
+The earlier
+`shared-raw-vk-fixed-concurrent-1q2q3q-matrix-192c96p-20261015-055405` had
+failed only `compute-storage` after an AS1 read fault at VA `0x20`, while the
+other four cases passed.  Since `run_compute_storage_case()` does not consume
+the submit-mode argument and the same case now passes solo, sequentially, and
+in a repeated matrix, that event is classified as a nondeterministic shared-path
+failure rather than proof that concurrent submit mode is the root cause.
+
+Current working boundary: corrected raw shader creation, dispatch, storage
+output, and signal-carrying submission work repeatedly in one-client sessions,
+but low-probability GPU faults remain.  NCNN prefix8-class graphs exercise the
+fragile region much more reliably.  The next source-level audit should compare
+the first failed NCNN submit with its immediately preceding `VM_BIND`,
+`BO_DESTROY`, sync-object reset/transfer, and ring-buffer lifetime operations,
+rather than treating the later `vkWaitForFences -4` or expanded
+`fatal_queues` mask as the cause.
+
+## 2026-10-15: Do not block on glmark2; complete individual ML kernels
+
+The ARM64 glmark2 payloads were already present under
+`GPU-SFTP/artifacts/glmark2-arm64/`, including stock GBM, upstream null,
+null-noop, GBM render-only, render-only-debug, and their build metadata.  No
+download was required.  glmark2 remains a separate frontend/resource-lifecycle
+track; it must not gate the ML and raw-Vulkan matrix.
+
+The second low-memory conv attempt passed after one non-destructive host cache
+drop:
+
+```text
+run:     shared-ml-postsync-conv-solo-100it-128c96p-manual550-20261015-064150
+result:  ML_CHECK=PASS; ML_RESULT=PASS; GPU_SMOKE_RESULT=PASS; RESULT: PASS
+kernel:  conv2d_64x64x32_3x3_fp32
+avg:     92726.80 us
+throughput: 0.814 GOps/s
+```
+
+The first attempt
+`shared-ml-postsync-conv-solo-100it-128c96p-manual550-20261015-064123` had been
+rejected only by the preflight guard at 548/550 MiB, not by a GPU fault.
+
+Host `MemAvailable` then remained near the guard and fell after each completed
+session even though no Firecracker or broker process survived.  To avoid
+stalling the matrix, the final two kernels were run as explicitly diagnostic
+one-client samples at 128 MiB client / 96 MiB proxy and one vCPU per VM:
+
+| Kernel | Run | Guard | Preflight | Result | Avg / throughput |
+| --- | --- | ---: | ---: | --- | ---: |
+| `depthwise_conv_128x128x128_3x3_fp32` | `shared-ml-postsync-depthwise-solo-100it-128c96p-diag530-20261015-064512` | 530 MiB | 533 MiB | PASS | 61817.15 us / 0.611 GOps/s |
+| `block_reduction_32mib_fp32` | `shared-ml-postsync-reduction-solo-100it-128c96p-diag500-20261015-064605` | 500 MiB | 505 MiB | PASS | 36273.75 us / 0.231 GOps/s |
+
+Both used `/dev/dri/renderD128`, reported Mali-G610 through Panfrost, printed
+`ML_CHECK=PASS samples=100 warmup=10`, and ended with `RESULT: PASS`.  Neither
+sample had an OOM kill, `CS_FAULT`, `CS_FATAL`, or a job timeout.  Because the
+guards were lowered only to bypass a small host-memory accounting/reclamation
+boundary, these two rows are diagnostic rather than formal qualification rows.
+
+Together with the prior low-memory softmax, attention, and gemm samples, all
+six individual ML kernels now have 100-iteration authoritative shared-path
+passes:
+
+| Kernel | Low-memory shared result |
+| --- | --- |
+| `gemm_512_fp32` | PASS |
+| `conv2d_64x64x32_3x3_fp32` | PASS |
+| `depthwise_conv_128x128x128_3x3_fp32` | PASS |
+| `block_reduction_32mib_fp32` | PASS |
+| `row_softmax_16384x256_fp32` | PASS |
+| `single_head_attention_256x64_fp32` | PASS |
+
+The six-kernel all-run remains a distinct allocation/lifecycle boundary: it
+passed its first five kernels at 192/96 MiB but failed softmax allocation with
+`DRM_IOCTL_PANTHOR_VM_BIND err=17` and `GL_OUT_OF_MEMORY`; lower-memory or
+higher-guard all-run attempts were preflight guard rejections, not GPU
+failures.
+
+Memory observations around these runs were:
+
+```text
+before conv retry after drop_caches: about 556 MiB
+conv retry preflight:                  554 MiB
+after conv:                            about 531 MiB
+depthwise preflight:                   533 MiB (manual 530 diagnostic)
+after depthwise:                       about 493 MiB
+after reclaim:                         about 510 MiB
+reduction preflight:                   505 MiB (manual 500 diagnostic)
+after reduction:                       about 453 MiB
+```
+
+No `firecracker` or `vmshm-broker` process remained after the drops.
+`drop_caches` and cgroup `memory.reclaim` recovered only part of the memory.
+This points to a host-side lifecycle/accounting leak or pinned-page retention
+across repeated shared sessions, and is now a first-class test issue.  A
+controlled reboot/recovery experiment is the obvious next isolation step, but
+it was not performed because the current test boundary explicitly avoids
+rebooting or flashing.
+
+## 2026-10-15: VM_BIND lifecycle evidence and diagnostic guest kernels
+
+The glmark2 dependency was not missing, so no download or rebuild was needed:
+`GPU-SFTP/artifacts/glmark2-arm64/` already contains ARM64 GBM, DRM-derived
+GBM, null, null-noop, render-only, and render-only-debug payloads.  The
+upstream build marker is commit `22c527cb0556f3a1ac4445aaa52cc532760928d5`.
+Those payloads remain a separate frontend/resource-lifecycle track and must not
+gate ML, raw-Vulkan, NCNN, or kernel lifecycle debugging.
+
+### Host memory state after the shared matrix
+
+The RK3588 host remained on the required runtime baseline:
+
+```text
+kernel: 6.12.0-opencca-pmthor
+driver: pmthor
+firecracker processes: 0
+vmshm-broker processes: 0
+MemTotal:             3386876 kB
+MemAvailable:          468604 kB
+user.slice memory:    3050504192 bytes
+```
+
+The direct `user.slice/cgroup.procs` list was empty and no populated descendant
+explained the charge.  `memory.events` still reported no OOM.  The anomalous
+numbers were instead:
+
+```text
+anon:                  about 10 MiB
+active_anon:           about 2.21 GiB
+inactive_anon:         about 438 MiB
+file:                  about 193 MiB
+nr_dying_descendants:       122
+nr_dying_subsys_memory:     122
+```
+
+A read-only `/proc/kpageflags` plus `/proc/kpagecgroup` scan over the System RAM
+PFN ranges found 173,601 `KPF_ANON | KPF_ACTIVE` pages charged directly to the
+`user.slice` cgroup inode, while only trivial counts belonged to live service
+or session cgroups.  Together with zero entries in the live DRM
+`gem_names` debugfs file and no visible VM processes, this strengthens the
+orphaned/dying-cgroup or still-pinned unmapped-page hypothesis.  The scan does
+not identify the allocating stack (host `CONFIG_PAGE_OWNER` is disabled) and
+does not by itself distinguish a vmshm payload pin from another long-lived page
+reference.  A controlled recovery/reboot baseline remains necessary to close
+that boundary; it was not attempted here.
+
+### VM_BIND and BO lifetime source boundary
+
+The relevant static path is:
+
+```text
+panthor-proxy VM_BIND translation
+  -> panthor_vmshm_vm_bind_async()
+  -> panthor_vm_bind_job_create()
+  -> panthor_vm_bind_prepare_op_ctx()
+  -> panthor_vm_prepare_map_op_ctx()
+  -> drm_gpuvm_bo_create/obtain()
+```
+
+`panthor_vmshm_group_submit()` also prepares mapped-BO reservations, and the
+map-job context retains `vm_bo`/GEM references until scheduler cleanup.  This
+weakens both the earlier "submit never references stream BOs" and "BO_DESTROY
+immediately causes payload/GEM UAF" hypotheses.  Async map/unmap ordering,
+pending fences, sync-object reset/transfer, and BO destruction around queued
+jobs remain the candidate timing races.
+
+Three NCNN runs showed `client BO_MMAP=82` but `proxy BO_MMAP=0`, and the RPC
+table has no forwarded BO-mmap operation.  The client maps its vmshm payload
+GPA locally; proxy userspace does not CPU-map the real Panthor GEM.  Therefore
+"proxy userspace CPU mmap creates double backing" is not currently supported as
+the primary NCNN PASS/FAIL explanation.  The corrected r8 fatal information is
+`fatal_info=0xfffadae0`; the first meaningful cached-WB exception was
+`CS_RES_TERM (0xf)` rather than the later queue fatal.
+
+### Diagnostic-only VM_BIND trace build
+
+`Linux-Guest-GPU/drivers/gpu/drm/panthor-proxy/panthor_proxy_drv.c` now emits a
+bounded `VM_BIND_TRACE` series for the first 2,048 calls.  Each request logs:
+
+- session/client VM/proxy VM, async mode, request flags, result, and failed op;
+- per-op type, flags, client and translated proxy BO handles, BO offset, GPUVA,
+  size, and sync window;
+- per-sync flags, client and translated proxy sync-object handles, and timeline
+  value.
+
+This is diagnostic-only logging; it changes no VM_BIND semantics and must not be
+used as a formal performance kernel.  Both shared guest kernels rebuilt
+successfully:
+
+```text
+client: GPU-SFTP/firecracker-bins/kernels/shared/client/Image
+sha256: 54236417591461bb40fc2089bbcc581fe61ed7aa78d8e1d899f2c99033e0b135
+
+proxy:  GPU-SFTP/firecracker-bins/kernels/shared/proxy/Image
+sha256: 818ade7149edeee8ea46a5fa81d665a388dba7252a82fbce0244c8f99a880652
+```
+
+The proxy image contains the new `VM_BIND_TRACE` format strings.  The artifacts
+were intentionally not synced to the RK3588 and no VM was launched, because the
+host still has only about 469 MiB available and the active boundary forbids
+reboot/flash/eMMC operations.
+
+## 2026-10-15: NCNN first-fault timeline and Mesa export-path boundaries
+
+The glmark2 dependency did not block the rest of the matrix: the local payload
+inventory contains ARM64 GBM, DRM-derived GBM, upstream null, null-noop,
+render-only, and render-only-debug trees.  More importantly, the non-glmark
+tracks completed independently:
+
+| Track | Current evidence |
+| --- | --- |
+| Six individual ML kernels | Each has a 100-iteration authoritative shared-path PASS (two rows are diagnostic because their low-memory guards were manually relaxed). |
+| Raw PanVK compute | Sequential five-case, concurrent five-case, and 12-case fixed matrices all ended with `RAW_VK_RESULT=PASS`, `GPU_SMOKE_RESULT=PASS`, and `RESULT: PASS`. |
+| NCNN MobileNet prefix | `mobilenet_v2_prefix8_out16` still fails; this is the active lifecycle fault, not a missing workload payload. |
+
+### NCNN first meaningful fault
+
+For
+`shared-ncnn-prefix8-out16-cached-r1-1loop-192c96p-manual600-20261015-063145`,
+the first meaningful GPU exception is not userspace's later `vkWaitForFences
+-4`.  The proxy order is:
+
+1. `GROUP_SUBMIT_TRACE seq=13` completes with `ret=0`, followed by successful
+   sync transfer/reset and `GROUP_GET_STATE state=0x0 fatal_queues=0x0`.
+2. Transient BO handles 10, 11, and 12 are destroyed, sync object 3 is
+   recreated, and the client maps a new allocation generation (including the
+   16 MiB staging payload logged as client BO 11).
+3. `GROUP_SUBMIT_TRACE seq=14` submits stream sizes `856/856/7744` at GPU VAs
+   `0xfffcc000/0xfffbc000/0xfffac000`.
+4. Queues 0 and 1 first report `CS_RES_TERM (0xf)` with exception data
+   `0x900`; queue 2 then reports `DATA_INVALID_FAULT (0x58)`.
+5. A following submission reaches `CS_INSTR_INVALID (0x49)` and
+   `GROUP_GET_STATE state=0x2 fatal_queues=0x4`; the later
+   `vkWaitForFences -4` is a consequence, not the first fault.
+
+This narrows the boundary to allocations/mappings and queued command-stream
+lifetime between two successful NCNN submit generations.  It does **not** yet
+prove a BO use-after-free: the production run's `BO_CREATE` and `VM_BIND`
+messages use `pr_info_ratelimited()`, so almost all session-3 BO/mapping events
+for the reproducer were suppressed.  In particular, the proxy log cannot answer
+whether the seq-14 stream VAs still had live, correctly translated mappings
+when the hardware consumed them.
+
+The diagnostic proxy kernel built in the preceding section addresses that
+observability gap with bounded, non-rate-limited `VM_BIND_TRACE` records and
+per-job `GROUP_SUBMIT_TRACE` records.  It remains un-deployed because the host
+still reports only about 467 MiB `MemAvailable`, roughly 3.06 GiB
+`user.slice/memory.current`, and 130 dying descendants with zero surviving
+Firecracker/broker processes.  Launching another VM now would conflate NCNN
+lifecycle behavior with an unrelated low-memory condition.
+
+### Mesa sync/export error paths
+
+Mesa 25.0.7 source separates the two historically conflated messages:
+
+- `MESA: error: export failed` comes from
+  `pan_fence.c` when `drmSyncobjExportSyncFile()` cannot export a Panfrost
+  context syncobj to a sync-file FD.
+- `DMA_BUF_IOCTL_EXPORT_SYNC_FILE failed (err=...)` can come from the Panthor
+  kmod shared-BO wait path in `panthor_kmod.c`, or from WSI direct dma-buf
+  export in `wsi_common_drm.c`.
+- In `panthor_kmod.c`, the same user-visible string is also emitted after a
+  later `sync_wait()` timeout; `err=-110` therefore does not by itself identify
+  whether the export ioctl or the following wait timed out.
+
+The old attention run had one of each Mesa error followed by all-zero readback
+and `ML_RESULT=FAIL`.  The recheck and postsync runs instead show repeated
+successful client-side `SYNCOBJ_EXPORT_SYNC_FILE` / `IMPORTDIAG` activity (141
+and 146 export records in their client logs, respectively) and end with
+`ML_CHECK=PASS` over 100 samples.  Attention is therefore a historical
+shared-sync failure that current runs pass; the old run must not be quoted as
+the present attention status.
+
+## 2026-10-15: Bounded glmark2 scene ladder and host-starvation boundary
+
+glmark2 was not a missing dependency at this point.  The ARM64 payload tree
+already contained GBM, render-only, render-only-debug, null, and null-noop
+install roots, and the diagnostic binary was:
+
+```text
+GPU-SFTP/artifacts/glmark2-arm64/rootfs-null-noop/usr/bin/glmark2-es2-null-noop
+sha256=2251afb6b792c08181e14205756a29c13f8dd15d5a3eb8ab6652efe55a65bb2c
+```
+
+The bounded scene ladder therefore proceeded without downloading or rebuilding
+the benchmark.  All rows below are low-memory diagnostics, not formal
+performance qualification.
+
+| Scene/configuration | Result | Classification |
+| --- | --- | --- |
+| `build:duration=2:use-vbo=false`, 320x240, null-noop, client/proxy 192/96 MiB | score 82, `GLMARK_RESULT=PASS` | workload PASS, shared-path clean FAIL: one real `DRM_IOCTL_PANTHOR_VM_BIND failed (err=110)` |
+| `clear:duration=2`, proxy 64 MiB | no renderer qualification | configuration floor: proxy guest kernel could not load its PE kernel image |
+| `clear:duration=2`, 320x240, null-noop, client/proxy 128/96 MiB, object window 128 MiB | score 416054, `GLMARK_RESULT=PASS` | post-hoc shared-path clean PASS: zero `BO_CREATE`/`VM_BIND` errors; the sole incomplete-framebuffer `glClear` message is expected for null-noop without a color attachment |
+| `buffer:duration=2`, same 128/96 MiB limits | no local guest result captured | RK3588 remained ICMP-reachable and accepted TCP port 22, but repeated SSH sessions timed out during banner exchange; classify as host userspace/memory starvation, not evidence that the scene itself passed or failed |
+
+The historical top-level `RESULT: FAIL` on the clear run mixed two runner
+problems: it predated the expected-null-noop framebuffer classification, and
+guest CRLF output defeated an anchor that required an end-of-line after
+`GLMARK_SCORE`/`GLMARK_RENDERER`.  The guest wrapper now reports separate
+`GLMARK_RESULT` and `GLMARK_CLEAN_RESULT` markers, treats only unexpected
+framebuffer messages as clean failures, and the top-level runner accepts the
+prefix without the line-ending suffix and requires `GLMARK_CLEAN_RESULT=PASS`.
+
+During the buffer attempt, a 30-second read from the RK3588 serial console
+produced no bytes.  The Magic SysRq memory request was disabled by policy.  The
+local runner was interrupted after its expected guest wait window and did not
+launch another workload.  No reboot, power-cycle, SD flash, or eMMC operation
+was performed.  Continuing the scene ladder requires a controlled host recovery
+first; after that, rerun the 96 MiB clear configuration once to validate the new
+markers natively, then use the reduced buffer selector:
+
+```text
+buffer:duration=1:update-fraction=0.1:update-dispersion=0.5:columns=8:update-method=subdata:interleave=false
+```
+
+## 2026-10-15: Stable control addresses and client RPC timeout mitigation
+
+### Control-network state
+
+The fixed control addresses were re-verified while no VM was running:
+
+| Device | Interface/address | Persistent mode |
+| --- | --- | --- |
+| Raspberry Pi preferred | `eth0` `192.168.31.189/24` | NetworkManager manual, metric 100 |
+| Raspberry Pi fallback | `wlan0` `192.168.31.52/24` | NetworkManager manual, metric 600 |
+| RK3588 | `enP4p65s0` `192.168.31.18/24` | systemd-networkd static |
+
+The discovery scan identified the expected Pi at `.189`, the same Pi's fallback
+address at `.52`, and the RK3588 at `.18`.  This reduces but does not eliminate
+address risk: the router should still reserve or exclude all three addresses
+from its DHCP pool.  Discovery remains the fallback for an unexpected conflict,
+not the normal path.
+
+### Why `err=110` is not necessarily a proxy-side BO allocation failure
+
+Static source inspection of
+`Linux-Guest-GPU/drivers/char/client_vmshm_comm/client_comm_vmshm.c` showed
+that every client RPC used a fixed one-second response deadline: the interrupt
+path waited for `CLIENT_COMM_VMSHM_RPC_TIMEOUT_MS`, and the polling path made
+1,000 approximately 1--2 ms attempts.  Both converted a late response into
+`-ETIMEDOUT` (`errno 110`).
+
+Consequently, the historical glmark2 message
+`DRM_IOCTL_PANTHOR_BO_CREATE failed (err=110)` proves that the client stopped
+waiting after one second; it does not by itself prove that the proxy's real
+Panthor `BO_CREATE` failed.  This is consistent with the observed client D-state
+under host memory starvation and with proxy-side successful BO/mapping traffic.
+
+### Minimal timeout/observability change
+
+The diagnostic guest kernels now make that deadline explicit and bounded:
+
+```text
+default: 10000 ms
+minimum: 100 ms
+maximum: 60000 ms
+parameter: client_comm_vmshm.rpc_timeout_ms
+```
+
+Both the interrupt and polling paths consume the same configured deadline.  A
+timeout now prints the request operation/type, sequence, and configured
+deadline.  An unexpected late response is also logged with response type,
+`reply_to`, status, and length rather than remaining `pr_debug()`-only.
+
+`panthor_proxy_handle_bo_create()` now records the request sequence in success,
+slow, failure, and response-send-failure paths.  BO_CREATE handlers slower than
+100 ms emit a `BO_CREATE slow` record with duration.  This should distinguish
+the next failure as one of:
+
+1. proxy real-BO allocation failure;
+2. response-send failure;
+3. late response dropped by the client;
+4. a genuine client-side timeout while the proxy eventually succeeds.
+
+This patch deliberately does not change handle translation, BO lifetime,
+VM_BIND ordering, or the global client RPC serialization.  Those larger design
+changes remain gated on runtime evidence.
+
+### Build and deployment evidence
+
+Both guest kernels rebuilt successfully and were manually copied to the RK3588
+runtime artifact directories:
+
+```text
+client sha256:
+4683788c825d12e7e4f196c09fcd89e377d10b91b3fe8f0b89bbc12b5c529d8d
+
+proxy sha256:
+0d0ba2f408d54115e4f3e5213ca9434aab0b43d0f9379dc3ab4213c534a228fd
+```
+
+The previous remote images were preserved under
+`GPU-SFTP/firecracker-bins/kernels/shared/archive/` with timestamp
+`20261015-005638`.  The remote hashes now match the rebuilt local artifacts.
+The host remained on `6.12.0-opencca-pmthor` with `/dev/pmthor`, SD root
+`/dev/mmcblk1p4`, and no surviving Firecracker or broker process.  No SD or
+eMMC flash was performed.
+
+### Testing boundary
+
+The timeout patch is currently source/build/deployment evidence, not a runtime
+fix claim.  Immediately before deployment the RK3588 still reported only about
+75 MiB `MemAvailable`, about 3.05 GiB charged to `user.slice`, and 115 dying
+memory-cgroup descendants.  Launching glmark2 or an ML VM in that state would
+conflate the RPC change with host starvation and folio/swap waits.
+
+The next clean-host regression, after an explicitly authorized controlled
+reboot and host-state verification, should run one workload at a time:
+
+1. reduced buffer glmark2 scene;
+2. build glmark2 scene;
+3. short attention ML regression.
+
+Pass requires `GLMARK_CLEAN_RESULT=PASS` with zero BO_CREATE, VM_BIND, and
+unexpected framebuffer errors, plus `ML_CHECK=PASS`.  If an `err=110` remains,
+correlate the new client timeout sequence with the proxy BO_CREATE sequence and
+duration before changing object lifetime.
+
+## 2026-10-15: Sync-file cleanup fixes and failure-stage diagnostics
+
+### Runtime evidence after the timeout deployment
+
+The following logs were inspected locally. These are reduced-workload
+diagnostics under host memory pressure, not qualification of the full matrix:
+
+| Run suffix under `GPU-SFTP/log/shared/vmshm-1client/` | Evidence | Boundary |
+| --- | --- | --- |
+| `shared-glmark2-newkernel-buffer-d1-reduced-nullnoop-320x240-128c96p-swapdiag-countfix-20261015-084351` | `GLMARK_CLEAN_RESULT=PASS`, `RESULT: PASS`; no counted BO creation, export, or VM bind errors | Reduced buffer scene only |
+| `shared-ml-newkernel-attention-100it-128c96p-swapdiag-r2-20261015-083554` | `ML_CHECK=PASS samples=100 warmup=1`, `RESULT: PASS` | Attention regression only; does not prove larger configurations |
+| `shared-glmark2-newkernel-build-d2-novbo-nullnoop-320x240-128c96p-swapdiag-countfix-20261015-084512` | Score 40, `GLMARK_RESULT=PASS`, but `GLMARK_CLEAN_RESULT=FAIL` and `RESULT: FAIL` | One `BO_CREATE err=110` remains |
+
+The preceding statement that historical `err=110` *proves* an outer client
+response timeout was too strong. BO_CREATE also calls
+`client_vmshm_manager_get()` after the Panthor RPC succeeds, and can propagate
+errors from either RPC or a proxy return value. The build log lacks the new
+timeout and sequence-bearing proxy records. A local image hash matching a
+remote artifact does not establish which image an earlier guest actually booted.
+The neighboring client BO events are about 1.37 seconds apart, which also
+requires checking the running guest before attributing this to a ten-second
+deadline. No definitive timeout origin is claimed.
+
+### Definite source fixes in sync-file export
+
+In `panthor_client_syncobj_export_sync_file()`:
+
+- If allocation of `sync_fence` fails, `out_put_fd` previously fell through
+  into `dma_fence_put(&sync_fence->base)` with a null pointer. Cleanup now
+  jumps directly to releasing the syncobj reference after releasing the FD.
+- If queueing work or creating the sync_file fails, the reserved FD must
+  also be released. Both failure paths now call `put_unused_fd()`.
+
+These are verified source defects and both guest kernels build successfully.
+They are **not** yet a demonstrated cause of the historical Mesa SIGSEGV,
+all-zero readback, or NCNN device loss. No allocation-failure runtime injection
+has been performed.
+
+BO_CREATE failure records now distinguish argument validation, RPC transport,
+proxy response status, response validation, local allocation, requester VMID,
+manager lookup, descriptor validation, and xarray insertion. Manager GET_OBJECT
+errors record handle, authenticated requester VMID, permissions, and reply
+sequence. BO_CREATE and manager error records no longer share rate-limited
+suppression with bursty successful traffic. Successful traffic remains limited.
+Client request naming now identifies `MANAGER_GET_OBJECT`.
+
+### glmark2 observability and verdicts
+
+Progress tracing defaults to enabled in the one-client runner and guest wrapper;
+an explicit `GLES_GLMARK_PROGRESS_TRACE=0` still disables it. Existing samples
+include process state, wait channel, log growth, RSS, FD count, current scene,
+and error counters, with a stall marker after unchanged samples. A stall marker
+is a diagnostic hint and does not by itself prove GPU deadlock.
+
+`GLMARK_EXPORT_ERRORS` counts both Mesa export failures and dma-buf sync-file
+export/wait failures. Any such error now prevents `GLMARK_CLEAN_RESULT=PASS`.
+This closes a verdict gap; a positive score alone remains insufficient.
+
+### Reference review and remaining synchronization question
+
+The Linux dma-buf documentation was retrieved on this date from
+`https://docs.kernel.org/driver-api/dma-buf.html`. It describes exporting the
+current fence set for later waiting and separately describes CPU-access cache
+coherency. The matching local DRM implementation is
+`Linux-Guest-GPU/drivers/gpu/drm/drm_syncobj.c`:
+`drm_syncobj_export_sync_file()` first obtains a referenced fence with
+`drm_syncobj_find_fence()`, then passes that fence to `sync_file_create()`.
+
+The custom client worker currently waits by session and syncobj handle.
+It therefore needs a separate review for source syncobj reset/replacement
+between export and worker execution, and for session close while an exported
+fence remains live. Holding an object reference alone does not establish
+snapshot semantics. This is an open correctness question, not a verified fix
+or an established explanation for the earlier failures.
+
+### Build/deployment and pending validation
+
+New diagnostic Image hashes:
+
+```text
+client e1c15945d48a83770ec3eb5f46fa54750b701569f1ce149429492c466d249f56
+proxy  722e1fd790faa2951387b5340bbfe6662666edc335c6d5fda6c8ecc25eb4f9e7
+```
+
+The previous remote Images were archived as
+`kernels/shared/archive/sync-cleanup-diag-20261015-013508/{client,proxy}/Image`.
+Both new remote Image hashes were checked before activation by renaming the
+uploaded `.new` files. The uploaded guest smoke wrapper was syntax-checked and
+its hash matches locally:
+`bb4570fd63c9b07c365ce01079405cc53788e435cbba7937d3b05f1f67172ea8`.
+Only shared guest artifacts and the guest smoke wrapper were updated;
+the host kernel, base rootfs, and boot storage are untouched.
+Shell syntax and scoped diff whitespace checks pass. Four CRLF log fixtures
+(clean, export error, sync-file error, and both) also verify the error-count
+helper. Those checks do not replace the pending GPU regression.
+
+The host recheck still found `MemAvailable=76108 kB`, `Inactive(anon)=2253932 kB`,
+and `AnonPages=12832 kB`, with no Firecracker or broker process. A clean-host
+runtime regression is pending. The five requested tracks remain:
+
+1. ML export: historical successful individual kernels do not qualify all sizes.
+2. Attention: 100 samples pass, larger and repeated lifecycle tests remain.
+3. NCNN: prefix reproducer still fails; correlate traced mappings and first fault.
+4. 1080p glmark2: default progress instrumentation is ready; full run remains.
+5. 720p glmark2: resource exhaustion/SIGSEGV regression remains.
+
+No reboot, power cycle, SD flash, or eMMC operation was performed in this step.
+
+## 2026-10-15: Export fence snapshots and DRM-session lifetime
+
+### Source-level synchronization defect
+
+The export worker previously saved only the source syncobj handle and later
+issued SYNCOBJ_WAIT against that mutable handle. Export returned to userspace
+before the worker necessarily ran. Resetting, destroying, or reusing the
+source between those operations could therefore change what the exported
+sync_file waited for. The temporary source reference in the export function
+was dropped before the asynchronous worker completed. A local fence reference
+alone did not keep the proxy session alive after the userspace DRM FD closed.
+
+This differs from the native implementation in `drm_syncobj.c`, which takes a
+reference to the fence at export time. The existing
+`drm_syncobj_transfer_to_binary()` also takes such a reference and replaces the
+destination fence. The custom proxy's SYNCOBJ_TRANSFER already forwards to
+that implementation.
+
+### Implemented change
+
+Export now creates a private proxy syncobj and uses the existing binary
+SYNCOBJ_TRANSFER RPC to snapshot the source's current fence before returning
+the sync_file FD. This destination is absent from the client userspace handle
+table and is used only by the export worker. The worker waits on the snapshot
+and destroys it after completion/error. It holds a reference to the originating
+DRM file until wait and cleanup finish, keeping the session alive across
+userspace close. No new wire opcode or message layout was introduced.
+
+Source reset/destruction after snapshot capture cannot replace the captured
+fence. This is a source-level correction, not yet runtime proof that the
+historical Mesa errors, attention readback, or NCNN failures are fixed.
+The existing bounded wait policy remains; full native synchronization
+equivalence is not claimed. Export now costs two extra RPCs plus snapshot
+destruction, and its performance impact has not been measured.
+
+The worker's error logging now tests its actual wait result rather than
+querying a still-unsignaled local fence. The export ioctl also closes an
+installed FD if copying its result to userspace fails.
+
+### Dedicated regression mode
+
+The ARM64 ioctl smoke gained `--sync-file-snapshot`. It:
+
+1. Checks that exporting an empty syncobj fails with `EINVAL`.
+2. Exports 64 initially signaled syncobjs, immediately resetting and destroying
+   each source and creating/destroying another empty object to exercise reuse.
+3. Closes its sole userspace DRM FD before checking all exported FDs.
+4. Requires each sync_file to become poll-readable within five seconds and
+   report `SYNC_IOC_FILE_INFO.status=1`, rather than merely accepting any
+   signaled/error fence.
+
+This is scheduling stress, not a deterministic injection of every race window.
+It also does not exercise pending GPU fences, cross-session imports, or
+allocation failures. Those cases remain outside this test's evidence.
+
+The one-client runner supports it end-to-end, including payload selection,
+completion wait, and result markers:
+
+```bash
+RUN_ID="shared-sync-file-snapshot-$(date +%Y%m%d-%H%M%S)" \
+  ./scripts/run/run-vmshm-e2e.sh \
+  --skip-build --skip-sync --sync-file-snapshot-smoke
+```
+
+Run only after restoring and checking a healthy host baseline. There is no
+hardware PASS result for this mode yet.
+
+### Verification and deployment
+
+Both guest kernel builds and the static ARM64 smoke build succeeded. No
+warnings/errors were found in the kernel build log; shell syntax and scoped
+diff checks pass. The smoke's help/argument handling was executed on RK3588,
+which verifies the ARM64 binary launches, not DRM semantics.
+
+```text
+client Image 5879f05de820129eb412e545ec956abd9a0134e1cbfc59dddeaaa394839f0544
+proxy Image  722e1fd790faa2951387b5340bbfe6662666edc335c6d5fda6c8ecc25eb4f9e7
+ioctl smoke  654d900305efda918c8f49fde03ba5cb23b1a0090be10846c020a09a49bc4330
+```
+
+The client Image and smoke binary were uploaded, hash-verified, then activated.
+The previous versions were archived under
+`kernels/shared/archive/sync-snapshot-20261015-014350/`.
+The proxy Image is unchanged from the preceding diagnostic deployment.
+
+No GPU workload was launched in this step. Host recovery is still pending;
+no reboot, power cycle, flash, base-rootfs replacement, or eMMC access occurred.
+The full ML, attention, NCNN, 720p, and 1080p completion gates remain open.
+
+## 2026-10-15: Import installs the captured dependency synchronously
+
+### Defect in the pending-import path
+
+The previous custom `panthor_client_syncobj_import_sync_file()` accepted an
+own-session pending fence, queued a worker, and returned success immediately.
+The worker waited for the local fence and later called SYNCOBJ_SIGNAL on the
+target. Until then, the target retained its earlier fence. If that earlier
+fence was signaled, a subsequent submission could observe a satisfied
+dependency before the imported work finished. If userspace reset or reused
+the target, the late signal could instead affect a newer generation.
+
+The native reference at
+`Linux-Guest-GPU/drivers/gpu/drm/drm_syncobj.c::drm_syncobj_import_sync_file_fence()`
+replaces the target fence before returning. It does not model import as a
+future signal operation.
+
+### Implemented correction and locking
+
+Own-session pending imports now transfer the proxy snapshot fence into the
+target before the import ioctl returns. Completed successful local fences use
+the existing synchronous signal operation; error fences return their error.
+Foreign fences and cross-session imports remain unsupported as before.
+
+Each exported fence now has a snapshot mutex. Import holds it while checking
+local completion and transferring the still-live snapshot. The export worker
+holds the same mutex while signaling local completion, destroying its snapshot,
+and clearing its handle. Thus import cannot race a successful snapshot
+destruction and accidentally transfer a recycled handle.
+
+The asynchronous import worker, its workqueue, allocation, and delayed signal
+path have been removed. Lock order is snapshot mutex followed by the RPC lock;
+the export worker completes its wait RPC before acquiring the snapshot mutex.
+No RPC wait holds the snapshot mutex and then depends on the removed importer.
+Hardware validation of this change remains pending.
+
+### Expanded regression, with explicit limits
+
+`--sync-file-snapshot-smoke` now performs 64 rounds of export, import into an
+initially signaled target, re-export, target reset/destruction, and source
+reset/destruction. After closing the DRM FD, it checks all 128 sync_file FDs
+for successful completion. The runner requires both markers:
+
+```text
+PANTHOR_SYNC_FILE_SNAPSHOT_SMOKE=PASS exports=128 source_reset=1 source_destroy=1 drm_close=1
+PANTHOR_SYNC_FILE_IMPORT_SMOKE=PASS imports=64 target_reset=1 target_destroy=1
+```
+
+Fixtures verify that complete CRLF markers are accepted, a missing import
+marker is rejected, and the earlier export-only 64-FD marker is rejected.
+This is scheduling stress with initially signaled source fences. It does not
+force the pending-import branch or establish correctness for real pending GPU
+work. A real workload or a deterministic pending-fence test is still required.
+
+### NCNN is a separate unresolved track
+
+The prefix reproducer
+`shared-ncnn-prefix8-out16-cached-r1-1loop-192c96p-manual600-20261015-063145`
+contains no `SYNCOBJ_EXPORT_SYNC_FILE` records. Its only IMPORTDIAG invocation
+is the boot smoke's invalid `handle=0 fd=0 flags=0`, repeated in the later dmesg
+excerpt; it is not a workload fence import. The first rendering fault remains
+after `GROUP_SUBMIT_TRACE seq=14`: `CS_RES_TERM`, then `DATA_INVALID_FAULT`.
+Therefore the current sync-file corrections must not be presented as a
+demonstrated fix for NCNN. Its traced mapping/allocation-generation regression
+still needs to run.
+
+### Build/deployment evidence
+
+Both guest kernels and the static ARM64 smoke rebuilt successfully. No build
+warnings/errors were found; shell syntax and scoped diff checks pass. Uploaded
+client Image and smoke hashes were verified before activation:
+
+```text
+client Image 0fae057fb4c7e4f153dc440915796532b16b76a91574ff699e767fa00cb4d60f
+proxy Image  722e1fd790faa2951387b5340bbfe6662666edc335c6d5fda6c8ecc25eb4f9e7
+ioctl smoke  18caaf143a1d5f5761ae4a0f192ec920b3474304f85086b057f88a7f02356bf0
+```
+
+Previous remote client Image and smoke are archived under
+`kernels/shared/archive/sync-import-transfer-20261015-015039/`.
+The new smoke binary's `--help` ran on RK3588; no DRM/GPU test was executed.
+
+The host still has only `MemAvailable=77636 kB`, with
+`Inactive(anon)=3006696 kB` and `AnonPages=12548 kB`, and no running
+Firecracker or broker. No reboot, power cycle, flash, or eMMC operation
+occurred. All five full workload qualification gates remain open.
+
+## 2026-10-15: Clean-host runtime recovery and confirmed page-table replacement fix
+
+### Host recovery and read-only shared roots
+
+The live host had about 74 MiB MemAvailable and no Firecracker/broker process.
+Diagnostics were saved to `GPU-SFTP/log/shared/host-recovery-20261015/`.
+A software reboot did not promptly restore SSH; the existing Pi reboot wrapper
+then recovered the board. The fresh host had about 3151 MiB available,
+`6.12.0-opencca-pmthor`, and `/dev/pmthor`.
+
+The first sync-file test (`shared-sync-snapshot-cleanhost-20261015-1023`)
+failed before userspace: the proxy mounted the same `rootfs.ext2` read-write
+before the read-only client booted. The client reported ext4 journal recovery
+required, write access unavailable, and VFS error -30/panic. Both shared config
+generators and GLES proxy generators now use `root=/dev/vda ro` and a read-only
+VMM block device. They run `/bin/sh` and need no persistent root writes.
+Payload injection still happens through a host loop mount before VM launch.
+
+`shared-sync-snapshot-readonly-20261015-1025` then recorded:
+
+```text
+PANTHOR_SYNC_FILE_SNAPSHOT_SMOKE=PASS exports=128 source_reset=1 source_destroy=1 drm_close=1
+PANTHOR_SYNC_FILE_IMPORT_SMOKE=PASS imports=64 target_reset=1 target_destroy=1
+RESULT: PASS
+```
+
+This exercises initially signaled fences, not a deterministic pending-fence
+race. Later ML logs do exercise import with `status=0` (pending).
+
+### Nonblocking export-fence monitoring
+
+The export worker's 750 ms proxy wait shared the serialized RPC channel with
+submission/import traffic. It now polls its immutable snapshot with a zero
+relative timeout and sleeps 1--2 ms outside the RPC between pending results.
+The 60-second total bound remains. Both guest kernels build successfully.
+This removes this worker's intentional blocking RPC; it is not a measured
+end-to-end speedup claim. In particular, attention still takes about 2.37 s
+per iteration in the tested WC configuration.
+
+### Deterministic EEXIST reproduction and correction
+
+`shared-ml-all-nonblocking-20261015-1030` ran six kernels in one process with
+100 measured/5 warmup iterations and GEMM size 256. Five kernels passed, but
+softmax allocation failed four times with `DRM_IOCTL_PANTHOR_VM_BIND err=17`.
+The first proxy failure was VM_BIND_TRACE seq=37: a 16 MiB MAP at
+`0x7ffffee00000`, after earlier mappings/unmaps had left lower-level tables.
+Thus this was not an allocation-pressure failure on the recovered host.
+
+`arm_panthor_lpae_init_2m_block_or_pages()` rejected any existing descriptor,
+including an empty lower-level table. The native map semantics remove a table
+before replacing its whole range. The Panthor path now does the same through
+`__arm_panthor_lpae_unmap()`. The generic Panthor PTE initialization path also
+now uses that HPA-aware walker rather than `__arm_lpae_unmap()`.
+
+The existing `--vm-bind-smoke` now allocates a 2 MiB BO and tests the same VA
+with MAP/UNMAP sizes 4 KiB, 2 MiB, 64 KiB, 2 MiB. Hardware A/B evidence:
+
+| Run | Result |
+| --- | --- |
+| `shared-vm-bind-size-reuse-oldkernel-20261015-1043` | Old proxy `722e1fd...`: round=1, size=0x200000 fails with File exists / ret=-17; RESULT: FAIL. |
+| `shared-vm-bind-size-reuse-fixed-gate-20261015-1042` | Fixed proxy `f1d73814...`: `PANTHOR_VM_BIND_SIZE_REUSE=PASS rounds=4`; RESULT: PASS. |
+| `shared-ml-all-tablefix-10it-20261015-1037` | All six kernels, including softmax, pass 10 measured/2 warmup iterations in one process; ML_RESULT/GPU_SMOKE_RESULT PASS; no Mesa/VM_BIND error. Historical runner RESULT remains FAIL because the remote wrapper lacked the new ML_CLEAN_RESULT marker. Do not rewrite this result as a formal gate PASS. |
+
+The remote smoke wrapper has since been synchronized and hash-verified
+(`c9c7a35ff4f510c6ccf94b6ace08a81eed88a0793e02be6827bce9ee5c61fc15`).
+The runner now accepts the BO_CREATE diagnostic `seq=` field, requires the
+size-reuse marker for VM-bind smoke, and requires all six named kernels for
+`--kernel all`, honoring an explicit GEMM size. CRLF fixtures check full/missing
+kernel sets, individual attention selection, and export-error rejection.
+
+The formal rerun `shared-ml-all-tablefix-100it-20261015-1053` then passed
+all six kernels with 100 measured/5 warmup iterations and GEMM 256, using the
+synchronized wrapper: `ML_RESULT=PASS`, `ML_CLEAN_RESULT=PASS`,
+`ML_EXPORT_ERRORS=0`, and runner `RESULT: PASS`.
+
+Active guest artifacts after restoring the fixed proxy from the A/B test:
+
+```text
+client 2e04897b579ed74dd0c5b52bd2f5fcfacaa9d7cc75875f6498677b77bafe2922
+proxy  f1d73814b6e73655d07863dcf68ab5b4633cf4bbeab4b22d3de8bdf8a3a71ea4
+```
+
+### NCNN remains a separate first-fault investigation
+
+`shared-ncnn-prefix8-tablefix-20261015-1045` used the cached-client diagnostic,
+512/384 MiB guest RAM, and one prefix8-out16 loop. Qualification passed, but
+NCNN still returned device loss. Immediately after seq=14, the first recorded
+MMU error was an AS1 READ at GPU VA `0x8`, `TRANSLATION_FAULT_1`; CS_BUS_FAULT
+followed. The three nonempty seq=14 streams were resolved to live mappings
+and payload generations 40/41/42, after explicit seq=61--69 unmaps/remaps.
+This narrows the next investigation to referenced descriptors/data visibility
+and cache ownership; it does not prove a particular null-pointer/cache cause.
+A default-WC comparison and the full model matrix remain required.
+
+A full 720p null-noop/finish glmark run was started as
+`shared-glmark720-tablefix-full-20261015-1047`. It completed the full suite:
+`GLMARK_SCORE=59`, `GLMARK_CLEAN_RESULT=PASS`, `GLMARK_RESULT=PASS`,
+`GPU_SMOKE_RESULT=PASS`, and runner `RESULT: PASS`. BO_CREATE, export, and
+VM_BIND error counts were all zero. The existing validation exception remains
+visible (`GLMARK_EXPECTED_FRAMEBUFFER_ERRORS=1`, unexpected=0).
+Null-noop is the existing diagnostic frontend; it does not qualify stock
+GBM/PRIME interoperability.
+
+The default-WC NCNN comparison
+`shared-ncnn-prefix8-wc-tablefix-20261015-1051` also failed. Qualification passed;
+the model reached submit seq=19, then a job timed out with queue 2's fence at
+8 while the pending job expected 9. Unlike the WB-client run, no MMU page fault
+preceded this timeout. Several proxy stream prefixes read as zero. This does
+not establish whether those bytes were actually stale.
+
+The object managers used WB kernel mappings while the default client BO mmap
+used WC. A follow-up experiment changes both managers' object-window mappings
+and the proxy debug mmap to WC, keeping the separate WB communication ring
+unchanged. This removes that specific mixed-attribute alias; its effect on
+NCNN and the GLES regressions must be measured before calling it a runtime fix.
+
+Both guests build without warnings/errors with this change. Runtime artifacts:
+
+```text
+client e797e3180e65407eecb5cfed894725f9e5f8b31f822f1089feb38a820062e68f
+proxy  29aade4ada0b22dd3018bd4e85145a4dd860156350ac2896f0e02d6b96aafe1e
+```
+
+`shared-ncnn-prefix8-matchedwc-20261015-1058` passed the same prefix8-out16
+test with the default WC client: qualification PASS, model PASS, NCNN_RESULT
+PASS, and runner PASS. The old WB-manager/default-WC-client comparison above
+failed. This supports the mixed-attribute mapping as a runtime defect, while
+larger model and GLES regressions are still necessary.
+
+`shared-ncnn-fullmodels-matchedwc-1loop-20261015-1100` passed mobilenet_v2
+and mobilenet_v3, but resnet50 failed. Its first recorded BO failure requested
+`0x9800000` (152 MiB) with ret=-12; the default object window was only 224 MiB
+and its buddy max_order was 15 (128 MiB). A later GPU WRITE fault at VA
+`0x4000000` followed these allocation failures. This result does not qualify
+resnet50; a larger window is needed before diagnosing any independent GPU fault.
+NCNN uses benchncnn's zero-filled weights, so these are graph execution/timing
+checks, not pretrained-model accuracy tests.
+
+The first matched-WC full 1080p glmark run
+`shared-glmark1080-matchedwc-full-20261015-1103` likewise exhausted the old
+224 MiB window during terrain/shadow: BO requests of `0x8a2000` and
+`0x2060000` returned -12. A score despite such errors cannot qualify the run.
+The runner now selects 512 MiB for glmark and 768 MiB for NCNN when the object
+window is `auto`; ordinary compute/ML retain their existing count-based policy.
+An explicit window override is preserved. Automatic host-memory preflight now
+requires at least guest RAM + configured object capacity + 256 MiB, with the
+previous 900 MiB minimum retained. These capacity defaults still require the
+larger-window runtime reruns.
+
+Those reruns exposed two independent setup defects before model execution:
+
+- `shared-ncnn-resnet50-matchedwc-768m-20261015-1110` was explicitly
+  **ABORTED**: extending the legacy `0x30000000` window to 768 MiB covered
+  UART/virtio MMIO at `0x40000000`, and the proxy console never booted.
+  Object windows above 256 MiB now move to GPA `0x100000000` in both guests;
+  preflight and launch logs record the GPA.
+- `shared-ncnn-resnet50-matchedwc-high768m-20261015-1114` booted at the high
+  GPA, but the allocator failed initialization with -12. The warning stack
+  points to the `kcalloc` for per-page buddy metadata (about 4.5 MiB,
+  order 11), not exhausted payload capacity. That CPU-only metadata now
+  uses `kvcalloc`, with both error cleanup and destruction using `kvfree`.
+  The follow-up guest build/runtime must qualify this correction.
+
+`shared-ncnn-resnet50-large-meta-fixed-20261015-1117` qualifies that correction:
+the high-GPA 768 MiB domain initialized with max_order=17; resnet50 completed
+with `NCNN_MODEL_RESULT=PASS`, `NCNN_RESULT=PASS`, `GPU_SMOKE_RESULT=PASS`,
+and runner `RESULT: PASS`. BO_CREATE/VM_BIND failure counts were both zero.
+Its one measured loop was 985.54 ms; this is a functional checkpoint, not the
+100-loop performance result. The updated proxy Image is
+`24e213e91b4ecc2ce2c4e6dece0b1bad15d445d3b7207e8701f4f70da5922b55`;
+the client remains `e797e318...`.
+
+The NCNN model gate also rejects any Mesa error, Vulkan `vk* failed`, or
+`VK_ERROR_` marker even if benchncnn exits zero and prints timing. The host
+runner independently rejects BO_CREATE/VM_BIND failures. NUL/CRLF fixtures
+confirm that a clean timing passes while allocation and fence errors fail.
+
+### Host PFN-reference lifetime patch: built, not deployed
+
+`kvm_gpa_to_hpa()` obtains a reference with `gfn_to_pfn_prot()` for every
+translated page but had no corresponding release, even on VM teardown.
+A source patch retains one reference per PFN in a per-VM xarray, releases
+duplicate acquisition references, and releases retained references at teardown.
+Indexing by PFN retains old backing across memslot replacement and deduplicates
+aliases. This is bounded by unique exposed pages, not by translation count.
+
+The host Image builds without warnings/errors and was packed into
+`opencca/snapshot/kernel-pmthor-gpa-pin-lifetime-20261015.img`; its flash wrapper
+dry run passed the live SD layout preflight. It has not been flashed/booted.
+Runtime memory-recovery proof and the device-quiesce-before-final-page-release
+lifecycle audit remain required before deployment. A retained reference is
+also not a complete DMA pin/migration/revoke protocol.
+
+No SD/eMMC/firmware flash occurred in this checkpoint. The subsequent
+clean-host matrix reboot recovered about 3159 MiB available. Runtime
+`shared-ncnn-all-matchedwc-100loops-20261015-1122` then passed all three
+models, 100 measured loops each, zero failed models. Means were 178.16 ms
+(mobilenet_v2), 174.32 ms (mobilenet_v3), and 872.29 ms (resnet50).
+The remote result is PASS; editing the live local runner caused its later
+log-fetch tail to fail (`n: command not found`), so logs were fetched in a
+separate read-only invocation. Later launches use immutable script copies.
+
+`shared-glmark1080-wc-high512m-full-20261015-1127` completed the full
+1080p suite with Score 57, BO_CREATE/export/VM_BIND errors all zero,
+GLMARK_CLEAN_RESULT/GLMARK_RESULT/GPU_SMOKE_RESULT PASS, and remote
+`RESULT: PASS`. This validates the matched-WC mapping plus 512 MiB high-GPA
+window through the earlier terrain/shadow failure point.
+
+Latest-kernel GEMM 512/all-kernel ML regression, larger/repeated Attention,
+pending-fence regression, and repeat-run host memory recovery remain open.
+The concise current matrix and limitations are maintained in
+`docs/shared/PANTHOR_SHARED_GPU_FIX_VERIFICATION_20261015.md`.
+
+
+### Latest Guest matrix completion and deployed joint Host session lifetime
+
+The earlier per-VM-only PFN candidate and the later device-only candidate were
+never deployed. Audit found that KVM teardown and `/dev/pmthor` file release
+can occur in either order, and GPU MMIO is mapped separately via `/dev/mem`.
+The final candidate therefore uses a reference-counted GPU session owned by
+both the device file and each VM that translates pages through it. The session
+xarray keeps one reference per PFN; duplicate translation references are
+returned immediately. A VM cannot rebind its cached HPAs to another session.
+Tracking requires the current VMM mm to match the device opener's mm.
+
+Final release requires both ownerships to end and a successful GPU reset.
+The driver now checks soft/hard-reset completion rather than printing a
+successful quiesce after both timeouts. A failed reset retains the device
+ownership on a retired-session list; a later successful reset can retire it.
+No runtime reset-failure injection has been performed. Active platform unbind
+and a complete DMA pin/migration/revoke protocol remain outside this fix.
+
+The final Host Image built without warnings/errors and was packed using the
+existing initrd/DTB. The Pi wrapper verified the live SD kernel layout and GPT,
+selected storage ID 2, and wrote only p3 at LBA 0x8000. Rootfs and firmware were
+not flashed. The board booted `6.12.0-opencca-pmthor #9`, built
+`Thu Oct 15 11:57:13 CST 2026`; `pmthor_gpu_track_pfn` is present in kallsyms.
+
+- Host Image SHA256: `fc198ee4371b86d5c740ad06f151ea80eb13e2e7ce2a3c8af3f64fff16791dc5`
+- Boot image: `opencca/snapshot/kernel-pmthor-joint-session-pfn-20261015.img`
+- Boot image SHA256: `33c5d968a1ed011ec94333e6c84de1746464678b42c35dd2744bb386372dc816`
+- Deployment/build/KVM proof: `GPU-SFTP/log/shared/host-recovery-20261015/joint-*`
+
+The new ARM64 test in `GPU-SFTP/tests/pmthor-pfn-lifetime/` invokes the actual
+GPA_TO_HPA HVC with 32 copies of one GPA, then exercises VM-first and
+device-first teardown. Old Host control passed translation (before deployment).
+The new Host passed both translation and the kernel-log lifetime checker:
+VM-first closes with pages=1/vm_refs=0 and releases after reset; device-first
+closes with pages=1/vm_refs=1 and releases only after VM teardown. Both release
+exactly one PFN. Initial diagnostic markers used libc dprintf, which returned
+EINVAL on /dev/kmsg; switching to one direct write fixed the test marker path.
+Negative log fixtures reject missing releases, wrong counts, and bad ordering.
+
+Before this Host deployment, the final matched-WC Guest pair also completed:
+
+- `shared-ml-all512-latestwc-100it-20261015-1134`: six kernels, 100 measured /
+  5 warmup iterations, GEMM 512, all correctness/clean markers PASS.
+- `shared-attention320-lifecycle-r{1,2,3}-20261015-1141`: three separate VM
+  lifecycles, 10 measured / 2 warmup iterations at 320x64, all PASS and launcher
+  exit 0. Single naive-attention dispatch is approximately 3.74 seconds; the
+  accepted CLI range does not guarantee larger sizes fit the GPU watchdog.
+- `shared-latestwc-vm-bind-regression-20261015-1145` and
+  `shared-latestwc-sync-snapshot-regression-20261015-1145`: PASS.
+- `shared-2client-latestwc-4mib-100it-20261015-1148`: two concurrent clients,
+  each 4 MiB / 100 measured iterations, GLES_PASS and launcher exit 0.
+- `shared-glmark720-latestwc-high512m-full-20261015-1153`: full null-noop /
+  finish suite, Score 58, zero unexpected framebuffer/BO/export/VM_BIND errors,
+  all clean/result markers PASS and launcher exit 0.
+
+Long idle SSH sessions previously stalled after a terminal remote PASS; the
+local stale connection was terminated and logs fetched separately. Both
+runners now use SSH server-alive probes. Latest 720p completed the full long
+run and fetch with launcher exit 0. All subsequent runners execute immutable
+same-directory snapshots to prevent source edits changing Bash read offsets.
+
+A sequential all-kernel 100-iteration / NCNN three-model 100-loop / full 720p /
+full 1080p matrix is now running on the new Host with per-run memory captures.
+These results must be recorded separately from the pre-Host-fix matrix.
+
+
+### Final Host #10: block takeover until VM teardown and reset again
+
+Host #9 completed the four-run matrix without reboot: ML all512/100 PASS,
+NCNN three models/100 PASS, full 720p Score 59 PASS, full 1080p Score 58 PASS.
+MemAvailable remained approximately 3150--3151 MiB and Shmem returned to
+1328 KiB after each run. These are #9 results, retained as historical evidence.
+
+Further lifecycle audit found that a VM can continue MMIO after device-file
+close. Merely retaining pages until VM teardown while remembering an earlier
+reset is insufficient: the VM could restart GPU work after that reset, and a
+new owner must not take over while that old VM survives. The stronger KVM test
+actually failed on #9 because reopening the GPU succeeded with the old VM alive
+(`joint-host-pfn-reopen-control.log`, expected negative-control failure).
+
+Final #10 replaces the callback/refcount/retired-list candidate with one
+owner-lock-protected active session and an explicit bound-VM count. Device
+close resets promptly but retains the session and its PFNs while any VM lives.
+New opens return EBUSY until those VMs end. Last-VM teardown resets again, then
+releases unique PFNs; a failed reset keeps the session for a later open/reset
+retry. If VM teardown occurs first, final device close performs the reset and
+release. Registry/owner locking serializes publication, close, VM teardown,
+and takeover. Active platform unbind and full DMA pin/migration/revoke remain
+unsupported; this is not a confidential-isolation proof.
+
+Final #10 built without warnings/errors and was flashed through the Pi wrapper
+only to SD p3. It booted `6.12.0-opencca-pmthor #10`, built
+`Thu Oct 15 12:23:44 CST 2026`.
+
+- Host Image SHA256: `ca8fb02a1ca95b588ef1e2fcd3191865c98ab3b1b758d586d3b36e90c88c3f6c`
+- Boot image: `opencca/snapshot/kernel-pmthor-final-session-pfn-20261015.img`
+- Boot image SHA256: `27c6ad71937d8cee1d8c7d976f6e76cca41ed6ab51b6f9eb0bebeacfb44ae4bb`
+- Proof: `final-host-pfn-{test,kernel,check}.log` under the host-recovery log directory.
+
+The enhanced two-order/32-duplicate KVM regression passed, including EBUSY on
+reopen and an additional successful reset after last-VM teardown before PFN
+release. `shared-final-host-proxy-sigkill-20261015-1228` then intentionally
+killed Proxy after at least five pending-import observations in a long
+Attention 320 run. Client/broker were stopped afterward. The workload FAIL /
+launcher exit 1 is expected and labelled by fault-injection-intent.txt; Host
+completed both resets and released 2968 PFNs. MemAvailable returned to about
+3154 MiB. This is a fault-exit test, not a successful inference benchmark.
+
+The shared runner now defaults to the tested null-noop frontend plus finish;
+explicit overrides remain available. The common gpu-smoke wrapper retains
+its other modes for non-shared workflows. The final #10 sequential matrix is
+running without intermediate reboots: post-fault Attention 320, ML all512/100,
+NCNN all/100, full default 720p/1080p, mapping-size reuse, sync snapshots, and
+two-client 4 MiB/100. Detailed results will follow in the concise report.
+
+
+### Final #10 completion, repeat-client check and PCP accounting
+
+All final #10 cases in `shared-final-host-*-20261015-1230` passed with individual
+launcher exit 0: post-fault Attention 320 (10 measured/2 warmup), all six ML
+kernels (100/5, GEMM 512), NCNN three models (100 each, zero failed), full default
+720p glmark (Score 59), full default 1080p (Score 58), VM_BIND size reuse,
+sync snapshot/import, and two concurrent 4 MiB clients (100/5 each).
+The two-client orchestration first passed an unsupported single-client
+--skip-build flag and exited before remote work; its CLI error log is retained,
+and the corrected invocation passed. An additional identical two-client run
+`shared-final-host-2client-repeat-20261015-1258` also passed with launcher exit 0.
+All four major long runs restored roughly 3151--3153 MiB MemAvailable and
+1328 KiB Shmem without an intervening reboot. Final teardown logs show both
+reset stages and matching unique-PFN close/release counts.
+
+The raw two-client MemAvailable snapshot was approximately 3055 MiB, so it was
+investigated rather than called full recovery. CPU1 PCP held about 24960 free
+pages. Repeated stat_refresh reads invoke refresh_cpu_vm_stats(true) and
+PCP decay, without changing sysctl configuration: PCP 23949 -> 4032 pages
+(-79668 KiB), MemAvailable 3127236 -> 3206776 KiB (+79540 KiB), Shmem unchanged
+at 1328 KiB. This accounts for the apparent extra usage as retained free PCP
+pages; the small remaining difference includes ordinary kernel/cache overhead.
+Source anchors: mm/page_alloc.c free_unref_page_commit()/decay_pcp_high(),
+mm/vmstat.c vmstat_refresh(), mm/show_mem.c si_mem_available().
+Proof is in pcp-refresh-proof.log and the repeat-run before/after snapshots.
+
+Final remote Guest hashes match the recorded pair, Host remains #10, no
+Firecracker/broker processes remain, CPU online is restored to 0-1. Detailed
+matrix, exact hashes, raw memory table, known frontend/accuracy/lifecycle
+limits and reproduction commands are in PANTHOR_SHARED_GPU_FIX_VERIFICATION_20261015.md.
