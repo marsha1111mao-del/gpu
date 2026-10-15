@@ -1,0 +1,104 @@
+[
+  {
+    "name": "preflight",
+    "returncode": 0,
+    "run_id": "fresh-clone-20261015-quick-preflight",
+    "log": "preflight.log"
+  },
+  {
+    "name": "ioctl",
+    "returncode": 0,
+    "run_id": "fresh-clone-20261015-quick-ioctl",
+    "log": "ioctl.log"
+  },
+  {
+    "name": "vm-create",
+    "returncode": 0,
+    "run_id": "fresh-clone-20261015-quick-vm-create",
+    "log": "vm-create.log"
+  },
+  {
+    "name": "bo-create",
+    "returncode": 0,
+    "run_id": "fresh-clone-20261015-quick-bo-create",
+    "log": "bo-create.log"
+  },
+  {
+    "name": "bo-lifecycle",
+    "returncode": 0,
+    "run_id": "fresh-clone-20261015-quick-bo-lifecycle",
+    "log": "bo-lifecycle.log"
+  },
+  {
+    "name": "bo-mmap",
+    "returncode": 0,
+    "run_id": "fresh-clone-20261015-quick-bo-mmap",
+    "log": "bo-mmap.log"
+  },
+  {
+    "name": "vm-bind",
+    "returncode": 0,
+    "run_id": "fresh-clone-20261015-quick-vm-bind",
+    "log": "vm-bind.log"
+  },
+  {
+    "name": "vm-bind-async-sync",
+    "returncode": 0,
+    "run_id": "fresh-clone-20261015-quick-vm-bind-async-sync",
+    "log": "vm-bind-async-sync.log"
+  },
+  {
+    "name": "vm-state-flush",
+    "returncode": 0,
+    "run_id": "fresh-clone-20261015-quick-vm-state-flush",
+    "log": "vm-state-flush.log"
+  },
+  {
+    "name": "syncobj-lifecycle",
+    "returncode": 0,
+    "run_id": "fresh-clone-20261015-quick-syncobj-lifecycle",
+    "log": "syncobj-lifecycle.log"
+  },
+  {
+    "name": "syncobj-wait",
+    "returncode": 0,
+    "run_id": "fresh-clone-20261015-quick-syncobj-wait",
+    "log": "syncobj-wait.log"
+  },
+  {
+    "name": "syncobj-transfer",
+    "returncode": 0,
+    "run_id": "fresh-clone-20261015-quick-syncobj-transfer",
+    "log": "syncobj-transfer.log"
+  },
+  {
+    "name": "syncobj-timeline-wait",
+    "returncode": 0,
+    "run_id": "fresh-clone-20261015-quick-syncobj-timeline-wait",
+    "log": "syncobj-timeline-wait.log"
+  },
+  {
+    "name": "syncobj-signal-query",
+    "returncode": 0,
+    "run_id": "fresh-clone-20261015-quick-syncobj-signal-query",
+    "log": "syncobj-signal-query.log"
+  },
+  {
+    "name": "sync-file-snapshot",
+    "returncode": 0,
+    "run_id": "fresh-clone-20261015-quick-sync-file-snapshot",
+    "log": "sync-file-snapshot.log"
+  },
+  {
+    "name": "group-lifecycle",
+    "returncode": 0,
+    "run_id": "fresh-clone-20261015-quick-group-lifecycle",
+    "log": "group-lifecycle.log"
+  },
+  {
+    "name": "group-submit-syncpoint",
+    "returncode": 1,
+    "run_id": "fresh-clone-20261015-quick-group-submit-syncpoint",
+    "log": "group-submit-syncpoint.log"
+  }
+]

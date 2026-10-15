@@ -4,6 +4,8 @@ RK3588 / OpenCCA GPU 虚拟化工作区，包含 Host `pmthor`、Guest Panthor
 Client/Proxy、Firecracker、vmshm-broker、测试程序和自动化脚本。组件使用固定
 Git 子模块提交，OpenCCA 上游组件的必要修改由带 SHA-256 的补丁清单恢复。
 
+完整操作入口：**[无上下文 Agent 环境部署与测试手册](docs/start/AGENT_ENVIRONMENT_AND_TEST_RUNBOOK.md)**，涵盖硬件探测、Pi 准备、Host 部署、全部测试、判定标准和故障恢复。
+
 ## 新机器开始
 
 控制机建议 Ubuntu 24.04 / Debian，Python ≥ 3.10。运行硬件测试需要已启动匹配
@@ -48,6 +50,8 @@ VM、切换 GPU 驱动、短暂调整 CPU 在线状态。详细硬件准备、�
 glmark2 和双 Client 结果见
 [测试与 Bug 修复报告](docs/shared/PANTHOR_SHARED_GPU_FIX_VERIFICATION_20261015.md)。
 `run-regression.py` 提供统一复测入口，并为每项测试保存日志和 `summary.json`。
+完整发布回归曾 32/32 通过；随后干净副本短回归出现 Group submit fence 等待超时，
+尚未定位。两次结果及边界见[仓库整理与验证记录](docs/shared/GPU_REPOSITORY_PUBLICATION_20261015.md)。
 
 NCNN 使用随机输入和空权重，仅验证 Vulkan 执行与性能；glmark 使用
 `null-noop`、`--frame-end finish`，没有显示器呈现性能含义。Realm 与 Host 访问

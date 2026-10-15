@@ -1,6 +1,8 @@
 # OpenCCA Network Discovery 2026-07-11
 
-## Status
+> 本页是 2026-07-11 的历史现场记录，以下 sandbox 限制不代表当前环境。当前操作请使用[Agent 手册](AGENT_ENVIRONMENT_AND_TEST_RUNBOOK.md)第 4 节；Pi 首选有线 `.189`，`.52` 为同一 Pi 无线备用。
+
+## Historical status
 
 The current Codex command sandbox cannot open network sockets. Direct SSH to the
 previously documented hosts fails before reaching the LAN:

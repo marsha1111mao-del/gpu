@@ -1,5 +1,9 @@
 # 新机器复现与源码构建
 
+完整流程见[无上下文 Agent 环境部署与测试手册](AGENT_ENVIRONMENT_AND_TEST_RUNBOOK.md)。
+该手册也记录了完整矩阵通过后，额外干净副本回归出现的 Group submit fence 超时，
+请勿将本指南视为所有新环境已经稳定通过的保证。
+
 ## 1. 适用环境
 
 本项目测试需要 RK3588 / Rock 5B、Mali GPU、匹配的 OpenCCA 固件和 Host 内核。
