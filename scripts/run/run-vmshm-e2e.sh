@@ -548,6 +548,7 @@ tar_sync_to_remote() {
 		--exclude='./.git' \
 		--exclude='./.vscode' \
 		--exclude='./node_modules' \
+		--exclude='./runtime' \
 		--exclude='./log' \
 		--exclude='./firecracker-bins/run-logs' \
 		--exclude='./firecracker-bins/rootfs' \
@@ -609,6 +610,7 @@ sync_to_remote() {
 		--exclude='.vscode/'
 		--exclude='.git/'
 		--exclude='node_modules/'
+		--exclude='runtime/'
 		--exclude='log/'
 		--exclude='firecracker-bins/run-logs/'
 		--exclude='linux-host-kernel/'
@@ -632,6 +634,9 @@ sync_to_remote() {
 			"${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_ROOT}/"
 	else
 		tar_sync_to_remote
+		if [[ "${SYNC_ROOTFS}" -eq 1 ]]; then
+			sync_rootfs_to_remote_atomic
+		fi
 	fi
 
 	migrate_remote_gpu_sftp_layout

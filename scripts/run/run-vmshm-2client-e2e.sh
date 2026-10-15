@@ -476,27 +476,6 @@ tar_sync_to_remote() {
 	) | ssh_remote "cd $(quote "${REMOTE_ROOT}") && tar -xf -"
 }
 
-stream_file_to_remote_atomic() {
-	local rel_path="$1"
-	local src="${SFTP_ROOT}/${rel_path}"
-	local dst="${REMOTE_ROOT}/${rel_path}"
-	local dst_dir tmp
-
-	[[ -f "${src}" ]] || die "missing local file for rootfs sync: ${src}"
-
-	dst_dir=$(dirname -- "${dst}")
-	tmp="${dst}.tmp.$$"
-	log "Syncing ${rel_path} via atomic ssh stream"
-	ssh_remote "mkdir -p $(quote "${dst_dir}") && rm -f $(quote "${tmp}")"
-	cat "${src}" |
-		ssh_remote "cat > $(quote "${tmp}") && chmod 0644 $(quote "${tmp}") && mv -f $(quote "${tmp}") $(quote "${dst}")"
-}
-
-sync_rootfs_to_remote_atomic() {
-	stream_file_to_remote_atomic "firecracker-bins/rootfs/rootfs.ext2"
-	stream_file_to_remote_atomic "firecracker-bins/rootfs/rootfs-panfrost.ext4"
-}
-
 tar_fetch_logs() {
 	local remote_log="${REMOTE_LOG_ROOT}/shared/vmshm-2client/${RUN_ID}"
 	local local_log="${SFTP_LOG_ROOT}/shared/vmshm-2client/${RUN_ID}"
@@ -525,6 +504,7 @@ sync_to_remote() {
 		--exclude='.vscode/'
 		--exclude='.git/'
 		--exclude='node_modules/'
+		--exclude='runtime/'
 		--exclude='log/'
 		--exclude='firecracker-bins/run-logs/'
 		--exclude='linux-host-kernel/'

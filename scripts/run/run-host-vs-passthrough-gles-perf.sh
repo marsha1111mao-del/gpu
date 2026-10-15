@@ -467,6 +467,7 @@ sync_to_remote() {
 		--exclude='.vscode/'
 		--exclude='.git/'
 		--exclude='node_modules/'
+		--exclude='runtime/'
 		--exclude='log/'
 		--exclude='firecracker-bins/run-logs/'
 		--exclude='firecracker-bins/rootfs/'
