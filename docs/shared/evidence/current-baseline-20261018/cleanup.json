@@ -1,0 +1,417 @@
+{
+  "moved_documents": [
+    {
+      "source": "docs/shared/DEVICE_RESOURCE_AND_WORKFLOW_AUDIT_20261017.md",
+      "target": "docs/archive/20261018/history/DEVICE_RESOURCE_AND_WORKFLOW_AUDIT_20261017.md",
+      "sha256_before": "1180bd084d74c7d2edba160adca2a9fbca7b9aefb01bfc9fe8d252d628b768d7",
+      "bytes": 13287,
+      "reason": "Historical design/experiment; superseded as daily baseline; unique evidence retained"
+    },
+    {
+      "source": "docs/shared/CCA_CAGE_ACAI_RME_DA_GPU_SHARING_ANALYSIS_20261013.md",
+      "target": "docs/archive/20261018/research/CCA_CAGE_ACAI_RME_DA_GPU_SHARING_ANALYSIS_20261013.md",
+      "sha256_before": "4509ca8a5aaae456401deff3421fcda2f0a516e86c86fa2d928720e40a328a00",
+      "bytes": 36472,
+      "reason": "Historical design/experiment; superseded as daily baseline; unique evidence retained"
+    },
+    {
+      "source": "docs/shared/GPU_TRUSTED_BROKER_PORTAL_CAGE_ANALYSIS_20261015.md",
+      "target": "docs/archive/20261018/research/GPU_TRUSTED_BROKER_PORTAL_CAGE_ANALYSIS_20261015.md",
+      "sha256_before": "518b8ef1e5eeb2071a32c50d553ca3c8fdb392bc4385c07f293f50754d337f31",
+      "bytes": 19978,
+      "reason": "Historical design/experiment; superseded as daily baseline; unique evidence retained"
+    },
+    {
+      "source": "docs/shared/GPU_MULTI_VM_SCHEDULING_PPT_20261008.md",
+      "target": "docs/archive/20261018/history/GPU_MULTI_VM_SCHEDULING_PPT_20261008.md",
+      "sha256_before": "917c4abec1f1fd1657100686241ffbeef8a72fe2bfb2b5780da76028d66f4e95",
+      "bytes": 11522,
+      "reason": "Historical design/experiment; superseded as daily baseline; unique evidence retained"
+    },
+    {
+      "source": "docs/shared/PROXY_TASK_SERVICE_IMPLEMENTATION_20261017.md",
+      "target": "docs/archive/20261018/history/PROXY_TASK_SERVICE_IMPLEMENTATION_20261017.md",
+      "sha256_before": "d2aeb08670a3a14f484a22e7b9046aee8334b5533b96b8729cb3c789804b609e",
+      "bytes": 98458,
+      "reason": "Historical design/experiment; superseded as daily baseline; unique evidence retained"
+    },
+    {
+      "source": "docs/shared/GPU_SFTP_ARTIFACT_LAYOUT.md",
+      "target": "docs/archive/20261018/history/GPU_SFTP_ARTIFACT_LAYOUT.md",
+      "sha256_before": "636f013e7d7fa35a7faa69d014e1c3037ac6ddfa4a858ebde3d124229acb198e",
+      "bytes": 4746,
+      "reason": "Historical design/experiment; superseded as daily baseline; unique evidence retained"
+    },
+    {
+      "source": "docs/shared/PROXY_REALM_GPU_ARCHITECTURE_V2_20261017.md",
+      "target": "docs/archive/20261018/research/PROXY_REALM_GPU_ARCHITECTURE_V2_20261017.md",
+      "sha256_before": "707f72fc15db523322621573a563dda1306d52cd53a9a8df10e3179267f89620",
+      "bytes": 29678,
+      "reason": "Historical design/experiment; superseded as daily baseline; unique evidence retained"
+    },
+    {
+      "source": "docs/shared/GPU_COMPREHENSIVE_EXPERIMENT_REPORT_20261015.md",
+      "target": "docs/archive/20261018/history/GPU_COMPREHENSIVE_EXPERIMENT_REPORT_20261015.md",
+      "sha256_before": "e54700188b974069885617eda4d6b096b0fdca8ba7d37e3f0e92e215effccf78",
+      "bytes": 50197,
+      "reason": "Historical design/experiment; superseded as daily baseline; unique evidence retained"
+    },
+    {
+      "source": "docs/shared/IDEAL_GPC_CONFIDENTIAL_GPU_SHARING_MODEL_20261013.md",
+      "target": "docs/archive/20261018/research/IDEAL_GPC_CONFIDENTIAL_GPU_SHARING_MODEL_20261013.md",
+      "sha256_before": "67f62334de23d3797bb98d4f7708801ff4dd8fef3441f769b824865eceac3b85",
+      "bytes": 32121,
+      "reason": "Historical design/experiment; superseded as daily baseline; unique evidence retained"
+    },
+    {
+      "source": "docs/shared/PORTAL_CAGE_ACAI_RESEARCH_IDEAS_20261015.md",
+      "target": "docs/archive/20261018/research/PORTAL_CAGE_ACAI_RESEARCH_IDEAS_20261015.md",
+      "sha256_before": "2b8fedf321c45f5053da9e6a547109afa60e301ed2c2923db0e90ea571224753",
+      "bytes": 13886,
+      "reason": "Historical design/experiment; superseded as daily baseline; unique evidence retained"
+    },
+    {
+      "source": "docs/shared/GPU_GLMARK_PERFORMANCE_REPORT_20261016.md",
+      "target": "docs/archive/20261018/history/GPU_GLMARK_PERFORMANCE_REPORT_20261016.md",
+      "sha256_before": "f3988014327959cba986f4bbd4a4a825e4459ddf66a2c79c4beef7f0c50a5a57",
+      "bytes": 21844,
+      "reason": "Historical design/experiment; superseded as daily baseline; unique evidence retained"
+    },
+    {
+      "source": "docs/shared/GPU_NATIVE_CURRENT_REALM_PERFORMANCE_20261018.md",
+      "target": "docs/archive/20261018/history/GPU_NATIVE_CURRENT_REALM_PERFORMANCE_20261018.md",
+      "sha256_before": "8a31d05b6a3c227a8870cbc8d171450e2f9a30f5de7773f9a05d9a06016e07dd",
+      "bytes": 20010,
+      "reason": "Historical design/experiment; superseded as daily baseline; unique evidence retained"
+    },
+    {
+      "source": "docs/shared/GPU_VIRTUALIZATION_DRIVER_ANALYSIS.md",
+      "target": "docs/archive/20261018/history/GPU_VIRTUALIZATION_DRIVER_ANALYSIS.md",
+      "sha256_before": "a256c26c234cb1fb24903847e02e1b0e4b84f65468ead233bf24e7a54a24f49a",
+      "bytes": 49225,
+      "reason": "Historical design/experiment; superseded as daily baseline; unique evidence retained"
+    },
+    {
+      "source": "docs/shared/PORTAL_IMPLEMENTATION_DEEP_DIVE_20261015.md",
+      "target": "docs/archive/20261018/research/PORTAL_IMPLEMENTATION_DEEP_DIVE_20261015.md",
+      "sha256_before": "5f737c8988a49935f84c559329fc76cd280aaa734df4320c420e0c3d421675d1",
+      "bytes": 13703,
+      "reason": "Historical design/experiment; superseded as daily baseline; unique evidence retained"
+    },
+    {
+      "source": "docs/shared/GPU_NATIVE_CLIENTPROXY_PERFORMANCE_20261015.md",
+      "target": "docs/archive/20261018/history/GPU_NATIVE_CLIENTPROXY_PERFORMANCE_20261015.md",
+      "sha256_before": "8e0e273a6310c96548c7c46bc7f50c2d242e98b6a26c3754b8ea4e5011c9ec4c",
+      "bytes": 32032,
+      "reason": "Historical design/experiment; superseded as daily baseline; unique evidence retained"
+    },
+    {
+      "source": "docs/shared/GPU_REGRESSION_COMPARISON_20261015.md",
+      "target": "docs/archive/20261018/history/GPU_REGRESSION_COMPARISON_20261015.md",
+      "sha256_before": "fb79729bce9c7a6618918965defc87345aafca1b708afe36e3e24a25fede3c4a",
+      "bytes": 17746,
+      "reason": "Historical design/experiment; superseded as daily baseline; unique evidence retained"
+    },
+    {
+      "source": "docs/shared/CCA_CONFIDENTIAL_GPU_SHARING_DESIGN.md",
+      "target": "docs/archive/20261018/research/CCA_CONFIDENTIAL_GPU_SHARING_DESIGN.md",
+      "sha256_before": "a76a76c9f138c1d753900930048e49e8ae847b82ad3d492e87fc569b658f8cbb",
+      "bytes": 10813,
+      "reason": "Historical design/experiment; superseded as daily baseline; unique evidence retained"
+    },
+    {
+      "source": "docs/shared/PROXY_REALM_PERFORMANCE_OPTIMIZATION_20261018.md",
+      "target": "docs/archive/20261018/history/PROXY_REALM_PERFORMANCE_OPTIMIZATION_20261018.md",
+      "sha256_before": "4cd6b767cfeb3952166c9db8f49ea00134d6b79c40cee2d10e64a668edc46094",
+      "bytes": 222523,
+      "reason": "Historical design/experiment; superseded as daily baseline; unique evidence retained"
+    },
+    {
+      "source": "docs/shared/GPU_PROJECT_PROGRESS_AND_ROADMAP_20261008.md",
+      "target": "docs/archive/20261018/history/GPU_PROJECT_PROGRESS_AND_ROADMAP_20261008.md",
+      "sha256_before": "49bd024fa2596a36ff89b257e4b9caeba1cec024ba2b8ece5d335ab2d089f5c7",
+      "bytes": 47887,
+      "reason": "Historical design/experiment; superseded as daily baseline; unique evidence retained"
+    },
+    {
+      "source": "docs/shared/GPU_GLMARK_OPTIMIZATION_20261016.md",
+      "target": "docs/archive/20261018/history/GPU_GLMARK_OPTIMIZATION_20261016.md",
+      "sha256_before": "58c697949ba0fbe9ce4775df4a891b5eeecb4364021c627dd033ebfc06c2dd1f",
+      "bytes": 158641,
+      "reason": "Historical design/experiment; superseded as daily baseline; unique evidence retained"
+    },
+    {
+      "source": "docs/shared/GPU_REPOSITORY_PUBLICATION_20261015.md",
+      "target": "docs/archive/20261018/history/GPU_REPOSITORY_PUBLICATION_20261015.md",
+      "sha256_before": "e938fe1e8907c6985fce8e447ef562b42d819433e7648e3d1270db22618e29b3",
+      "bytes": 6738,
+      "reason": "Historical design/experiment; superseded as daily baseline; unique evidence retained"
+    },
+    {
+      "source": "docs/shared/PANTHOR_IOCTL_VIRTUALIZATION_DESIGN.md",
+      "target": "docs/archive/20261018/history/PANTHOR_IOCTL_VIRTUALIZATION_DESIGN.md",
+      "sha256_before": "c91a10b25ba41afaab18351ac29bbfc06e86857373f9613fae1aef41fc4a00d9",
+      "bytes": 29433,
+      "reason": "Historical design/experiment; superseded as daily baseline; unique evidence retained"
+    },
+    {
+      "source": "docs/shared/PANTHOR_SHARED_GPU_FIX_VERIFICATION_20261015.md",
+      "target": "docs/archive/20261018/history/PANTHOR_SHARED_GPU_FIX_VERIFICATION_20261015.md",
+      "sha256_before": "2c44bc478959a645aee3a496ccc593d3f122553bc30582a944035c3e209a847a",
+      "bytes": 11674,
+      "reason": "Historical design/experiment; superseded as daily baseline; unique evidence retained"
+    },
+    {
+      "source": "docs/shared/PANTHOR_SHARED_VIRTUALIZATION_WORKLOG.md",
+      "target": "docs/archive/20261018/history/PANTHOR_SHARED_VIRTUALIZATION_WORKLOG.md",
+      "sha256_before": "5f8059724bbc3bee6b1c040a65480258a120461d2ef9c6ba7abb21a146f0ff49",
+      "bytes": 349711,
+      "reason": "Historical design/experiment; superseded as daily baseline; unique evidence retained"
+    },
+    {
+      "source": "docs/shared/PANTHOR_GLES_COMPUTE_SMOKE_BASELINE_ANALYSIS.md",
+      "target": "docs/archive/20261018/history/PANTHOR_GLES_COMPUTE_SMOKE_BASELINE_ANALYSIS.md",
+      "sha256_before": "cb1fb4abb896a5b8c6df532b3c0e4ec9172be5f73485da7982f8fb662e306268",
+      "bytes": 30599,
+      "reason": "Historical design/experiment; superseded as daily baseline; unique evidence retained"
+    },
+    {
+      "source": "docs/shared/CCA_TRUSTED_GPU_REALM_DIRECT_ACCESS_IMPLEMENTATION_REPORT.md",
+      "target": "docs/archive/20261018/history/CCA_TRUSTED_GPU_REALM_DIRECT_ACCESS_IMPLEMENTATION_REPORT.md",
+      "sha256_before": "45778bf480a82584e5a60da6380b45f22057845a1000d395de5094ded7cbe9c5",
+      "bytes": 30008,
+      "reason": "Historical design/experiment; superseded as daily baseline; unique evidence retained"
+    },
+    {
+      "source": "docs/shared/PROXY_REALM_PERFORMANCE_CAUSE_ANALYSIS_20261018.md",
+      "target": "docs/archive/20261018/history/PROXY_REALM_PERFORMANCE_CAUSE_ANALYSIS_20261018.md",
+      "sha256_before": "9a8b8d8134f848994fe4430683c16b0c49ac95e8b335a9be8289b50856396cc9",
+      "bytes": 13118,
+      "reason": "Historical design/experiment; superseded as daily baseline; unique evidence retained"
+    }
+  ],
+  "rewritten_link_documents": [
+    "docs/dev/CURRENT_CODE_CHANGES_20260711.md",
+    "docs/codex-context/2026-06-03-full-gpu-passthrough-shared-context.md",
+    "docs/start/DEVELOPMENT_AND_ARTIFACT_HYGIENE.md",
+    "docs/start/AGENT_ENVIRONMENT_AND_TEST_RUNBOOK.md",
+    "docs/start/FROM_ZERO_REPRODUCTION.md",
+    "docs/archive/20261018/history/DEVICE_RESOURCE_AND_WORKFLOW_AUDIT_20261017.md",
+    "docs/archive/20261018/research/CCA_CAGE_ACAI_RME_DA_GPU_SHARING_ANALYSIS_20261013.md",
+    "docs/archive/20261018/research/GPU_TRUSTED_BROKER_PORTAL_CAGE_ANALYSIS_20261015.md",
+    "docs/archive/20261018/history/PROXY_TASK_SERVICE_IMPLEMENTATION_20261017.md",
+    "docs/archive/20261018/research/PROXY_REALM_GPU_ARCHITECTURE_V2_20261017.md",
+    "docs/archive/20261018/history/GPU_COMPREHENSIVE_EXPERIMENT_REPORT_20261015.md",
+    "docs/archive/20261018/research/IDEAL_GPC_CONFIDENTIAL_GPU_SHARING_MODEL_20261013.md",
+    "docs/archive/20261018/research/PORTAL_CAGE_ACAI_RESEARCH_IDEAS_20261015.md",
+    "docs/archive/20261018/history/GPU_GLMARK_PERFORMANCE_REPORT_20261016.md",
+    "docs/archive/20261018/history/GPU_NATIVE_CURRENT_REALM_PERFORMANCE_20261018.md",
+    "docs/archive/20261018/history/GPU_VIRTUALIZATION_DRIVER_ANALYSIS.md",
+    "docs/archive/20261018/research/PORTAL_IMPLEMENTATION_DEEP_DIVE_20261015.md",
+    "docs/archive/20261018/history/GPU_NATIVE_CLIENTPROXY_PERFORMANCE_20261015.md",
+    "docs/archive/20261018/history/GPU_REGRESSION_COMPARISON_20261015.md",
+    "docs/shared/GPU_NATIVE_PROXYCLIENT_COMPARISON_20261018.md",
+    "docs/archive/20261018/history/PROXY_REALM_PERFORMANCE_OPTIMIZATION_20261018.md",
+    "docs/archive/20261018/history/GPU_PROJECT_PROGRESS_AND_ROADMAP_20261008.md",
+    "docs/archive/20261018/history/GPU_REPOSITORY_PUBLICATION_20261015.md",
+    "docs/archive/20261018/history/PANTHOR_SHARED_VIRTUALIZATION_WORKLOG.md",
+    "docs/shared/GPU_BO_CAPACITY_FIX_20261018.md",
+    "docs/archive/20261018/history/CCA_TRUSTED_GPU_REALM_DIRECT_ACCESS_IMPLEMENTATION_REPORT.md",
+    "docs/skills/gpu-shared-virtualization-autotest/SKILL.md",
+    "README.md",
+    "GPU-SFTP/tests/realm-xshm/README.md",
+    "GPU-SFTP/tests/pmthor-fixed-opp/README.md",
+    "configs/performance/README.md"
+  ],
+  "deleted": [
+    {
+      "path": "GPU-SFTP/tests/pmthor-fixed-opp/..module-common.o.cmd",
+      "bytes": 56575,
+      "mtime_ns": 1792095979378992784,
+      "sha256": "14dcea614423dd46722185c47fc160853b21873aaca37fcdf09047a229ddfde1",
+      "reason": "obsolete fixed-OPP module replaced by standard Host devfreq; no live runner/build caller"
+    },
+    {
+      "path": "GPU-SFTP/tests/pmthor-fixed-opp/.Module.symvers.cmd",
+      "bytes": 256,
+      "mtime_ns": 1792095979034131634,
+      "sha256": "341df4227a3479f4117b67803b6c49f58e7a4dc199b20e6680c106acb76b3723",
+      "reason": "obsolete fixed-OPP module replaced by standard Host devfreq; no live runner/build caller"
+    },
+    {
+      "path": "GPU-SFTP/tests/pmthor-fixed-opp/.module-common.o",
+      "bytes": 16072,
+      "mtime_ns": 1792095979377385741,
+      "sha256": "07fc4494806a2c7d22df022fdcc555a3d914aec05f4244479edadf43439f36d8",
+      "reason": "obsolete fixed-OPP module replaced by standard Host devfreq; no live runner/build caller"
+    },
+    {
+      "path": "GPU-SFTP/tests/pmthor-fixed-opp/.modules.order.cmd",
+      "bytes": 214,
+      "mtime_ns": 1792095979014992803,
+      "sha256": "0ac1858c03e59a3a161c19be1c24756f08b5461017773d7e856ce2a115f2f087",
+      "reason": "obsolete fixed-OPP module replaced by standard Host devfreq; no live runner/build caller"
+    },
+    {
+      "path": "GPU-SFTP/tests/pmthor-fixed-opp/.pmthor_opp_probe.ko.cmd",
+      "bytes": 463,
+      "mtime_ns": 1792095979384293889,
+      "sha256": "e98562a1103275d9efb5d0a9a1518c3ea12540db334b36659efe47454dd02579",
+      "reason": "obsolete fixed-OPP module replaced by standard Host devfreq; no live runner/build caller"
+    },
+    {
+      "path": "GPU-SFTP/tests/pmthor-fixed-opp/.pmthor_opp_probe.mod.cmd",
+      "bytes": 264,
+      "mtime_ns": 1792095979014992803,
+      "sha256": "0c453ffec6d37cd36cd7c815fa9b10d900000dcbe994c9a2d207592ec73a22db",
+      "reason": "obsolete fixed-OPP module replaced by standard Host devfreq; no live runner/build caller"
+    },
+    {
+      "path": "GPU-SFTP/tests/pmthor-fixed-opp/.pmthor_opp_probe.mod.o.cmd",
+      "bytes": 56291,
+      "mtime_ns": 1792095979211356125,
+      "sha256": "87747cd10b016b5eaef88f1201a53a7afe70e1aca1b6f228449ee2766807be52",
+      "reason": "obsolete fixed-OPP module replaced by standard Host devfreq; no live runner/build caller"
+    },
+    {
+      "path": "GPU-SFTP/tests/pmthor-fixed-opp/.pmthor_opp_probe.o.cmd",
+      "bytes": 78393,
+      "mtime_ns": 1792095979010992804,
+      "sha256": "5078ffc918cf917a8f5c44bee81e230fdab9c04244075329f6ec9f9b111a18ab",
+      "reason": "obsolete fixed-OPP module replaced by standard Host devfreq; no live runner/build caller"
+    },
+    {
+      "path": "GPU-SFTP/tests/pmthor-fixed-opp/Makefile",
+      "bytes": 154,
+      "mtime_ns": 1792087843575733103,
+      "sha256": "bf2d5a384e05ab8ebb0e8297820271c7bdc76ef7eb62607b2a51dfd2d2aebf47",
+      "reason": "obsolete fixed-OPP module replaced by standard Host devfreq; no live runner/build caller"
+    },
+    {
+      "path": "GPU-SFTP/tests/pmthor-fixed-opp/Module.symvers",
+      "bytes": 0,
+      "mtime_ns": 1792095979034131634,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "obsolete fixed-OPP module replaced by standard Host devfreq; no live runner/build caller"
+    },
+    {
+      "path": "GPU-SFTP/tests/pmthor-fixed-opp/README.md",
+      "bytes": 2208,
+      "mtime_ns": 1792300015149763683,
+      "sha256": "f027908665035a84aa94a4861f3a0f50fc760c52bba86b7aed6a3c8eb2ccd1c7",
+      "reason": "obsolete fixed-OPP module replaced by standard Host devfreq; no live runner/build caller"
+    },
+    {
+      "path": "GPU-SFTP/tests/pmthor-fixed-opp/modules.order",
+      "bytes": 65,
+      "mtime_ns": 1792095979014992803,
+      "sha256": "27567d44a9a351b30258da1e54e457dfa584264818a421a79a5088a1496a6e3e",
+      "reason": "obsolete fixed-OPP module replaced by standard Host devfreq; no live runner/build caller"
+    },
+    {
+      "path": "GPU-SFTP/tests/pmthor-fixed-opp/pmthor_opp_probe.c",
+      "bytes": 2680,
+      "mtime_ns": 1792087843574220485,
+      "sha256": "4421730641cbec59ef71bfa2780397975f061694810184cfd9333bec7f10f992",
+      "reason": "obsolete fixed-OPP module replaced by standard Host devfreq; no live runner/build caller"
+    },
+    {
+      "path": "GPU-SFTP/tests/pmthor-fixed-opp/pmthor_opp_probe.ko",
+      "bytes": 69864,
+      "mtime_ns": 1792095979384293889,
+      "sha256": "2e9ae385803a18c1e4b099e12d874388e0a96f883f16ed5f73700c504c212851",
+      "reason": "obsolete fixed-OPP module replaced by standard Host devfreq; no live runner/build caller"
+    },
+    {
+      "path": "GPU-SFTP/tests/pmthor-fixed-opp/pmthor_opp_probe.mod",
+      "bytes": 65,
+      "mtime_ns": 1792095979014992803,
+      "sha256": "27567d44a9a351b30258da1e54e457dfa584264818a421a79a5088a1496a6e3e",
+      "reason": "obsolete fixed-OPP module replaced by standard Host devfreq; no live runner/build caller"
+    },
+    {
+      "path": "GPU-SFTP/tests/pmthor-fixed-opp/pmthor_opp_probe.mod.c",
+      "bytes": 313,
+      "mtime_ns": 1792095979034131634,
+      "sha256": "bcb0f6e59407eda571c9fa0052237bb81ccd7e4535f3540525647d280c483bf8",
+      "reason": "obsolete fixed-OPP module replaced by standard Host devfreq; no live runner/build caller"
+    },
+    {
+      "path": "GPU-SFTP/tests/pmthor-fixed-opp/pmthor_opp_probe.mod.o",
+      "bytes": 17192,
+      "mtime_ns": 1792095979210339606,
+      "sha256": "74312e41c3c2aeff94257f19d59f4d268b66d19ab8f5a728bfd3a98fa5463ccd",
+      "reason": "obsolete fixed-OPP module replaced by standard Host devfreq; no live runner/build caller"
+    },
+    {
+      "path": "GPU-SFTP/tests/pmthor-fixed-opp/pmthor_opp_probe.o",
+      "bytes": 39520,
+      "mtime_ns": 1792095979006992804,
+      "sha256": "bdb5103ea84b3c6ef2c052d7e3cf2517b65b3e63d921a33d48896f3b7b667453",
+      "reason": "obsolete fixed-OPP module replaced by standard Host devfreq; no live runner/build caller"
+    },
+    {
+      "path": "scripts/artifacts/__pycache__/restore-runtime.cpython-314.pyc",
+      "bytes": 8040,
+      "sha256": "898a47dc7aa195179cb026802e768163c4ab60425e1e5bdd2b07871382a0f432",
+      "reason": "regenerable Python bytecode"
+    },
+    {
+      "path": "scripts/run/__pycache__/run-realm-xshm.cpython-314.pyc",
+      "bytes": 9733,
+      "sha256": "3e50e1943a948630bf35fcc16f0da1bca6083769613074f6cc3011cd499d03d2",
+      "reason": "regenerable Python bytecode"
+    },
+    {
+      "path": "scripts/run/__pycache__/run-regression.cpython-314.pyc",
+      "bytes": 10547,
+      "sha256": "a07de57b091326f50c9307c47d605798734a44273c8b0b1b293ed95c5c40fb9a",
+      "reason": "regenerable Python bytecode"
+    },
+    {
+      "path": "scripts/run/__pycache__/deploy-rmm-firmware.cpython-314.pyc",
+      "bytes": 12027,
+      "sha256": "f1ebd02d97e82206994b10dc4b61bb37054d97a46a2924151debe8ddb2b2c8fe",
+      "reason": "regenerable Python bytecode"
+    },
+    {
+      "path": "scripts/check/__pycache__/check-checkout.cpython-314.pyc",
+      "bytes": 5781,
+      "sha256": "656ce968f847146cd64368ff187ca70f8db9373cafe96492aa688dd529474d53",
+      "reason": "regenerable Python bytecode"
+    },
+    {
+      "path": "scripts/maintenance/__pycache__/lab-run.cpython-314.pyc",
+      "bytes": 17298,
+      "sha256": "4fd9190441fa58a8621d16b4246687d92d8580288245dc8deee10a522368807d",
+      "reason": "regenerable Python bytecode"
+    },
+    {
+      "path": "scripts/maintenance/__pycache__/lab-resources.cpython-314.pyc",
+      "bytes": 8127,
+      "sha256": "dd8ef5c70c5dbd1d096d471acc33b957c8410aeb699b5b87083f3694e35f84d8",
+      "reason": "regenerable Python bytecode"
+    },
+    {
+      "path": "scripts/build/__pycache__/build-realm-xshm-initrd.cpython-314.pyc",
+      "bytes": 4197,
+      "sha256": "3af5fcc4dd835b3d1eb263b141b271eba79d1592c1f6ea9a631395959cb9f78c",
+      "reason": "regenerable Python bytecode"
+    },
+    {
+      "path": "GPU-SFTP/tests/realm-xshm/__pycache__/run-realms.cpython-314.pyc",
+      "bytes": 56166,
+      "sha256": "9c3bb759d24c50e2b555ac47b8e16984a41cf2624f317519000e973fd5731662",
+      "reason": "regenerable Python bytecode"
+    },
+    {
+      "path": "GPU-SFTP/tests/pmthor-pfn-lifetime/__pycache__/check_kernel_log.cpython-314.pyc",
+      "bytes": 3186,
+      "sha256": "c311fa9b5af7f3d0c5f14820b618340c596e7bed5bbe17664007b96873074935",
+      "reason": "regenerable Python bytecode"
+    }
+  ],
+  "deleted_bytes": 475691,
+  "runtime_sources_unchanged": 60,
+  "retired_source_archive": "build/workspace-cleanup-20261018/retired-fixed-opp-source.tar.gz"
+}

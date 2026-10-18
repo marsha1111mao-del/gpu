@@ -1,0 +1,5780 @@
+{
+  "run_id": "memfd-retirement-dual-20261018",
+  "status": "PASS",
+  "commands": [
+    {
+      "realm": 0,
+      "command": "register",
+      "expected_status": 0,
+      "response": {
+        "command": "register",
+        "status": 0,
+        "result": [
+          1,
+          13,
+          63,
+          128
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 1,
+      "command": "register",
+      "expected_status": 0,
+      "response": {
+        "command": "register",
+        "status": 0,
+        "result": [
+          1,
+          15,
+          63,
+          128
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 2,
+      "command": "register",
+      "expected_status": 0,
+      "response": {
+        "command": "register",
+        "status": 0,
+        "result": [
+          1,
+          14,
+          63,
+          128
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 0,
+      "command": "irq-bind",
+      "expected_status": 0,
+      "response": {
+        "command": "irq-bind",
+        "status": 0,
+        "result": [
+          127,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 1,
+      "command": "irq-bind",
+      "expected_status": 0,
+      "response": {
+        "command": "irq-bind",
+        "status": 0,
+        "result": [
+          127,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 2,
+      "command": "irq-bind",
+      "expected_status": 0,
+      "response": {
+        "command": "irq-bind",
+        "status": 0,
+        "result": [
+          127,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 0,
+      "command": "irq-stats",
+      "expected_status": 0,
+      "response": {
+        "command": "irq-stats",
+        "status": 0,
+        "result": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 1,
+      "command": "irq-stats",
+      "expected_status": 0,
+      "response": {
+        "command": "irq-stats",
+        "status": 0,
+        "result": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 2,
+      "command": "irq-stats",
+      "expected_status": 0,
+      "response": {
+        "command": "irq-stats",
+        "status": 0,
+        "result": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 0,
+      "command": "offer 15",
+      "expected_status": 0,
+      "response": {
+        "command": "offer",
+        "status": 0,
+        "result": [
+          8,
+          15,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 2,
+      "command": "accept 8",
+      "expected_status": 1,
+      "response": {
+        "command": "accept",
+        "status": 1,
+        "result": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "accept 8",
+      "expected_status": 1,
+      "response": {
+        "command": "accept",
+        "status": 1,
+        "result": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "notify 8",
+      "expected_status": 2,
+      "response": {
+        "command": "notify",
+        "status": 2,
+        "result": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "accept 8",
+      "expected_status": 0,
+      "response": {
+        "command": "accept",
+        "status": 0,
+        "result": [
+          0,
+          0,
+          1,
+          13
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 2,
+      "command": "query 8",
+      "expected_status": 1,
+      "response": {
+        "command": "query",
+        "status": 1,
+        "result": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "notify 8",
+      "expected_status": 1,
+      "response": {
+        "command": "notify",
+        "status": 1,
+        "result": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "close 8",
+      "expected_status": 1,
+      "response": {
+        "command": "close",
+        "status": 1,
+        "result": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "ack 8 0",
+      "expected_status": 1,
+      "response": {
+        "command": "ack",
+        "status": 1,
+        "result": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "irq-stats",
+      "expected_status": 0,
+      "response": {
+        "command": "irq-stats",
+        "status": 0,
+        "result": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 1,
+      "command": "irq-stats",
+      "expected_status": 0,
+      "response": {
+        "command": "irq-stats",
+        "status": 0,
+        "result": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 2,
+      "command": "irq-stats",
+      "expected_status": 0,
+      "response": {
+        "command": "irq-stats",
+        "status": 0,
+        "result": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 1,
+      "command": "arm 8 0",
+      "expected_status": 0,
+      "response": {
+        "command": "arm",
+        "status": 0,
+        "result": [
+          0,
+          0,
+          3,
+          13
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 0,
+      "command": "notify 8",
+      "expected_status": 0,
+      "response": {
+        "command": "notify",
+        "status": 0,
+        "result": [
+          1,
+          15,
+          1,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 0,
+      "command": "notify 8",
+      "expected_status": 0,
+      "response": {
+        "command": "notify",
+        "status": 0,
+        "result": [
+          2,
+          15,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 0,
+      "command": "irq-stats",
+      "expected_status": 0,
+      "response": {
+        "command": "irq-stats",
+        "status": 0,
+        "result": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 1,
+      "command": "irq-stats",
+      "expected_status": 0,
+      "response": {
+        "command": "irq-stats",
+        "status": 0,
+        "result": [
+          1,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 2,
+      "command": "irq-stats",
+      "expected_status": 0,
+      "response": {
+        "command": "irq-stats",
+        "status": 0,
+        "result": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 1,
+      "command": "query 8",
+      "expected_status": 0,
+      "response": {
+        "command": "query",
+        "status": 0,
+        "result": [
+          2,
+          0,
+          1,
+          13
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 1,
+      "command": "ack 8 3",
+      "expected_status": 1,
+      "response": {
+        "command": "ack",
+        "status": 1,
+        "result": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "arm 8 2",
+      "expected_status": 1,
+      "response": {
+        "command": "arm",
+        "status": 1,
+        "result": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "ack 8 1",
+      "expected_status": 0,
+      "response": {
+        "command": "ack",
+        "status": 0,
+        "result": [
+          2,
+          1,
+          1,
+          13
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 1,
+      "command": "arm 8 1",
+      "expected_status": 0,
+      "response": {
+        "command": "arm",
+        "status": 0,
+        "result": [
+          2,
+          1,
+          1,
+          13
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 1,
+      "command": "ack 8 2",
+      "expected_status": 0,
+      "response": {
+        "command": "ack",
+        "status": 0,
+        "result": [
+          2,
+          2,
+          1,
+          13
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 1,
+      "command": "arm 8 2",
+      "expected_status": 0,
+      "response": {
+        "command": "arm",
+        "status": 0,
+        "result": [
+          2,
+          2,
+          3,
+          13
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 0,
+      "command": "offer 14",
+      "expected_status": 0,
+      "response": {
+        "command": "offer",
+        "status": 0,
+        "result": [
+          9,
+          14,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 2,
+      "command": "accept 9",
+      "expected_status": 0,
+      "response": {
+        "command": "accept",
+        "status": 0,
+        "result": [
+          0,
+          0,
+          1,
+          13
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 0,
+      "command": "pool-source 8392704",
+      "expected_status": 0,
+      "response": {
+        "command": "pool-source",
+        "status": 0,
+        "result": [
+          2598764544,
+          8392704,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 0,
+      "command": "pool-source 8392704",
+      "expected_status": 0,
+      "response": {
+        "command": "pool-source",
+        "status": 0,
+        "result": [
+          2607157248,
+          8392704,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 0,
+      "command": "pool-info",
+      "expected_status": -22,
+      "response": {
+        "command": "pool-info",
+        "status": -22,
+        "result": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 1
+    },
+    {
+      "realm": 0,
+      "command": "pool-read 0",
+      "expected_status": -22,
+      "response": {
+        "command": "pool-read",
+        "status": -22,
+        "result": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 1
+    },
+    {
+      "realm": 1,
+      "command": "pool-target 8392704",
+      "expected_status": 0,
+      "response": {
+        "command": "pool-target",
+        "status": 0,
+        "result": [
+          2598776832,
+          8392704,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 0,
+      "command": "--pool 2598764544 pool-fill-pages 3694171490925674496",
+      "expected_status": 0,
+      "response": {
+        "command": "pool-fill-pages",
+        "status": 0,
+        "result": [
+          2598764544,
+          8392704,
+          2049,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 0,
+      "command": "mem-offer 8 2598764544 8392704",
+      "expected_status": null,
+      "response": {
+        "command": "mem-offer",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          64,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          128,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          192,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          256,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          320,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          384,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          448,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          512,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          576,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          640,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          704,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          768,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          832,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          896,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          960,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          1024,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          1088,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          1152,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          1216,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          1280,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          1344,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          1408,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          1472,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          1536,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          1600,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          1664,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          1728,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          1792,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          1856,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          1920,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          1984,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          1,
+          2048,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 0,
+        "result": [
+          6,
+          2,
+          2049,
+          2049
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 1,
+      "command": "mem-attach 6 2598776832",
+      "expected_status": null,
+      "response": {
+        "command": "mem-attach",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          64,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          128,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          192,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          256,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          320,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          384,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          448,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          512,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          576,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          640,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          704,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          768,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          832,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          896,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          960,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          1024,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          1088,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          1152,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          1216,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          1280,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          1344,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          1408,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          1472,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          1536,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          1600,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          1664,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          1728,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          1792,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          1856,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          1920,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          1984,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          3,
+          2048,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          63,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          127,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          191,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          255,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          319,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          383,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          447,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          511,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          575,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          639,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          703,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          767,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          831,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          895,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          959,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          1023,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          1087,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          1151,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          1215,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          1279,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          1343,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          1407,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          1471,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          1535,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          1599,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          1663,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          1727,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          1791,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          1855,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          1919,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          1983,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          4,
+          2047,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 0,
+        "result": [
+          6,
+          5,
+          2049,
+          2049
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 1,
+      "command": "pool-check-pages 3694171490925674496 6",
+      "expected_status": 0,
+      "response": {
+        "command": "pool-check-pages",
+        "status": 0,
+        "result": [
+          2598776832,
+          8392704,
+          2049,
+          6
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 2,
+      "command": "mem-describe 6",
+      "expected_status": 1,
+      "response": {
+        "command": "mem-describe",
+        "status": 1,
+        "result": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "pool-bind-gpu 6",
+      "expected_status": 0,
+      "response": {
+        "command": "pool-bind-gpu",
+        "status": 0,
+        "result": [
+          2598764544,
+          8392704,
+          0,
+          6
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 1,
+      "command": "pool-bind-gpu 6",
+      "expected_status": 0,
+      "response": {
+        "command": "pool-bind-gpu",
+        "status": 0,
+        "result": [
+          2598776832,
+          8392704,
+          0,
+          6
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 2,
+      "command": "pool-target 8392704",
+      "expected_status": 0,
+      "response": {
+        "command": "pool-target",
+        "status": 0,
+        "result": [
+          2598776832,
+          8392704,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 0,
+      "command": "--pool 2607157248 pool-fill-pages 3694171490926723072",
+      "expected_status": 0,
+      "response": {
+        "command": "pool-fill-pages",
+        "status": 0,
+        "result": [
+          2607157248,
+          8392704,
+          2049,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 0,
+      "command": "mem-offer 9 2607157248 8392704",
+      "expected_status": null,
+      "response": {
+        "command": "mem-offer",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          64,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          128,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          192,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          256,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          320,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          384,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          448,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          512,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          576,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          640,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          704,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          768,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          832,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          896,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          960,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          1024,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          1088,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          1152,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          1216,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          1280,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          1344,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          1408,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          1472,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          1536,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          1600,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          1664,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          1728,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          1792,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          1856,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          1920,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          1984,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          1,
+          2048,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 0,
+        "result": [
+          7,
+          2,
+          2049,
+          2049
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 2,
+      "command": "mem-attach 7 2598776832",
+      "expected_status": null,
+      "response": {
+        "command": "mem-attach",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          64,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          128,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          192,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          256,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          320,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          384,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          448,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          512,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          576,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          640,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          704,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          768,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          832,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          896,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          960,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          1024,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          1088,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          1152,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          1216,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          1280,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          1344,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          1408,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          1472,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          1536,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          1600,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          1664,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          1728,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          1792,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          1856,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          1920,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          1984,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          3,
+          2048,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          63,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          127,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          191,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          255,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          319,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          383,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          447,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          511,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          575,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          639,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          703,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          767,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          831,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          895,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          959,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          1023,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          1087,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          1151,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          1215,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          1279,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          1343,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          1407,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          1471,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          1535,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          1599,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          1663,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          1727,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          1791,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          1855,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          1919,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          1983,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          4,
+          2047,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 0,
+        "result": [
+          7,
+          5,
+          2049,
+          2049
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 2,
+      "command": "pool-check-pages 3694171490926723072 7",
+      "expected_status": 0,
+      "response": {
+        "command": "pool-check-pages",
+        "status": 0,
+        "result": [
+          2598776832,
+          8392704,
+          2049,
+          7
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 1,
+      "command": "mem-describe 7",
+      "expected_status": 1,
+      "response": {
+        "command": "mem-describe",
+        "status": 1,
+        "result": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "pool-bind-gpu 7",
+      "expected_status": 0,
+      "response": {
+        "command": "pool-bind-gpu",
+        "status": 0,
+        "result": [
+          2607157248,
+          8392704,
+          0,
+          7
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 2,
+      "command": "pool-bind-gpu 7",
+      "expected_status": 0,
+      "response": {
+        "command": "pool-bind-gpu",
+        "status": 0,
+        "result": [
+          2598776832,
+          8392704,
+          0,
+          7
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 0,
+      "command": "kernel-log",
+      "returncode": 0,
+      "markers": {
+        "XSHM_KERNEL_LOG_END": true
+      }
+    },
+    {
+      "realm": 1,
+      "command": "gpu-smoke --basic /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=BASIC_PASS": true
+      }
+    },
+    {
+      "realm": 2,
+      "command": "gpu-smoke --basic /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=BASIC_PASS": true
+      }
+    },
+    {
+      "realm": 1,
+      "command": "gpu-smoke --vm-create /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=VM_CREATE_PASS": true
+      }
+    },
+    {
+      "realm": 2,
+      "command": "gpu-smoke --vm-create /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=VM_CREATE_PASS": true
+      }
+    },
+    {
+      "realm": 1,
+      "command": "gpu-smoke --bo-create /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=BO_CREATE_PASS": true
+      }
+    },
+    {
+      "realm": 2,
+      "command": "gpu-smoke --bo-create /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=BO_CREATE_PASS": true
+      }
+    },
+    {
+      "realm": 1,
+      "command": "gpu-smoke --bo-lifecycle /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=BO_LIFECYCLE_PASS": true
+      }
+    },
+    {
+      "realm": 2,
+      "command": "gpu-smoke --bo-lifecycle /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=BO_LIFECYCLE_PASS": true
+      }
+    },
+    {
+      "realm": 1,
+      "command": "gpu-smoke --bo-mmap /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=BO_MMAP_PASS": true
+      }
+    },
+    {
+      "realm": 2,
+      "command": "gpu-smoke --bo-mmap /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=BO_MMAP_PASS": true
+      }
+    },
+    {
+      "realm": 1,
+      "command": "gpu-smoke --vm-bind /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=VM_BIND_PASS": true
+      }
+    },
+    {
+      "realm": 2,
+      "command": "gpu-smoke --vm-bind /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=VM_BIND_PASS": true
+      }
+    },
+    {
+      "realm": 1,
+      "command": "gpu-smoke --vm-bind-async-sync /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=VM_BIND_ASYNC_SYNC_PASS": true
+      }
+    },
+    {
+      "realm": 2,
+      "command": "gpu-smoke --vm-bind-async-sync /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=VM_BIND_ASYNC_SYNC_PASS": true
+      }
+    },
+    {
+      "realm": 1,
+      "command": "gpu-smoke --vm-state-flush /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=VM_STATE_FLUSH_PASS": true
+      }
+    },
+    {
+      "realm": 2,
+      "command": "gpu-smoke --vm-state-flush /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=VM_STATE_FLUSH_PASS": true
+      }
+    },
+    {
+      "realm": 1,
+      "command": "gpu-smoke --syncobj-lifecycle /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=SYNCOBJ_LIFECYCLE_PASS": true
+      }
+    },
+    {
+      "realm": 2,
+      "command": "gpu-smoke --syncobj-lifecycle /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=SYNCOBJ_LIFECYCLE_PASS": true
+      }
+    },
+    {
+      "realm": 1,
+      "command": "gpu-smoke --syncobj-wait /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=SYNCOBJ_WAIT_PASS": true
+      }
+    },
+    {
+      "realm": 2,
+      "command": "gpu-smoke --syncobj-wait /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=SYNCOBJ_WAIT_PASS": true
+      }
+    },
+    {
+      "realm": 1,
+      "command": "gpu-smoke --syncobj-transfer /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=SYNCOBJ_TRANSFER_PASS": true
+      }
+    },
+    {
+      "realm": 2,
+      "command": "gpu-smoke --syncobj-transfer /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=SYNCOBJ_TRANSFER_PASS": true
+      }
+    },
+    {
+      "realm": 1,
+      "command": "gpu-smoke --syncobj-timeline-wait /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=SYNCOBJ_TIMELINE_WAIT_PASS": true
+      }
+    },
+    {
+      "realm": 2,
+      "command": "gpu-smoke --syncobj-timeline-wait /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=SYNCOBJ_TIMELINE_WAIT_PASS": true
+      }
+    },
+    {
+      "realm": 1,
+      "command": "gpu-smoke --syncobj-signal-query /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=SYNCOBJ_SIGNAL_QUERY_PASS": true
+      }
+    },
+    {
+      "realm": 2,
+      "command": "gpu-smoke --syncobj-signal-query /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=SYNCOBJ_SIGNAL_QUERY_PASS": true
+      }
+    },
+    {
+      "realm": 1,
+      "command": "gpu-smoke --sync-file-snapshot /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=SYNC_FILE_SNAPSHOT_PASS": true
+      }
+    },
+    {
+      "realm": 2,
+      "command": "gpu-smoke --sync-file-snapshot /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=SYNC_FILE_SNAPSHOT_PASS": true
+      }
+    },
+    {
+      "realm": 1,
+      "command": "gpu-smoke --group-lifecycle /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=GROUP_LIFECYCLE_PASS": true
+      }
+    },
+    {
+      "realm": 2,
+      "command": "gpu-smoke --group-lifecycle /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=GROUP_LIFECYCLE_PASS": true
+      }
+    },
+    {
+      "realm": 1,
+      "command": "gpu-smoke --group-submit-syncpoint /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=GROUP_SUBMIT_SYNCPOINT_PASS": true
+      }
+    },
+    {
+      "realm": 2,
+      "command": "gpu-smoke --group-submit-syncpoint /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=GROUP_SUBMIT_SYNCPOINT_PASS": true
+      }
+    },
+    {
+      "realm": 1,
+      "command": "gpu-smoke --tiler-heap-lifecycle /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=TILER_HEAP_LIFECYCLE_PASS": true
+      }
+    },
+    {
+      "realm": 2,
+      "command": "gpu-smoke --tiler-heap-lifecycle /dev/dri/renderD128",
+      "returncode": 0,
+      "markers": {
+        "PANTHOR_IOCTL_SMOKE=TILER_HEAP_LIFECYCLE_PASS": true
+      }
+    },
+    {
+      "realm": 1,
+      "command": "compute",
+      "returncode": 0,
+      "markers": {
+        "COMPUTE_CHECK=PASS count=65536 samples=16": true,
+        "GL_RENDERER=Mali-G610": true
+      }
+    },
+    {
+      "realm": 2,
+      "command": "compute",
+      "returncode": 0,
+      "markers": {
+        "COMPUTE_CHECK=PASS count=65536 samples=16": true,
+        "GL_RENDERER=Mali-G610": true
+      }
+    },
+    {
+      "realm": 2,
+      "command": "pool-unbind 7",
+      "expected_status": 0,
+      "response": {
+        "command": "pool-unbind",
+        "status": 0,
+        "result": [
+          2598776832,
+          8392704,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 0,
+      "command": "pool-unbind 7",
+      "expected_status": 0,
+      "response": {
+        "command": "pool-unbind",
+        "status": 0,
+        "result": [
+          2607157248,
+          8392704,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 2,
+      "command": "mem-detach 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-detach",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          1985,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          1921,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          1857,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          1793,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          1729,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          1665,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          1601,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          1537,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          1473,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          1409,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          1345,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          1281,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          1217,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          1153,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          1089,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          1025,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          961,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          897,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          833,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          769,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          705,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          641,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          577,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          513,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          449,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          385,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          321,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          257,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          193,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          129,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          65,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          7,
+          6,
+          1,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 2,
+      "command": "mem-continue 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 0,
+        "result": [
+          7,
+          2,
+          0,
+          2049
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 0,
+      "command": "mem-revoke 7",
+      "expected_status": null,
+      "response": {
+        "command": "mem-revoke",
+        "status": 0,
+        "result": [
+          7,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 1,
+      "command": "pool-unbind 6",
+      "expected_status": 0,
+      "response": {
+        "command": "pool-unbind",
+        "status": 0,
+        "result": [
+          2598776832,
+          8392704,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 0,
+      "command": "pool-unbind 6",
+      "expected_status": 0,
+      "response": {
+        "command": "pool-unbind",
+        "status": 0,
+        "result": [
+          2598764544,
+          8392704,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 1,
+      "command": "mem-detach 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-detach",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          1985,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          1921,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          1857,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          1793,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          1729,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          1665,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          1601,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          1537,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          1473,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          1409,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          1345,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          1281,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          1217,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          1153,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          1089,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          1025,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          961,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          897,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          833,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          769,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          705,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          641,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          577,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          513,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          449,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          385,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          321,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          257,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          193,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          129,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          65,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 3,
+        "result": [
+          6,
+          6,
+          1,
+          2049
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "mem-continue 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-continue",
+        "status": 0,
+        "result": [
+          6,
+          2,
+          0,
+          2049
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 0,
+      "command": "mem-revoke 6",
+      "expected_status": null,
+      "response": {
+        "command": "mem-revoke",
+        "status": 0,
+        "result": [
+          6,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 0,
+      "command": "close 9",
+      "expected_status": 0,
+      "response": {
+        "command": "close",
+        "status": 0,
+        "result": [
+          0,
+          14,
+          1,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 0,
+      "command": "irq-stats",
+      "expected_status": 0,
+      "response": {
+        "command": "irq-stats",
+        "status": 0,
+        "result": [
+          3497,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 1,
+      "command": "irq-stats",
+      "expected_status": 0,
+      "response": {
+        "command": "irq-stats",
+        "status": 0,
+        "result": [
+          1737,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 2,
+      "command": "irq-stats",
+      "expected_status": 0,
+      "response": {
+        "command": "irq-stats",
+        "status": 0,
+        "result": [
+          1733,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 0,
+      "command": "close 8",
+      "expected_status": 0,
+      "response": {
+        "command": "close",
+        "status": 0,
+        "result": [
+          0,
+          15,
+          1,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 0,
+      "command": "notify 8",
+      "expected_status": 2,
+      "response": {
+        "command": "notify",
+        "status": 2,
+        "result": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 1,
+      "command": "unregister",
+      "expected_status": 0,
+      "response": {
+        "command": "unregister",
+        "status": 0,
+        "result": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 1,
+      "command": "register",
+      "expected_status": 0,
+      "response": {
+        "command": "register",
+        "status": 0,
+        "result": [
+          1,
+          16,
+          63,
+          128
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 0,
+      "command": "offer 15",
+      "expected_status": 1,
+      "response": {
+        "command": "offer",
+        "status": 1,
+        "result": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 3
+    },
+    {
+      "realm": 0,
+      "command": "offer 16",
+      "expected_status": 0,
+      "response": {
+        "command": "offer",
+        "status": 0,
+        "result": [
+          10,
+          16,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 1,
+      "command": "accept 10",
+      "expected_status": 0,
+      "response": {
+        "command": "accept",
+        "status": 0,
+        "result": [
+          0,
+          0,
+          1,
+          13
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 1,
+      "command": "query 10",
+      "expected_status": 0,
+      "response": {
+        "command": "query",
+        "status": 0,
+        "result": [
+          0,
+          0,
+          1,
+          13
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 1,
+      "command": "close 10",
+      "expected_status": 0,
+      "response": {
+        "command": "close",
+        "status": 0,
+        "result": [
+          0,
+          13,
+          1,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 0,
+      "command": "unregister",
+      "expected_status": 0,
+      "response": {
+        "command": "unregister",
+        "status": 0,
+        "result": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 1,
+      "command": "unregister",
+      "expected_status": 0,
+      "response": {
+        "command": "unregister",
+        "status": 0,
+        "result": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 2,
+      "command": "unregister",
+      "expected_status": 0,
+      "response": {
+        "command": "unregister",
+        "status": 0,
+        "result": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "returncode": 0
+    },
+    {
+      "realm": 0,
+      "command": "kernel-log",
+      "returncode": 0,
+      "markers": {
+        "XSHM_KERNEL_LOG_END": true
+      }
+    },
+    {
+      "realm": 1,
+      "command": "kernel-log",
+      "returncode": 0,
+      "markers": {
+        "XSHM_KERNEL_LOG_END": true
+      }
+    },
+    {
+      "realm": 2,
+      "command": "kernel-log",
+      "returncode": 0,
+      "markers": {
+        "XSHM_KERNEL_LOG_END": true
+      }
+    }
+  ],
+  "memory_pages": 2049,
+  "transport": true,
+  "trusted_events": true,
+  "parallel_boot": true,
+  "gpu_flow": true,
+  "clients": 2,
+  "pin_cpus": true,
+  "performance": false,
+  "benchmark_only": false,
+  "compute_rootfs": "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4",
+  "glmark_rootfs": null,
+  "rpc_stats": false,
+  "suite": false,
+  "large_pool": false,
+  "profiles": null,
+  "inputs": {
+    "/root/GPU-SFTP/tests/realm-xshm/run-realms.py": "e7703ec7d913676cb65f87e5e92e1751943f933000a039df4bb6414edd2152e9",
+    "/root/GPU-SFTP/firecracker-bins/bin/firecracker": "1da45f6ad565434ff4bef82f8e1c15faed17f940ae8297a7a05bfc7278be6b66",
+    "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/Image": "a8bcdb5583ddcb9e1651169222308ad3a29f686af527847640aa6a3080e4f94c",
+    "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/initrd.cpio": "c3cdd4fa34c168e528460c9dd63f58354b5b66437c51973415fc5edb60931299",
+    "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/proxy/Image": "37f18d657364265177611827a154008ecb0acaaf51bee61fe4807b590df748a5",
+    "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4": "5d0c2ec8e5c1830f6a93c39d34bd8ae02a99702792e9e16a9d9034388f606d60"
+  },
+  "event_irq": {
+    "before": [
+      0,
+      0,
+      0
+    ],
+    "after_two_notifications": [
+      0,
+      1,
+      0
+    ],
+    "intid": 127,
+    "negative_and_coalescing": "PASS",
+    "after_workloads": [
+      3497,
+      1737,
+      1733
+    ]
+  },
+  "simultaneous_client_bindings": 2,
+  "permission_selftests": "PASS",
+  "two_client_compute_check": "PASS",
+  "two_client_gpu_flow_check": "PASS",
+  "memory_check": "PASS",
+  "provider_replacement_check": "NOT_RUN (separate single-Client lifecycle test)",
+  "kernel_health": {
+    "0": {
+      "csg_update_timeout": [],
+      "fw_ping_timeout": [],
+      "gpu_translation_fault": [],
+      "kernel_warning": [],
+      "kernel_oops": []
+    },
+    "1": {
+      "csg_update_timeout": [],
+      "fw_ping_timeout": [],
+      "gpu_translation_fault": [],
+      "kernel_warning": [],
+      "kernel_oops": []
+    },
+    "2": {
+      "csg_update_timeout": [],
+      "fw_ping_timeout": [],
+      "gpu_translation_fault": [],
+      "kernel_warning": [],
+      "kernel_oops": []
+    }
+  },
+  "vm_exit_codes": [
+    0,
+    0,
+    0
+  ]
+}

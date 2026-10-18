@@ -1,0 +1,194 @@
+[
+  {
+    "name": "preflight",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-preflight",
+    "log": "preflight.log"
+  },
+  {
+    "name": "ioctl",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-ioctl",
+    "log": "ioctl.log"
+  },
+  {
+    "name": "vm-create",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-vm-create",
+    "log": "vm-create.log"
+  },
+  {
+    "name": "bo-create",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-bo-create",
+    "log": "bo-create.log"
+  },
+  {
+    "name": "bo-lifecycle",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-bo-lifecycle",
+    "log": "bo-lifecycle.log"
+  },
+  {
+    "name": "bo-mmap",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-bo-mmap",
+    "log": "bo-mmap.log"
+  },
+  {
+    "name": "vm-bind",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-vm-bind",
+    "log": "vm-bind.log"
+  },
+  {
+    "name": "vm-bind-async-sync",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-vm-bind-async-sync",
+    "log": "vm-bind-async-sync.log"
+  },
+  {
+    "name": "vm-state-flush",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-vm-state-flush",
+    "log": "vm-state-flush.log"
+  },
+  {
+    "name": "syncobj-lifecycle",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-syncobj-lifecycle",
+    "log": "syncobj-lifecycle.log"
+  },
+  {
+    "name": "syncobj-wait",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-syncobj-wait",
+    "log": "syncobj-wait.log"
+  },
+  {
+    "name": "syncobj-transfer",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-syncobj-transfer",
+    "log": "syncobj-transfer.log"
+  },
+  {
+    "name": "syncobj-timeline-wait",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-syncobj-timeline-wait",
+    "log": "syncobj-timeline-wait.log"
+  },
+  {
+    "name": "syncobj-signal-query",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-syncobj-signal-query",
+    "log": "syncobj-signal-query.log"
+  },
+  {
+    "name": "sync-file-snapshot",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-sync-file-snapshot",
+    "log": "sync-file-snapshot.log"
+  },
+  {
+    "name": "group-lifecycle",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-group-lifecycle",
+    "log": "group-lifecycle.log"
+  },
+  {
+    "name": "group-submit-syncpoint",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-group-submit-syncpoint",
+    "log": "group-submit-syncpoint.log"
+  },
+  {
+    "name": "tiler-heap-lifecycle",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-tiler-heap-lifecycle",
+    "log": "tiler-heap-lifecycle.log"
+  },
+  {
+    "name": "pfn-lifetime",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-pfn-lifetime",
+    "log": "pfn-lifetime.log"
+  },
+  {
+    "name": "pfn-log-check",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-pfn-log-check",
+    "log": "pfn-log-check.log"
+  },
+  {
+    "name": "compute-4mib",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-compute-4mib",
+    "log": "compute-4mib.log"
+  },
+  {
+    "name": "compute-16mib",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-compute-16mib",
+    "log": "compute-16mib.log"
+  },
+  {
+    "name": "compute-64mib",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-compute-64mib",
+    "log": "compute-64mib.log"
+  },
+  {
+    "name": "compute-128mib",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-compute-128mib",
+    "log": "compute-128mib.log"
+  },
+  {
+    "name": "ml-all",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-ml-all",
+    "log": "ml-all.log"
+  },
+  {
+    "name": "attention320",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-attention320",
+    "log": "attention320.log"
+  },
+  {
+    "name": "ncnn",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-ncnn",
+    "log": "ncnn.log"
+  },
+  {
+    "name": "glmark-1280x720",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-glmark-1280x720",
+    "log": "glmark-1280x720.log"
+  },
+  {
+    "name": "glmark-1920x1080",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-glmark-1920x1080",
+    "log": "glmark-1920x1080.log"
+  },
+  {
+    "name": "two-client",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-two-client",
+    "log": "two-client.log"
+  },
+  {
+    "name": "passthrough",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-passthrough",
+    "log": "passthrough.log"
+  },
+  {
+    "name": "idle-after",
+    "returncode": 0,
+    "run_id": "glmark-opt-20261016-opp3-regression32-idle-after",
+    "log": "idle-after.log"
+  }
+]

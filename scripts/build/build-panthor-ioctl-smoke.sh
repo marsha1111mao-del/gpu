@@ -6,15 +6,20 @@ ROOT_DIR=$(cd -- "${SCRIPT_DIR}/../.." && pwd)
 SRC_DIR="${SRC_DIR:-"${ROOT_DIR}/GPU-SFTP/tests/panthor-ioctl-smoke"}"
 OUT="${OUT:-"${SRC_DIR}/panthor_ioctl_smoke"}"
 CC="${CC:-aarch64-linux-gnu-gcc}"
-DRM_UAPI="${DRM_UAPI:-/usr/include/drm}"
+# Match ioctl structure sizes to the target kernel. New controller headers
+# extend drm_syncobj_handle with a timeline point, changing HANDLE_TO_FD's
+# ioctl number and bypassing the frontend's binary-syncobj interception.
+if [[ -z "${DRM_UAPI:-}" ]]; then
+	uapi_root="${ROOT_DIR}/build/panthor-ioctl-uapi"
+	make -s -C "${ROOT_DIR}/Linux-Guest-GPU" \
+		O="${uapi_root}/kbuild" ARCH=arm64 \
+		INSTALL_HDR_PATH="${uapi_root}/export" headers_install
+	DRM_UAPI="${uapi_root}/export/include/drm"
+fi
 INSTALL_PATH="${INSTALL_PATH:-"${ROOT_DIR}/GPU-SFTP/firecracker-bins/bin/panthor_ioctl_smoke"}"
 
 if [[ -z "${PANTHOR_UAPI:-}" ]]; then
-	if [[ -f "${ROOT_DIR}/Linux-Guest-GPU/include/uapi/drm/panthor_drm.h" ]]; then
-		PANTHOR_UAPI="${ROOT_DIR}/Linux-Guest-GPU/include/uapi/drm"
-	else
-		PANTHOR_UAPI="${DRM_UAPI}"
-	fi
+	PANTHOR_UAPI="${DRM_UAPI}"
 fi
 
 "${CC}" \

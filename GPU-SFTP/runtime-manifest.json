@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "baseline": "2026-10-15 Host #10 ordinary VM sharing",
+  "baseline": "2026-10-18 RMM-only Realm Client/Proxy; Host/passthrough retain separately versioned reference payloads",
   "artifacts": [
     {
-      "archive": "GPU-SFTP/runtime/arm64-userspace-20261015.tar.gz",
-      "sha256": "1787a7f32b54e8cb7e2957eb6c7d4dea9ca1880c10e9412233894b5add80d1e7",
-      "size": 27169412,
+      "archive": "GPU-SFTP/runtime/arm64-userspace-20261018.tar.gz",
+      "sha256": "2303bd2abbb19059237a63bd4bd7eeda302b234f68edf137e25562169ad487fa",
+      "size": 24959962,
       "files": {
         "artifacts/glmark2-arm64/rootfs-null-noop/BUILD.txt": {
           "size": 848,
@@ -652,8 +652,8 @@
           "sha256": "fd5882c2e3816507712189820097996b3821db33d6a6aa06045c9cdf9687dac9"
         },
         "firecracker-bins/bin/firecracker": {
-          "size": 4554160,
-          "sha256": "f21f02354b41bed40e961af34de4191ba791d81f3c8f53109b0703696cdc4925"
+          "size": 4505272,
+          "sha256": "1da45f6ad565434ff4bef82f8e1c15faed17f940ae8297a7a05bfc7278be6b66"
         },
         "firecracker-bins/bin/gles-compute-smoke": {
           "size": 32752,
@@ -670,22 +670,6 @@
         "firecracker-bins/bin/pmthor-pfn-lifetime": {
           "size": 651728,
           "sha256": "c1d3f7783d717afb71466ef8e9ed067aabab409d75e1f46584eaa5dadd6b1fad"
-        },
-        "firecracker-bins/bin/vmshm-broker": {
-          "size": 2155664,
-          "sha256": "ccbd8a2350b16ca2c95f0cc37093efe29a57dd6e27b7732cb5d84ae1bc891d77"
-        },
-        "firecracker-bins/bin/vmshm-client-test": {
-          "size": 2156232,
-          "sha256": "4aed716a802df76f9aba2e91f8bf4eba5cde0fa05b6da66dcaf3d7198e17b471"
-        },
-        "firecracker-bins/bin/vmshm_lookup_probe": {
-          "size": 646192,
-          "sha256": "cfd78b07d989bfc5f61f479262154481e12d84e0b68827ab224302bcea78cc3a"
-        },
-        "firecracker-bins/bin/vmshm_raw_rpc_probe": {
-          "size": 655848,
-          "sha256": "adbf445b05c9278d68561ef27d5c76a3a09004e90ef23bba90d3a913650fb5c0"
         },
         "tests/vulkan-bench/bin/raw-vk-probe": {
           "size": 512456,
@@ -705,28 +689,6 @@
       }
     },
     {
-      "archive": "GPU-SFTP/runtime/arm64-client-20261015.tar.gz",
-      "size": 14743385,
-      "sha256": "f650242ed562cdb36da19eb7665a67b6a74b2714adc225ef0855e8f4c08d5b27",
-      "files": {
-        "firecracker-bins/kernels/shared/client/Image": {
-          "size": 46647808,
-          "sha256": "e797e3180e65407eecb5cfed894725f9e5f8b31f822f1089feb38a820062e68f"
-        }
-      }
-    },
-    {
-      "archive": "GPU-SFTP/runtime/arm64-proxy-20261015.tar.gz",
-      "size": 14843861,
-      "sha256": "5521cb55b8bf1b787f29576282bae726cf329987ccf929a31bc6b8aa771d9b3b",
-      "files": {
-        "firecracker-bins/kernels/shared/proxy/Image": {
-          "size": 46912000,
-          "sha256": "24e213e91b4ecc2ce2c4e6dece0b1bad15d445d3b7207e8701f4f70da5922b55"
-        }
-      }
-    },
-    {
       "archive": "GPU-SFTP/runtime/arm64-host-20261015.tar.gz",
       "size": 16293034,
       "sha256": "f981e344b8672f1ce1302e025a5a51072cabd39a8e2b8b9d676fa767299df001",
@@ -734,6 +696,39 @@
         "linux-host-kernel/Image": {
           "size": 52566528,
           "sha256": "ca8fb02a1ca95b588ef1e2fcd3191865c98ab3b1b758d586d3b36e90c88c3f6c"
+        }
+      }
+    },
+    {
+      "archive": "GPU-SFTP/runtime/arm64-realm-client-20261018.tar.gz",
+      "sha256": "3b8db872138baa1ad2349042b56f4bab0d86c1ed81b86c938b4f4aaa192d0df4",
+      "size": 14252937,
+      "files": {
+        "firecracker-bins/kernels/realm-xshm/Image": {
+          "size": 39176704,
+          "sha256": "a8bcdb5583ddcb9e1651169222308ad3a29f686af527847640aa6a3080e4f94c"
+        }
+      }
+    },
+    {
+      "archive": "GPU-SFTP/runtime/arm64-realm-proxy-20261018.tar.gz",
+      "sha256": "f447883dc21917d048dd9850cfac27bc5955cfee736ed87343cc7bd8b9c81524",
+      "size": 14344032,
+      "files": {
+        "firecracker-bins/kernels/realm-xshm/proxy/Image": {
+          "size": 39375360,
+          "sha256": "37f18d657364265177611827a154008ecb0acaaf51bee61fe4807b590df748a5"
+        }
+      }
+    },
+    {
+      "archive": "GPU-SFTP/runtime/arm64-realm-initrd-20261018.tar.gz",
+      "sha256": "e661d580c3ff2e9e0369380c36e9f31139ae713b63ffa8090c5af3a587196853",
+      "size": 1315672,
+      "files": {
+        "firecracker-bins/kernels/realm-xshm/initrd.cpio": {
+          "size": 3100672,
+          "sha256": "c3cdd4fa34c168e528460c9dd63f58354b5b66437c51973415fc5edb60931299"
         }
       }
     }

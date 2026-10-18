@@ -5,9 +5,9 @@ SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 ROOT_DIR=$(cd -- "${SCRIPT_DIR}/../.." && pwd)
 
 PI_USER=${PI_USER:-mzh}
-PI_PASS=${PI_PASS:-root}
+PI_PASS=${PI_PASS:?Set PI_PASS in the local environment}
 RK_USER=${RK_USER:-root}
-RK_PASS=${RK_PASS:-root}
+RK_PASS=${RK_PASS:?Set RK_PASS in the local environment}
 SSH_PORT=${SSH_PORT:-22}
 CONNECT_TIMEOUT=${CONNECT_TIMEOUT:-2}
 JOBS=${JOBS:-64}
@@ -250,11 +250,8 @@ fi
 log "updating documented/default IPs: Pi ${OLD_PI_IP} -> ${pi_ip}, RK ${OLD_RK_IP} -> ${rk_ip}"
 files=(
 	"opencca/docs/SD_CARD_FLASH_RUNBOOK.md"
-	"docs/shared/PANTHOR_SHARED_VIRTUALIZATION_WORKLOG.md"
 	"docs/start/RASPBERRY_PI_FLASH_RUNBOOK.md"
 	"scripts/run/run-host-vs-passthrough-gles-perf.sh"
-	"scripts/run/run-vmshm-2client-e2e.sh"
-	"scripts/run/run-vmshm-e2e.sh"
 	"scripts/deploy/deploy-host-kernel-and-test.sh"
 	"opencca/scripts/lib/opencca_paths.sh"
 )

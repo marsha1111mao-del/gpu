@@ -1,0 +1,51 @@
+{
+  "logs": {
+    "client-rmm-only-build.log": {
+      "path": "build/memfd-retirement-20261018/client-rmm-only-build.log",
+      "sha256": "f77f6fe070e7bf209dc043fb768e145ff236b4d7a8e4564f3755afc8838a6a0c"
+    },
+    "proxy-rmm-only-build.log": {
+      "path": "build/memfd-retirement-20261018/proxy-rmm-only-build.log",
+      "sha256": "d57489466ec2c3802bc7a89f98bb601d1f9da280f3e0912630856115ccaee66c"
+    },
+    "firecracker-final-build-r6.log": {
+      "path": "build/memfd-retirement-20261018/firecracker-final-build-r6.log",
+      "sha256": "705f973077025782433cf69be7a09ffaebbb62b7efef9e482e51f5474564d3c7"
+    },
+    "checkout-final.log": {
+      "path": "build/memfd-retirement-20261018/checkout-final.log",
+      "sha256": "dc76a5579e3840853482209c67f2dae7ba940957aeb54e7d2c1f67d08c3ee092"
+    },
+    "firecracker-tests-rme-check.log": {
+      "path": "build/memfd-retirement-20261018/firecracker-tests-rme-check.log",
+      "sha256": "76b72525583743f927e205732e2466459b57ee7516854d574e0f2b61ba816e4f"
+    },
+    "opencca-patch-check.log": {
+      "path": "build/memfd-retirement-20261018/opencca-patch-check.log",
+      "sha256": "9347467867f3c18896a1fedaaef993e148c31291595ecc6f98d5b0e3a5cfad25"
+    }
+  },
+  "results": {
+    "client_build": "PASS",
+    "proxy_build": "PASS",
+    "firecracker_build": "PASS",
+    "checkout": "PASS",
+    "vmm_test_compile": "FAIL (pre-existing test interfaces)",
+    "opencca_patch_manifest": "FAIL (pre-existing buildconf difference)"
+  },
+  "preexisting_vmm_test_failures": {
+    "unchanged_from_pinned_commit": [
+      "src/vmm/src/vmm_config/machine_config.rs",
+      "src/vmm/src/vstate/vm/mod.rs",
+      "src/vmm/src/device_manager/mmio.rs",
+      "src/vmm/src/vstate/vcpu/mod.rs",
+      "src/vmm/tests/devices.rs"
+    ],
+    "diff_exit_code": 0
+  },
+  "hardware": {
+    "720p": "PASS score=1157 rc=0",
+    "two_client": "PASS rc=0",
+    "other_workloads": "NOT_RUN"
+  }
+}

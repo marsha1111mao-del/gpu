@@ -10,9 +10,7 @@
 “新机器”可以是全新的 Linux 构建/控制机；GPU 测试仍在物理 RK3588 上执行。
 仅 clone 到普通 PC 不能提供 GPU、KVM HVC 或 OpenCCA 硬件环境。
 
-2026-10-15 普通共享测试基线：Host `6.12.0-opencca-pmthor #10`，
-GPU 绑定 `pmthor`，无其他 VM 占用，Host CPU 通常在线 0–1。双 Client 测试
-自动使用更多 CPU，结束后恢复。禁止并发启动多套回归。
+当前Host、RMM、Realm冻结包及性能配置见[当前基线](../shared/CURRENT_BASELINE.md)。Host需绑定pmthor、无其他VM占用，通常CPU0–1在线；测试结束恢复。旧普通VM/memfd载荷不再是可运行路径，禁止并发启动多套回归。
 
 全新板子的 SD 卡、固件、Host Image 和匹配模块准备见
 `RASPBERRY_PI_FLASH_RUNBOOK.md` 与 `FROM_ZERO_REPRODUCTION.md`。需要直通对比时，
@@ -51,40 +49,18 @@ OpenCCA 内层上游仓库保持固定提交，必要修改以清单中的补丁
 仓库出现 dirty 是预期现象。不要在内层仓库执行 `git reset --hard` 后直接构建。
 清单检查基线和哈希，已应用的补丁不会重复应用，遇到冲突会停止。
 
-## 3. 板端检查与全量回归
+## 3. 板端检查与Realm测试
 
-板端需要 root、SSH、`/dev/kvm`、`/dev/pmthor`、bash、tar、mount、losetup、
-timeout、dmesg、taskset、modprobe、足够 rootfs 工作空间。建议安装 rsync，
-脚本也提供 tar 同步兼容路径。板端 Python 3 用于部分报告与诊断。
-源码编译 GLES/ML 时另需 gcc、pkg-config、libegl1-mesa-dev、libgles2-mesa-dev、
-libgbm-dev 和 libdrm-dev。
+确认SSH、/dev/kvm、/dev/pmthor、匹配的Host/RMM、Firecracker和只读Panfrost rootfs。先检查资源，再通过租约运行已冻结输入：
 
 ```bash
-export REMOTE_HOST=192.168.31.18
-export REMOTE_USER=root
-export REMOTE_PASS='root'  # 换成自己的板端凭据
-python3 scripts/run/run-regression.py --passthrough
+python3 scripts/maintenance/lab-resources.py --check --output build/preflight.json
+python3 scripts/maintenance/lab-run.py --run-id <唯一ID> -- \
+  python3 scripts/run/run-realm-xshm.py --images <冻结包> \
+  --workload glmark --performance --benchmark-only --suite --profiles glmark-720
 ```
 
-首次执行会同步运行树和 rootfs。后续确认板端文件一致时才加 `--remote-prepared`；
-`--quick` 用于短回归，不能替代完整性能基线。`--passthrough` 会切换 Host GPU
-驱动并进行 Host/Guest 对比。默认只运行普通共享矩阵。
-
-| 组别 | 覆盖 |
-| --- | --- |
-| IOCTL | 17 项设备查询、BO、mmap、VM_BIND、syncobj/sync_file、Group/Heap |
-| PFN | 32 次重复翻译、两种 device/VM 关闭顺序、EBUSY 与最终 reset/free |
-| Compute | 4 / 16 / 64 / 128 MiB、结果校验、预热与测量 |
-| ML | 六种算子、GEMM 512、Attention 320 |
-| NCNN | 三个模型、Vulkan GPU 探针、完整网络、空权重 |
-| 图形 | glmark2 720p / 1080p，null-noop，frame-end finish |
-| 共享 | 两个 Client 同时提交 Compute |
-| 直通（可选） | Host vs 单 VM passthrough，完成后恢复 pmthor |
-
-每个用例在 `GPU-SFTP/log/regression/<run-id>/` 保存输出和退出码，
-`summary.json` 持续更新；任何失败立即停止。单项脚本的 Guest/Proxy/Host 日志
-位于 `GPU-SFTP/log/shared/` 或 `log/passthrough/`。异常中断后先检查远端残留 VM、
-driver 绑定、挂载和 CPU 状态，再复测。
+入口只上传冻结包中变化的内核/initrd/runner，不自动恢复Host/RMM/rootfs。优化首先以完整720p超过1000分为门槛，再运行双Client功能、IOCTL、Compute、ML及大负载；具体范围见[Realm说明](../../GPU-SFTP/tests/realm-xshm/README.md)。每项保存run-id、命令、退出码、输入哈希及日志；未选择项为NOT_RUN。旧32项普通VM矩阵和memfd脚本已删除，历史报告仅用于对照。
 
 ## 4. 从源码重建
 
@@ -102,8 +78,7 @@ sudo apt-get install -y build-essential gcc-aarch64-linux-gnu \
 ```
 
 四种内核使用固定配置；`build-verified-kernels.sh` 要求干净源码目录并执行
-out-of-tree 构建，默认 `JOBS=8`。已有 in-tree 构建环境可继续使用原来的
-`build-guest-vmshm-kernels.sh` / `build-host-kernel-payload.sh`。完整 Host 模块：
+out-of-tree 构建，默认 `JOBS=8`。Client/Proxy始终合并REALM_XSHM配置；不要从旧普通VM配置单独构建。完整 Host 模块：
 
 ```bash
 INSTALL_MODULES=1 JOBS=8 ./scripts/build/build-host-kernel-payload.sh
@@ -118,15 +93,12 @@ rustup target add --toolchain 1.83.0 aarch64-unknown-linux-musl
 LINKER=/path/to/aarch64-linux-musl-gcc ./scripts/build/build-firecracker-runtime.sh
 ```
 
+需安装构建机libclang/Clang头文件、rustfmt和libseccomp开发库；ARM64 musl目标另需交叉构建的静态libseccomp，可通过目标RUSTFLAGS的`-L native=/path/to/arm64-musl/lib`指定，不要指向Host架构库。旧aws-lc依赖要求兼容CMake策略的构建环境，记录实际工具链版本。
+
 不要把 glibc 的 `aarch64-linux-gnu-gcc` 当作 musl linker。组件使用
 `cargo --locked`，Rust 依赖仓库已补全 rust-vmm-ci 的子模块映射。
 
-GLES/ML 单项测试省略 `--skip-gles-remote-build`，就会在板端从当前 C 源码重建：
-
-```bash
-./scripts/run/run-vmshm-e2e.sh --skip-build --gles-ml-smoke
-./scripts/run/run-vmshm-e2e.sh --skip-build --gles-compute-smoke
-```
+Realm完整initrd构建入口为`scripts/build/build-realm-xshm-initrd.py --help`；它打包当前测试源码对应的载荷，不使用旧memfd runner。
 
 NCNN 和 glmark2 固定来源、定制内容及源码快照见 `GPU-SFTP/ARTIFACTS.md`。
 重建这些第三方载荷后需更新对应探针、模型、依赖库和验证结果。

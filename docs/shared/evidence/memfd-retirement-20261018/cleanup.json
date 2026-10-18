@@ -1,0 +1,349 @@
+{
+  "removed_source_files": 43,
+  "removed_source_bytes": 353425,
+  "removed": [
+    {
+      "path": "scripts/run/run-vmshm-e2e.sh",
+      "sha256": "17b65eb4b354932a7662c28224b1741a4d0891a66746fbc60478bdce9008085c",
+      "bytes": 113228
+    },
+    {
+      "path": "scripts/run/run-regression.py",
+      "sha256": "457304efb619f260bef31fa1fa502a4ee0e94be1c570fa165cdde0264cd2490e",
+      "bytes": 7581
+    },
+    {
+      "path": "scripts/run/run-vmshm-2client-e2e.sh",
+      "sha256": "5d163bbc00cc37f896b4ba8dacc8c86b56900065f3cb595a593ddf9fbbcd2954",
+      "bytes": 68951
+    },
+    {
+      "path": "scripts/build/build-guest-vmshm-kernels.sh",
+      "sha256": "8bc7cdf1eb716bd9bb052c4b6e57292d7501661102e1b4fcc5843c8638e04d53",
+      "bytes": 5663
+    },
+    {
+      "path": "scripts/build/build-vmshm-raw-rpc-probe.sh",
+      "sha256": "f310643fb66563af6e8ea8b47e9d47ad88885a1bc6dd6d45f0128c75c1299be6",
+      "bytes": 529
+    },
+    {
+      "path": "scripts/build/build-vmshm-demo.sh",
+      "sha256": "6a5ee05e9ef3593218abcad47f8ad4ba69f6ab8008b2c4111637308805552be7",
+      "bytes": 489
+    },
+    {
+      "path": "scripts/build/build-vmshm-lookup-probe.sh",
+      "sha256": "d3302250cfeff44a8c23ac174e9a6d665e70c4b62703405764c31f93437e6a88",
+      "bytes": 525
+    },
+    {
+      "path": "GPU-SFTP/tests/vmshm-raw-rpc-probe/vmshm_raw_rpc_probe.c",
+      "sha256": "f34092e43880dd531fb8455ea410b52a0175fd99757154410b09275b3b77c074",
+      "bytes": 22260
+    },
+    {
+      "path": "GPU-SFTP/tests/vmshm-test/compile.sh",
+      "sha256": "5a72c7638f8433587181025fde644e08041935842657505e11f8fdf888bba0bf",
+      "bytes": 210
+    },
+    {
+      "path": "GPU-SFTP/tests/vmshm-test/vmshm-demo.c",
+      "sha256": "2cfb6daab8d8db6af9ebeba86908c8a1471453975c617e500687bfec31fafd95",
+      "bytes": 8066
+    },
+    {
+      "path": "GPU-SFTP/tests/vmshm-lookup-probe/vmshm_lookup_probe.c",
+      "sha256": "bebdec0097afda50152e472d986f96018230d81da3d5cdd800a3d10f1a7432cf",
+      "bytes": 5284
+    },
+    {
+      "path": "GPU-SFTP/firecracker-bins/scripts/tools/copy-vmshm-test.sh",
+      "sha256": "169d05b0cc9d6ead7d3b3656ce35871217f458d70a7b9fba48c264f2ceb0ba03",
+      "bytes": 903
+    },
+    {
+      "path": "GPU-SFTP/firecracker-bins/scripts/shared/vmshm-2client/install-vmshm-irq-configs-2client.sh",
+      "sha256": "389f5ef5da71e5ff5766b03c47c131a690416f63e694b081c85d561976a9629f",
+      "bytes": 5534
+    },
+    {
+      "path": "GPU-SFTP/firecracker-bins/scripts/shared/vmshm-2client/vm-proxy-2client-test.sh",
+      "sha256": "e730532b420e1a205d0e1e291150a8916751ffe98589b257933177aecb6faf0d",
+      "bytes": 277
+    },
+    {
+      "path": "GPU-SFTP/firecracker-bins/scripts/shared/vmshm-2client/vm-client1-2client-test.sh",
+      "sha256": "76633c601de1e32bdb11e04f595f70ee3f1363b1f1f69e112910b215f08b4a8d",
+      "bytes": 279
+    },
+    {
+      "path": "GPU-SFTP/firecracker-bins/scripts/shared/vmshm-2client/vm-client0-2client-test.sh",
+      "sha256": "7464c1f9560aa17f6cce1b83d6bd575bdd6535f9f02f3f34936bfd4ae6c85376",
+      "bytes": 279
+    },
+    {
+      "path": "GPU-SFTP/firecracker-bins/scripts/shared/vmshm-2client/broker-run-2client.sh",
+      "sha256": "4912b5292c68e5bc2b7aa17760406e782d53f9724c424037cc9525de08fcd53b",
+      "bytes": 249
+    },
+    {
+      "path": "GPU-SFTP/firecracker-bins/scripts/shared/vmshm-1client/install-vmshm-irq-configs.sh",
+      "sha256": "5cb650fcc3d0cfb988b507d16e31fea5119c6dfe0921f3f4c6682cc9ca4ed9bf",
+      "bytes": 3639
+    },
+    {
+      "path": "GPU-SFTP/firecracker-bins/scripts/shared/vmshm-1client/vm-client-test.sh",
+      "sha256": "a8bbb6d1a159ceb2f6df0b0995641c9261cdc6227229924232260aed95e8eea8",
+      "bytes": 278
+    },
+    {
+      "path": "GPU-SFTP/firecracker-bins/scripts/shared/vmshm-1client/broker-run.sh",
+      "sha256": "ccee93e696bfcb242258859bb8352a75dd260cc09ac293feddbb38fbaa5a62f2",
+      "bytes": 249
+    },
+    {
+      "path": "GPU-SFTP/firecracker-bins/scripts/shared/vmshm-1client/vm-proxy-test.sh",
+      "sha256": "363475dba2a3e4ea3684afd6590bf7211f0706879cc77bdf83270b28b26dd0c9",
+      "bytes": 277
+    },
+    {
+      "path": "GPU-SFTP/firecracker-bins/configs/shared/vmshm-2client/client1-vm-config.json",
+      "sha256": "1b6dd682c0ed7eb60317809925030dfa26e097c1391c8db42ac705ccf276f992",
+      "bytes": 1358
+    },
+    {
+      "path": "GPU-SFTP/firecracker-bins/configs/shared/vmshm-2client/proxy-vm-config.json",
+      "sha256": "28b0a34a6923b3ed89e2eb8084bd6ded5a142380b118c767e56e72771a052e69",
+      "bytes": 1792
+    },
+    {
+      "path": "GPU-SFTP/firecracker-bins/configs/shared/vmshm-2client/client0-vm-config.json",
+      "sha256": "58daf0d33447f1f1de52249be1332aa679019e5f747565903af21f02050b6be4",
+      "bytes": 1358
+    },
+    {
+      "path": "GPU-SFTP/firecracker-bins/configs/shared/vmshm-2client/broker-config.toml",
+      "sha256": "35bb6c4eda5a3d2a5ba4cdf435ad9f2cdba958ec7b359703874693279a843dc6",
+      "bytes": 503
+    },
+    {
+      "path": "GPU-SFTP/firecracker-bins/configs/shared/vmshm-1client/proxy-vm-config.json",
+      "sha256": "1e74710b233bfbc77e6602455b962a2ace9ec11dc4df78d16e663a6107638ebe",
+      "bytes": 1329
+    },
+    {
+      "path": "GPU-SFTP/firecracker-bins/configs/shared/vmshm-1client/broker-config.toml",
+      "sha256": "953c144b3bb774e94bb6a09475ec82e92cc2d3c5d620cda41b1cc5554eada64e",
+      "bytes": 368
+    },
+    {
+      "path": "GPU-SFTP/firecracker-bins/configs/shared/vmshm-1client/client-vm-config.json",
+      "sha256": "89743ce48a4ac1af78f812c80e26f32ea89f0f7019a05408b0f0a48692f86ce8",
+      "bytes": 1340
+    },
+    {
+      "path": "firecracker/Firecracker-CCA-MZH/src/vmm/src/vmshm.rs",
+      "sha256": "628102b9b044eb83e17978bc8e13be870ee47be437996058c321261c68a5c14d",
+      "bytes": 25420
+    },
+    {
+      "path": "firecracker/Firecracker-CCA-MZH/src/vmm/src/vmm_config/vmshm.rs",
+      "sha256": "9dc4121efaa1f1d664a00436f6d14954fb091c0cb59376aa18c4a4f1b7460054",
+      "bytes": 4726
+    },
+    {
+      "path": "firecracker/vmshm-broker/example.toml",
+      "sha256": "0a2511945635623b38c24d74515c23c3e4afc8b598ed7399d9ce2724289955bf",
+      "bytes": 300
+    },
+    {
+      "path": "firecracker/vmshm-broker/Cargo.lock",
+      "sha256": "d7431f0dce1d5eb263fd5fd815e8cf212f7fea032a321a979ecfa8c7444263e5",
+      "bytes": 12806
+    },
+    {
+      "path": "firecracker/vmshm-broker/Cargo.toml",
+      "sha256": "90f059e0e1fddad1f1bcdcddd97bb5799e4aaac9859e7f331300999d2c1d147a",
+      "bytes": 428
+    },
+    {
+      "path": "firecracker/vmshm-broker/scripts/build-aarch64.sh",
+      "sha256": "5bbed57c1a6fb6bd18d513beb104d0b4eecafa23bf404af6081b87663b489162",
+      "bytes": 1563
+    },
+    {
+      "path": "firecracker/vmshm-broker/scripts/smoke-test.sh",
+      "sha256": "fc6f0aa7c41dc97f386dceac2075fcc26d62d3094724df13c8c9ffe4c15703bd",
+      "bytes": 3001
+    },
+    {
+      "path": "firecracker/vmshm-broker/src/protocol.rs",
+      "sha256": "4e2d1bcb3559a1bb32c15889fcc325175f55a03f284a1d8d38e47c0fa3bd615b",
+      "bytes": 7556
+    },
+    {
+      "path": "firecracker/vmshm-broker/src/config.rs",
+      "sha256": "f1a24fc22b994528021ae8e008e01c8cf90c9aa16ad4f73833f2dddce6a4e54a",
+      "bytes": 3256
+    },
+    {
+      "path": "firecracker/vmshm-broker/src/main.rs",
+      "sha256": "3d4b5724e07364f92b58d84e27a2958b8507258caa70f5e01d2857c6e3659ea6",
+      "bytes": 8496
+    },
+    {
+      "path": "firecracker/vmshm-broker/src/memfd.rs",
+      "sha256": "8bad579f8962a62cbcf2fad7cd9c3ff905b4602d42dce5b9d1e0aa80a345a249",
+      "bytes": 1612
+    },
+    {
+      "path": "firecracker/vmshm-broker/src/fdpass.rs",
+      "sha256": "db59043f7fcae09740183ebf4cdd86be419380be4fb0bc5f4da987974a3298ae",
+      "bytes": 2506
+    },
+    {
+      "path": "firecracker/vmshm-broker/src/broker.rs",
+      "sha256": "066261a5ba3df5cc76a7ee6f0fc37202b65770226cd0ff1ce0f4219a340a9f36",
+      "bytes": 12012
+    },
+    {
+      "path": "firecracker/vmshm-broker/tests/e2e.rs",
+      "sha256": "ff8b5eb7b563dcdd221c07f5f08c5e6623fb2213b1cf27b426bc5d80c5435c49",
+      "bytes": 7499
+    },
+    {
+      "path": "Linux-Guest-GPU/drivers/char/proxy_vmshm_manager/proxy_vmshm.c",
+      "sha256": "6844f4a31bddbd508453fa98f15d7a719e7becaaac6b65f9dedc4a08fbc3f3df",
+      "bytes": 9446
+    }
+  ],
+  "changed": {
+    "scripts/run/run-host-vs-passthrough-gles-perf.sh": {
+      "before": "70d6c9e87c6b59a045de0caae1c05bf502453a9e0759109bed93c42f62a7f236",
+      "after": "9c9e0274121f17a86e28642b162b09c998aed4782448783e6c316637782a7e6b",
+      "bytes": 64958
+    },
+    "scripts/check/check-checkout.py": {
+      "before": "5db1ee558fe0ca675296fdf09bb93d95f2570f0ad1106815eddb9ce62b6f70e1",
+      "after": "4b30c1c9a98952c5f7c8b7f0c44858ab0617eb9ee27fbb5999c47d9bcf37036e",
+      "bytes": 2886
+    },
+    "scripts/lib/gpu_sftp_layout.sh": {
+      "before": "95c33b23a9d6c4344fc8dd0f049789db915c29e2364aced5849f3eeb31561bc7",
+      "after": "cce3ef111501a973dec5d91f14f1cc7e35a64aa9cddd25017fba6de75a01c3d2",
+      "bytes": 1325
+    },
+    "scripts/net/discover-opencca-hosts.sh": {
+      "before": "feb3a1dd3cafb7bc6bb12bc8201562b181d659e92153d8e6926c20d9656703a5",
+      "after": "0f907c1ccf4d157352992c8840c02929bac22e4412ea2fd9987d3116b3e9bbe0",
+      "bytes": 8091
+    },
+    "scripts/build/build-firecracker-runtime.sh": {
+      "before": "9777d53dea2af6c4cbc6ce13d182532a64279291134b5e3c493a3095609bf48f",
+      "after": "a18540f0ee2f95ba94fe6c0dd3ffbdb0b8cacde2f7165974600ca715ff922e6b",
+      "bytes": 1109
+    },
+    "scripts/build/build-verified-kernels.sh": {
+      "before": "c3b93da8d6822c7657f413001844b719455e09aabbd1ddb94bf0db01323e0cc1",
+      "after": "7289b37184025d21db680e72711d883a6cfae8863b2729005d2ca2a4359f3ef9",
+      "bytes": 2744
+    },
+    "firecracker/Firecracker-CCA-MZH/src/vmm/src/lib.rs": {
+      "before": "ec9eaac5aeba1487df91ccf06088421b0ecc95c44ed000fb9a86559ca6394d01",
+      "after": "0c74ad9fc0e2fe82d22c5153e7a7621efacb9ec7c697cc471a16c075285f0542",
+      "bytes": 37712
+    },
+    "firecracker/Firecracker-CCA-MZH/src/vmm/src/builder.rs": {
+      "before": "a6c6c0b5c82c60210bd79ff7a7294d5c3d8a75c7f6800b69c655705c7c585433",
+      "after": "33970e13ad4f6137d19067be78942fc43ffa24c78427d5b15abe502f42a0277d",
+      "bytes": 71255
+    },
+    "firecracker/Firecracker-CCA-MZH/src/vmm/src/resources.rs": {
+      "before": "54448f38846caa077569c0742998b2215a0eb702f8361b7c48ff7fb492dd7d13",
+      "after": "5eb05438b53d9c33474b9921bd71cb3b3c569db091328e4354538aa05604c753",
+      "bytes": 58134
+    },
+    "firecracker/Firecracker-CCA-MZH/src/vmm/src/vmm_config/mod.rs": {
+      "before": "397887babd782c5aa041ef1a0f5dd3d4b41f05aa942d9cee25f826b0eb782e87",
+      "after": "87b2ebd23aa1aebad67c6ea73f34e23d87a1826d153a15e5c8e31bce6d3c545b",
+      "bytes": 7951
+    },
+    "firecracker/Firecracker-CCA-MZH/src/vmm/src/arch/aarch64/mod.rs": {
+      "before": "44bb8fd35c286ef260678f5eb46a641e2dc3ea29021babff2f2cad2dfcdb2beb",
+      "after": "efb4159a23c48dce55fbfcf86e8e0f2d41915af525f27cf0fabb3d4f64eb0678",
+      "bytes": 5746
+    },
+    "firecracker/Firecracker-CCA-MZH/src/vmm/src/arch/aarch64/fdt.rs": {
+      "before": "314119b94511ab6463df95fabf6d2e32b5493ace1ceb41f3a2e5dc641c8f67e0",
+      "after": "768724ac7b69ce75d0581c806fd12cc36b28282bd11e402664bb1fdc44879b6d",
+      "bytes": 30807
+    },
+    "Linux-Guest-GPU/drivers/char/Kconfig": {
+      "before": "8b370f79eb8ff240b356b695707d57df2e047f7f90c6a6fa13f3724fa90e91db",
+      "after": "2397dc98d080665f98873a1ac4852812b864da3ac28357f9097f8d0d6351fc7f",
+      "bytes": 15289
+    },
+    "Linux-Guest-GPU/drivers/char/client_vmshm_comm/client_comm_vmshm.c": {
+      "before": "75900820e3318db8d752005dbef70e77f37ab42d06de18dbbd7f33a7e6ea829b",
+      "after": "04e2bd1ae3031d05c9a17514004df8de4cbbbc3c3b95fef58d30dc0e8e8aa310",
+      "bytes": 46049
+    },
+    "Linux-Guest-GPU/drivers/char/client_vmshm_comm/Kconfig": {
+      "before": "1b6d4a8cb1e11f49fc6fee50ff4caff06633c9b77edd53487a936b025a3e51c6",
+      "after": "effc8500a3d30518bfe09916a7a3a728e4483f9de63e7063232fd469e1bf2c2e",
+      "bytes": 1319
+    },
+    "Linux-Guest-GPU/drivers/char/client_vmshm_manager/Kconfig": {
+      "before": "e37de1ef23047b80678a1d4897ce03e0b6fa3911fc4f8655b4ea1f2b1b667d9b",
+      "after": "831e838baf1e27ea0ac289977a99ff00f0a45ca36591abeef43e843d3a016d58",
+      "bytes": 378
+    },
+    "Linux-Guest-GPU/drivers/char/client_vmshm_manager/client_vmshm_manager.c": {
+      "before": "4c07de5893d83c2abeef16cda0dbf13cf61e57e88dfacc0ef91a01cfd1bde182",
+      "after": "23d0fe31bc82dd9cc160cfef4b1fe0ae93b0bd82239ca47cbb0df9c1aa369826",
+      "bytes": 5013
+    },
+    "Linux-Guest-GPU/drivers/char/proxy_vmshm_manager/Makefile": {
+      "before": "c7bd6554da1aea9ba361d0c62961661f008fb2cf321950685cd7f30dab4ef0a2",
+      "after": "dd1e030e9d1605735416e6238a6b232553a5f8c2382bae5489cb025d87471ad6",
+      "bytes": 167
+    },
+    "Linux-Guest-GPU/drivers/char/proxy_vmshm_manager/proxy_vmshm_manager.c": {
+      "before": "eac3c075b0ea1ba8b79d51001684401269356be4baf97ab5b0b73ca728841e54",
+      "after": "a80d96b98abb59d6ca9854883b53574dacb09cd0534fcb24a91b0e7f71d69a1b",
+      "bytes": 58609
+    },
+    "Linux-Guest-GPU/drivers/char/proxy_vmshm_manager/proxy_vmshm_manager.h": {
+      "before": "a26a248fd35edde32b8bb754b8609d7c6ea6689b51e73b7e7720168afdebcc47",
+      "after": "8d9036c0f857590fdde8eb67e160d8837c05dae92e60b8842b404b7142d4e397",
+      "bytes": 401
+    },
+    "Linux-Guest-GPU/drivers/char/proxy_vmshm_manager/Kconfig": {
+      "before": "99948fa246ea339adf52ea1350bdd79f28778cfb8fb6bd12fd0501a6ff8bd434",
+      "after": "a8f29a2593997573d7e4ff3d5d71886c80af8efc43b4759c0e32002261976106",
+      "bytes": 609
+    },
+    "Linux-Guest-GPU/drivers/char/proxy_vmshm_manager/proxy_vmshm_manager_test.c": {
+      "before": "09ed5b93792ea61b7572aca834a3259072b91b409625fb56969553ce1f7a4bbd",
+      "after": "3027e18a9928a42d963465eb161a6981ada35fe35cf1f073269175fb56708a71",
+      "bytes": 3253
+    },
+    "Linux-Guest-GPU/drivers/char/proxy_vmshm_comm/Kconfig": {
+      "before": "e02568d42029ed28abd44e4fdbfa82ea948e8ddeed61524c7e5d4fdf2e021b92",
+      "after": "b1fec766b8e8960b60958c210b51f47d0fd1d20c896f7cfe6906009ef40a4d41",
+      "bytes": 1167
+    },
+    "Linux-Guest-GPU/drivers/char/proxy_vmshm_comm/proxy_comm_vmshm.c": {
+      "before": "73d20fabbab72f35d7d6dc0ceb04403eb4abdd71e69cce21dcfbd487dd378129",
+      "after": "0ff1f9968a6a54566db980ced01872008de7ef7fdb304ee7314e0a2cb88d5cdf",
+      "bytes": 48299
+    },
+    "Linux-Guest-GPU/include/linux/client_vmshm.h": {
+      "before": "141cad876f83968cabe8606dcb2190a92fd4efc033efca3ad2a7ae520393e706",
+      "after": "d7ab89f66fb15c6e995a073b1b591134ca1ac3e4b500a4f8c9a0848e9aae0d5c",
+      "bytes": 1859
+    }
+  },
+  "note": "Deletion inventory excludes binary archives; original local changes saved in ignored before patches."
+}

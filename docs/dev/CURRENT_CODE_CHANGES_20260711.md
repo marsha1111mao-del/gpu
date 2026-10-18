@@ -54,8 +54,8 @@ opencca/trusted-firmware-a:       4 files changed,  244 insertions(+)
 
 - `GPU-SFTP/tests/gpu-compute-smoke/gles_compute_smoke.c`
 - `GPU-SFTP/tests/gpu-compute-smoke/gpu-smoke.sh`
-- `docs/shared/CCA_CONFIDENTIAL_GPU_SHARING_DESIGN.md`
-- `docs/shared/PANTHOR_SHARED_VIRTUALIZATION_WORKLOG.md`
+- `docs/archive/20261018/research/CCA_CONFIDENTIAL_GPU_SHARING_DESIGN.md`
+- `docs/archive/20261018/history/PANTHOR_SHARED_VIRTUALIZATION_WORKLOG.md`
 - `docs/start/RASPBERRY_PI_FLASH_RUNBOOK.md`
 - `scripts/build/build-host-kernel-payload.sh`
 - `scripts/run/run-host-vs-passthrough-gles-perf.sh`

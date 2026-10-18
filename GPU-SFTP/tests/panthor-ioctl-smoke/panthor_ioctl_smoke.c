@@ -1615,6 +1615,136 @@ static int expect_syncobj_timeline_wait_failure(int fd, uint32_t *handles,
 	return 0;
 }
 
+/* Use both ABI sizes: Mesa may use the legacy request on the same fd. */
+struct smoke_timeline_wait_legacy {
+	uint64_t handles, points;
+	int64_t timeout_nsec;
+	uint32_t count_handles, flags, first_signaled, pad;
+};
+
+static int timeline_cache_wait_check(int fd, uint32_t handle, uint64_t point,
+				     int success, int legacy)
+{
+	struct drm_syncobj_timeline_wait wait = {
+		.handles = (uint64_t)(uintptr_t)&handle,
+		.points = (uint64_t)(uintptr_t)&point,
+		.count_handles = 1,
+		.flags = DRM_SYNCOBJ_WAIT_FLAGS_WAIT_ALL,
+		.first_signaled = UINT32_MAX,
+	};
+	int ret;
+
+	if (legacy) {
+		struct smoke_timeline_wait_legacy old = {
+			.handles = wait.handles, .points = wait.points,
+			.count_handles = 1, .flags = wait.flags,
+			.first_signaled = UINT32_MAX,
+		};
+
+		ret = ioctl(fd, DRM_IOWR(0xCA, struct smoke_timeline_wait_legacy), &old);
+		wait.first_signaled = old.first_signaled;
+	} else {
+		ret = ioctl(fd, DRM_IOCTL_SYNCOBJ_TIMELINE_WAIT, &wait);
+	}
+	if ((success && (ret || wait.first_signaled != 0)) ||
+	    (!success && (ret != -1 || errno != EINVAL))) {
+		fprintf(stderr, "TIMELINE_CACHE_WAIT handle=%u point=%llu success=%d legacy=%d ret=%d first=%u errno=%d\n",
+			handle, (unsigned long long)point, success, legacy,
+			ret, wait.first_signaled, errno);
+		return -1;
+	}
+	return 0;
+}
+
+static int timeline_cache_bo_cycle(int fd)
+{
+	struct drm_panthor_bo_create bo = { .size = 4096 };
+	struct drm_panthor_bo_mmap_offset offset = { 0 };
+	struct drm_gem_close gem_close = { 0 };
+	int ret;
+
+	if (ioctl(fd, DRM_IOCTL_PANTHOR_BO_CREATE, &bo))
+		return -1;
+	offset.handle = bo.handle;
+	ret = ioctl(fd, DRM_IOCTL_PANTHOR_BO_MMAP_OFFSET, &offset);
+	gem_close.handle = bo.handle;
+	if (ioctl(fd, DRM_IOCTL_GEM_CLOSE, &gem_close))
+		ret = -1;
+	return ret;
+}
+
+static int timeline_cache_invalidation_check(int fd, uint32_t source,
+					     uint32_t *target)
+{
+	struct drm_syncobj_transfer transfer = {
+		.src_handle = source,
+	};
+	struct drm_syncobj_array reset = {
+		.handles = (uint64_t)(uintptr_t)target, .count_handles = 1,
+	};
+	int round;
+
+	for (round = 0; round < 16; round++) {
+		struct drm_syncobj_handle exported = {
+			.handle = source,
+			.flags = DRM_SYNCOBJ_HANDLE_TO_FD_FLAGS_EXPORT_SYNC_FILE,
+		};
+		struct drm_syncobj_handle imported = {
+			.handle = *target,
+			.flags = DRM_SYNCOBJ_FD_TO_HANDLE_FLAGS_IMPORT_SYNC_FILE,
+		};
+		struct drm_syncobj_destroy destroy = { .handle = *target };
+		struct drm_syncobj_create create = { 0 };
+		int ret;
+
+		if (timeline_cache_wait_check(fd, *target, 7, 1, 0) ||
+		    timeline_cache_bo_cycle(fd) ||
+		    timeline_cache_wait_check(fd, *target, 7, 1, 1) ||
+		    ioctl(fd, DRM_IOCTL_SYNCOBJ_RESET, &reset) ||
+		    timeline_cache_wait_check(fd, *target, 7, 0, 0) ||
+		    timeline_cache_wait_check(fd, *target, 7, 0, 1))
+			return -1;
+		transfer.dst_handle = *target;
+		transfer.dst_point = 3;
+		if (ioctl(fd, DRM_IOCTL_SYNCOBJ_TRANSFER, &transfer) ||
+		    timeline_cache_wait_check(fd, *target, 3, 1, 0) ||
+		    timeline_cache_wait_check(fd, *target, 3, 1, 1) ||
+		    timeline_cache_wait_check(fd, *target, 7, 0, 0))
+			return -1;
+		if (ioctl(fd, DRM_IOCTL_SYNCOBJ_HANDLE_TO_FD, &exported))
+			return -1;
+		imported.fd = exported.fd;
+		ret = ioctl(fd, DRM_IOCTL_SYNCOBJ_FD_TO_HANDLE, &imported);
+		close(exported.fd);
+		if (ret || timeline_cache_wait_check(fd, *target, 3, 0, 0))
+			return -1;
+		if (ioctl(fd, DRM_IOCTL_SYNCOBJ_DESTROY, &destroy))
+			return -1;
+		*target = 0;
+		if (ioctl(fd, DRM_IOCTL_SYNCOBJ_CREATE, &create))
+			return -1;
+		*target = create.handle;
+		if (timeline_cache_wait_check(fd, *target, 3, 0, 0))
+			return -1;
+		transfer.dst_handle = *target;
+		transfer.dst_point = 7;
+		if (ioctl(fd, DRM_IOCTL_SYNCOBJ_TRANSFER, &transfer))
+			return -1;
+	}
+	printf("PANTHOR_TIMELINE_CACHE_INVALIDATION_SMOKE=PASS iterations=16 reset=16 import=16 destroy_recreate=16 descending_point=16 modern_legacy=1 bo_lifecycle=16\n");
+	{
+		FILE *stats = fopen("/sys/module/panthor_client/parameters/sync_file_wait_stats", "r");
+		char buffer[2048];
+
+		if (stats) {
+			if (fgets(buffer, sizeof(buffer), stats))
+				printf("PANTHOR_TIMELINE_CACHE_STATS %s", buffer);
+			fclose(stats);
+		}
+	}
+	return 0;
+}
+
 static int syncobj_timeline_wait_check(int fd)
 {
 	struct drm_syncobj_create src_a = {
@@ -1723,6 +1853,10 @@ static int syncobj_timeline_wait_check(int fd)
 			wait.first_signaled);
 		goto out_destroy_empty;
 	}
+
+	if (timeline_cache_invalidation_check(fd, src_a.handle, &timeline_a.handle))
+		goto out_destroy_empty;
+	handles[0] = timeline_a.handle;
 
 	memset(&wait, 0, sizeof(wait));
 	wait.handles = (uint64_t)(uintptr_t)handles;
@@ -2267,6 +2401,109 @@ out_destroy_vm:
 	return ret;
 }
 
+/* Validate the maximum proxy batch, plan reuse, and atomic rejection.
+ * Empty streams test DRM submission/fence semantics, not GPU computation.
+ * Real shader execution is covered by the compute and glmark workloads.
+ */
+static int group_submit_batch_check(int fd, uint32_t group_handle)
+{
+	enum { BATCH_JOBS = 6 };
+	struct drm_panthor_queue_submit jobs[BATCH_JOBS] = { 0 };
+	struct drm_panthor_sync_op signals[BATCH_JOBS] = { 0 };
+	uint32_t handles[BATCH_JOBS] = { 0 };
+	struct drm_panthor_group_submit batch = {
+		.group_handle = group_handle,
+		.queue_submits = {
+			.stride = sizeof(jobs[0]),
+			.count = BATCH_JOBS,
+			.array = (uint64_t)(uintptr_t)jobs,
+		},
+	};
+	struct drm_syncobj_array reset = {
+		.handles = (uint64_t)(uintptr_t)handles,
+		.count_handles = BATCH_JOBS,
+	};
+	struct drm_syncobj_wait wait = {
+		.handles = (uint64_t)(uintptr_t)handles,
+		.count_handles = BATCH_JOBS,
+		.flags = DRM_SYNCOBJ_WAIT_FLAGS_WAIT_ALL |
+			 DRM_SYNCOBJ_WAIT_FLAGS_WAIT_FOR_SUBMIT,
+	};
+	unsigned int i, iteration;
+	int ret = -1;
+
+	for (i = 0; i < BATCH_JOBS; i++) {
+		struct drm_syncobj_create sync = { 0 };
+
+		if (ioctl(fd, DRM_IOCTL_SYNCOBJ_CREATE, &sync) < 0)
+			goto out;
+		handles[i] = sync.handle;
+		signals[i].handle = sync.handle;
+		signals[i].flags = DRM_PANTHOR_SYNC_OP_HANDLE_TYPE_SYNCOBJ |
+				   DRM_PANTHOR_SYNC_OP_SIGNAL;
+		jobs[i].syncs.stride = sizeof(signals[i]);
+		jobs[i].syncs.count = 1;
+		jobs[i].syncs.array = (uint64_t)(uintptr_t)&signals[i];
+	}
+
+	for (iteration = 0; iteration < 2; iteration++) {
+		if (ioctl(fd, DRM_IOCTL_SYNCOBJ_RESET, &reset) < 0)
+			goto out;
+		if (ioctl(fd, DRM_IOCTL_PANTHOR_GROUP_SUBMIT, &batch) < 0) {
+			fprintf(stderr, "GROUP_SUBMIT_BATCH failed: %s\n", strerror(errno));
+			goto out;
+		}
+		wait.timeout_nsec = abs_timeout_after_ns(1000000000LL);
+		if (ioctl(fd, DRM_IOCTL_SYNCOBJ_WAIT, &wait) < 0) {
+			fprintf(stderr, "GROUP_SUBMIT_BATCH_WAIT failed: %s\n", strerror(errno));
+			goto out;
+		}
+		printf("GROUP_SUBMIT_BATCH jobs=%u iteration=%u fences=all PASS\n",
+		       BATCH_JOBS, iteration);
+	}
+
+	if (ioctl(fd, DRM_IOCTL_SYNCOBJ_RESET, &reset) < 0)
+		goto out;
+	/* The group has one queue. A bad final job must not publish fences
+	 * for the preceding valid jobs in the same batch.
+	 */
+	jobs[BATCH_JOBS - 1].queue_index = 1;
+	if (ioctl(fd, DRM_IOCTL_PANTHOR_GROUP_SUBMIT, &batch) == 0 || errno != EINVAL) {
+		fprintf(stderr, "GROUP_SUBMIT_BATCH invalid final queue was not rejected with EINVAL\n");
+		goto out;
+	}
+	for (i = 0; i < BATCH_JOBS; i++) {
+		struct drm_syncobj_handle exported = {
+			.handle = handles[i],
+			.flags = DRM_SYNCOBJ_HANDLE_TO_FD_FLAGS_EXPORT_SYNC_FILE,
+			.fd = -1,
+		};
+
+		/* Export detects even an unsignalled published fence; checking
+		 * only immediate signal status could miss a partial submission.
+		 */
+		if (ioctl(fd, DRM_IOCTL_SYNCOBJ_HANDLE_TO_FD, &exported) == 0) {
+			close(exported.fd);
+			fprintf(stderr, "GROUP_SUBMIT_BATCH rejected batch published fence %u\n", i);
+			goto out;
+		}
+		if (errno != EINVAL) {
+			fprintf(stderr, "GROUP_SUBMIT_BATCH empty fence export: %s\n", strerror(errno));
+			goto out;
+		}
+	}
+	printf("GROUP_SUBMIT_BATCH_REJECT jobs=%u partial_fences=0 PASS\n", BATCH_JOBS);
+	ret = 0;
+out:
+	for (i = 0; i < BATCH_JOBS; i++) {
+		struct drm_syncobj_destroy destroy = { .handle = handles[i] };
+
+		if (handles[i] && ioctl(fd, DRM_IOCTL_SYNCOBJ_DESTROY, &destroy) < 0)
+			ret = -1;
+	}
+	return ret;
+}
+
 static int group_submit_syncpoint_check(int fd)
 {
 	struct drm_panthor_gpu_info gpu = { 0 };
@@ -2296,6 +2533,7 @@ static int group_submit_syncpoint_check(int fd)
 	struct drm_panthor_group_submit group_submit = { 0 };
 	uint32_t created_group = 0;
 	uint32_t wait_handle = 0;
+	unsigned int iteration;
 	int ret = -1;
 
 	if (query_gpu_info_out(fd, &gpu) || query_csif_info_out(fd, &csif))
@@ -2368,34 +2606,66 @@ static int group_submit_syncpoint_check(int fd)
 	group_submit.queue_submits.count = 1;
 	group_submit.queue_submits.array = (uint64_t)(uintptr_t)&submit;
 
-	if (ioctl(fd, DRM_IOCTL_PANTHOR_GROUP_SUBMIT, &group_submit) < 0) {
-		fprintf(stderr, "GROUP_SUBMIT_SYNCPOINT failed: %s\n",
-			strerror(errno));
-		goto out_destroy_group;
-	}
-	printf("GROUP_SUBMIT_SYNCPOINT group=%u sync=%u queue=%u stream_addr=0x%llx stream_size=%u sync_flags=0x%x\n",
-	       created_group, sync.handle, submit.queue_index,
-	       (unsigned long long)submit.stream_addr, submit.stream_size,
-	       sync_op.flags);
+	/* Exercise reuse, then destruction/reallocation of a referenced syncobj.
+	 * Every wait must observe a new fence, never the previous signalled one.
+	 */
+	for (iteration = 0; iteration < 4; iteration++) {
+		if (iteration == 2) {
+			uint32_t old_handle = sync.handle;
 
-	wait_handle = sync.handle;
-	wait.handles = (uint64_t)(uintptr_t)&wait_handle;
-	wait.timeout_nsec = 1000000000LL;
-	wait.count_handles = 1;
-	wait.flags = DRM_SYNCOBJ_WAIT_FLAGS_WAIT_FOR_SUBMIT;
-	if (ioctl(fd, DRM_IOCTL_SYNCOBJ_WAIT, &wait) < 0) {
-		fprintf(stderr, "SYNCOBJ_WAIT_AFTER_GROUP_SUBMIT handle=%u failed: %s\n",
-			sync.handle, strerror(errno));
-		goto out_destroy_group;
+			sync_destroy.handle = old_handle;
+			if (ioctl(fd, DRM_IOCTL_SYNCOBJ_DESTROY, &sync_destroy) < 0)
+				goto out_destroy_group;
+			sync.handle = 0;
+			if (ioctl(fd, DRM_IOCTL_SYNCOBJ_CREATE, &sync) < 0)
+				goto out_destroy_group;
+			sync_op.handle = sync.handle;
+			printf("GROUP_SUBMIT_SYNCPOINT_SYNC_REPLACED old=%u new=%u reused=%u\n",
+			       old_handle, sync.handle, old_handle == sync.handle);
+		} else if (iteration) {
+			struct drm_syncobj_array reset = {
+				.handles = (uint64_t)(uintptr_t)&sync.handle,
+				.count_handles = 1,
+			};
+
+			if (ioctl(fd, DRM_IOCTL_SYNCOBJ_RESET, &reset) < 0)
+				goto out_destroy_group;
+		}
+
+		if (ioctl(fd, DRM_IOCTL_PANTHOR_GROUP_SUBMIT, &group_submit) < 0) {
+			fprintf(stderr, "GROUP_SUBMIT_SYNCPOINT failed: %s\n",
+				strerror(errno));
+			goto out_destroy_group;
+		}
+		printf("GROUP_SUBMIT_SYNCPOINT group=%u sync=%u queue=%u stream_addr=0x%llx stream_size=%u sync_flags=0x%x\n",
+		       created_group, sync.handle, submit.queue_index,
+		       (unsigned long long)submit.stream_addr, submit.stream_size,
+		       sync_op.flags);
+
+		wait_handle = sync.handle;
+		wait.handles = (uint64_t)(uintptr_t)&wait_handle;
+		/* DRM expects an absolute CLOCK_MONOTONIC deadline. */
+		wait.timeout_nsec = abs_timeout_after_ns(1000000000LL);
+		wait.count_handles = 1;
+		wait.flags = DRM_SYNCOBJ_WAIT_FLAGS_WAIT_FOR_SUBMIT;
+		if (ioctl(fd, DRM_IOCTL_SYNCOBJ_WAIT, &wait) < 0) {
+			fprintf(stderr, "SYNCOBJ_WAIT_AFTER_GROUP_SUBMIT handle=%u failed: %s\n",
+				sync.handle, strerror(errno));
+			goto out_destroy_group;
+		}
+		printf("SYNCOBJ_WAIT_AFTER_GROUP_SUBMIT handle=%u timeout_nsec=%lld flags=0x%x first=%u\n",
+		       sync.handle, (long long)wait.timeout_nsec, wait.flags,
+		       wait.first_signaled);
+		if (wait.first_signaled != 0) {
+			fprintf(stderr, "SYNCOBJ_WAIT_AFTER_GROUP_SUBMIT first=%u want 0\n",
+				wait.first_signaled);
+			goto out_destroy_group;
+		}
+		printf("GROUP_SUBMIT_SYNCPOINT_ITERATION=%u PASS\n", iteration);
 	}
-	printf("SYNCOBJ_WAIT_AFTER_GROUP_SUBMIT handle=%u timeout_nsec=%lld flags=0x%x first=%u\n",
-	       sync.handle, (long long)wait.timeout_nsec, wait.flags,
-	       wait.first_signaled);
-	if (wait.first_signaled != 0) {
-		fprintf(stderr, "SYNCOBJ_WAIT_AFTER_GROUP_SUBMIT first=%u want 0\n",
-			wait.first_signaled);
+
+	if (group_submit_batch_check(fd, created_group))
 		goto out_destroy_group;
-	}
 
 	state.group_handle = created_group;
 	if (ioctl(fd, DRM_IOCTL_PANTHOR_GROUP_GET_STATE, &state) < 0) {
@@ -2405,10 +2675,9 @@ static int group_submit_syncpoint_check(int fd)
 	}
 	printf("GROUP_GET_STATE_AFTER_SUBMIT handle=%u state=0x%x fatal_queues=0x%x\n",
 	       created_group, state.state, state.fatal_queues);
-	if (state.state & ~(DRM_PANTHOR_GROUP_STATE_TIMEDOUT |
-			    DRM_PANTHOR_GROUP_STATE_FATAL_FAULT)) {
+	if (state.state || state.fatal_queues) {
 		fprintf(stderr,
-			"GROUP_GET_STATE_AFTER_SUBMIT returned invalid state bits: 0x%x\n",
+			"GROUP_GET_STATE_AFTER_SUBMIT returned an unhealthy group: 0x%x\n",
 			state.state);
 		goto out_destroy_group;
 	}

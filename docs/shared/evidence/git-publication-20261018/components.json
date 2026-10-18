@@ -1,0 +1,37 @@
+[
+  {
+    "repository": "opencca/tf-rmm",
+    "commit": "8b92ea3d2dec2229bad084654cdaae0a57b9b243",
+    "title": "Add authenticated Realm sharing and trusted event delivery",
+    "push_returncode": 0,
+    "remote_verified": "8b92ea3d2dec2229bad084654cdaae0a57b9b243"
+  },
+  {
+    "repository": "Linux-Guest-GPU",
+    "commit": "3cd87b3eedc675f9f1c6ce1cc22f41451da1614a",
+    "title": "Use RMM-only sharing with reusable GPU execution plans",
+    "push_returncode": 0,
+    "remote_verified": "3cd87b3eedc675f9f1c6ce1cc22f41451da1614a"
+  },
+  {
+    "repository": "Linux-Host-GPU",
+    "commit": "cfe4c5d6ebc8667bb23b096a42bde37dbd528455",
+    "title": "Route trusted Realm events and preserve GPU ownership controls",
+    "push_returncode": 0,
+    "remote_verified": "cfe4c5d6ebc8667bb23b096a42bde37dbd528455"
+  },
+  {
+    "repository": "firecracker/Firecracker-CCA-MZH",
+    "commit": "250f1493b5050c88b91c346c7af03e1134d8123f",
+    "title": "Retire memfd shared-GPU transport and reject obsolete configuration",
+    "push_returncode": 0,
+    "remote_verified": "250f1493b5050c88b91c346c7af03e1134d8123f"
+  },
+  {
+    "repository": "opencca",
+    "commit": "748e7d35e228914e746e4814bb1502e749ab0315",
+    "title": "Pin authenticated Realm sharing and reproducible firmware inputs",
+    "push_returncode": 0,
+    "remote_verified": "748e7d35e228914e746e4814bb1502e749ab0315"
+  }
+]

@@ -2,6 +2,10 @@
 
 版本：2026-10-15。所有控制机命令默认在仓库根目录执行；标注“Pi 上”或“RK 上”的命令只在对应设备执行。
 
+**当前开发入口（2026-10-18）：** [P42 + BO 修复基线](../shared/CURRENT_BASELINE.md)，
+最新结果见 [Native / ProxyClient 汇总](../shared/GPU_NATIVE_PROXYCLIENT_COMPARISON_20261018.md)。
+旧普通 VM/memfd 路径已退役。当前 RMM Realm 测试使用第8节，历史32项PASS只用于对照。
+
 ## 1. 目标、阅读顺序与证据边界
 
 本手册面向只拿到 Git 仓库的新 Agent，按“识别环境 → 恢复固定载荷 → 连接硬件 → 必要时部署 → 执行测试 → 保存证据”的顺序操作。不要依赖原开发机的绝对路径、已编译缓存、SSH 私钥或聊天上下文。
@@ -19,11 +23,12 @@
 相关文档的职责：
 
 - 本文是环境与执行流程的主入口。
+- [开发与产物管理](DEVELOPMENT_AND_ARTIFACT_HYGIENE.md)：资源检查、硬件测试独占入口、snapshot 保留与清理、日志回收。测试命令通过 `scripts/maintenance/lab-run.py --run-id <唯一ID> -- <下文测试命令>` 执行，整套回归只包一层。
 - [快速复现](FRESH_CLONE.md)：已有健康板端时的最短路径。
 - [Pi 刷机操作手册](RASPBERRY_PI_FLASH_RUNBOOK.md)：接线、Maskrom、串口、SD 操作细节。
 - [载荷与来源](../../GPU-SFTP/ARTIFACTS.md)：归档、rootfs、NCNN/glmark 来源与重建要求。
-- [测试与 Bug 分析](../shared/PANTHOR_SHARED_GPU_FIX_VERIFICATION_20261015.md)：实现原理、修复原因和历史测试结果。
-- [仓库整理与验证记录](../shared/GPU_REPOSITORY_PUBLICATION_20261015.md)：本次发布的构建、完整回归及后续失败记录。
+- [测试与 Bug 分析](../archive/20261018/history/PANTHOR_SHARED_GPU_FIX_VERIFICATION_20261015.md)：实现原理、修复原因和历史测试结果。
+- [仓库整理与验证记录](../archive/20261018/history/GPU_REPOSITORY_PUBLICATION_20261015.md)：本次发布的构建、完整回归及后续失败记录。
 
 2026-10-15 已有完整硬件回归 **32/32 通过**，基线 Host 为 `6.12.0-opencca-pmthor #10`。但之后额外的干净副本短回归在 `group-submit-syncpoint` 出现 `SYNCOBJ_WAIT_AFTER_GROUP_SUBMIT ... Timer expired`，尚未定位；因此不能宣称任意 clone 后全矩阵已经稳定通过。该失败不应被早先 PASS 覆盖。按用户要求，不再追加 rsync 验证。
 
@@ -48,8 +53,8 @@ flowchart LR
 | Host Linux | KVM、GPU 归属、Client 内存翻译、PFN 引用与 reset | `Linux-Host-GPU/` |
 | Client Linux | DRM/Panthor 前端、BO/VM/syncobj、提交转发 | `Linux-Guest-GPU/` |
 | Proxy Linux | 接收 RPC、调用真正的 Panthor/GPU | 同一 Guest 源码的 Proxy 配置 |
-| Firecracker | 启动 VM，提供 vmshm/GPU 设备集成 | `firecracker/Firecracker-CCA-MZH/` |
-| vmshm-broker | VM 间共享内存与通知协调 | `firecracker/vmshm-broker/` |
+| Firecracker | 启动 Realm，提供 GPU 设备集成 | `firecracker/Firecracker-CCA-MZH/` |
+| RMM xshm | 共享内存授权、持久事件与可信IRQ | `opencca/tf-rmm/runtime/core/` |
 | RMM/固件 | OpenCCA 启动与实验性 Realm 管理 | `opencca/tf-rmm/` 等 |
 | 运行树 | 内核、用户态、rootfs、配置、测试源码及日志 | `GPU-SFTP/` |
 
@@ -73,7 +78,7 @@ export WORKSPACE="$PWD"
 python3 scripts/check/check-checkout.py
 ```
 
-bootstrap 初始化固定提交的第一层子模块，恢复 175 个固定运行文件，下载并校验两个 Guest rootfs。公开 clone 和下载不需要开发者 GitHub 身份。
+bootstrap 初始化固定提交的第一层子模块，按manifest恢复固定运行文件，下载并校验两个 Guest rootfs。公开 clone 和下载不需要开发者 GitHub 身份。
 
 ```bash
 git rev-parse HEAD
@@ -268,11 +273,17 @@ JOBS=8 ./scripts/build/build-verified-kernels.sh
 
 四种配置位于 `configs/verified-20261015/`，分别为 Host、Client、Proxy、passthrough。可只构建一个角色：`build-verified-kernels.sh host`。此入口要求源码目录没有 in-tree `.config/include/config`，输出在 `build/verified-kernels/`，再复制 Image 到运行树。不要为了满足此条件删除有价值的开发目录；另建干净 clone 即可。
 
+IOCTL 探针构建默认从目标 Guest 内核执行 `headers_install` 导出 DRM UAPI，
+不要直接替换成控制机较新的 `/usr/include/drm`。例如新头文件将
+`drm_syncobj_handle` 从 16 字节扩为 24 字节，改变 HANDLE_TO_FD 的 IOCTL 编号，
+会绕过当前 Client 的精确编号处理并产生误导性的 ENOENT。显式覆盖 `DRM_UAPI`
+时需核对目标 ABI；相关失败与修正复测见 glmark 优化记录。
+
 | 角色 | 运行 Image 目标 |
 | --- | --- |
 | Host | `GPU-SFTP/linux-host-kernel/Image` |
-| Client | `GPU-SFTP/firecracker-bins/kernels/shared/client/Image` |
-| Proxy | `GPU-SFTP/firecracker-bins/kernels/shared/proxy/Image` |
+| Client | `GPU-SFTP/firecracker-bins/kernels/realm-xshm/Image` |
+| Proxy | `GPU-SFTP/firecracker-bins/kernels/realm-xshm/proxy/Image` |
 | passthrough | `GPU-SFTP/firecracker-bins/kernels/passthrough/Image` |
 
 需要完整 Host 模块时使用单独的 in-tree 构建入口：
@@ -328,16 +339,7 @@ NCNN 和 glmark 的实际使用源码随 `GPU-SFTP/runtime/` 归档提供，先�
 
 ### 7.1 健康 Host：只部署测试运行树
 
-完成第 4 节检查后，首项共享测试会同步运行树与两个 Guest 基础 rootfs：
-
-```bash
-RUN_ID="onboard-$(date +%Y%m%d-%H%M%S)" \
-    ./scripts/run/run-vmshm-e2e.sh --skip-build --sync-rootfs --vm-create-smoke
-```
-
-检查退出码、`RESULT: PASS` 和 Guest 的 `PANTHOR_VM_CREATE_SMOKE=PASS`，然后进入第 8 节。首次运行不要加 `--skip-sync`。统一回归也会自动完成首次同步，若直接运行统一回归，无需先执行本节单项。
-
-`--skip-build` 复用控制机恢复的内核和 VMM；`--skip-gles-remote-build` 复用已准备 GLES 程序；`--skip-sync` 复用板端运行文件。这三个选项含义不同，不能互相替代。
+完成第4节检查后，准备匹配的Realm冻结包（client/proxy Image、initrd、runner及SHA清单），确认板端只读Panfrost rootfs、Firecracker和Host/RMM。按第8节在租约中运行；健康Host不需要刷写。`run-realm-xshm.py`只同步冻结包中变化的文件，不部署Host/RMM/rootfs。不能使用旧普通VM载荷代替Realm内核。
 
 ### 7.2 只更新 Host SD kernel 分区
 
@@ -402,117 +404,36 @@ export OPENCCA_ROOTFS_IMAGE=/absolute/path/to/verified-host-disk.img
 
 ## 8. 正常测试：入口、原理和通过标准
 
-### 8.1 统一矩阵与证据
+### 8.1 当前Realm入口
 
-在确认硬件空闲、变量正确后执行：
-
-```bash
-python3 scripts/run/run-regression.py --passthrough \
-    --run-id "acceptance-$(date +%Y%m%d-%H%M%S)"
-```
-
-不需要直通对比时省略 `--passthrough`。仅当已确认板端载荷与本地一致时加 `--remote-prepared`；`--quick` 缩短循环，不能替代正式性能测量。run-id 必须唯一，只允许字母、数字、`-`、`_`。
-
-每项 stdout/stderr 和退出码保存在 `GPU-SFTP/log/regression/<run-id>/`，`summary.json` 每项完成后更新，遇错立即停。全部 32 项包含直通及前后环境检查，最终为 `REGRESSION_RESULT=PASS cases=32`。单项详细日志位于 `GPU-SFTP/log/shared/`、`GPU-SFTP/log/passthrough/`；记录各脚本输出的实际目录，不能仅凭文件名推断通过。
-
-### 8.2 测试总览
-
-| 测试组 | 主要机制与覆盖 | 正式参数 | 判定依据 |
-| --- | --- | --- | --- |
-| IOCTL 17 项 | Client handle 与 Proxy 对象映射、BO/VM、同步对象、Group/Heap 生命周期 | 逐项启动 | 用例 marker、退出码、整体 RESULT |
-| PFN 生命周期 | 同一 GPA 去重引用、device 与 VM 双持有、最终 reset 后释放 | 32 次重复翻译、两种关闭顺序 | 程序和内核日志 checker 均通过 |
-| Compute | GLES shader 读写 BO、提交、fence、CPU 读回校验 | 4/16/64/128 MiB | 结果校验与 perf 数据 |
-| ML | GEMM、conv、depthwise、reduction、softmax、attention | 100 次 + 5 预热，GEMM 512 | 六算子 ML_CHECK 与 ML_RESULT |
-| Attention 320 | 更长 GPU 工作负载与同步链 | 10 次 + 2 预热 | 数值校验和整体退出码 |
-| NCNN | Vulkan 执行实际网络拓扑 | 三模型，每个 100 次 | GPU 探针、各模型与 NCNN_RESULT |
-| glmark2 | GLES 图形场景及提交完成同步 | 720p / 1080p 全场景 | 硬件 renderer、场景与验证报告 |
-| 双 Client | 两个 Client 同时经 Proxy 使用 GPU | 每个 4 MiB、100 次 + 5 预热 | 两 Client 都完成并校验 |
-| Host / passthrough | 原生与单 VM 路径性能对比 | 同一用户态、对应循环 | 两路径校验、对比报告、恢复 pmthor |
-
-### 8.3 IOCTL 单项
+先按[当前基线](../shared/CURRENT_BASELINE.md)确认冻结输入。优化每轮先运行完整720p；达到1000分门槛后再扩大范围。所有硬件测试通过同一个租约入口，不能并行启动另一套回归：
 
 ```bash
-RUN_ID="ioctl-$(date +%Y%m%d-%H%M%S)" \
-    ./scripts/run/run-vmshm-e2e.sh --skip-build --sync-rootfs --vm-bind-smoke
+python3 scripts/maintenance/lab-run.py --run-id <唯一ID> -- \
+  python3 scripts/run/run-realm-xshm.py --images <冻结包> \
+  --workload glmark --performance --benchmark-only --suite --profiles glmark-720
 ```
 
-替换最后一个参数即可选择：`--ioctl-smoke`、`--vm-create-smoke`、`--bo-create-smoke`、`--bo-lifecycle-smoke`、`--bo-mmap-smoke`、`--vm-bind-smoke`、`--vm-bind-async-sync-smoke`、`--vm-state-flush-smoke`、`--syncobj-lifecycle-smoke`、`--syncobj-wait-smoke`、`--syncobj-transfer-smoke`、`--syncobj-timeline-wait-smoke`、`--syncobj-signal-query-smoke`、`--sync-file-snapshot-smoke`、`--group-lifecycle-smoke`、`--group-submit-syncpoint-smoke`、`--tiler-heap-lifecycle-smoke`。
+### 8.2 扩展与判定
 
-VM_BIND 还检查不同映射大小复用；sync_file snapshot 关注“导出时 fence”的语义，不能用后来替换的 syncobj fence 混淆。Group submit 返回成功不代表 fence 已完成，仍需等待和验证。最新干净副本失败就发生在这一等待阶段，见第 10 节。
+| 范围 | Realm runner参数 | 通过依据 |
+| --- | --- | --- |
+| 完整720p | 上述命令 | Mali后端、33场景、score、validation、无提交/BO错误 |
+| 双Client功能和负例 | `--workload compute` | 两Client各17项API、真实计算、权限拒绝及IRQ检查 |
+| 可信事件 | `--workload events` | 持久pending/ack、身份和通道拒绝检查 |
+| 大负载 | glmark benchmark模式加`--large-pool --suite --profiles ncnn-resnet50 glmark-1080 ioctl compute-128` | 每项正确性及退出码；要求512MiB上限RMM |
 
-### 8.4 Compute 与 ML
+默认256MiB池、每Realm768MiB/CMA320MiB；大配置512MiB池、每Realm1GiB/CMA576MiB。性能请求GPU600MHz/实际594MHz，Proxy CPU1/Client CPU2。参数详情、冻结包组成和工具构建见[Realm工具说明](../../GPU-SFTP/tests/realm-xshm/README.md)。
 
-```bash
-./scripts/run/run-vmshm-e2e.sh --skip-build --sync-rootfs \
-    --gles-compute-smoke --skip-gles-remote-build \
-    --gles-client-mem-mib 512 --gles-proxy-mem-mib 384 \
-    --gles-smoke-args '--count 1048576 --iterations 100 --warmup 5 --perf --exclude-cpu-prepare'
-```
+每项保留命令、退出码、run-id、日志与实际输入哈希；wrapper记录前后资源，runner记录串口和summary。未选项目为NOT_RUN。提交成功不等于fence完成。glmark为null-noop / finish离屏性能，不能表述成屏幕FPS；一个已知validation例外需单列。NCNN使用随机输入/空权重，不证明模型精度，fence失败的时间不能计为有效性能。
 
-`count` 单位是 uint32 元素，4/16/64/128 MiB 分别为 `1048576/4194304/16777216/33554432`。4/16 MiB 测量 100 次，64/128 MiB 测量 20 次，均预热 5 次。比较性能时必须保持是否排除 CPU prepare 的条件一致。
+### 8.3 原生与直通
 
-```bash
-./scripts/run/run-vmshm-e2e.sh --skip-build --skip-sync \
-    --gles-ml-smoke --skip-gles-remote-build \
-    --gles-client-mem-mib 512 --gles-proxy-mem-mib 384 \
-    --gles-smoke-args '--kernel all --gemm-size 512 --iterations 100 --warmup 5'
-```
+`run-host-vs-passthrough-gles-perf.sh --help`给出Host/单VM对比参数，同样通过`lab-run.py`运行；先读脚本，确认匹配模块。测试会切换驱动，结束后检查pmthor与CPU0-1恢复；不得在Realm运行时解绑GPU。PFN生命周期源码和checker仍保留，其退出码与内核日志应独立核验。
 
-Attention 长负载将参数替换为 `--kernel attention --attention-size 320 --iterations 10 --warmup 2`。可选 kernel 为 `all/gemm/conv/depthwise/reduction/softmax/attention`。通过依据包含数值结果，不只是打印运行时间。
+### 8.4 历史结果
 
-### 8.5 NCNN Vulkan
-
-```bash
-GLES_NCNN_LOOP_COUNT=100 GLES_CLIENT_BO_MMAP_CACHED=0 \
-    ./scripts/run/run-vmshm-e2e.sh --skip-build --skip-sync \
-    --gles-ncnn-smoke --skip-gles-remote-build \
-    --gles-client-mem-mib 512 --gles-proxy-mem-mib 384
-```
-
-模型是 mobilenet_v2、mobilenet_v3、resnet50 的完整 param，使用随机输入和空权重。结果证明执行路径和性能，不证明模型精度。检查 Vulkan GPU probe 和三项 `NCNN_MODEL_RESULT=PASS`，最后 `NCNN_RESULT=PASS`。对象共享窗口会按该模式配置到更大范围，相关高 GPA 配置由脚本处理，避免手工改回旧小窗口。
-
-### 8.6 glmark2
-
-```bash
-GLES_GLMARK_FLAVOR=null-noop GLES_GLMARK_FRAME_END=finish \
-    ./scripts/run/run-vmshm-e2e.sh --skip-build --skip-sync \
-    --gles-glmark-smoke --skip-gles-remote-build \
-    --gles-client-mem-mib 512 --gles-proxy-mem-mib 384 \
-    --gles-glmark-size 1280x720
-```
-
-再以 `1920x1080` 执行。完整测试不设置 `GLES_GLMARK_BENCHMARKS`；只跑 build 场景属于短回归。null-noop 不做显示器呈现，finish 等待 GPU 完成，所得分数不能表述为屏幕 FPS。检查 renderer，不能接受 llvmpipe 软件回退；报告中有一个已知 framebuffer 验证例外，应单独计数，unexpected validation failure 必须为零，不能隐藏在总分里。
-
-### 8.7 双 Client 与单 VM 直通
-
-```bash
-./scripts/run/run-vmshm-2client-e2e.sh --skip-sync \
-    --gles-compute-smoke --skip-gles-remote-build \
-    --gles-smoke-args '--count 1048576 --iterations 100 --warmup 5' \
-    --gles-client-mem-mib 128 --gles-proxy-mem-mib 192
-
-./scripts/run/run-host-vs-passthrough-gles-perf.sh \
-    --host-rootfs-userspace --skip-sync --skip-remote-build \
-    --exclude-cpu-prepare --iterations 100 --warmup 5 \
-    --large-count-iterations 20 --large-count-warmup 5
-```
-
-双 Client 自动调整 CPU 并恢复，检查两份结果。直通脚本临时切换 Host 驱动，需要匹配模块；结束后检查 `pmthor` 和 CPU `0-1`。不得在另一套共享 VM 活跃时手工解绑 GPU。
-
-### 8.8 PFN 引用生命周期
-
-统一矩阵执行程序后再检查内核日志。独立执行需 Host 空闲，且程序已同步到板端：
-
-```bash
-mkdir -p GPU-SFTP/log/manual
-SSHPASS="$RK_PASSWORD" sshpass -e ssh "$RK_HOST" \
-    'timeout 35 /root/GPU-SFTP/firecracker-bins/bin/pmthor-pfn-lifetime; status=$?; dmesg; exit "$status"' \
-    > GPU-SFTP/log/manual/pfn-lifetime.log 2>&1
-python3 GPU-SFTP/tests/pmthor-pfn-lifetime/check_kernel_log.py \
-    GPU-SFTP/log/manual/pfn-lifetime.log
-```
-
-程序退出非零必须保留为失败，不能被后续 checker 退出码覆盖。它检查同 GPA 重复翻译仅维持唯一 PFN 引用、device/VM 两种关闭顺序、旧 VM 仍存活时新打开返回 EBUSY、最终 reset 完成后再释放引用。仅检查进程结束或 MemAvailable 不足以证明生命周期正确。
+旧memfd/irqfd共享runner、broker及32项统一矩阵已删除，不再提供兼容入口。2026-10-15的32/32与后续fence超时均保留在[历史报告](../archive/20261018/history/PANTHOR_SHARED_GPU_FIX_VERIFICATION_20261015.md)，不代表当前组合。P42+BO修复的720p1161、1080p901及ResNet50结果见[性能汇总](../shared/GPU_NATIVE_PROXYCLIENT_COMPARISON_20261018.md)；删除旧代码后的结果必须独立记录。
 
 ## 9. 故障注入与实验路径
 
@@ -520,7 +441,7 @@ python3 GPU-SFTP/tests/pmthor-pfn-lifetime/check_kernel_log.py \
 
 这是恢复能力测试，工作负载预期失败。已有报告记录先确认多次成功 `SYNCOBJ_IMPORT_SYNC_FILE ... status=0`、再杀本次 Proxy，检查 Host reset/PFN 回收，随后同一 boot 正常 Attention 和长回归通过。不能将这个 FAIL 当成正常工作负载通过。
 
-后续 Agent 复现时先从本次 run 的 PID/命令行确认 Proxy 归属，保存 Client/Proxy/broker/Host 日志，只 kill 本次 Proxy，随后有序关闭对应 Client/broker。检查最后 reset 与引用释放，恢复驱动和 CPU，最后执行正常用例证明恢复。不要用全局 pkill 替代归属判断。
+后续 Agent 复现时先从本次 run 的 PID/命令行确认 Proxy 归属，保存 Client/Proxy/Host 日志，只 kill 本次 Proxy，随后有序关闭对应 Client。检查最后 reset 与引用释放，恢复驱动和 CPU，最后执行正常用例证明恢复。不要用全局 pkill 替代归属判断。
 
 ### 9.2 不能并入正常通过清单的实验
 
@@ -555,6 +476,24 @@ python3 GPU-SFTP/tests/pmthor-pfn-lifetime/check_kernel_log.py \
 额外运行 `fresh-clone-20261015-quick` 已在 `group-submit-syncpoint` 停止：前面的 preflight 与 IOCTL 项通过，但 Client 在成功提交空 stream/signal syncpoint 后，两次 session 均出现 `SYNCOBJ_WAIT_AFTER_GROUP_SUBMIT ... Timer expired`，最终 `PANTHOR_IOCTL_INIT=FAIL status=1`、`RESULT: FAIL`。根因未定位，不能断言与 rsync、干净 clone 或特定内核代码存在因果关系。
 
 原始日志位于原控制机：`build/fresh-clone-20261015/GPU-SFTP/log/regression/fresh-clone-20261015-quick/group-submit-syncpoint.log`；此目录被 Git 忽略，新 clone 不会自动拥有它。仓库发布记录保留该事实与关键摘录。下一轮调试应先比较同一次运行的 Proxy 和 Host 日志、timeout 参数与 fence 状态；不要删掉用例、缩减成功标准或反复重跑掩盖失败。
+
+后续原生/Clientproxy 性能专项 `native-clientproxy-20261015-165201` 另记录了两类问题：原 Group submit 冒烟把绝对等待期限固定为 `1000000000 ns`（启动后第 1 秒），在批量计时中出现过期后超时；修正为“当前 CLOCK_MONOTONIC + 1 秒”的补充探针通过，但固定源码/载荷未修改，原失败仍保留。原生 Panthor 在 128 MiB Compute 完成后的 unbind 阶段还触发 `process_fw_events_work` 内核 Oops，卸载卡在 `flush_workqueue`，普通重启卡在 `device_shutdown`；本次保存证据后经 SysRq 复位恢复。该卸载问题未修复，不能把负载校验通过当成清理安全，也不应在已发生 Oops 的内核上继续测量。完整结果、boot 分段审计和恢复记录见 [原生/Clientproxy 性能报告](../archive/20261018/history/GPU_NATIVE_CLIENTPROXY_PERFORMANCE_20261015.md)。
+
+2026-10-16 性能优化工作树已将上述绝对期限修正应用到探针源码，并重建本地/板端探针；
+`glmark-opt-20261016-deadline-sourcefix` 在旧 Host 上退出 0，Group submit 和整体 marker 均通过。
+这是未提交工作树及自行构建载荷的后续证据，不改变固定发布基线、历史失败或完整 32 项的验收状态。
+候选 Host `6.12.0-opencca-pmthor-dma1` 的部署与分项验证见
+[glmark 优化记录](../archive/20261018/history/GPU_GLMARK_OPTIMIZATION_20261016.md)，不得沿用旧 Host 的通过结论。
+
+2026-10-16 后续未提交工作树已部署 `6.12.0-opencca-pmthor-opp3`，
+原生 `process_fw_events_work` 增加 DRM unplug 临界区保护，匹配模块 SHA-256 为
+`2091b3f718dccef040a700bc53fb8e628f24481e28764249adaad6a6e8fa37ac`。
+该组合的 `glmark-opt-20261016-opp3-regression32` 完整 32 项退出 0，
+包含原生/直通和前后环境检查；另有 128 MiB 原生负载后的卸载恢复验证。
+这更新的是本地源码构建组合的证据，不改变固定发布载荷及上述历史失败记录。
+性能候选的准确 Host/Client/Proxy 哈希和参数见优化记录及
+[performance 配置说明](../../configs/performance/README.md)；
+不能只使用旧固定 Client 并设置新参数后沿用候选性能。
 
 ### 10.3 停止与恢复
 

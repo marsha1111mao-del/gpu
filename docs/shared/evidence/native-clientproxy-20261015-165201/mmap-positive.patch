@@ -1,0 +1,59 @@
+--- build/native-clientproxy/ioctl_perf.c
++++ build/native-clientproxy/ioctl_mmap_positive.c
+@@ -684,42 +684,8 @@
+ 	printf("BO_MMAP_RW handle=%u word0=0x%08x word1=0x%08x\n",
+ 	       bo.handle, words[0], words[1]);
+ 
+-	if (ioctl(fd, DRM_IOCTL_PANTHOR_BO_CREATE, &no_mmap_bo) < 0) {
+-		fprintf(stderr, "BO_CREATE NO_MMAP failed: %s\n",
+-			strerror(errno));
+-		goto out_unmap;
+-	}
+-
+-	printf("BO_CREATE_NO_MMAP handle=%u size=0x%llx\n",
+-	       no_mmap_bo.handle, (unsigned long long)no_mmap_bo.size);
+-
+-	no_mmap_offset.handle = no_mmap_bo.handle;
+-	if (ioctl(fd, DRM_IOCTL_PANTHOR_BO_MMAP_OFFSET,
+-		  &no_mmap_offset) == 0) {
+-		fprintf(stderr,
+-			"BO_MMAP_OFFSET unexpectedly succeeded for NO_MMAP handle=%u offset=0x%llx\n",
+-			no_mmap_bo.handle,
+-			(unsigned long long)no_mmap_offset.offset);
+-		goto out_close_no_mmap_bo;
+-	}
+-
+-	printf("BO_MMAP_OFFSET_NO_MMAP handle=%u expected_failure errno=%d (%s)\n",
+-	       no_mmap_bo.handle, errno, strerror(errno));
++	/* Common positive mmap profile: NO_MMAP policy is tested separately. */
+ 	ret = 0;
+-
+-out_close_no_mmap_bo:
+-	if (no_mmap_bo.handle) {
+-		gem_close.handle = no_mmap_bo.handle;
+-		if (ioctl(fd, DRM_IOCTL_GEM_CLOSE, &gem_close) < 0) {
+-			fprintf(stderr,
+-				"GEM_CLOSE NO_MMAP handle=%u failed: %s\n",
+-				no_mmap_bo.handle, strerror(errno));
+-			ret = -1;
+-		} else {
+-			printf("GEM_CLOSE_NO_MMAP handle=%u\n",
+-			       no_mmap_bo.handle);
+-		}
+-	}
+ 
+ out_unmap:
+ 	if (words != MAP_FAILED) {
+@@ -2894,10 +2860,10 @@
+ 
+ static double now_us(void) { struct timespec ts; clock_gettime(CLOCK_MONOTONIC, &ts); return ts.tv_sec*1000000.0+ts.tv_nsec/1000.0; }
+ int main(int argc, char **argv) {
+- const char *modes[]={"basic","vm-create","bo-create","bo-lifecycle","bo-mmap","vm-bind","vm-bind-async-sync","vm-state-flush","syncobj-lifecycle","syncobj-wait","syncobj-transfer","syncobj-timeline-wait","syncobj-signal-query","sync-file-snapshot","group-lifecycle","group-submit-syncpoint","tiler-heap-lifecycle"};
++ const char *modes[]={"bo-mmap"};
+  const char *node="/dev/dri/renderD128"; int failed=0;
+  if(argc>2) node=argv[2];
+- puts("IOCTL_PERF_PROFILE=common-supported no_client_unsupported_fd_checks warmup=3 samples=20 clock=CLOCK_MONOTONIC includes=open+basic+case+close excludes=VM_boot");
++ puts("IOCTL_PERF_PROFILE=common-positive-bo-mmap no_client_unsupported_fd_checks warmup=3 samples=20 clock=CLOCK_MONOTONIC includes=open+basic+case+close excludes=VM_boot");
+  for(unsigned m=0;m<sizeof(modes)/sizeof(modes[0]);m++) {
+   char opt[128]; snprintf(opt,sizeof(opt),"--%s",modes[m]); char *args[]={argv[0],opt,(char*)node,NULL};
+   double sum=0,min=1e30,max=0; int rc=0,n=0;

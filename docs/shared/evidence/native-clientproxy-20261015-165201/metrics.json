@@ -1,0 +1,2331 @@
+{
+  "run_id": "native-clientproxy-20261015-165201",
+  "ioctl": {
+    "native": [
+      {
+        "mode": "basic",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 23.436,
+        "min_us": 23.043,
+        "max_us": 23.917,
+        "samples_us": [
+          23.043,
+          23.917,
+          23.334,
+          23.334,
+          23.334,
+          23.626,
+          23.335,
+          23.626,
+          23.335,
+          23.334,
+          23.626,
+          23.626,
+          23.626,
+          23.334,
+          23.626,
+          23.335,
+          23.043,
+          23.334,
+          23.626,
+          23.334
+        ],
+        "p50_us": 23.335,
+        "p95_us": 23.64055
+      },
+      {
+        "mode": "vm-create",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 179.746,
+        "min_us": 39.959,
+        "max_us": 2816.142,
+        "samples_us": [
+          40.543,
+          40.543,
+          39.959,
+          40.251,
+          40.251,
+          40.835,
+          40.251,
+          40.544,
+          40.543,
+          40.252,
+          41.127,
+          40.543,
+          40.251,
+          40.252,
+          39.96,
+          40.252,
+          40.252,
+          40.251,
+          2816.142,
+          51.918
+        ],
+        "p50_us": 40.252,
+        "p95_us": 190.12920000000196
+      },
+      {
+        "mode": "bo-create",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 77.396,
+        "min_us": 60.085,
+        "max_us": 271.843,
+        "samples_us": [
+          62.71,
+          69.419,
+          66.21,
+          271.843,
+          69.419,
+          67.961,
+          68.253,
+          66.794,
+          66.794,
+          67.669,
+          69.419,
+          61.252,
+          96.546,
+          62.128,
+          62.419,
+          64.461,
+          63.002,
+          60.668,
+          60.085,
+          70.877
+        ],
+        "p50_us": 66.794,
+        "p95_us": 105.31085000000013
+      },
+      {
+        "mode": "bo-lifecycle",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 122.607,
+        "min_us": 109.087,
+        "max_us": 267.177,
+        "samples_us": [
+          109.379,
+          109.671,
+          119.004,
+          111.421,
+          110.545,
+          110.545,
+          109.67,
+          118.421,
+          109.962,
+          109.087,
+          267.177,
+          117.546,
+          116.671,
+          124.255,
+          116.379,
+          117.838,
+          116.671,
+          114.629,
+          125.421,
+          117.838
+        ],
+        "p50_us": 116.525,
+        "p95_us": 132.50880000000012
+      },
+      {
+        "mode": "bo-mmap",
+        "rc": 1,
+        "samples": 0,
+        "avg_us": 0.0,
+        "min_us": 0.0,
+        "max_us": 0.0,
+        "samples_us": []
+      },
+      {
+        "mode": "vm-bind",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 2476.806,
+        "min_us": 2247.372,
+        "max_us": 2920.563,
+        "samples_us": [
+          2920.563,
+          2268.373,
+          2624.219,
+          2342.168,
+          2618.677,
+          2306.0,
+          2653.679,
+          2269.54,
+          2651.637,
+          2312.416,
+          2619.261,
+          2312.416,
+          2629.177,
+          2247.372,
+          2642.886,
+          2309.499,
+          2616.052,
+          2300.749,
+          2617.803,
+          2273.623
+        ],
+        "p50_us": 2479.11,
+        "p95_us": 2667.0232
+      },
+      {
+        "mode": "vm-bind-async-sync",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 222.243,
+        "min_us": 198.632,
+        "max_us": 289.635,
+        "samples_us": [
+          198.632,
+          228.675,
+          244.133,
+          230.425,
+          205.341,
+          221.383,
+          205.341,
+          205.632,
+          250.551,
+          206.215,
+          210.299,
+          223.716,
+          225.466,
+          205.632,
+          256.968,
+          204.174,
+          203.59,
+          224.299,
+          289.635,
+          204.757
+        ],
+        "p50_us": 215.841,
+        "p95_us": 258.60135
+      },
+      {
+        "mode": "vm-state-flush",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 64.84,
+        "min_us": 63.877,
+        "max_us": 67.377,
+        "samples_us": [
+          64.169,
+          65.336,
+          64.169,
+          64.169,
+          65.044,
+          64.169,
+          63.878,
+          67.086,
+          64.752,
+          65.044,
+          63.878,
+          64.169,
+          64.169,
+          64.752,
+          63.877,
+          67.377,
+          65.044,
+          67.377,
+          64.169,
+          64.169
+        ],
+        "p50_us": 64.169,
+        "p95_us": 67.377
+      },
+      {
+        "mode": "syncobj-lifecycle",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 42.351,
+        "min_us": 41.71,
+        "max_us": 44.918,
+        "samples_us": [
+          44.918,
+          42.001,
+          42.293,
+          42.585,
+          42.001,
+          42.002,
+          41.71,
+          42.002,
+          42.293,
+          42.584,
+          42.002,
+          42.002,
+          42.001,
+          42.001,
+          42.585,
+          42.001,
+          41.71,
+          42.293,
+          42.294,
+          43.752
+        ],
+        "p50_us": 42.002,
+        "p95_us": 43.810300000000005
+      },
+      {
+        "mode": "syncobj-wait",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 52.91,
+        "min_us": 49.293,
+        "max_us": 57.169,
+        "samples_us": [
+          49.294,
+          55.71,
+          56.002,
+          56.002,
+          55.127,
+          56.585,
+          57.169,
+          57.168,
+          56.877,
+          54.252,
+          50.169,
+          49.877,
+          50.168,
+          50.169,
+          52.502,
+          52.793,
+          49.585,
+          49.293,
+          49.293,
+          50.168
+        ],
+        "p50_us": 52.6475,
+        "p95_us": 57.16805
+      },
+      {
+        "mode": "syncobj-transfer",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 44.452,
+        "min_us": 42.001,
+        "max_us": 77.586,
+        "samples_us": [
+          77.586,
+          45.21,
+          42.585,
+          42.585,
+          42.001,
+          42.293,
+          42.293,
+          42.002,
+          43.751,
+          42.293,
+          42.293,
+          42.293,
+          44.043,
+          43.46,
+          42.877,
+          42.294,
+          42.002,
+          42.294,
+          42.293,
+          42.584
+        ],
+        "p50_us": 42.294,
+        "p95_us": 46.82880000000002
+      },
+      {
+        "mode": "syncobj-timeline-wait",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 85.899,
+        "min_us": 71.169,
+        "max_us": 282.052,
+        "samples_us": [
+          71.169,
+          72.044,
+          71.752,
+          71.461,
+          72.044,
+          71.753,
+          72.919,
+          72.045,
+          72.044,
+          72.045,
+          73.211,
+          282.052,
+          82.545,
+          81.378,
+          78.169,
+          78.461,
+          78.753,
+          79.919,
+          81.378,
+          82.836
+        ],
+        "p50_us": 73.065,
+        "p95_us": 92.79680000000013
+      },
+      {
+        "mode": "syncobj-signal-query",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 82.778,
+        "min_us": 69.419,
+        "max_us": 170.631,
+        "samples_us": [
+          69.419,
+          75.545,
+          74.961,
+          73.794,
+          73.211,
+          73.503,
+          102.962,
+          73.502,
+          73.211,
+          73.795,
+          170.631,
+          76.711,
+          103.546,
+          98.878,
+          75.544,
+          72.919,
+          73.211,
+          73.502,
+          73.503,
+          73.211
+        ],
+        "p50_us": 73.6485,
+        "p95_us": 106.90025000000006
+      },
+      {
+        "mode": "sync-file-snapshot",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 1779.624,
+        "min_us": 1693.477,
+        "max_us": 2051.366,
+        "samples_us": [
+          1792.939,
+          1742.187,
+          1769.897,
+          1717.395,
+          1857.984,
+          1739.27,
+          1762.896,
+          1734.02,
+          2051.366,
+          1693.477,
+          1736.937,
+          1720.603,
+          1710.978,
+          1938.778,
+          1732.854,
+          1740.729,
+          1712.728,
+          1976.696,
+          1701.352,
+          1759.397
+        ],
+        "p50_us": 1739.9995,
+        "p95_us": 1980.4295
+      },
+      {
+        "mode": "group-lifecycle",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 297.409,
+        "min_us": 267.468,
+        "max_us": 558.562,
+        "samples_us": [
+          290.511,
+          302.177,
+          277.968,
+          273.885,
+          558.562,
+          274.76,
+          275.635,
+          278.552,
+          291.385,
+          278.552,
+          321.137,
+          283.511,
+          276.801,
+          298.969,
+          299.844,
+          275.343,
+          283.802,
+          268.343,
+          270.968,
+          267.468
+        ],
+        "p50_us": 278.552,
+        "p95_us": 333.00825000000015
+      },
+      {
+        "mode": "group-submit-syncpoint",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 379.108,
+        "min_us": 299.844,
+        "max_us": 1212.502,
+        "samples_us": [
+          299.844,
+          379.764,
+          382.973,
+          310.637,
+          384.722,
+          335.137,
+          310.928,
+          312.97,
+          1212.502,
+          308.886,
+          314.428,
+          338.929,
+          332.221,
+          385.889,
+          313.261,
+          304.803,
+          317.053,
+          335.429,
+          384.722,
+          317.053
+        ],
+        "p50_us": 324.637,
+        "p95_us": 427.21965000000057
+      },
+      {
+        "mode": "tiler-heap-lifecycle",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 346.921,
+        "min_us": 284.386,
+        "max_us": 972.16,
+        "samples_us": [
+          284.386,
+          297.511,
+          284.969,
+          972.16,
+          301.302,
+          315.595,
+          306.261,
+          337.47,
+          296.635,
+          290.219,
+          342.721,
+          488.851,
+          321.72,
+          288.177,
+          296.928,
+          294.594,
+          296.927,
+          317.345,
+          293.135,
+          311.511
+        ],
+        "p50_us": 299.40650000000005,
+        "p95_us": 513.0164500000003
+      }
+    ],
+    "proxy": [
+      {
+        "mode": "basic",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 6527.471,
+        "min_us": 6287.75,
+        "max_us": 6758.5,
+        "samples_us": [
+          6295.917,
+          6548.208,
+          6602.459,
+          6287.75,
+          6451.375,
+          6558.417,
+          6607.417,
+          6500.084,
+          6424.833,
+          6524.583,
+          6758.5,
+          6473.25,
+          6469.166,
+          6607.125,
+          6560.75,
+          6505.333,
+          6619.375,
+          6508.25,
+          6580.584,
+          6666.042
+        ],
+        "p50_us": 6536.3955,
+        "p95_us": 6670.664900000001
+      },
+      {
+        "mode": "vm-create",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 9346.852,
+        "min_us": 9172.916,
+        "max_us": 9513.0,
+        "samples_us": [
+          9343.833,
+          9513.0,
+          9358.708,
+          9310.0,
+          9430.167,
+          9377.959,
+          9259.833,
+          9332.458,
+          9268.292,
+          9326.042,
+          9342.666,
+          9314.958,
+          9409.75,
+          9253.125,
+          9331.875,
+          9314.375,
+          9426.958,
+          9172.916,
+          9493.458,
+          9356.667
+        ],
+        "p50_us": 9337.562,
+        "p95_us": 9494.4351
+      },
+      {
+        "mode": "bo-create",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 12005.642,
+        "min_us": 10475.208,
+        "max_us": 14557.083,
+        "samples_us": [
+          14540.75,
+          14175.584,
+          14131.542,
+          14557.083,
+          14382.667,
+          14262.792,
+          14420.291,
+          10825.209,
+          10846.791,
+          10842.708,
+          10707.083,
+          10530.917,
+          10789.917,
+          10677.625,
+          10909.792,
+          10655.459,
+          10736.833,
+          10475.208,
+          10892.584,
+          10752.0
+        ],
+        "p50_us": 10844.7495,
+        "p95_us": 14541.56665
+      },
+      {
+        "mode": "bo-lifecycle",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 14017.267,
+        "min_us": 13244.292,
+        "max_us": 21908.25,
+        "samples_us": [
+          13505.333,
+          13387.208,
+          13408.792,
+          13410.542,
+          13378.75,
+          13244.292,
+          13619.083,
+          13474.125,
+          21908.25,
+          16566.958,
+          13480.542,
+          13428.917,
+          13573.875,
+          13308.167,
+          13465.375,
+          13473.25,
+          13495.416,
+          13334.417,
+          13561.917,
+          13320.125
+        ],
+        "p50_us": 13469.3125,
+        "p95_us": 16834.022600000004
+      },
+      {
+        "mode": "bo-mmap",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 14175.933,
+        "min_us": 13957.708,
+        "max_us": 14854.0,
+        "samples_us": [
+          13995.917,
+          14071.75,
+          14252.0,
+          13957.708,
+          14098.0,
+          14333.958,
+          13965.583,
+          14224.875,
+          14360.792,
+          14180.25,
+          14217.875,
+          14149.625,
+          14261.625,
+          14147.0,
+          14190.166,
+          14130.958,
+          14110.542,
+          13993.0,
+          14023.042,
+          14854.0
+        ],
+        "p50_us": 14148.3125,
+        "p95_us": 14385.4524
+      },
+      {
+        "mode": "vm-bind",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 36028.708,
+        "min_us": 34950.708,
+        "max_us": 43715.875,
+        "samples_us": [
+          35507.5,
+          35259.875,
+          35091.292,
+          35384.417,
+          35489.416,
+          35381.208,
+          35597.625,
+          35251.708,
+          35333.083,
+          43715.875,
+          38532.958,
+          35319.958,
+          37354.625,
+          35449.167,
+          35308.291,
+          34950.708,
+          35412.417,
+          35616.292,
+          35388.208,
+          35229.541
+        ],
+        "p50_us": 35386.3125,
+        "p95_us": 38792.10385
+      },
+      {
+        "mode": "vm-bind-async-sync",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 29576.998,
+        "min_us": 28657.708,
+        "max_us": 40698.0,
+        "samples_us": [
+          30250.5,
+          29211.583,
+          28812.292,
+          28971.25,
+          28778.458,
+          28795.666,
+          29019.375,
+          28841.458,
+          29066.625,
+          28891.042,
+          28959.876,
+          28880.541,
+          28730.625,
+          28797.708,
+          29113.292,
+          29070.708,
+          28657.708,
+          28822.792,
+          40698.0,
+          29170.459
+        ],
+        "p50_us": 28925.459000000003,
+        "p95_us": 30772.875000000007
+      },
+      {
+        "mode": "vm-state-flush",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 11610.01,
+        "min_us": 11384.625,
+        "max_us": 11982.25,
+        "samples_us": [
+          11598.125,
+          11468.333,
+          11544.166,
+          11604.25,
+          11489.625,
+          11399.5,
+          11525.792,
+          11533.959,
+          11528.417,
+          11532.209,
+          11570.708,
+          11454.042,
+          11720.334,
+          11879.0,
+          11722.959,
+          11982.25,
+          11591.125,
+          11901.75,
+          11769.041,
+          11384.625
+        ],
+        "p50_us": 11557.437,
+        "p95_us": 11905.775
+      },
+      {
+        "mode": "syncobj-lifecycle",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 12007.392,
+        "min_us": 11825.042,
+        "max_us": 12235.709,
+        "samples_us": [
+          11840.208,
+          12121.667,
+          11986.042,
+          11859.167,
+          12051.375,
+          11865.291,
+          12058.959,
+          11947.25,
+          11825.042,
+          12109.708,
+          12162.5,
+          12012.292,
+          12235.709,
+          11839.625,
+          11965.917,
+          12156.667,
+          12127.208,
+          11951.333,
+          12133.916,
+          11897.958
+        ],
+        "p50_us": 11999.167,
+        "p95_us": 12166.16045
+      },
+      {
+        "mode": "syncobj-wait",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 15051.619,
+        "min_us": 14792.75,
+        "max_us": 16571.625,
+        "samples_us": [
+          14883.458,
+          14887.541,
+          14940.625,
+          14933.625,
+          15137.791,
+          15148.583,
+          15051.459,
+          14862.458,
+          14996.625,
+          14841.75,
+          14913.792,
+          14941.791,
+          15053.5,
+          14953.458,
+          15136.042,
+          15006.834,
+          14792.75,
+          15038.333,
+          14940.333,
+          16571.625
+        ],
+        "p50_us": 14947.6245,
+        "p95_us": 15219.735100000002
+      },
+      {
+        "mode": "syncobj-transfer",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 13680.056,
+        "min_us": 13496.0,
+        "max_us": 13930.292,
+        "samples_us": [
+          13521.959,
+          13619.958,
+          13930.292,
+          13664.0,
+          13506.208,
+          13753.833,
+          13793.209,
+          13699.583,
+          13558.709,
+          13842.792,
+          13914.541,
+          13533.917,
+          13661.375,
+          13648.25,
+          13711.541,
+          13571.542,
+          13808.667,
+          13622.291,
+          13496.0,
+          13742.459
+        ],
+        "p50_us": 13662.6875,
+        "p95_us": 13915.32855
+      },
+      {
+        "mode": "syncobj-timeline-wait",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 23732.012,
+        "min_us": 23363.958,
+        "max_us": 24057.25,
+        "samples_us": [
+          24057.25,
+          23793.584,
+          23788.917,
+          23363.958,
+          23586.791,
+          23648.333,
+          23901.791,
+          23693.25,
+          23638.708,
+          23938.25,
+          23626.75,
+          23690.333,
+          23685.666,
+          23918.417,
+          23537.209,
+          23784.834,
+          24015.25,
+          23608.083,
+          23504.834,
+          23858.041
+        ],
+        "p50_us": 23691.7915,
+        "p95_us": 24017.35
+      },
+      {
+        "mode": "syncobj-signal-query",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 21893.258,
+        "min_us": 21094.208,
+        "max_us": 32768.167,
+        "samples_us": [
+          32768.167,
+          21535.5,
+          21378.584,
+          21240.625,
+          21343.0,
+          21287.875,
+          21393.167,
+          21195.417,
+          21556.792,
+          21094.208,
+          21293.125,
+          21304.792,
+          21395.209,
+          21123.958,
+          21469.0,
+          21268.041,
+          21408.625,
+          21243.25,
+          21406.0,
+          21159.833
+        ],
+        "p50_us": 21323.896,
+        "p95_us": 22117.36075000001
+      },
+      {
+        "mode": "sync-file-snapshot",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 1050472.398,
+        "min_us": 1041977.709,
+        "max_us": 1068346.125,
+        "samples_us": [
+          1043739.959,
+          1064269.5,
+          1042822.959,
+          1052025.626,
+          1041977.709,
+          1044726.084,
+          1062669.417,
+          1042481.417,
+          1051988.875,
+          1046310.417,
+          1044422.458,
+          1066916.084,
+          1046264.334,
+          1052123.334,
+          1046352.417,
+          1047052.125,
+          1068346.125,
+          1052992.792,
+          1045739.625,
+          1046226.709
+        ],
+        "p50_us": 1046331.417,
+        "p95_us": 1066987.58605
+      },
+      {
+        "mode": "group-lifecycle",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 19368.533,
+        "min_us": 19030.375,
+        "max_us": 19607.0,
+        "samples_us": [
+          19588.625,
+          19164.833,
+          19392.333,
+          19319.708,
+          19493.542,
+          19248.541,
+          19417.417,
+          19275.083,
+          19322.333,
+          19338.083,
+          19311.25,
+          19217.625,
+          19447.458,
+          19399.042,
+          19484.209,
+          19030.375,
+          19380.375,
+          19607.0,
+          19383.0,
+          19549.833
+        ],
+        "p50_us": 19381.6875,
+        "p95_us": 19589.54375
+      },
+      {
+        "mode": "group-submit-syncpoint",
+        "rc": 1,
+        "samples": 0,
+        "avg_us": 0.0,
+        "min_us": 0.0,
+        "max_us": 0.0,
+        "samples_us": []
+      },
+      {
+        "mode": "tiler-heap-lifecycle",
+        "rc": 0,
+        "samples": 20,
+        "avg_us": 13727.627,
+        "min_us": 13447.875,
+        "max_us": 14094.792,
+        "samples_us": [
+          13772.792,
+          13649.125,
+          13911.625,
+          13872.834,
+          13762.875,
+          13518.458,
+          13548.5,
+          13731.959,
+          14094.792,
+          13770.75,
+          13631.333,
+          13673.041,
+          13922.709,
+          13447.875,
+          13636.875,
+          13865.541,
+          13715.042,
+          13686.75,
+          13719.125,
+          13620.542
+        ],
+        "p50_us": 13717.0835,
+        "p95_us": 13931.31315
+      }
+    ],
+    "native_mmap_positive": {
+      "returncode": 0,
+      "samples": 20,
+      "avg_us": 118.606,
+      "min_us": 110.25,
+      "max_us": 146.417
+    },
+    "proxy_mmap_positive": {
+      "returncode": 0,
+      "samples": 20,
+      "avg_us": 13776.044,
+      "min_us": 12432.875,
+      "max_us": 16230.375
+    },
+    "native_group_valid_deadline": {
+      "returncode": 0,
+      "samples": 20,
+      "avg_us": 332.775,
+      "min_us": 306.818,
+      "max_us": 370.69
+    },
+    "proxy_group_valid_deadline": {
+      "returncode": 0,
+      "samples": 20,
+      "avg_us": 26830.635,
+      "min_us": 24948.583,
+      "max_us": 29628.666
+    }
+  },
+  "compute": {
+    "compute-4mib": {
+      "native": {
+        "iter_us": {
+          "min": 1310.0,
+          "avg": 1410.22,
+          "max": 1768.0,
+          "total": 141022.0
+        },
+        "check": "PASS count=1048576 samples=16 formula=x*3+7+alu_mix alu_iters=1",
+        "renderer": "Mali-G610 (Panfrost)",
+        "config": [
+          "iterations=100 warmup=5 count=1048576 bytes=4194304 alu_iters=1"
+        ],
+        "cpu_prepare_excluded": "1",
+        "case": "compute-4mib"
+      },
+      "proxy": {
+        "iter_us": {
+          "min": 18785.0,
+          "avg": 20034.2,
+          "max": 28635.0,
+          "total": 2003420.0
+        },
+        "check": "PASS count=1048576 samples=16 formula=x*3+7+alu_mix alu_iters=1",
+        "renderer": "Mali-G610 (Panfrost)",
+        "config": [
+          "iterations=100 warmup=5 count=1048576 bytes=4194304 alu_iters=1"
+        ],
+        "cpu_prepare_excluded": "1",
+        "case": "compute-4mib"
+      }
+    },
+    "compute-16mib": {
+      "native": {
+        "iter_us": {
+          "min": 4588.0,
+          "avg": 5427.58,
+          "max": 11028.0,
+          "total": 542758.0
+        },
+        "check": "PASS count=4194304 samples=16 formula=x*3+7+alu_mix alu_iters=1",
+        "renderer": "Mali-G610 (Panfrost)",
+        "config": [
+          "iterations=100 warmup=5 count=4194304 bytes=16777216 alu_iters=1"
+        ],
+        "cpu_prepare_excluded": "1",
+        "case": "compute-16mib"
+      },
+      "proxy": {
+        "iter_us": {
+          "min": 21223.0,
+          "avg": 24233.52,
+          "max": 37372.0,
+          "total": 2423352.0
+        },
+        "check": "PASS count=4194304 samples=16 formula=x*3+7+alu_mix alu_iters=1",
+        "renderer": "Mali-G610 (Panfrost)",
+        "config": [
+          "iterations=100 warmup=5 count=4194304 bytes=16777216 alu_iters=1"
+        ],
+        "cpu_prepare_excluded": "1",
+        "case": "compute-16mib"
+      }
+    },
+    "compute-64mib": {
+      "native": {
+        "iter_us": {
+          "min": 22325.0,
+          "avg": 22730.95,
+          "max": 28806.0,
+          "total": 454619.0
+        },
+        "check": "PASS count=16777216 samples=16 formula=x*3+7+alu_mix alu_iters=1",
+        "renderer": "Mali-G610 (Panfrost)",
+        "config": [
+          "iterations=20 warmup=5 count=16777216 bytes=67108864 alu_iters=1"
+        ],
+        "cpu_prepare_excluded": "1",
+        "case": "compute-64mib"
+      },
+      "proxy": {
+        "iter_us": {
+          "min": 35123.0,
+          "avg": 40258.1,
+          "max": 44827.0,
+          "total": 805162.0
+        },
+        "check": "PASS count=16777216 samples=16 formula=x*3+7+alu_mix alu_iters=1",
+        "renderer": "Mali-G610 (Panfrost)",
+        "config": [
+          "iterations=20 warmup=5 count=16777216 bytes=67108864 alu_iters=1"
+        ],
+        "cpu_prepare_excluded": "1",
+        "case": "compute-64mib"
+      }
+    },
+    "compute-128mib": {
+      "native": {
+        "iter_us": {
+          "min": 44779.0,
+          "avg": 44938.8,
+          "max": 45349.0,
+          "total": 898776.0
+        },
+        "check": "PASS count=33554432 samples=16 formula=x*3+7+alu_mix alu_iters=1",
+        "renderer": "Mali-G610 (Panfrost)",
+        "config": [
+          "iterations=20 warmup=5 count=33554432 bytes=134217728 alu_iters=1"
+        ],
+        "cpu_prepare_excluded": "1",
+        "case": "compute-128mib-clean"
+      },
+      "proxy": {
+        "iter_us": {
+          "min": 57901.0,
+          "avg": 63114.05,
+          "max": 74161.0,
+          "total": 1262281.0
+        },
+        "check": "PASS count=33554432 samples=16 formula=x*3+7+alu_mix alu_iters=1",
+        "renderer": "Mali-G610 (Panfrost)",
+        "config": [
+          "iterations=20 warmup=5 count=33554432 bytes=134217728 alu_iters=1"
+        ],
+        "cpu_prepare_excluded": "1",
+        "case": "compute-128mib-clean"
+      }
+    }
+  },
+  "ml": {
+    "ml-all": {
+      "native": {
+        "kernels": [
+          {
+            "kernel": "gemm_512_fp32",
+            "iter_us": {
+              "min": 20515.0,
+              "avg": 20712.58,
+              "max": 21445.0,
+              "total": 2071258.0
+            },
+            "check": "PASS samples=100 warmup=5"
+          },
+          {
+            "kernel": "conv2d_64x64x32_3x3_fp32",
+            "iter_us": {
+              "min": 23640.0,
+              "avg": 24007.44,
+              "max": 24442.0,
+              "total": 2400744.0
+            },
+            "check": "PASS samples=100 warmup=5"
+          },
+          {
+            "kernel": "depthwise_conv_128x128x128_3x3_fp32",
+            "iter_us": {
+              "min": 16992.0,
+              "avg": 17158.08,
+              "max": 19563.0,
+              "total": 1715808.0
+            },
+            "check": "PASS samples=100 warmup=5"
+          },
+          {
+            "kernel": "block_reduction_32mib_fp32",
+            "iter_us": {
+              "min": 6708.0,
+              "avg": 8133.04,
+              "max": 131246.0,
+              "total": 813304.0
+            },
+            "check": "PASS samples=100 warmup=5"
+          },
+          {
+            "kernel": "row_softmax_16384x256_fp32",
+            "iter_us": {
+              "min": 14327.0,
+              "avg": 14744.49,
+              "max": 15330.0,
+              "total": 1474449.0
+            },
+            "check": "PASS samples=100 warmup=5"
+          },
+          {
+            "kernel": "single_head_attention_256x64_fp32",
+            "iter_us": {
+              "min": 542519.0,
+              "avg": 543535.04,
+              "max": 552022.0,
+              "total": 54353504.0
+            },
+            "check": "PASS samples=100 warmup=5"
+          }
+        ],
+        "result": "PASS",
+        "clean": "PASS",
+        "renderer": "Mali-G610 (Panfrost)"
+      },
+      "proxy": {
+        "kernels": [
+          {
+            "kernel": "gemm_512_fp32",
+            "iter_us": {
+              "min": 33918.0,
+              "avg": 39931.67,
+              "max": 51919.0,
+              "total": 3993167.0
+            },
+            "check": "PASS samples=100 warmup=5"
+          },
+          {
+            "kernel": "conv2d_64x64x32_3x3_fp32",
+            "iter_us": {
+              "min": 36921.0,
+              "avg": 43795.76,
+              "max": 67897.0,
+              "total": 4379576.0
+            },
+            "check": "PASS samples=100 warmup=5"
+          },
+          {
+            "kernel": "depthwise_conv_128x128x128_3x3_fp32",
+            "iter_us": {
+              "min": 29870.0,
+              "avg": 35624.55,
+              "max": 52095.0,
+              "total": 3562455.0
+            },
+            "check": "PASS samples=100 warmup=5"
+          },
+          {
+            "kernel": "block_reduction_32mib_fp32",
+            "iter_us": {
+              "min": 27024.0,
+              "avg": 30586.9,
+              "max": 135426.0,
+              "total": 3058690.0
+            },
+            "check": "PASS samples=100 warmup=5"
+          },
+          {
+            "kernel": "row_softmax_16384x256_fp32",
+            "iter_us": {
+              "min": 25003.0,
+              "avg": 34566.86,
+              "max": 74948.0,
+              "total": 3456686.0
+            },
+            "check": "PASS samples=100 warmup=5"
+          },
+          {
+            "kernel": "single_head_attention_256x64_fp32",
+            "iter_us": {
+              "min": 562333.0,
+              "avg": 569177.97,
+              "max": 616050.0,
+              "total": 56917797.0
+            },
+            "check": "PASS samples=100 warmup=5"
+          }
+        ],
+        "result": "PASS",
+        "clean": "PASS",
+        "renderer": "Mali-G610 (Panfrost)"
+      }
+    },
+    "attention320": {
+      "native": {
+        "kernels": [
+          {
+            "kernel": "single_head_attention_320x64_fp32",
+            "iter_us": {
+              "min": 853510.0,
+              "avg": 854476.8,
+              "max": 855574.0,
+              "total": 8544768.0
+            },
+            "check": "PASS samples=10 warmup=2"
+          }
+        ],
+        "result": "PASS",
+        "clean": "PASS",
+        "renderer": "Mali-G610 (Panfrost)"
+      },
+      "proxy": {
+        "kernels": [
+          {
+            "kernel": "single_head_attention_320x64_fp32",
+            "iter_us": {
+              "min": 2461978.0,
+              "avg": 2474533.5,
+              "max": 2492901.0,
+              "total": 24745335.0
+            },
+            "check": "PASS samples=10 warmup=2"
+          }
+        ],
+        "result": "PASS",
+        "clean": "PASS",
+        "renderer": "Mali-G610 (Panfrost)"
+      }
+    }
+  },
+  "ncnn": {
+    "native": {
+      "models": [
+        {
+          "model": "mobilenet_v2",
+          "avg_ms": "24.39",
+          "min_ms": "23.43",
+          "max_ms": "25.26",
+          "result": "PASS"
+        },
+        {
+          "model": "mobilenet_v3",
+          "avg_ms": "23.27",
+          "min_ms": "21.15",
+          "max_ms": "31.25",
+          "result": "PASS"
+        },
+        {
+          "model": "resnet50",
+          "avg_ms": "1265.92",
+          "min_ms": "1235.75",
+          "max_ms": "1468.18",
+          "result": "PASS"
+        }
+      ],
+      "result": "PASS",
+      "qualification": "PASS"
+    },
+    "proxy": {
+      "models": [
+        {
+          "model": "mobilenet_v2",
+          "avg_ms": "147.60",
+          "min_ms": "139.29",
+          "max_ms": "186.29",
+          "result": "PASS"
+        },
+        {
+          "model": "mobilenet_v3",
+          "avg_ms": "148.73",
+          "min_ms": "132.22",
+          "max_ms": "172.88",
+          "result": "PASS"
+        },
+        {
+          "model": "resnet50",
+          "avg_ms": "806.71",
+          "min_ms": "772.60",
+          "max_ms": "852.00",
+          "result": "PASS"
+        }
+      ],
+      "result": "PASS",
+      "qualification": "PASS"
+    }
+  },
+  "glmark": {
+    "glmark-1280x720": {
+      "native": {
+        "GLMARK_SCORE": "1496",
+        "GLMARK_RENDERER": "Mali-G610 (Panfrost)",
+        "GLMARK_VALIDATE": "PASS",
+        "GLMARK_VALIDATE_SUCCESS": "26 FAILURE=1 UNKNOWN=6",
+        "GLMARK_RESULT": "PASS",
+        "GLMARK_CLEAN_RESULT": "PASS",
+        "GLMARK_EXPECTED_FRAMEBUFFER_ERRORS": "1",
+        "GLMARK_UNEXPECTED_FRAMEBUFFER_ERRORS": "0",
+        "GLMARK_BO_CREATE_ERRORS": "0",
+        "GLMARK_EXPORT_ERRORS": "0",
+        "GLMARK_VM_BIND_ERRORS": "0",
+        "scenes": [
+          {
+            "scene": "[build] use-vbo=false:",
+            "fps": 1108.0,
+            "frame_ms": 0.903
+          },
+          {
+            "scene": "[build] use-vbo=true:",
+            "fps": 2254.0,
+            "frame_ms": 0.444
+          },
+          {
+            "scene": "[texture] texture-filter=nearest:",
+            "fps": 2229.0,
+            "frame_ms": 0.449
+          },
+          {
+            "scene": "[texture] texture-filter=linear:",
+            "fps": 2234.0,
+            "frame_ms": 0.448
+          },
+          {
+            "scene": "[texture] texture-filter=mipmap:",
+            "fps": 2208.0,
+            "frame_ms": 0.453
+          },
+          {
+            "scene": "[shading] shading=gouraud:",
+            "fps": 1965.0,
+            "frame_ms": 0.509
+          },
+          {
+            "scene": "[shading] shading=blinn-phong-inf:",
+            "fps": 1948.0,
+            "frame_ms": 0.513
+          },
+          {
+            "scene": "[shading] shading=phong:",
+            "fps": 1835.0,
+            "frame_ms": 0.545
+          },
+          {
+            "scene": "[shading] shading=cel:",
+            "fps": 1846.0,
+            "frame_ms": 0.542
+          },
+          {
+            "scene": "[bump] bump-render=high-poly:",
+            "fps": 1337.0,
+            "frame_ms": 0.748
+          },
+          {
+            "scene": "[bump] bump-render=normals:",
+            "fps": 2495.0,
+            "frame_ms": 0.401
+          },
+          {
+            "scene": "[bump] bump-render=height:",
+            "fps": 2413.0,
+            "frame_ms": 0.414
+          },
+          {
+            "scene": "[effect2d] kernel=0,1,0;1,-4,1;0,1,0;:",
+            "fps": 2045.0,
+            "frame_ms": 0.489
+          },
+          {
+            "scene": "[effect2d] kernel=1,1,1,1,1;1,1,1,1,1;1,1,1,1,1;:",
+            "fps": 1175.0,
+            "frame_ms": 0.851
+          },
+          {
+            "scene": "[pulsar] light=false:quads=5:texture=false:",
+            "fps": 1747.0,
+            "frame_ms": 0.573
+          },
+          {
+            "scene": "[desktop] blur-radius=5:effect=blur:passes=1:separable=true:windows=4:",
+            "fps": 366.0,
+            "frame_ms": 2.739
+          },
+          {
+            "scene": "[desktop] effect=shadow:windows=4:",
+            "fps": 939.0,
+            "frame_ms": 1.066
+          },
+          {
+            "scene": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=map:",
+            "fps": 46.0,
+            "frame_ms": 21.788
+          },
+          {
+            "scene": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=subdata:",
+            "fps": 46.0,
+            "frame_ms": 21.854
+          },
+          {
+            "scene": "[buffer] columns=200:interleave=true:update-dispersion=0.9:update-fraction=0.5:update-method=map:",
+            "fps": 64.0,
+            "frame_ms": 15.691
+          },
+          {
+            "scene": "[ideas] speed=duration:",
+            "fps": 474.0,
+            "frame_ms": 2.114
+          },
+          {
+            "scene": "[jellyfish] <default>:",
+            "fps": 1487.0,
+            "frame_ms": 0.673
+          },
+          {
+            "scene": "[terrain] <default>:",
+            "fps": 80.0,
+            "frame_ms": 12.545
+          },
+          {
+            "scene": "[shadow] <default>:",
+            "fps": 1036.0,
+            "frame_ms": 0.966
+          },
+          {
+            "scene": "[refract] <default>:",
+            "fps": 204.0,
+            "frame_ms": 4.905
+          },
+          {
+            "scene": "[conditionals] fragment-steps=0:vertex-steps=0:",
+            "fps": 2026.0,
+            "frame_ms": 0.494
+          },
+          {
+            "scene": "[conditionals] fragment-steps=5:vertex-steps=0:",
+            "fps": 1959.0,
+            "frame_ms": 0.511
+          },
+          {
+            "scene": "[conditionals] fragment-steps=0:vertex-steps=5:",
+            "fps": 2023.0,
+            "frame_ms": 0.495
+          },
+          {
+            "scene": "[function] fragment-complexity=low:fragment-steps=5:",
+            "fps": 2017.0,
+            "frame_ms": 0.496
+          },
+          {
+            "scene": "[function] fragment-complexity=medium:fragment-steps=5:",
+            "fps": 1887.0,
+            "frame_ms": 0.53
+          },
+          {
+            "scene": "[loop] fragment-loop=false:fragment-steps=5:vertex-steps=5:",
+            "fps": 2015.0,
+            "frame_ms": 0.496
+          },
+          {
+            "scene": "[loop] fragment-steps=5:fragment-uniform=false:vertex-steps=5:",
+            "fps": 2014.0,
+            "frame_ms": 0.497
+          },
+          {
+            "scene": "[loop] fragment-steps=5:fragment-uniform=true:vertex-steps=5:",
+            "fps": 1883.0,
+            "frame_ms": 0.531
+          }
+        ],
+        "validation_failure_lines": [
+          "[function] fragment-complexity=medium:fragment-steps=5: Validation: Failure"
+        ]
+      },
+      "proxy": {
+        "GLMARK_SCORE": "58",
+        "GLMARK_RENDERER": "Mali-G610 (Panfrost)",
+        "GLMARK_VALIDATE": "PASS",
+        "GLMARK_VALIDATE_SUCCESS": "26 FAILURE=1 UNKNOWN=6",
+        "GLMARK_RESULT": "PASS",
+        "GLMARK_CLEAN_RESULT": "PASS",
+        "GLMARK_EXPECTED_FRAMEBUFFER_ERRORS": "1",
+        "GLMARK_UNEXPECTED_FRAMEBUFFER_ERRORS": "0",
+        "GLMARK_BO_CREATE_ERRORS": "0",
+        "GLMARK_EXPORT_ERRORS": "0",
+        "GLMARK_VM_BIND_ERRORS": "0",
+        "scenes": [
+          {
+            "scene": "[build] use-vbo=false:",
+            "fps": 64.0,
+            "frame_ms": 15.677
+          },
+          {
+            "scene": "[build] use-vbo=true:",
+            "fps": 76.0,
+            "frame_ms": 13.216
+          },
+          {
+            "scene": "[texture] texture-filter=nearest:",
+            "fps": 74.0,
+            "frame_ms": 13.592
+          },
+          {
+            "scene": "[texture] texture-filter=linear:",
+            "fps": 75.0,
+            "frame_ms": 13.396
+          },
+          {
+            "scene": "[texture] texture-filter=mipmap:",
+            "fps": 74.0,
+            "frame_ms": 13.537
+          },
+          {
+            "scene": "[shading] shading=gouraud:",
+            "fps": 75.0,
+            "frame_ms": 13.367
+          },
+          {
+            "scene": "[shading] shading=blinn-phong-inf:",
+            "fps": 75.0,
+            "frame_ms": 13.463
+          },
+          {
+            "scene": "[shading] shading=phong:",
+            "fps": 75.0,
+            "frame_ms": 13.407
+          },
+          {
+            "scene": "[shading] shading=cel:",
+            "fps": 75.0,
+            "frame_ms": 13.508
+          },
+          {
+            "scene": "[bump] bump-render=high-poly:",
+            "fps": 74.0,
+            "frame_ms": 13.693
+          },
+          {
+            "scene": "[bump] bump-render=normals:",
+            "fps": 73.0,
+            "frame_ms": 13.809
+          },
+          {
+            "scene": "[bump] bump-render=height:",
+            "fps": 71.0,
+            "frame_ms": 14.143
+          },
+          {
+            "scene": "[effect2d] kernel=0,1,0;1,-4,1;0,1,0;:",
+            "fps": 75.0,
+            "frame_ms": 13.481
+          },
+          {
+            "scene": "[effect2d] kernel=1,1,1,1,1;1,1,1,1,1;1,1,1,1,1;:",
+            "fps": 70.0,
+            "frame_ms": 14.473
+          },
+          {
+            "scene": "[pulsar] light=false:quads=5:texture=false:",
+            "fps": 71.0,
+            "frame_ms": 14.166
+          },
+          {
+            "scene": "[desktop] blur-radius=5:effect=blur:passes=1:separable=true:windows=4:",
+            "fps": 9.0,
+            "frame_ms": 116.142
+          },
+          {
+            "scene": "[desktop] effect=shadow:windows=4:",
+            "fps": 40.0,
+            "frame_ms": 25.322
+          },
+          {
+            "scene": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=map:",
+            "fps": 22.0,
+            "frame_ms": 46.316
+          },
+          {
+            "scene": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=subdata:",
+            "fps": 22.0,
+            "frame_ms": 45.687
+          },
+          {
+            "scene": "[buffer] columns=200:interleave=true:update-dispersion=0.9:update-fraction=0.5:update-method=map:",
+            "fps": 32.0,
+            "frame_ms": 32.198
+          },
+          {
+            "scene": "[ideas] speed=duration:",
+            "fps": 49.0,
+            "frame_ms": 20.489
+          },
+          {
+            "scene": "[jellyfish] <default>:",
+            "fps": 72.0,
+            "frame_ms": 14.011
+          },
+          {
+            "scene": "[terrain] <default>:",
+            "fps": 2.0,
+            "frame_ms": 551.373
+          },
+          {
+            "scene": "[shadow] <default>:",
+            "fps": 38.0,
+            "frame_ms": 26.39
+          },
+          {
+            "scene": "[refract] <default>:",
+            "fps": 7.0,
+            "frame_ms": 151.169
+          },
+          {
+            "scene": "[conditionals] fragment-steps=0:vertex-steps=0:",
+            "fps": 71.0,
+            "frame_ms": 14.267
+          },
+          {
+            "scene": "[conditionals] fragment-steps=5:vertex-steps=0:",
+            "fps": 73.0,
+            "frame_ms": 13.858
+          },
+          {
+            "scene": "[conditionals] fragment-steps=0:vertex-steps=5:",
+            "fps": 71.0,
+            "frame_ms": 14.264
+          },
+          {
+            "scene": "[function] fragment-complexity=low:fragment-steps=5:",
+            "fps": 71.0,
+            "frame_ms": 14.279
+          },
+          {
+            "scene": "[function] fragment-complexity=medium:fragment-steps=5:",
+            "fps": 69.0,
+            "frame_ms": 14.625
+          },
+          {
+            "scene": "[loop] fragment-loop=false:fragment-steps=5:vertex-steps=5:",
+            "fps": 68.0,
+            "frame_ms": 14.743
+          },
+          {
+            "scene": "[loop] fragment-steps=5:fragment-uniform=false:vertex-steps=5:",
+            "fps": 69.0,
+            "frame_ms": 14.593
+          },
+          {
+            "scene": "[loop] fragment-steps=5:fragment-uniform=true:vertex-steps=5:",
+            "fps": 71.0,
+            "frame_ms": 14.163
+          }
+        ],
+        "validation_failure_lines": [
+          "[function] fragment-complexity=medium:fragment-steps=5: Validation: Failure"
+        ]
+      }
+    },
+    "glmark-1920x1080": {
+      "native": {
+        "GLMARK_SCORE": "1161",
+        "GLMARK_RENDERER": "Mali-G610 (Panfrost)",
+        "GLMARK_VALIDATE": "PASS",
+        "GLMARK_VALIDATE_SUCCESS": "26 FAILURE=1 UNKNOWN=6",
+        "GLMARK_RESULT": "PASS",
+        "GLMARK_CLEAN_RESULT": "PASS",
+        "GLMARK_EXPECTED_FRAMEBUFFER_ERRORS": "1",
+        "GLMARK_UNEXPECTED_FRAMEBUFFER_ERRORS": "0",
+        "GLMARK_BO_CREATE_ERRORS": "0",
+        "GLMARK_EXPORT_ERRORS": "0",
+        "GLMARK_VM_BIND_ERRORS": "0",
+        "scenes": [
+          {
+            "scene": "[build] use-vbo=false:",
+            "fps": 1023.0,
+            "frame_ms": 0.978
+          },
+          {
+            "scene": "[build] use-vbo=true:",
+            "fps": 1916.0,
+            "frame_ms": 0.522
+          },
+          {
+            "scene": "[texture] texture-filter=nearest:",
+            "fps": 1691.0,
+            "frame_ms": 0.591
+          },
+          {
+            "scene": "[texture] texture-filter=linear:",
+            "fps": 1698.0,
+            "frame_ms": 0.589
+          },
+          {
+            "scene": "[texture] texture-filter=mipmap:",
+            "fps": 1699.0,
+            "frame_ms": 0.589
+          },
+          {
+            "scene": "[shading] shading=gouraud:",
+            "fps": 1682.0,
+            "frame_ms": 0.595
+          },
+          {
+            "scene": "[shading] shading=blinn-phong-inf:",
+            "fps": 1664.0,
+            "frame_ms": 0.601
+          },
+          {
+            "scene": "[shading] shading=phong:",
+            "fps": 1521.0,
+            "frame_ms": 0.658
+          },
+          {
+            "scene": "[shading] shading=cel:",
+            "fps": 1514.0,
+            "frame_ms": 0.661
+          },
+          {
+            "scene": "[bump] bump-render=high-poly:",
+            "fps": 1194.0,
+            "frame_ms": 0.838
+          },
+          {
+            "scene": "[bump] bump-render=normals:",
+            "fps": 1961.0,
+            "frame_ms": 0.51
+          },
+          {
+            "scene": "[bump] bump-render=height:",
+            "fps": 1848.0,
+            "frame_ms": 0.541
+          },
+          {
+            "scene": "[effect2d] kernel=0,1,0;1,-4,1;0,1,0;:",
+            "fps": 1299.0,
+            "frame_ms": 0.77
+          },
+          {
+            "scene": "[effect2d] kernel=1,1,1,1,1;1,1,1,1,1;1,1,1,1,1;:",
+            "fps": 588.0,
+            "frame_ms": 1.703
+          },
+          {
+            "scene": "[pulsar] light=false:quads=5:texture=false:",
+            "fps": 1389.0,
+            "frame_ms": 0.72
+          },
+          {
+            "scene": "[desktop] blur-radius=5:effect=blur:passes=1:separable=true:windows=4:",
+            "fps": 276.0,
+            "frame_ms": 3.625
+          },
+          {
+            "scene": "[desktop] effect=shadow:windows=4:",
+            "fps": 743.0,
+            "frame_ms": 1.346
+          },
+          {
+            "scene": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=map:",
+            "fps": 46.0,
+            "frame_ms": 22.035
+          },
+          {
+            "scene": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=subdata:",
+            "fps": 46.0,
+            "frame_ms": 22.07
+          },
+          {
+            "scene": "[buffer] columns=200:interleave=true:update-dispersion=0.9:update-fraction=0.5:update-method=map:",
+            "fps": 64.0,
+            "frame_ms": 15.864
+          },
+          {
+            "scene": "[ideas] speed=duration:",
+            "fps": 444.0,
+            "frame_ms": 2.253
+          },
+          {
+            "scene": "[jellyfish] <default>:",
+            "fps": 1027.0,
+            "frame_ms": 0.974
+          },
+          {
+            "scene": "[terrain] <default>:",
+            "fps": 65.0,
+            "frame_ms": 15.469
+          },
+          {
+            "scene": "[shadow] <default>:",
+            "fps": 803.0,
+            "frame_ms": 1.246
+          },
+          {
+            "scene": "[refract] <default>:",
+            "fps": 162.0,
+            "frame_ms": 6.191
+          },
+          {
+            "scene": "[conditionals] fragment-steps=0:vertex-steps=0:",
+            "fps": 1535.0,
+            "frame_ms": 0.652
+          },
+          {
+            "scene": "[conditionals] fragment-steps=5:vertex-steps=0:",
+            "fps": 1493.0,
+            "frame_ms": 0.67
+          },
+          {
+            "scene": "[conditionals] fragment-steps=0:vertex-steps=5:",
+            "fps": 1535.0,
+            "frame_ms": 0.652
+          },
+          {
+            "scene": "[function] fragment-complexity=low:fragment-steps=5:",
+            "fps": 1527.0,
+            "frame_ms": 0.655
+          },
+          {
+            "scene": "[function] fragment-complexity=medium:fragment-steps=5:",
+            "fps": 1427.0,
+            "frame_ms": 0.701
+          },
+          {
+            "scene": "[loop] fragment-loop=false:fragment-steps=5:vertex-steps=5:",
+            "fps": 1525.0,
+            "frame_ms": 0.656
+          },
+          {
+            "scene": "[loop] fragment-steps=5:fragment-uniform=false:vertex-steps=5:",
+            "fps": 1524.0,
+            "frame_ms": 0.656
+          },
+          {
+            "scene": "[loop] fragment-steps=5:fragment-uniform=true:vertex-steps=5:",
+            "fps": 1419.0,
+            "frame_ms": 0.705
+          }
+        ],
+        "validation_failure_lines": [
+          "[function] fragment-complexity=medium:fragment-steps=5: Validation: Failure"
+        ]
+      },
+      "proxy": {
+        "GLMARK_SCORE": "58",
+        "GLMARK_RENDERER": "Mali-G610 (Panfrost)",
+        "GLMARK_VALIDATE": "PASS",
+        "GLMARK_VALIDATE_SUCCESS": "26 FAILURE=1 UNKNOWN=6",
+        "GLMARK_RESULT": "PASS",
+        "GLMARK_CLEAN_RESULT": "PASS",
+        "GLMARK_EXPECTED_FRAMEBUFFER_ERRORS": "1",
+        "GLMARK_UNEXPECTED_FRAMEBUFFER_ERRORS": "0",
+        "GLMARK_BO_CREATE_ERRORS": "0",
+        "GLMARK_EXPORT_ERRORS": "0",
+        "GLMARK_VM_BIND_ERRORS": "0",
+        "scenes": [
+          {
+            "scene": "[build] use-vbo=false:",
+            "fps": 64.0,
+            "frame_ms": 15.828
+          },
+          {
+            "scene": "[build] use-vbo=true:",
+            "fps": 76.0,
+            "frame_ms": 13.17
+          },
+          {
+            "scene": "[texture] texture-filter=nearest:",
+            "fps": 77.0,
+            "frame_ms": 13.062
+          },
+          {
+            "scene": "[texture] texture-filter=linear:",
+            "fps": 76.0,
+            "frame_ms": 13.205
+          },
+          {
+            "scene": "[texture] texture-filter=mipmap:",
+            "fps": 77.0,
+            "frame_ms": 13.135
+          },
+          {
+            "scene": "[shading] shading=gouraud:",
+            "fps": 77.0,
+            "frame_ms": 13.14
+          },
+          {
+            "scene": "[shading] shading=blinn-phong-inf:",
+            "fps": 76.0,
+            "frame_ms": 13.162
+          },
+          {
+            "scene": "[shading] shading=phong:",
+            "fps": 76.0,
+            "frame_ms": 13.159
+          },
+          {
+            "scene": "[shading] shading=cel:",
+            "fps": 75.0,
+            "frame_ms": 13.405
+          },
+          {
+            "scene": "[bump] bump-render=high-poly:",
+            "fps": 73.0,
+            "frame_ms": 13.862
+          },
+          {
+            "scene": "[bump] bump-render=normals:",
+            "fps": 75.0,
+            "frame_ms": 13.376
+          },
+          {
+            "scene": "[bump] bump-render=height:",
+            "fps": 76.0,
+            "frame_ms": 13.328
+          },
+          {
+            "scene": "[effect2d] kernel=0,1,0;1,-4,1;0,1,0;:",
+            "fps": 70.0,
+            "frame_ms": 14.489
+          },
+          {
+            "scene": "[effect2d] kernel=1,1,1,1,1;1,1,1,1,1;1,1,1,1,1;:",
+            "fps": 70.0,
+            "frame_ms": 14.382
+          },
+          {
+            "scene": "[pulsar] light=false:quads=5:texture=false:",
+            "fps": 75.0,
+            "frame_ms": 13.442
+          },
+          {
+            "scene": "[desktop] blur-radius=5:effect=blur:passes=1:separable=true:windows=4:",
+            "fps": 9.0,
+            "frame_ms": 114.283
+          },
+          {
+            "scene": "[desktop] effect=shadow:windows=4:",
+            "fps": 40.0,
+            "frame_ms": 25.027
+          },
+          {
+            "scene": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=map:",
+            "fps": 22.0,
+            "frame_ms": 45.69
+          },
+          {
+            "scene": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=subdata:",
+            "fps": 23.0,
+            "frame_ms": 45.159
+          },
+          {
+            "scene": "[buffer] columns=200:interleave=true:update-dispersion=0.9:update-fraction=0.5:update-method=map:",
+            "fps": 32.0,
+            "frame_ms": 31.97
+          },
+          {
+            "scene": "[ideas] speed=duration:",
+            "fps": 50.0,
+            "frame_ms": 20.262
+          },
+          {
+            "scene": "[jellyfish] <default>:",
+            "fps": 67.0,
+            "frame_ms": 14.932
+          },
+          {
+            "scene": "[terrain] <default>:",
+            "fps": 2.0,
+            "frame_ms": 538.81
+          },
+          {
+            "scene": "[shadow] <default>:",
+            "fps": 39.0,
+            "frame_ms": 25.759
+          },
+          {
+            "scene": "[refract] <default>:",
+            "fps": 7.0,
+            "frame_ms": 146.432
+          },
+          {
+            "scene": "[conditionals] fragment-steps=0:vertex-steps=0:",
+            "fps": 72.0,
+            "frame_ms": 13.947
+          },
+          {
+            "scene": "[conditionals] fragment-steps=5:vertex-steps=0:",
+            "fps": 73.0,
+            "frame_ms": 13.779
+          },
+          {
+            "scene": "[conditionals] fragment-steps=0:vertex-steps=5:",
+            "fps": 72.0,
+            "frame_ms": 13.906
+          },
+          {
+            "scene": "[function] fragment-complexity=low:fragment-steps=5:",
+            "fps": 71.0,
+            "frame_ms": 14.149
+          },
+          {
+            "scene": "[function] fragment-complexity=medium:fragment-steps=5:",
+            "fps": 71.0,
+            "frame_ms": 14.199
+          },
+          {
+            "scene": "[loop] fragment-loop=false:fragment-steps=5:vertex-steps=5:",
+            "fps": 72.0,
+            "frame_ms": 13.921
+          },
+          {
+            "scene": "[loop] fragment-steps=5:fragment-uniform=false:vertex-steps=5:",
+            "fps": 71.0,
+            "frame_ms": 14.178
+          },
+          {
+            "scene": "[loop] fragment-steps=5:fragment-uniform=true:vertex-steps=5:",
+            "fps": 72.0,
+            "frame_ms": 13.942
+          }
+        ],
+        "validation_failure_lines": [
+          "[function] fragment-complexity=medium:fragment-steps=5: Validation: Failure"
+        ]
+      }
+    }
+  },
+  "two_client": {
+    "native": {
+      "0": {
+        "iter_us": {
+          "min": 3220.0,
+          "avg": 3377.6,
+          "max": 3705.0,
+          "total": 337760.0
+        },
+        "check": "PASS count=1048576 samples=16 formula=x*3+7+alu_mix alu_iters=1",
+        "renderer": "Mali-G610 (Panfrost)",
+        "config": [
+          "iterations=100 warmup=5 count=1048576 bytes=4194304 alu_iters=1"
+        ]
+      },
+      "1": {
+        "iter_us": {
+          "min": 3237.0,
+          "avg": 3379.93,
+          "max": 3800.0,
+          "total": 337993.0
+        },
+        "check": "PASS count=1048576 samples=16 formula=x*3+7+alu_mix alu_iters=1",
+        "renderer": "Mali-G610 (Panfrost)",
+        "config": [
+          "iterations=100 warmup=5 count=1048576 bytes=4194304 alu_iters=1"
+        ]
+      }
+    },
+    "proxy": {
+      "0": {
+        "iter_us": {
+          "min": 9033.0,
+          "avg": 24454.21,
+          "max": 47342.0,
+          "total": 2445421.0
+        },
+        "check": "PASS count=1048576 samples=16 formula=x*3+7+alu_mix alu_iters=1",
+        "renderer": "Mali-G610 (Panfrost)",
+        "config": [
+          "iterations=100 warmup=5 count=1048576 bytes=4194304 alu_iters=1"
+        ]
+      },
+      "1": {
+        "iter_us": {
+          "min": 9093.0,
+          "avg": 24766.91,
+          "max": 42056.0,
+          "total": 2476691.0
+        },
+        "check": "PASS count=1048576 samples=16 formula=x*3+7+alu_mix alu_iters=1",
+        "renderer": "Mali-G610 (Panfrost)",
+        "config": [
+          "iterations=100 warmup=5 count=1048576 bytes=4194304 alu_iters=1"
+        ]
+      }
+    }
+  },
+  "passthrough": {
+    "host-count1048576-summary": {
+      "iter_us": {
+        "min": 1324.0,
+        "avg": 1575.44,
+        "max": 1834.0,
+        "total": 157544.0
+      },
+      "status": "0",
+      "timeout_status": null,
+      "check": "PASS count=1048576 samples=16 formula=x*3+7+alu_mix alu_iters=1"
+    },
+    "vm-count4194304-summary": {
+      "iter_us": {
+        "min": 5378.0,
+        "avg": 9717.21,
+        "max": 17885.0,
+        "total": 971721.0
+      },
+      "status": null,
+      "timeout_status": "0",
+      "check": "PASS count=4194304 samples=16 formula=x*3+7+alu_mix alu_iters=1"
+    },
+    "vm-count1048576-summary": {
+      "iter_us": {
+        "min": 6585.0,
+        "avg": 13034.32,
+        "max": 22590.0,
+        "total": 1303432.0
+      },
+      "status": null,
+      "timeout_status": "0",
+      "check": "PASS count=1048576 samples=16 formula=x*3+7+alu_mix alu_iters=1"
+    },
+    "host-count16777216-summary": {
+      "iter_us": {
+        "min": 22350.0,
+        "avg": 22482.8,
+        "max": 22616.0,
+        "total": 449656.0
+      },
+      "status": "0",
+      "timeout_status": null,
+      "check": "PASS count=16777216 samples=16 formula=x*3+7+alu_mix alu_iters=1"
+    },
+    "host-count4194304-summary": {
+      "iter_us": {
+        "min": 4545.0,
+        "avg": 5384.39,
+        "max": 5920.0,
+        "total": 538439.0
+      },
+      "status": "0",
+      "timeout_status": null,
+      "check": "PASS count=4194304 samples=16 formula=x*3+7+alu_mix alu_iters=1"
+    },
+    "vm-count16777216-summary": {
+      "iter_us": {
+        "min": 22910.0,
+        "avg": 24271.45,
+        "max": 31303.0,
+        "total": 485429.0
+      },
+      "status": null,
+      "timeout_status": "0",
+      "check": "PASS count=16777216 samples=16 formula=x*3+7+alu_mix alu_iters=1"
+    }
+  },
+  "ncnn_resnet_repeat": {
+    "native": {
+      "models": [
+        {
+          "model": "resnet50",
+          "avg_ms": "1268.48",
+          "min_ms": "1240.03",
+          "max_ms": "1300.38",
+          "result": "PASS"
+        }
+      ],
+      "result": "PASS",
+      "qualification": "PASS"
+    },
+    "proxy": {
+      "models": [
+        {
+          "model": "resnet50",
+          "avg_ms": "1091.53",
+          "min_ms": "953.44",
+          "max_ms": "1241.91",
+          "result": "PASS"
+        }
+      ],
+      "result": "PASS",
+      "qualification": "PASS"
+    }
+  }
+}

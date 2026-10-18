@@ -52,9 +52,9 @@ Important documents:
 - `docs/passthrough/GPU_PASSTHROUGH_EFFECTIVE_OPTIMIZATIONS.md`
 - `docs/passthrough/GPU_HOST_VS_PASSTHROUGH_PERF_TEST_GUIDE.md`
 - `docs/passthrough/GPU_PASSTHROUGH_OPTIMIZATION_LOG.md`
-- `docs/shared/GPU_VIRTUALIZATION_DRIVER_ANALYSIS.md`
-- `docs/shared/PANTHOR_IOCTL_VIRTUALIZATION_DESIGN.md`
-- `docs/shared/PANTHOR_GLES_COMPUTE_SMOKE_BASELINE_ANALYSIS.md`
+- `docs/archive/20261018/history/GPU_VIRTUALIZATION_DRIVER_ANALYSIS.md`
+- `docs/archive/20261018/history/PANTHOR_IOCTL_VIRTUALIZATION_DESIGN.md`
+- `docs/archive/20261018/history/PANTHOR_GLES_COMPUTE_SMOKE_BASELINE_ANALYSIS.md`
 - `docs/codex-context/2026-05-28-vmshm-panthor-context.md`
 - `docs/codex-context/2026-06-03-gpu-passthrough-optimization-context.md`
 

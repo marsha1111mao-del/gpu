@@ -1,0 +1,24 @@
+--- build/native-clientproxy/ioctl_perf.c
++++ build/native-clientproxy/ioctl_group_deadline.c
+@@ -2379,7 +2379,7 @@
+ 
+ 	wait_handle = sync.handle;
+ 	wait.handles = (uint64_t)(uintptr_t)&wait_handle;
+-	wait.timeout_nsec = 1000000000LL;
++	wait.timeout_nsec = abs_timeout_after_ns(1000000000LL);
+ 	wait.count_handles = 1;
+ 	wait.flags = DRM_SYNCOBJ_WAIT_FLAGS_WAIT_FOR_SUBMIT;
+ 	if (ioctl(fd, DRM_IOCTL_SYNCOBJ_WAIT, &wait) < 0) {
+@@ -2894,10 +2894,10 @@
+ 
+ static double now_us(void) { struct timespec ts; clock_gettime(CLOCK_MONOTONIC, &ts); return ts.tv_sec*1000000.0+ts.tv_nsec/1000.0; }
+ int main(int argc, char **argv) {
+- const char *modes[]={"basic","vm-create","bo-create","bo-lifecycle","bo-mmap","vm-bind","vm-bind-async-sync","vm-state-flush","syncobj-lifecycle","syncobj-wait","syncobj-transfer","syncobj-timeline-wait","syncobj-signal-query","sync-file-snapshot","group-lifecycle","group-submit-syncpoint","tiler-heap-lifecycle"};
++ const char *modes[]={"group-submit-syncpoint"};
+  const char *node="/dev/dri/renderD128"; int failed=0;
+  if(argc>2) node=argv[2];
+- puts("IOCTL_PERF_PROFILE=common-supported no_client_unsupported_fd_checks warmup=3 samples=20 clock=CLOCK_MONOTONIC includes=open+basic+case+close excludes=VM_boot");
++ puts("IOCTL_PERF_PROFILE=group-valid-absolute-deadline no_client_unsupported_fd_checks warmup=3 samples=20 clock=CLOCK_MONOTONIC includes=open+basic+case+close excludes=VM_boot");
+  for(unsigned m=0;m<sizeof(modes)/sizeof(modes[0]);m++) {
+   char opt[128]; snprintf(opt,sizeof(opt),"--%s",modes[m]); char *args[]={argv[0],opt,(char*)node,NULL};
+   double sum=0,min=1e30,max=0; int rc=0,n=0;

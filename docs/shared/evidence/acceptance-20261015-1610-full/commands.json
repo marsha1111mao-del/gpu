@@ -1,0 +1,639 @@
+[
+  {
+    "name": "preflight",
+    "command": [
+      "sshpass",
+      "-e",
+      "ssh",
+      "-o",
+      "ConnectTimeout=10",
+      "-o",
+      "ServerAliveInterval=15",
+      "-o",
+      "ServerAliveCountMax=6",
+      "-o",
+      "StrictHostKeyChecking=accept-new",
+      "root@192.168.31.18",
+      "set -eu; test -c /dev/kvm; test -c /dev/pmthor; test \"$(basename \"$(readlink -f /sys/bus/platform/devices/fb000000.gpu/driver)\")\" = pmthor; ! pgrep -x firecracker; ! pgrep -x vmshm-broker; uname -a; cat /sys/devices/system/cpu/online"
+    ],
+    "started_utc": "2026-10-15T08:09:40.456352+00:00",
+    "run_id": "acceptance-20261015-1610-full-preflight",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/preflight.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:09:40.798804+00:00",
+    "elapsed_seconds": 0.342
+  },
+  {
+    "name": "ioctl",
+    "command": [
+      "bash",
+      "scripts/run/run-vmshm-e2e.sh",
+      "--skip-build",
+      "--ioctl-smoke",
+      "--sync-rootfs",
+      "--no-clean-remote-procs"
+    ],
+    "started_utc": "2026-10-15T08:09:40.811005+00:00",
+    "run_id": "acceptance-20261015-1610-full-ioctl",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/ioctl.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:12:57.586846+00:00",
+    "elapsed_seconds": 196.776
+  },
+  {
+    "name": "vm-create",
+    "command": [
+      "bash",
+      "scripts/run/run-vmshm-e2e.sh",
+      "--skip-build",
+      "--vm-create-smoke",
+      "--skip-sync",
+      "--no-clean-remote-procs"
+    ],
+    "started_utc": "2026-10-15T08:12:57.597837+00:00",
+    "run_id": "acceptance-20261015-1610-full-vm-create",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/vm-create.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:13:06.246563+00:00",
+    "elapsed_seconds": 8.649
+  },
+  {
+    "name": "bo-create",
+    "command": [
+      "bash",
+      "scripts/run/run-vmshm-e2e.sh",
+      "--skip-build",
+      "--bo-create-smoke",
+      "--skip-sync",
+      "--no-clean-remote-procs"
+    ],
+    "started_utc": "2026-10-15T08:13:06.247261+00:00",
+    "run_id": "acceptance-20261015-1610-full-bo-create",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/bo-create.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:13:15.979205+00:00",
+    "elapsed_seconds": 9.732
+  },
+  {
+    "name": "bo-lifecycle",
+    "command": [
+      "bash",
+      "scripts/run/run-vmshm-e2e.sh",
+      "--skip-build",
+      "--bo-lifecycle-smoke",
+      "--skip-sync",
+      "--no-clean-remote-procs"
+    ],
+    "started_utc": "2026-10-15T08:13:15.979764+00:00",
+    "run_id": "acceptance-20261015-1610-full-bo-lifecycle",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/bo-lifecycle.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:13:25.670984+00:00",
+    "elapsed_seconds": 9.691
+  },
+  {
+    "name": "bo-mmap",
+    "command": [
+      "bash",
+      "scripts/run/run-vmshm-e2e.sh",
+      "--skip-build",
+      "--bo-mmap-smoke",
+      "--skip-sync",
+      "--no-clean-remote-procs"
+    ],
+    "started_utc": "2026-10-15T08:13:25.671568+00:00",
+    "run_id": "acceptance-20261015-1610-full-bo-mmap",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/bo-mmap.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:13:34.346329+00:00",
+    "elapsed_seconds": 8.675
+  },
+  {
+    "name": "vm-bind",
+    "command": [
+      "bash",
+      "scripts/run/run-vmshm-e2e.sh",
+      "--skip-build",
+      "--vm-bind-smoke",
+      "--skip-sync",
+      "--no-clean-remote-procs"
+    ],
+    "started_utc": "2026-10-15T08:13:34.346893+00:00",
+    "run_id": "acceptance-20261015-1610-full-vm-bind",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/vm-bind.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:13:43.074714+00:00",
+    "elapsed_seconds": 8.728
+  },
+  {
+    "name": "vm-bind-async-sync",
+    "command": [
+      "bash",
+      "scripts/run/run-vmshm-e2e.sh",
+      "--skip-build",
+      "--vm-bind-async-sync-smoke",
+      "--skip-sync",
+      "--no-clean-remote-procs"
+    ],
+    "started_utc": "2026-10-15T08:13:43.075368+00:00",
+    "run_id": "acceptance-20261015-1610-full-vm-bind-async-sync",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/vm-bind-async-sync.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:13:52.820972+00:00",
+    "elapsed_seconds": 9.746
+  },
+  {
+    "name": "vm-state-flush",
+    "command": [
+      "bash",
+      "scripts/run/run-vmshm-e2e.sh",
+      "--skip-build",
+      "--vm-state-flush-smoke",
+      "--skip-sync",
+      "--no-clean-remote-procs"
+    ],
+    "started_utc": "2026-10-15T08:13:52.821566+00:00",
+    "run_id": "acceptance-20261015-1610-full-vm-state-flush",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/vm-state-flush.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:14:02.574464+00:00",
+    "elapsed_seconds": 9.753
+  },
+  {
+    "name": "syncobj-lifecycle",
+    "command": [
+      "bash",
+      "scripts/run/run-vmshm-e2e.sh",
+      "--skip-build",
+      "--syncobj-lifecycle-smoke",
+      "--skip-sync",
+      "--no-clean-remote-procs"
+    ],
+    "started_utc": "2026-10-15T08:14:02.575214+00:00",
+    "run_id": "acceptance-20261015-1610-full-syncobj-lifecycle",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/syncobj-lifecycle.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:14:11.309539+00:00",
+    "elapsed_seconds": 8.734
+  },
+  {
+    "name": "syncobj-wait",
+    "command": [
+      "bash",
+      "scripts/run/run-vmshm-e2e.sh",
+      "--skip-build",
+      "--syncobj-wait-smoke",
+      "--skip-sync",
+      "--no-clean-remote-procs"
+    ],
+    "started_utc": "2026-10-15T08:14:11.310093+00:00",
+    "run_id": "acceptance-20261015-1610-full-syncobj-wait",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/syncobj-wait.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:14:20.977459+00:00",
+    "elapsed_seconds": 9.667
+  },
+  {
+    "name": "syncobj-transfer",
+    "command": [
+      "bash",
+      "scripts/run/run-vmshm-e2e.sh",
+      "--skip-build",
+      "--syncobj-transfer-smoke",
+      "--skip-sync",
+      "--no-clean-remote-procs"
+    ],
+    "started_utc": "2026-10-15T08:14:20.978189+00:00",
+    "run_id": "acceptance-20261015-1610-full-syncobj-transfer",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/syncobj-transfer.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:14:30.689358+00:00",
+    "elapsed_seconds": 9.711
+  },
+  {
+    "name": "syncobj-timeline-wait",
+    "command": [
+      "bash",
+      "scripts/run/run-vmshm-e2e.sh",
+      "--skip-build",
+      "--syncobj-timeline-wait-smoke",
+      "--skip-sync",
+      "--no-clean-remote-procs"
+    ],
+    "started_utc": "2026-10-15T08:14:30.690430+00:00",
+    "run_id": "acceptance-20261015-1610-full-syncobj-timeline-wait",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/syncobj-timeline-wait.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:14:39.465204+00:00",
+    "elapsed_seconds": 8.775
+  },
+  {
+    "name": "syncobj-signal-query",
+    "command": [
+      "bash",
+      "scripts/run/run-vmshm-e2e.sh",
+      "--skip-build",
+      "--syncobj-signal-query-smoke",
+      "--skip-sync",
+      "--no-clean-remote-procs"
+    ],
+    "started_utc": "2026-10-15T08:14:39.465744+00:00",
+    "run_id": "acceptance-20261015-1610-full-syncobj-signal-query",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/syncobj-signal-query.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:14:49.227015+00:00",
+    "elapsed_seconds": 9.761
+  },
+  {
+    "name": "sync-file-snapshot",
+    "command": [
+      "bash",
+      "scripts/run/run-vmshm-e2e.sh",
+      "--skip-build",
+      "--sync-file-snapshot-smoke",
+      "--skip-sync",
+      "--no-clean-remote-procs"
+    ],
+    "started_utc": "2026-10-15T08:14:49.227776+00:00",
+    "run_id": "acceptance-20261015-1610-full-sync-file-snapshot",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/sync-file-snapshot.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:14:59.937575+00:00",
+    "elapsed_seconds": 10.71
+  },
+  {
+    "name": "group-lifecycle",
+    "command": [
+      "bash",
+      "scripts/run/run-vmshm-e2e.sh",
+      "--skip-build",
+      "--group-lifecycle-smoke",
+      "--skip-sync",
+      "--no-clean-remote-procs"
+    ],
+    "started_utc": "2026-10-15T08:14:59.938266+00:00",
+    "run_id": "acceptance-20261015-1610-full-group-lifecycle",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/group-lifecycle.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:15:08.699543+00:00",
+    "elapsed_seconds": 8.761
+  },
+  {
+    "name": "group-submit-syncpoint",
+    "command": [
+      "bash",
+      "scripts/run/run-vmshm-e2e.sh",
+      "--skip-build",
+      "--group-submit-syncpoint-smoke",
+      "--skip-sync",
+      "--no-clean-remote-procs"
+    ],
+    "started_utc": "2026-10-15T08:15:08.700268+00:00",
+    "run_id": "acceptance-20261015-1610-full-group-submit-syncpoint",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/group-submit-syncpoint.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:15:17.432276+00:00",
+    "elapsed_seconds": 8.732
+  },
+  {
+    "name": "tiler-heap-lifecycle",
+    "command": [
+      "bash",
+      "scripts/run/run-vmshm-e2e.sh",
+      "--skip-build",
+      "--tiler-heap-lifecycle-smoke",
+      "--skip-sync",
+      "--no-clean-remote-procs"
+    ],
+    "started_utc": "2026-10-15T08:15:17.432855+00:00",
+    "run_id": "acceptance-20261015-1610-full-tiler-heap-lifecycle",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/tiler-heap-lifecycle.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:15:26.141490+00:00",
+    "elapsed_seconds": 8.709
+  },
+  {
+    "name": "pfn-lifetime",
+    "command": [
+      "sshpass",
+      "-e",
+      "ssh",
+      "-o",
+      "ConnectTimeout=10",
+      "-o",
+      "ServerAliveInterval=15",
+      "-o",
+      "ServerAliveCountMax=6",
+      "-o",
+      "StrictHostKeyChecking=accept-new",
+      "root@192.168.31.18",
+      "timeout 35 /root/GPU-SFTP/firecracker-bins/bin/pmthor-pfn-lifetime; status=$?; dmesg; exit \"$status\""
+    ],
+    "started_utc": "2026-10-15T08:15:26.142317+00:00",
+    "run_id": "acceptance-20261015-1610-full-pfn-lifetime",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/pfn-lifetime.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:15:26.649667+00:00",
+    "elapsed_seconds": 0.507
+  },
+  {
+    "name": "pfn-log-check",
+    "command": [
+      "/usr/bin/python3",
+      "GPU-SFTP/tests/pmthor-pfn-lifetime/check_kernel_log.py",
+      "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/pfn-lifetime.log"
+    ],
+    "started_utc": "2026-10-15T08:15:26.650597+00:00",
+    "run_id": "acceptance-20261015-1610-full-pfn-log-check",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/pfn-log-check.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:15:26.680254+00:00",
+    "elapsed_seconds": 0.03
+  },
+  {
+    "name": "compute-4mib",
+    "command": [
+      "bash",
+      "scripts/run/run-vmshm-e2e.sh",
+      "--skip-build",
+      "--gles-compute-smoke",
+      "--skip-gles-remote-build",
+      "--gles-client-mem-mib",
+      "512",
+      "--gles-proxy-mem-mib",
+      "384",
+      "--gles-smoke-args",
+      "--count 1048576 --iterations 100 --warmup 5 --perf --exclude-cpu-prepare",
+      "--skip-sync",
+      "--no-clean-remote-procs"
+    ],
+    "started_utc": "2026-10-15T08:15:26.680592+00:00",
+    "run_id": "acceptance-20261015-1610-full-compute-4mib",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/compute-4mib.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:15:39.564228+00:00",
+    "elapsed_seconds": 12.884
+  },
+  {
+    "name": "compute-16mib",
+    "command": [
+      "bash",
+      "scripts/run/run-vmshm-e2e.sh",
+      "--skip-build",
+      "--gles-compute-smoke",
+      "--skip-gles-remote-build",
+      "--gles-client-mem-mib",
+      "512",
+      "--gles-proxy-mem-mib",
+      "384",
+      "--gles-smoke-args",
+      "--count 4194304 --iterations 100 --warmup 5 --perf --exclude-cpu-prepare",
+      "--skip-sync",
+      "--no-clean-remote-procs"
+    ],
+    "started_utc": "2026-10-15T08:15:39.565436+00:00",
+    "run_id": "acceptance-20261015-1610-full-compute-16mib",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/compute-16mib.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:15:52.522012+00:00",
+    "elapsed_seconds": 12.957
+  },
+  {
+    "name": "compute-64mib",
+    "command": [
+      "bash",
+      "scripts/run/run-vmshm-e2e.sh",
+      "--skip-build",
+      "--gles-compute-smoke",
+      "--skip-gles-remote-build",
+      "--gles-client-mem-mib",
+      "512",
+      "--gles-proxy-mem-mib",
+      "384",
+      "--gles-smoke-args",
+      "--count 16777216 --iterations 20 --warmup 5 --perf --exclude-cpu-prepare",
+      "--skip-sync",
+      "--no-clean-remote-procs"
+    ],
+    "started_utc": "2026-10-15T08:15:52.522754+00:00",
+    "run_id": "acceptance-20261015-1610-full-compute-64mib",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/compute-64mib.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:16:04.236267+00:00",
+    "elapsed_seconds": 11.714
+  },
+  {
+    "name": "compute-128mib",
+    "command": [
+      "bash",
+      "scripts/run/run-vmshm-e2e.sh",
+      "--skip-build",
+      "--gles-compute-smoke",
+      "--skip-gles-remote-build",
+      "--gles-client-mem-mib",
+      "512",
+      "--gles-proxy-mem-mib",
+      "384",
+      "--gles-smoke-args",
+      "--count 33554432 --iterations 20 --warmup 5 --perf --exclude-cpu-prepare",
+      "--skip-sync",
+      "--no-clean-remote-procs"
+    ],
+    "started_utc": "2026-10-15T08:16:04.237081+00:00",
+    "run_id": "acceptance-20261015-1610-full-compute-128mib",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/compute-128mib.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:16:18.026369+00:00",
+    "elapsed_seconds": 13.789
+  },
+  {
+    "name": "ml-all",
+    "command": [
+      "bash",
+      "scripts/run/run-vmshm-e2e.sh",
+      "--skip-build",
+      "--gles-ml-smoke",
+      "--skip-gles-remote-build",
+      "--gles-client-mem-mib",
+      "512",
+      "--gles-proxy-mem-mib",
+      "384",
+      "--gles-smoke-args",
+      "--kernel all --gemm-size 512 --iterations 100 --warmup 5",
+      "--skip-sync",
+      "--no-clean-remote-procs"
+    ],
+    "started_utc": "2026-10-15T08:16:18.027246+00:00",
+    "run_id": "acceptance-20261015-1610-full-ml-all",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/ml-all.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:19:45.784751+00:00",
+    "elapsed_seconds": 207.758
+  },
+  {
+    "name": "attention320",
+    "command": [
+      "bash",
+      "scripts/run/run-vmshm-e2e.sh",
+      "--skip-build",
+      "--gles-ml-smoke",
+      "--skip-gles-remote-build",
+      "--gles-client-mem-mib",
+      "512",
+      "--gles-proxy-mem-mib",
+      "384",
+      "--gles-smoke-args",
+      "--kernel attention --attention-size 320 --iterations 10 --warmup 2",
+      "--skip-sync",
+      "--no-clean-remote-procs"
+    ],
+    "started_utc": "2026-10-15T08:19:45.785595+00:00",
+    "run_id": "acceptance-20261015-1610-full-attention320",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/attention320.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:20:26.133742+00:00",
+    "elapsed_seconds": 40.348
+  },
+  {
+    "name": "ncnn",
+    "command": [
+      "bash",
+      "scripts/run/run-vmshm-e2e.sh",
+      "--skip-build",
+      "--gles-ncnn-smoke",
+      "--skip-gles-remote-build",
+      "--gles-client-mem-mib",
+      "512",
+      "--gles-proxy-mem-mib",
+      "384",
+      "--skip-sync",
+      "--no-clean-remote-procs"
+    ],
+    "started_utc": "2026-10-15T08:20:26.134602+00:00",
+    "run_id": "acceptance-20261015-1610-full-ncnn",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/ncnn.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:23:58.690027+00:00",
+    "elapsed_seconds": 212.555
+  },
+  {
+    "name": "glmark-1280x720",
+    "command": [
+      "bash",
+      "scripts/run/run-vmshm-e2e.sh",
+      "--skip-build",
+      "--gles-glmark-smoke",
+      "--skip-gles-remote-build",
+      "--gles-client-mem-mib",
+      "512",
+      "--gles-proxy-mem-mib",
+      "384",
+      "--gles-glmark-size",
+      "1280x720",
+      "--skip-sync",
+      "--no-clean-remote-procs"
+    ],
+    "started_utc": "2026-10-15T08:23:58.690708+00:00",
+    "run_id": "acceptance-20261015-1610-full-glmark-1280x720",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/glmark-1280x720.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:30:24.074241+00:00",
+    "elapsed_seconds": 385.384
+  },
+  {
+    "name": "glmark-1920x1080",
+    "command": [
+      "bash",
+      "scripts/run/run-vmshm-e2e.sh",
+      "--skip-build",
+      "--gles-glmark-smoke",
+      "--skip-gles-remote-build",
+      "--gles-client-mem-mib",
+      "512",
+      "--gles-proxy-mem-mib",
+      "384",
+      "--gles-glmark-size",
+      "1920x1080",
+      "--skip-sync",
+      "--no-clean-remote-procs"
+    ],
+    "started_utc": "2026-10-15T08:30:24.075099+00:00",
+    "run_id": "acceptance-20261015-1610-full-glmark-1920x1080",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/glmark-1920x1080.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:36:45.379826+00:00",
+    "elapsed_seconds": 381.305
+  },
+  {
+    "name": "two-client",
+    "command": [
+      "bash",
+      "scripts/run/run-vmshm-2client-e2e.sh",
+      "--skip-sync",
+      "--gles-compute-smoke",
+      "--skip-gles-remote-build",
+      "--gles-smoke-args",
+      "--count 1048576 --iterations 100 --warmup 5",
+      "--gles-client-mem-mib",
+      "128",
+      "--gles-proxy-mem-mib",
+      "192",
+      "--no-clean-remote-procs"
+    ],
+    "started_utc": "2026-10-15T08:36:45.380813+00:00",
+    "run_id": "acceptance-20261015-1610-full-two-client",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/two-client.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:37:00.625704+00:00",
+    "elapsed_seconds": 15.245
+  },
+  {
+    "name": "passthrough",
+    "command": [
+      "bash",
+      "scripts/run/run-host-vs-passthrough-gles-perf.sh",
+      "--host-rootfs-userspace",
+      "--skip-sync",
+      "--skip-remote-build",
+      "--exclude-cpu-prepare",
+      "--iterations",
+      "100",
+      "--warmup",
+      "5",
+      "--large-count-iterations",
+      "20",
+      "--large-count-warmup",
+      "5"
+    ],
+    "started_utc": "2026-10-15T08:37:00.626259+00:00",
+    "run_id": "acceptance-20261015-1610-full-passthrough",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/passthrough.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:37:59.952612+00:00",
+    "elapsed_seconds": 59.326
+  },
+  {
+    "name": "idle-after",
+    "command": [
+      "sshpass",
+      "-e",
+      "ssh",
+      "-o",
+      "ConnectTimeout=10",
+      "-o",
+      "ServerAliveInterval=15",
+      "-o",
+      "ServerAliveCountMax=6",
+      "-o",
+      "StrictHostKeyChecking=accept-new",
+      "root@192.168.31.18",
+      "! pgrep -x firecracker; ! pgrep -x vmshm-broker; test -c /dev/pmthor; cat /sys/devices/system/cpu/online; grep -E 'MemAvailable|Shmem:' /proc/meminfo"
+    ],
+    "started_utc": "2026-10-15T08:37:59.953193+00:00",
+    "run_id": "acceptance-20261015-1610-full-idle-after",
+    "log": "/home/mzh/gpu/GPU-SFTP/log/regression/acceptance-20261015-1610-full/idle-after.log",
+    "returncode": 0,
+    "ended_utc": "2026-10-15T08:38:00.340060+00:00",
+    "elapsed_seconds": 0.387
+  }
+]

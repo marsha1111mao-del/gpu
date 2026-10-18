@@ -1,0 +1,11 @@
+{
+  "run_id": "acceptance-20261015-1610-full",
+  "started_utc": "2026-10-15T08:09:40.440303+00:00",
+  "ended_utc": "2026-10-15T08:38:00.341301+00:00",
+  "returncode": 0,
+  "quick": false,
+  "passthrough": true,
+  "ioctl_payload": "manifest-verified pinned binary; rebuild hook /usr/bin/true",
+  "single_two_client_cleanup": "--no-clean-remote-procs",
+  "canonical_runner": "scripts/run/run-regression.py"
+}

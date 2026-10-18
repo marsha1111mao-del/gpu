@@ -171,12 +171,17 @@ apply_cmdline_overrides() {
 
 dump_perf_dmesg() {
 	log "post-run passthrough dmesg excerpt:"
-	dmesg | grep -E 'CLIENT_COMM_RPC_STATS|PANTHOR_PT_STATS|PANTHOR_PT_TIMING|PANTHOR_JOB_IRQ_STATS|PANTHOR_SUBMIT_STATS|PANTHOR_SYNC_ONLY_DIAG|GROUP_SUBMIT_DIAG|PANTHOR_RINGBUF_READ_PROBE|DRM_SCHED_PUSH_STATS|DRM_SCHED_RUN_JOB_STATS|GPA2HPA|PTW|PTFREE|TABLE|IMPORTDIAG|SYNCOBJ_EXPORT_SYNC_FILE|SYNCOBJ_IMPORT_SYNC_FILE|gpu fault|job timeout|Unhandled fault|Oops|Unable to handle|WARN|ERROR|Failed' | tail -n 240 || true
+	dmesg | grep -E 'CLIENT_COMM_RPC_STATS|RPC_CONCURRENCY|PANTHOR_PT_STATS|PANTHOR_PT_TIMING|PANTHOR_JOB_IRQ_STATS|PANTHOR_SUBMIT_STATS|PANTHOR_SYNC_ONLY_DIAG|GROUP_SUBMIT_DIAG|PANTHOR_RINGBUF_READ_PROBE|DRM_SCHED_PUSH_STATS|DRM_SCHED_RUN_JOB_STATS|GPA2HPA|PTW|PTFREE|TABLE|IMPORTDIAG|SYNCOBJ_EXPORT_SYNC_FILE|SYNCOBJ_IMPORT_SYNC_FILE|gpu fault|job timeout|Unhandled fault|Oops|Unable to handle|WARN|ERROR|Failed' | tail -n 240 || true
 }
 
 dump_client_comm_rpc_stats() {
 	local param="/sys/module/client_comm_vmshm/parameters/rpc_stats"
 	local value
+	local sync_stats="/sys/module/panthor_client/parameters/sync_file_wait_stats"
+
+	if [ -r "${sync_stats}" ]; then
+		log "PANTHOR_CLIENT_SYNC_FILE_WAIT_STATS $(cat "${sync_stats}")"
+	fi
 
 	if [ ! -w "${param}" ]; then
 		return 0
@@ -443,9 +448,9 @@ run_glmark2_workload() {
 	local glmark_pid progress_pid progress_start
 	local size="${GPU_SMOKE_GLMARK_SIZE:-1280x720}"
 	local requested_node="${GPU_SMOKE_DRM_NODE:-}"
-	local rc score renderer drm_node successes failures unknowns
+	local rc score renderer drm_node successes failures unknowns unexpected_failures
 	local framebuffer_errors expected_framebuffer_errors unexpected_framebuffer_errors
-	local bo_create_errors export_errors vm_bind_errors
+	local bo_create_errors export_errors vm_bind_errors submission_errors clean_result
 	local run_prefix=""
 	local benchmark_list="${GPU_SMOKE_GLMARK_BENCHMARKS:-}"
 	local benchmark old_ifs
@@ -638,12 +643,25 @@ run_glmark2_workload() {
 		failures=$(grep -c 'Validation: Failure' "${validate_log}" 2>/dev/null || true)
 		unknowns=$(grep -c 'Validation: Unknown' "${validate_log}" 2>/dev/null || true)
 		echo "GLMARK_VALIDATE_SUCCESS=${successes:-0} FAILURE=${failures:-0} UNKNOWN=${unknowns:-0}"
-		# Exact checksum validation has a known Panfrost numeric mismatch in the
-		# medium function scene. Qualify on broad scene agreement instead, while
-		# preserving the per-scene output above for comparison.
+		# Only the documented medium-function numeric mismatch is accepted.
+		# A failure count threshold can hide new corruption in other scenes.
+		unexpected_failures=$(grep 'Validation: Failure' "${validate_log}" |
+			grep -Fxcv '[function] fragment-complexity=medium:fragment-steps=5: Validation: Failure' || true)
+		echo "GLMARK_VALIDATE_UNEXPECTED_FAILURES=${unexpected_failures:-0}"
 		if [ "${rc}" -ne 0 ] ||
-			grep -Eq 'Error: Failed|Exception' "${validate_log}" 2>/dev/null ||
-			[ "${successes:-0}" -lt 20 ] || [ "${failures:-99}" -gt 4 ]; then
+			grep -Eq 'Error: Failed|Exception|panfrost_batch_submit failed' "${validate_log}" 2>/dev/null ||
+			[ "${successes:-0}" -lt 20 ] || [ "${unexpected_failures:-99}" -ne 0 ]; then
+			# Collect reference/actual pixels without changing the failed
+			# verdict. Debug logging changes timing, so a diagnostic rerun
+			# must never replace the original validation result.
+			LD_LIBRARY_PATH="${glmark_libs}${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}" \
+				${run_prefix} "${glmark_bin}" --validate --debug \
+				--off-screen=1 --size "${size}" --data-path "${glmark_data}" \
+				${glmark_winsys_args} ${glmark_frame_args} \
+				>"${validate_log}.debug" 2>&1
+			echo "GLMARK_VALIDATE_DIAGNOSTIC_RC=$?"
+			grep -E 'Info: \[|Validation failed|Validation: (Success|Failure|Unknown)' \
+				"${validate_log}.debug" || true
 			echo "GLMARK_SIZE=${size}"
 			echo "GLMARK_RESULT=FAIL reason=glmark2-validate rc=${rc}"
 			dump_client_comm_rpc_stats
@@ -654,7 +672,7 @@ run_glmark2_workload() {
 	fi
 
 	log "+ LD_LIBRARY_PATH=${glmark_libs} ${run_prefix} ${glmark_bin} --off-screen=3 --size ${size} --data-path ${glmark_data} ${glmark_winsys_args} ${glmark_frame_args}"
-	rm -f "${progress_log}"
+	: >"${progress_log}"
 	progress_pid=
 	LD_LIBRARY_PATH="${glmark_libs}${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}" \
 		${run_prefix} \
@@ -733,6 +751,7 @@ run_glmark2_workload() {
 	bo_create_errors=$(glmark2_error_count 'PANTHOR_BO_CREATE failed' "${glmark_log}")
 	export_errors=$(glmark2_error_count 'MESA: error: export failed|DMA_BUF_IOCTL_EXPORT_SYNC_FILE failed' "${glmark_log}")
 	vm_bind_errors=$(glmark2_error_count 'DRM_IOCTL_PANTHOR_VM_BIND failed|PANTHOR_VM_BIND.*err' "${glmark_log}")
+	submission_errors=$(glmark2_error_count 'panfrost_batch_submit failed' "${glmark_log}")
 	expected_framebuffer_errors=0
 	case "${flavor}" in
 	null|null-noop)
@@ -752,13 +771,14 @@ run_glmark2_workload() {
 	echo "GLMARK_BO_CREATE_ERRORS=${bo_create_errors:-0}"
 	echo "GLMARK_EXPORT_ERRORS=${export_errors:-0}"
 	echo "GLMARK_VM_BIND_ERRORS=${vm_bind_errors:-0}"
-	if [ "${unexpected_framebuffer_errors:-0}" -eq 0 ] && [ "${bo_create_errors:-0}" -eq 0 ] && [ "${vm_bind_errors:-0}" -eq 0 ] && [ "${export_errors:-0}" -eq 0 ]; then
-		echo "GLMARK_CLEAN_RESULT=PASS"
-	else
-		echo "GLMARK_CLEAN_RESULT=FAIL"
+	echo "GLMARK_SUBMISSION_ERRORS=${submission_errors:-0}"
+	clean_result=FAIL
+	if [ "${unexpected_framebuffer_errors:-0}" -eq 0 ] && [ "${bo_create_errors:-0}" -eq 0 ] && [ "${vm_bind_errors:-0}" -eq 0 ] && [ "${export_errors:-0}" -eq 0 ] && [ "${submission_errors:-0}" -eq 0 ]; then
+		clean_result=PASS
 	fi
+	echo "GLMARK_CLEAN_RESULT=${clean_result}"
 
-	if [ "${rc}" -eq 0 ] &&
+	if [ "${rc}" -eq 0 ] && [ "${clean_result}" = PASS ] &&
 		case "${score}" in ''|*[!0-9]*) false ;; *) [ "${score}" -gt 0 ] ;; esac &&
 		echo "${renderer}" | grep -Eq 'Mali|Panfrost' &&
 		! grep -Eq 'llvmpipe|softpipe|Software Rasterizer|Error: Failed|Exception' "${glmark_log}" 2>/dev/null; then
@@ -1276,9 +1296,9 @@ if [ -n "${MESA_LOADER_DRIVER_OVERRIDE:-}" ]; then
 fi
 export MESA_DEBUG="${MESA_DEBUG:-context}"
 
-if [ -f /root/gpu-smoke.env ]; then
+if [ -f "${GPU_SMOKE_ENV_FILE:-/root/gpu-smoke.env}" ]; then
 	# shellcheck disable=SC1091
-	. /root/gpu-smoke.env
+	. "${GPU_SMOKE_ENV_FILE:-/root/gpu-smoke.env}"
 fi
 
 if ! apply_cmdline_overrides; then

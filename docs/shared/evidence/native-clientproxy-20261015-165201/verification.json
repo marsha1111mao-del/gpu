@@ -1,0 +1,9 @@
+{
+  "run_id": "native-clientproxy-20261015-165201",
+  "verified_utc": "2026-10-15T09:49:28.688617+00:00",
+  "command": "python3 build/native-clientproxy/verify.py",
+  "returncode": 0,
+  "result": "PERFORMANCE_EVIDENCE_VERIFY=PASS",
+  "meaning": "evidence and exception accounting verified; does not mean all workloads or cleanup stages passed",
+  "verification_log": "build/native-clientproxy/verification.log"
+}

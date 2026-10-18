@@ -1,5 +1,7 @@
 # GPU Workspace Project Management Principles
 
+> 历史管理与memfd实现说明；已退役的路径/命令不能用于当前开发。现行流程见[环境主手册](AGENT_ENVIRONMENT_AND_TEST_RUNBOOK.md)与[开发规范](DEVELOPMENT_AND_ARTIFACT_HYGIENE.md)。
+
 This document records the project-management ideas behind the current GPU
 workspace layout. It is meant to be reused when the project grows, when a new
 machine is set up, or when scripts/artifacts need to be reorganized again.

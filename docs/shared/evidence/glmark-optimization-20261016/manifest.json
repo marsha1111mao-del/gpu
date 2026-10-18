@@ -1,0 +1,74 @@
+{
+  "kind": "uncommitted source-built experiment, not fixed release",
+  "repository_base_commits": {
+    ".": "799c37431c36a922927d76a8dc1dd0afa16d9901",
+    "Linux-Host-GPU": "96b92dccc781163fec4d70209056214b7c376ae1",
+    "Linux-Guest-GPU": "d00c872e4eb1ca2f4cd12e94c7759a72ceb9fce9"
+  },
+  "source_sha256": {
+    "Linux-Host-GPU/drivers/pmthor/pmthor_drv.c": "63f3cdd1667aa0b61adad0d57b356cd9a276d761cd431947f1534711ad544b0c",
+    "Linux-Host-GPU/drivers/gpu/drm/panthor/panthor_sched.c": "1ca58d3e5d604add3521a10295c321153311d97fe57f267a8da140d81fa085a8",
+    "Linux-Guest-GPU/drivers/gpu/drm/panthor-client/panthor_client_drv.c": "6699c56648e8a4ff3fc7113f170c8247e1cb36cf6987d673d8684627baed9408",
+    "Linux-Guest-GPU/drivers/char/client_vmshm_comm/client_comm_vmshm.c": "b99b00a8f456bef150aefae1a4d62e3157379052cbb5090cda0b7d9825af9849",
+    "Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_fw.c": "eaa0499c4869857f2ef3917024cb7357dc02d2e717465bec89573c8ed32a80e1",
+    "scripts/run/run-vmshm-e2e.sh": "90680bae79bf2aa36c901d97ded0bc1eaf61638ca79a16354cb0accec3ae8e07",
+    "GPU-SFTP/tests/gpu-compute-smoke/gpu-smoke.sh": "b9902930a08f6165758a13c49f15d37691ae17eb34102e8406fca2f033c831c3",
+    "configs/performance/glmark-clientproxy-opp3.env": "62483a9451cf9e9813b183b17e0afb092cd4bf39f6734994ad484c8db24d7348"
+  },
+  "regression_command": "GLES_HOST_GPU_OPP_HZ=600000000 GLES_CLIENT_COMPLETED_WAIT_CACHE=1 GLES_CLIENT_CONCURRENT_RPC=1 GLES_CLIENT_FUSED_SNAPSHOT=0 GLES_CLIENT_LAZY_SNAPSHOT_WAIT=0 GLES_CLIENT_COMPLETED_SNAPSHOT=0 GLES_QUIET_CONSOLE=1 GLES_HOST_ONLINE_CPUS=0-3 GLES_BROKER_CPUS=0 GLES_PROXY_CPUS=1 GLES_CLIENT_CPUS=2 GLES_CLIENT0_CPUS=2 GLES_CLIENT1_CPUS=3 GLES_GLMARK_FLAVOR=null-noop GLES_GLMARK_FRAME_END=finish python3 scripts/run/run-regression.py --remote-prepared --passthrough --run-id glmark-opt-20261016-opp3-regression32",
+  "regression_run_id": "glmark-opt-20261016-opp3-regression32",
+  "regression_log": "GPU-SFTP/log/regression/glmark-opt-20261016-opp3-regression32/",
+  "regression_exit_codes": {
+    "suite": 0,
+    "restore": 0
+  },
+  "native_run_id": "glmark-opt-20261016-opp3-native-full",
+  "native_command": "bash /root/GPU-SFTP/log/glmark-optimization/native-opp3-glmark.sh glmark-opt-20261016-opp3-native-full",
+  "native_log": "GPU-SFTP/log/glmark-optimization/glmark-opt-20261016-opp3-native-full/",
+  "native_helper_sha256": "79833a3dd200d50e4b16f27cc0b79c04657f67cc9259716f955186bd4d01b6a8",
+  "boot_id": "de6db746-7603-440b-bd2b-528d3adaf559",
+  "notes": [
+    "The full32 two-Client runner does not propagate the experimental cache/concurrent flags or Host OPP.",
+    "Initial postprocessor assertion confused program and checker PFN markers; corrected against original evidence, no hardware rerun.",
+    "gpu-smoke.sh matches local and RK byte-for-byte; init differs only in a shutdown comment.",
+    "Original native unbind Oops and all earlier failures remain documented in the optimization notebook.",
+    "Native cleanup encountered four transient busy unmount messages; bounded retries completed, cleanup exited 0, final mount check found none.",
+    "Validated e800 Client activated locally and on RK after tests; original cadce backups retained. Performance flags remain default-off; source the profile.",
+    "Local GPU-SFTP/linux-host-kernel/Image remains the old fixed runtime payload, not the running opp3 Host."
+  ],
+  "native_exit_codes": {
+    "suite": 0,
+    "sequence": 0
+  },
+  "native_workload_exit_codes": {
+    "1280x720": 0,
+    "1920x1080": 0
+  },
+  "native_cleanup_exit_code": 0,
+  "activation_exit_code": 0,
+  "final_health_exit_code": 0,
+  "final_health_log": "build/glmark-optimization/opp3-final-health.log",
+  "final_health_summary": "FINAL_HOST_HEALTH=PASS",
+  "final_state": {
+    "host": "6.12.0-opencca-pmthor-opp3",
+    "driver": "pmthor",
+    "cpus": "0-1",
+    "gpu_governor": "userspace",
+    "nominal_and_actual_gpu_hz": 300000000,
+    "native_module_loaded": false,
+    "vm_or_broker_remaining": false,
+    "native_test_mount_remaining": false,
+    "client": "e800a161dc03e5914a01fbf26fcfa2fae5cee43bbdd6bf2216621cc3a6934833",
+    "proxy": "e83f011122e8107860a3000a96b8f522bcbed59c2c99395a7dbe02ebf6ec9ca8",
+    "experimental_flags_default": false
+  },
+  "payload_sha256": {
+    "running_host_candidate": "5a692bc15bcd7e456820385c3b6c6a55304e358b067c61ebe7032ecbe21c1a6f",
+    "local_client_runtime": "e800a161dc03e5914a01fbf26fcfa2fae5cee43bbdd6bf2216621cc3a6934833",
+    "local_proxy_runtime": "e83f011122e8107860a3000a96b8f522bcbed59c2c99395a7dbe02ebf6ec9ca8",
+    "local_client_backup": "cadce91888406da32d2b04906deb24f93792de0141e4c5a03572c3e32120007b",
+    "host_native_module": "2091b3f718dccef040a700bc53fb8e628f24481e28764249adaad6a6e8fa37ac",
+    "host_module_package": "d55e961742e74d2008b0510cf090ce2da90680ccc3c08cb1c89086907fbf323c",
+    "local_host_runtime_not_deployed": "ca8fb02a1ca95b588ef1e2fcd3191865c98ab3b1b758d586d3b36e90c88c3f6c"
+  }
+}

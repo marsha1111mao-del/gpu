@@ -1,0 +1,323 @@
+{
+  "run_id": "acceptance-20261015-1610-full",
+  "compute": {
+    "compute-4mib": {
+      "config": "iterations=100 warmup=5 count=1048576 bytes=4194304 alu_iters=1",
+      "iter_us": {
+        "min": 18624.0,
+        "avg": 19951.22,
+        "max": 31677.0,
+        "total": 1995122.0
+      },
+      "renderer": "Mali-G610 (Panfrost)",
+      "correctness": "PASS count=1048576 samples=16 formula=x*3+7+alu_mix alu_iters=1[    5.158852] panthor-client: BO_MMAP_OFFSET session=1 client_bo=11 offset=0x100408000 size=0x10000 payload=0xb0000000b",
+      "cpu_prepare_excluded": "1"
+    },
+    "compute-16mib": {
+      "config": "iterations=100 warmup=5 count=4194304 bytes=16777216 alu_iters=1",
+      "iter_us": {
+        "min": 21255.0,
+        "avg": 23605.44,
+        "max": 36770.0,
+        "total": 2360544.0
+      },
+      "renderer": "Mali-G610 (Panfrost)",
+      "correctness": "PASS count=4194304 samples=16 formula=x*3+7+alu_mix alu_iters=1",
+      "cpu_prepare_excluded": "1"
+    },
+    "compute-64mib": {
+      "config": "iterations=20 warmup=5 count=16777216 bytes=67108864 alu_iters=1",
+      "iter_us": {
+        "min": 34343.0,
+        "avg": 40172.55,
+        "max": 42975.0,
+        "total": 803451.0
+      },
+      "renderer": "Mali-G610 (Panfrost)",
+      "correctness": "PASS count=16777216 samples=16 formula=x*3+7+alu_mix alu_iters=1",
+      "cpu_prepare_excluded": "1"
+    },
+    "compute-128mib": {
+      "config": "iterations=20 warmup=5 count=33554432 bytes=134217728 alu_iters=1",
+      "iter_us": {
+        "min": 57560.0,
+        "avg": 63132.75,
+        "max": 71956.0,
+        "total": 1262655.0
+      },
+      "renderer": "Mali-G610 (Panfrost)",
+      "correctness": "PASS count=33554432 samples=16 formula=x*3+7+alu_mix alu_iters=1",
+      "cpu_prepare_excluded": "1"
+    }
+  },
+  "ml": {
+    "ml-all": {
+      "kernels": [
+        {
+          "kernel": "gemm_512_fp32",
+          "check": "PASS samples=100 warmup=5",
+          "iter_us": {
+            "min": 70922.0,
+            "avg": 75329.33,
+            "max": 86264.0,
+            "total": 7532933.0
+          }
+        },
+        {
+          "kernel": "conv2d_64x64x32_3x3_fp32",
+          "check": "PASS samples=100 warmup=5",
+          "iter_us": {
+            "min": 83340.0,
+            "avg": 90476.04,
+            "max": 119222.0,
+            "total": 9047604.0
+          }
+        },
+        {
+          "kernel": "depthwise_conv_128x128x128_3x3_fp32",
+          "check": "PASS samples=100 warmup=5",
+          "iter_us": {
+            "min": 55570.0,
+            "avg": 61683.56,
+            "max": 83705.0,
+            "total": 6168356.0
+          }
+        },
+        {
+          "kernel": "block_reduction_32mib_fp32",
+          "check": "PASS samples=100 warmup=5",
+          "iter_us": {
+            "min": 31381.0,
+            "avg": 39597.39,
+            "max": 147824.0,
+            "total": 3959739.0
+          }
+        },
+        {
+          "kernel": "row_softmax_16384x256_fp32",
+          "check": "PASS samples=100 warmup=5",
+          "iter_us": {
+            "min": 46120.0,
+            "avg": 55616.5,
+            "max": 78077.0,
+            "total": 5561650.0
+          }
+        },
+        {
+          "kernel": "single_head_attention_256x64_fp32",
+          "check": "PASS samples=100 warmup=5",
+          "iter_us": {
+            "min": 1552113.0,
+            "avg": 1561357.16,
+            "max": 1570029.0,
+            "total": 156135716.0
+          }
+        }
+      ],
+      "clean": "PASS",
+      "result": "PASS",
+      "renderer": "Mali-G610 (Panfrost)"
+    },
+    "attention320": {
+      "kernels": [
+        {
+          "kernel": "single_head_attention_320x64_fp32",
+          "check": "PASS samples=10 warmup=2",
+          "iter_us": {
+            "min": 2471751.0,
+            "avg": 2489342.6,
+            "max": 2517930.0,
+            "total": 24893426.0
+          }
+        }
+      ],
+      "clean": "PASS",
+      "result": "PASS",
+      "renderer": "Mali-G610 (Panfrost)"
+    }
+  },
+  "ncnn": {
+    "models": [
+      {
+        "model": "mobilenet_v2",
+        "returncode": "0",
+        "min_ms": "138.98",
+        "max_ms": "180.24",
+        "avg_ms": "149.47",
+        "result": "PASS"
+      },
+      {
+        "model": "mobilenet_v3",
+        "returncode": "0",
+        "min_ms": "136.19",
+        "max_ms": "174.72",
+        "avg_ms": "147.42",
+        "result": "PASS"
+      },
+      {
+        "model": "resnet50",
+        "returncode": "0",
+        "min_ms": "767.38",
+        "max_ms": "991.46",
+        "avg_ms": "809.83",
+        "result": "PASS"
+      }
+    ],
+    "backend": "panvk-direct driver=/root/ncnn/libs/libvulkan_panfrost.so",
+    "qualification": "PASS",
+    "failed_models": "0",
+    "result": "PASS"
+  },
+  "glmark": {
+    "glmark-1280x720": {
+      "GLMARK_SCORE": "58",
+      "GLMARK_SIZE": "1280x720",
+      "GLMARK_RENDERER": "Mali-G610 (Panfrost)",
+      "GLMARK_FLAVOR": "null-noop",
+      "GLMARK_FRAME_END": "finish",
+      "GLMARK_VALIDATE": "PASS",
+      "GLMARK_VALIDATE_RC": "0",
+      "GLMARK_VALIDATE_SUCCESS": "26 FAILURE=1 UNKNOWN=6",
+      "GLMARK_FRAMEBUFFER_ERRORS": "1",
+      "GLMARK_EXPECTED_FRAMEBUFFER_ERRORS": "1",
+      "GLMARK_UNEXPECTED_FRAMEBUFFER_ERRORS": "0",
+      "GLMARK_BO_CREATE_ERRORS": "0",
+      "GLMARK_EXPORT_ERRORS": "0",
+      "GLMARK_VM_BIND_ERRORS": "0",
+      "GLMARK_CLEAN_RESULT": "PASS",
+      "validation_failure_lines": [
+        "[function] fragment-complexity=medium:fragment-steps=5: Validation: Failure"
+      ],
+      "benchmark_scene_count": 33
+    },
+    "glmark-1920x1080": {
+      "GLMARK_SCORE": "58",
+      "GLMARK_SIZE": "1920x1080",
+      "GLMARK_RENDERER": "Mali-G610 (Panfrost)",
+      "GLMARK_FLAVOR": "null-noop",
+      "GLMARK_FRAME_END": "finish",
+      "GLMARK_VALIDATE": "PASS",
+      "GLMARK_VALIDATE_RC": "0",
+      "GLMARK_VALIDATE_SUCCESS": "26 FAILURE=1 UNKNOWN=6",
+      "GLMARK_FRAMEBUFFER_ERRORS": "1",
+      "GLMARK_EXPECTED_FRAMEBUFFER_ERRORS": "1",
+      "GLMARK_UNEXPECTED_FRAMEBUFFER_ERRORS": "0",
+      "GLMARK_BO_CREATE_ERRORS": "0",
+      "GLMARK_EXPORT_ERRORS": "0",
+      "GLMARK_VM_BIND_ERRORS": "0",
+      "GLMARK_CLEAN_RESULT": "PASS",
+      "validation_failure_lines": [
+        "[function] fragment-complexity=medium:fragment-steps=5: Validation: Failure"
+      ],
+      "benchmark_scene_count": 33
+    }
+  },
+  "two_client": {
+    "client0": {
+      "check": "PASS count=1048576 samples=16 formula=x*3+7+alu_mix alu_iters=1",
+      "result": "PASS",
+      "renderer": "Mali-G610 (Panfrost)",
+      "config": null,
+      "iter_us": {}
+    },
+    "client1": {
+      "check": "PASS count=1048576 samples=16 formula=x*3+7+alu_mix alu_iters=1",
+      "result": "PASS",
+      "renderer": "Mali-G610 (Panfrost)",
+      "config": null,
+      "iter_us": {}
+    }
+  },
+  "passthrough": {
+    "host-count1048576-summary": {
+      "status": "0",
+      "timeout_status": null,
+      "count": "1048576",
+      "iterations": "100",
+      "warmup": "5",
+      "renderer": "Mali-G610 (Panfrost)",
+      "check": "PASS count=1048576 samples=16 formula=x*3+7+alu_mix alu_iters=1",
+      "iter_us": {
+        "min": 1299.0,
+        "avg": 1396.95,
+        "max": 1828.0,
+        "total": 139695.0
+      }
+    },
+    "host-count16777216-summary": {
+      "status": "0",
+      "timeout_status": null,
+      "count": "16777216",
+      "iterations": "20",
+      "warmup": "5",
+      "renderer": "Mali-G610 (Panfrost)",
+      "check": "PASS count=16777216 samples=16 formula=x*3+7+alu_mix alu_iters=1",
+      "iter_us": {
+        "min": 22067.0,
+        "avg": 22200.95,
+        "max": 22317.0,
+        "total": 444019.0
+      }
+    },
+    "host-count4194304-summary": {
+      "status": "0",
+      "timeout_status": null,
+      "count": "4194304",
+      "iterations": "100",
+      "warmup": "5",
+      "renderer": "Mali-G610 (Panfrost)",
+      "check": "PASS count=4194304 samples=16 formula=x*3+7+alu_mix alu_iters=1",
+      "iter_us": {
+        "min": 4536.0,
+        "avg": 5425.51,
+        "max": 5909.0,
+        "total": 542551.0
+      }
+    },
+    "vm-count1048576-summary": {
+      "status": null,
+      "timeout_status": "0",
+      "count": "1048576",
+      "iterations": "100",
+      "warmup": "5",
+      "renderer": "Mali-G610 (Panfrost)",
+      "check": "PASS count=1048576 samples=16 formula=x*3+7+alu_mix alu_iters=1",
+      "iter_us": {
+        "min": 5877.0,
+        "avg": 13564.09,
+        "max": 22221.0,
+        "total": 1356409.0
+      }
+    },
+    "vm-count16777216-summary": {
+      "status": null,
+      "timeout_status": "0",
+      "count": "16777216",
+      "iterations": "20",
+      "warmup": "5",
+      "renderer": "Mali-G610 (Panfrost)",
+      "check": "PASS count=16777216 samples=16 formula=x*3+7+alu_mix alu_iters=1",
+      "iter_us": {
+        "min": 22259.0,
+        "avg": 22470.35,
+        "max": 24122.0,
+        "total": 449407.0
+      }
+    },
+    "vm-count4194304-summary": {
+      "status": null,
+      "timeout_status": "0",
+      "count": "4194304",
+      "iterations": "100",
+      "warmup": "5",
+      "renderer": "Mali-G610 (Panfrost)",
+      "check": "PASS count=4194304 samples=16 formula=x*3+7+alu_mix alu_iters=1",
+      "iter_us": {
+        "min": 6037.0,
+        "avg": 10259.27,
+        "max": 21486.0,
+        "total": 1025927.0
+      }
+    }
+  }
+}

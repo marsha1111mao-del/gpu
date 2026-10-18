@@ -1,0 +1,2897 @@
+{
+  "current": {
+    "attention-320": {
+      "result": true,
+      "kernels": {
+        "single_head_attention_320x64_fp32": {
+          "samples": 10,
+          "warmup": 2,
+          "min_us": 1222862.0,
+          "avg_us": 1224652.6,
+          "max_us": 1225930.0
+        }
+      }
+    },
+    "compute-128": {
+      "iter_us": {
+        "min": 37555.0,
+        "avg": 38575.05,
+        "max": 53359.0,
+        "total": 771501.0
+      },
+      "correct": true,
+      "renderer": [
+        "Mali-G610 (Panfrost)"
+      ],
+      "phases_us": {
+        "cpu_prepare": {
+          "samples": 20.0,
+          "min": 59460.0,
+          "avg": 59542.95,
+          "max": 59656.0,
+          "total": 1190859.0
+        },
+        "buffer_upload": {
+          "samples": 20.0,
+          "min": 26937.0,
+          "avg": 27133.8,
+          "max": 27260.0,
+          "total": 542676.0
+        },
+        "dispatch_call": {
+          "samples": 20.0,
+          "min": 571.0,
+          "avg": 1438.3,
+          "max": 16126.0,
+          "total": 28766.0
+        },
+        "memory_barrier": {
+          "samples": 20.0,
+          "min": 85.0,
+          "avg": 89.05,
+          "max": 96.0,
+          "total": 1781.0
+        },
+        "map_wait": {
+          "samples": 20.0,
+          "min": 9820.0,
+          "avg": 9911.15,
+          "max": 9953.0,
+          "total": 198223.0
+        },
+        "unmap": {
+          "samples": 20.0,
+          "min": 2.0,
+          "avg": 2.75,
+          "max": 4.0,
+          "total": 55.0
+        },
+        "iter_total": {
+          "samples": 20.0,
+          "min": 37555.0,
+          "avg": 38575.05,
+          "max": 53359.0,
+          "total": 771501.0
+        }
+      },
+      "config": [
+        "PERF_CONFIG iterations=20 warmup=5 count=33554432 bytes=134217728 alu_iters=1",
+        "PERF_CPU_PREPARE_EXCLUDED=1"
+      ]
+    },
+    "compute-16": {
+      "iter_us": {
+        "min": 5194.0,
+        "avg": 5303.48,
+        "max": 5465.0,
+        "total": 530348.0
+      },
+      "correct": true,
+      "renderer": [
+        "Mali-G610 (Panfrost)"
+      ],
+      "phases_us": {
+        "cpu_prepare": {
+          "samples": 100.0,
+          "min": 7411.0,
+          "avg": 7496.17,
+          "max": 7564.0,
+          "total": 749617.0
+        },
+        "buffer_upload": {
+          "samples": 100.0,
+          "min": 3206.0,
+          "avg": 3309.28,
+          "max": 3429.0,
+          "total": 330928.0
+        },
+        "dispatch_call": {
+          "samples": 100.0,
+          "min": 460.0,
+          "avg": 516.87,
+          "max": 714.0,
+          "total": 51687.0
+        },
+        "memory_barrier": {
+          "samples": 100.0,
+          "min": 80.0,
+          "avg": 90.3,
+          "max": 181.0,
+          "total": 9030.0
+        },
+        "map_wait": {
+          "samples": 100.0,
+          "min": 1229.0,
+          "avg": 1384.14,
+          "max": 1485.0,
+          "total": 138414.0
+        },
+        "unmap": {
+          "samples": 100.0,
+          "min": 2.0,
+          "avg": 2.89,
+          "max": 4.0,
+          "total": 289.0
+        },
+        "iter_total": {
+          "samples": 100.0,
+          "min": 5194.0,
+          "avg": 5303.48,
+          "max": 5465.0,
+          "total": 530348.0
+        }
+      },
+      "config": [
+        "PERF_CONFIG iterations=100 warmup=5 count=4194304 bytes=16777216 alu_iters=1",
+        "PERF_CPU_PREPARE_EXCLUDED=1"
+      ]
+    },
+    "compute-4": {
+      "iter_us": {
+        "min": 1595.0,
+        "avg": 1690.85,
+        "max": 1902.0,
+        "total": 169085.0
+      },
+      "correct": true,
+      "renderer": [
+        "Mali-G610 (Panfrost)"
+      ],
+      "phases_us": {
+        "cpu_prepare": {
+          "samples": 100.0,
+          "min": 1795.0,
+          "avg": 1901.05,
+          "max": 2060.0,
+          "total": 190105.0
+        },
+        "buffer_upload": {
+          "samples": 100.0,
+          "min": 769.0,
+          "avg": 795.51,
+          "max": 974.0,
+          "total": 79551.0
+        },
+        "dispatch_call": {
+          "samples": 100.0,
+          "min": 371.0,
+          "avg": 436.89,
+          "max": 640.0,
+          "total": 43689.0
+        },
+        "memory_barrier": {
+          "samples": 100.0,
+          "min": 84.0,
+          "avg": 90.91,
+          "max": 186.0,
+          "total": 9091.0
+        },
+        "map_wait": {
+          "samples": 100.0,
+          "min": 142.0,
+          "avg": 365.7,
+          "max": 529.0,
+          "total": 36570.0
+        },
+        "unmap": {
+          "samples": 100.0,
+          "min": 1.0,
+          "avg": 1.84,
+          "max": 3.0,
+          "total": 184.0
+        },
+        "iter_total": {
+          "samples": 100.0,
+          "min": 1595.0,
+          "avg": 1690.85,
+          "max": 1902.0,
+          "total": 169085.0
+        }
+      },
+      "config": [
+        "PERF_CONFIG iterations=100 warmup=5 count=1048576 bytes=4194304 alu_iters=1",
+        "PERF_CPU_PREPARE_EXCLUDED=1"
+      ]
+    },
+    "compute-64": {
+      "iter_us": {
+        "min": 19174.0,
+        "avg": 19273.85,
+        "max": 19372.0,
+        "total": 385477.0
+      },
+      "correct": true,
+      "renderer": [
+        "Mali-G610 (Panfrost)"
+      ],
+      "phases_us": {
+        "cpu_prepare": {
+          "samples": 20.0,
+          "min": 29701.0,
+          "avg": 29781.95,
+          "max": 29884.0,
+          "total": 595639.0
+        },
+        "buffer_upload": {
+          "samples": 20.0,
+          "min": 13401.0,
+          "avg": 13490.15,
+          "max": 13623.0,
+          "total": 269803.0
+        },
+        "dispatch_call": {
+          "samples": 20.0,
+          "min": 583.0,
+          "avg": 629.85,
+          "max": 866.0,
+          "total": 12597.0
+        },
+        "memory_barrier": {
+          "samples": 20.0,
+          "min": 77.0,
+          "avg": 83.35,
+          "max": 153.0,
+          "total": 1667.0
+        },
+        "map_wait": {
+          "samples": 20.0,
+          "min": 4934.0,
+          "avg": 5068.25,
+          "max": 5171.0,
+          "total": 101365.0
+        },
+        "unmap": {
+          "samples": 20.0,
+          "min": 2.0,
+          "avg": 2.25,
+          "max": 3.0,
+          "total": 45.0
+        },
+        "iter_total": {
+          "samples": 20.0,
+          "min": 19174.0,
+          "avg": 19273.85,
+          "max": 19372.0,
+          "total": 385477.0
+        }
+      },
+      "config": [
+        "PERF_CONFIG iterations=20 warmup=5 count=16777216 bytes=67108864 alu_iters=1",
+        "PERF_CPU_PREPARE_EXCLUDED=1"
+      ]
+    },
+    "glmark-720": {
+      "score": 1154,
+      "validate": [
+        26,
+        1,
+        6
+      ],
+      "scenes": [
+        {
+          "name": "[build] use-vbo=false",
+          "fps": 1120,
+          "frametime_ms": 0.894
+        },
+        {
+          "name": "[build] use-vbo=true",
+          "fps": 1742,
+          "frametime_ms": 0.574
+        },
+        {
+          "name": "[texture] texture-filter=nearest",
+          "fps": 1758,
+          "frametime_ms": 0.569
+        },
+        {
+          "name": "[texture] texture-filter=linear",
+          "fps": 1757,
+          "frametime_ms": 0.569
+        },
+        {
+          "name": "[texture] texture-filter=mipmap",
+          "fps": 1744,
+          "frametime_ms": 0.574
+        },
+        {
+          "name": "[shading] shading=gouraud",
+          "fps": 1539,
+          "frametime_ms": 0.65
+        },
+        {
+          "name": "[shading] shading=blinn-phong-inf",
+          "fps": 1523,
+          "frametime_ms": 0.657
+        },
+        {
+          "name": "[shading] shading=phong",
+          "fps": 1432,
+          "frametime_ms": 0.699
+        },
+        {
+          "name": "[shading] shading=cel",
+          "fps": 1425,
+          "frametime_ms": 0.702
+        },
+        {
+          "name": "[bump] bump-render=high-poly",
+          "fps": 1066,
+          "frametime_ms": 0.938
+        },
+        {
+          "name": "[bump] bump-render=normals",
+          "fps": 1876,
+          "frametime_ms": 0.533
+        },
+        {
+          "name": "[bump] bump-render=height",
+          "fps": 1806,
+          "frametime_ms": 0.554
+        },
+        {
+          "name": "[effect2d] kernel=0,1,0;1,-4,1;0,1,0;",
+          "fps": 1473,
+          "frametime_ms": 0.679
+        },
+        {
+          "name": "[effect2d] kernel=1,1,1,1,1;1,1,1,1,1;1,1,1,1,1;",
+          "fps": 837,
+          "frametime_ms": 1.196
+        },
+        {
+          "name": "[pulsar] light=false:quads=5:texture=false",
+          "fps": 1392,
+          "frametime_ms": 0.719
+        },
+        {
+          "name": "[desktop] blur-radius=5:effect=blur:passes=1:separable=true:windows=4",
+          "fps": 231,
+          "frametime_ms": 4.348
+        },
+        {
+          "name": "[desktop] effect=shadow:windows=4",
+          "fps": 696,
+          "frametime_ms": 1.438
+        },
+        {
+          "name": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=map",
+          "fps": 46,
+          "frametime_ms": 21.866
+        },
+        {
+          "name": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=subdata",
+          "fps": 46,
+          "frametime_ms": 21.898
+        },
+        {
+          "name": "[buffer] columns=200:interleave=true:update-dispersion=0.9:update-fraction=0.5:update-method=map",
+          "fps": 65,
+          "frametime_ms": 15.399
+        },
+        {
+          "name": "[ideas] speed=duration",
+          "fps": 436,
+          "frametime_ms": 2.298
+        },
+        {
+          "name": "[jellyfish] <default>",
+          "fps": 1111,
+          "frametime_ms": 0.9
+        },
+        {
+          "name": "[terrain] <default>",
+          "fps": 40,
+          "frametime_ms": 25.585
+        },
+        {
+          "name": "[shadow] <default>",
+          "fps": 742,
+          "frametime_ms": 1.349
+        },
+        {
+          "name": "[refract] <default>",
+          "fps": 135,
+          "frametime_ms": 7.439
+        },
+        {
+          "name": "[conditionals] fragment-steps=0:vertex-steps=0",
+          "fps": 1551,
+          "frametime_ms": 0.645
+        },
+        {
+          "name": "[conditionals] fragment-steps=5:vertex-steps=0",
+          "fps": 1490,
+          "frametime_ms": 0.672
+        },
+        {
+          "name": "[conditionals] fragment-steps=0:vertex-steps=5",
+          "fps": 1554,
+          "frametime_ms": 0.644
+        },
+        {
+          "name": "[function] fragment-complexity=low:fragment-steps=5",
+          "fps": 1550,
+          "frametime_ms": 0.645
+        },
+        {
+          "name": "[function] fragment-complexity=medium:fragment-steps=5",
+          "fps": 1434,
+          "frametime_ms": 0.698
+        },
+        {
+          "name": "[loop] fragment-loop=false:fragment-steps=5:vertex-steps=5",
+          "fps": 1552,
+          "frametime_ms": 0.644
+        },
+        {
+          "name": "[loop] fragment-steps=5:fragment-uniform=false:vertex-steps=5",
+          "fps": 1554,
+          "frametime_ms": 0.644
+        },
+        {
+          "name": "[loop] fragment-steps=5:fragment-uniform=true:vertex-steps=5",
+          "fps": 1424,
+          "frametime_ms": 0.702
+        }
+      ],
+      "clean": true,
+      "result": true,
+      "errors": []
+    },
+    "ioctl": {
+      "cases": {
+        "basic": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 520.304,
+          "min_us": 499.625,
+          "max_us": 585.375
+        },
+        "vm-create": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 706.825,
+          "min_us": 676.666,
+          "max_us": 818.708
+        },
+        "bo-create": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 912.334,
+          "min_us": 855.459,
+          "max_us": 1031.042
+        },
+        "bo-lifecycle": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 1318.698,
+          "min_us": 1263.791,
+          "max_us": 1491.0
+        },
+        "bo-mmap": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 932.896,
+          "min_us": 890.167,
+          "max_us": 1000.709
+        },
+        "vm-bind": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 7140.656,
+          "min_us": 7016.333,
+          "max_us": 7286.416
+        },
+        "vm-bind-async-sync": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 1687.554,
+          "min_us": 1546.708,
+          "max_us": 2750.125
+        },
+        "vm-state-flush": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 810.629,
+          "min_us": 773.792,
+          "max_us": 881.708
+        },
+        "syncobj-lifecycle": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 549.558,
+          "min_us": 515.959,
+          "max_us": 598.208
+        },
+        "syncobj-wait": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 993.694,
+          "min_us": 945.292,
+          "max_us": 1080.917
+        },
+        "syncobj-transfer": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 849.348,
+          "min_us": 798.292,
+          "max_us": 916.708
+        },
+        "syncobj-timeline-wait": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 1421.51,
+          "min_us": 1341.667,
+          "max_us": 1516.959
+        },
+        "syncobj-signal-query": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 1331.808,
+          "min_us": 1283.917,
+          "max_us": 1370.542
+        },
+        "sync-file-snapshot": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 43696.8,
+          "min_us": 42993.709,
+          "max_us": 44310.875
+        },
+        "group-lifecycle": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 1563.187,
+          "min_us": 1439.375,
+          "max_us": 2655.916
+        },
+        "group-submit-syncpoint": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 1800.502,
+          "min_us": 1683.792,
+          "max_us": 2107.292
+        },
+        "tiler-heap-lifecycle": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 1436.473,
+          "min_us": 1333.792,
+          "max_us": 2173.209
+        }
+      },
+      "matrix_pass": true
+    },
+    "ml-all": {
+      "result": true,
+      "kernels": {
+        "gemm_512_fp32": {
+          "samples": 100,
+          "warmup": 5,
+          "min_us": 29348.0,
+          "avg_us": 29381.59,
+          "max_us": 29539.0
+        },
+        "conv2d_64x64x32_3x3_fp32": {
+          "samples": 100,
+          "warmup": 5,
+          "min_us": 33307.0,
+          "avg_us": 33866.72,
+          "max_us": 34332.0
+        },
+        "depthwise_conv_128x128x128_3x3_fp32": {
+          "samples": 100,
+          "warmup": 5,
+          "min_us": 21848.0,
+          "avg_us": 21896.43,
+          "max_us": 21999.0
+        },
+        "block_reduction_32mib_fp32": {
+          "samples": 100,
+          "warmup": 5,
+          "min_us": 9493.0,
+          "avg_us": 10639.13,
+          "max_us": 118811.0
+        },
+        "row_softmax_16384x256_fp32": {
+          "samples": 100,
+          "warmup": 5,
+          "min_us": 19043.0,
+          "avg_us": 19276.66,
+          "max_us": 20155.0
+        },
+        "single_head_attention_256x64_fp32": {
+          "samples": 100,
+          "warmup": 5,
+          "min_us": 771721.0,
+          "avg_us": 775953.32,
+          "max_us": 795063.0
+        }
+      }
+    },
+    "ncnn-mobilenet_v2": {
+      "model_pass": true,
+      "qualification": true,
+      "avg_ms": 32.14,
+      "errors": []
+    },
+    "ncnn-mobilenet_v3": {
+      "model_pass": true,
+      "qualification": true,
+      "avg_ms": 28.86,
+      "errors": []
+    }
+  },
+  "failed_batch": {
+    "attention-320": {
+      "result": true,
+      "kernels": {
+        "single_head_attention_320x64_fp32": {
+          "samples": 10,
+          "warmup": 2,
+          "min_us": 1221813.0,
+          "avg_us": 1223184.5,
+          "max_us": 1224302.0
+        }
+      }
+    },
+    "compute-128": {
+      "iter_us": {
+        "min": 37471.0,
+        "avg": 37682.05,
+        "max": 37984.0,
+        "total": 753641.0
+      },
+      "correct": true,
+      "renderer": [
+        "Mali-G610 (Panfrost)"
+      ],
+      "phases_us": {
+        "cpu_prepare": {
+          "samples": 20.0,
+          "min": 59358.0,
+          "avg": 59430.75,
+          "max": 59522.0,
+          "total": 1188615.0
+        },
+        "buffer_upload": {
+          "samples": 20.0,
+          "min": 26828.0,
+          "avg": 26998.5,
+          "max": 27136.0,
+          "total": 539970.0
+        },
+        "dispatch_call": {
+          "samples": 20.0,
+          "min": 588.0,
+          "avg": 673.35,
+          "max": 992.0,
+          "total": 13467.0
+        },
+        "memory_barrier": {
+          "samples": 20.0,
+          "min": 80.0,
+          "avg": 87.85,
+          "max": 97.0,
+          "total": 1757.0
+        },
+        "map_wait": {
+          "samples": 20.0,
+          "min": 9799.0,
+          "avg": 9919.9,
+          "max": 9991.0,
+          "total": 198398.0
+        },
+        "unmap": {
+          "samples": 20.0,
+          "min": 2.0,
+          "avg": 2.45,
+          "max": 3.0,
+          "total": 49.0
+        },
+        "iter_total": {
+          "samples": 20.0,
+          "min": 37471.0,
+          "avg": 37682.05,
+          "max": 37984.0,
+          "total": 753641.0
+        }
+      },
+      "config": [
+        "PERF_CONFIG iterations=20 warmup=5 count=33554432 bytes=134217728 alu_iters=1",
+        "PERF_CPU_PREPARE_EXCLUDED=1"
+      ]
+    },
+    "compute-16": {
+      "iter_us": {
+        "min": 5230.0,
+        "avg": 5343.65,
+        "max": 5472.0,
+        "total": 534365.0
+      },
+      "correct": true,
+      "renderer": [
+        "Mali-G610 (Panfrost)"
+      ],
+      "phases_us": {
+        "cpu_prepare": {
+          "samples": 100.0,
+          "min": 7408.0,
+          "avg": 7484.46,
+          "max": 7543.0,
+          "total": 748446.0
+        },
+        "buffer_upload": {
+          "samples": 100.0,
+          "min": 3260.0,
+          "avg": 3364.2,
+          "max": 3475.0,
+          "total": 336420.0
+        },
+        "dispatch_call": {
+          "samples": 100.0,
+          "min": 442.0,
+          "avg": 497.6,
+          "max": 673.0,
+          "total": 49760.0
+        },
+        "memory_barrier": {
+          "samples": 100.0,
+          "min": 80.0,
+          "avg": 95.79,
+          "max": 162.0,
+          "total": 9579.0
+        },
+        "map_wait": {
+          "samples": 100.0,
+          "min": 1244.0,
+          "avg": 1383.36,
+          "max": 1535.0,
+          "total": 138336.0
+        },
+        "unmap": {
+          "samples": 100.0,
+          "min": 2.0,
+          "avg": 2.7,
+          "max": 4.0,
+          "total": 270.0
+        },
+        "iter_total": {
+          "samples": 100.0,
+          "min": 5230.0,
+          "avg": 5343.65,
+          "max": 5472.0,
+          "total": 534365.0
+        }
+      },
+      "config": [
+        "PERF_CONFIG iterations=100 warmup=5 count=4194304 bytes=16777216 alu_iters=1",
+        "PERF_CPU_PREPARE_EXCLUDED=1"
+      ]
+    },
+    "compute-4": {
+      "iter_us": {
+        "min": 1599.0,
+        "avg": 1706.28,
+        "max": 2086.0,
+        "total": 170628.0
+      },
+      "correct": true,
+      "renderer": [
+        "Mali-G610 (Panfrost)"
+      ],
+      "phases_us": {
+        "cpu_prepare": {
+          "samples": 100.0,
+          "min": 1799.0,
+          "avg": 1899.65,
+          "max": 2061.0,
+          "total": 189965.0
+        },
+        "buffer_upload": {
+          "samples": 100.0,
+          "min": 780.0,
+          "avg": 805.45,
+          "max": 1024.0,
+          "total": 80545.0
+        },
+        "dispatch_call": {
+          "samples": 100.0,
+          "min": 362.0,
+          "avg": 424.69,
+          "max": 651.0,
+          "total": 42469.0
+        },
+        "memory_barrier": {
+          "samples": 100.0,
+          "min": 77.0,
+          "avg": 87.66,
+          "max": 97.0,
+          "total": 8766.0
+        },
+        "map_wait": {
+          "samples": 100.0,
+          "min": 114.0,
+          "avg": 386.69,
+          "max": 794.0,
+          "total": 38669.0
+        },
+        "unmap": {
+          "samples": 100.0,
+          "min": 1.0,
+          "avg": 1.79,
+          "max": 3.0,
+          "total": 179.0
+        },
+        "iter_total": {
+          "samples": 100.0,
+          "min": 1599.0,
+          "avg": 1706.28,
+          "max": 2086.0,
+          "total": 170628.0
+        }
+      },
+      "config": [
+        "PERF_CONFIG iterations=100 warmup=5 count=1048576 bytes=4194304 alu_iters=1",
+        "PERF_CPU_PREPARE_EXCLUDED=1"
+      ]
+    },
+    "compute-64": {
+      "iter_us": {
+        "min": 19154.0,
+        "avg": 19284.8,
+        "max": 19467.0,
+        "total": 385696.0
+      },
+      "correct": true,
+      "renderer": [
+        "Mali-G610 (Panfrost)"
+      ],
+      "phases_us": {
+        "cpu_prepare": {
+          "samples": 20.0,
+          "min": 29706.0,
+          "avg": 29814.2,
+          "max": 29931.0,
+          "total": 596284.0
+        },
+        "buffer_upload": {
+          "samples": 20.0,
+          "min": 13384.0,
+          "avg": 13479.7,
+          "max": 13559.0,
+          "total": 269594.0
+        },
+        "dispatch_call": {
+          "samples": 20.0,
+          "min": 582.0,
+          "avg": 642.4,
+          "max": 760.0,
+          "total": 12848.0
+        },
+        "memory_barrier": {
+          "samples": 20.0,
+          "min": 79.0,
+          "avg": 81.9,
+          "max": 91.0,
+          "total": 1638.0
+        },
+        "map_wait": {
+          "samples": 20.0,
+          "min": 4937.0,
+          "avg": 5078.4,
+          "max": 5190.0,
+          "total": 101568.0
+        },
+        "unmap": {
+          "samples": 20.0,
+          "min": 2.0,
+          "avg": 2.4,
+          "max": 3.0,
+          "total": 48.0
+        },
+        "iter_total": {
+          "samples": 20.0,
+          "min": 19154.0,
+          "avg": 19284.8,
+          "max": 19467.0,
+          "total": 385696.0
+        }
+      },
+      "config": [
+        "PERF_CONFIG iterations=20 warmup=5 count=16777216 bytes=67108864 alu_iters=1",
+        "PERF_CPU_PREPARE_EXCLUDED=1"
+      ]
+    },
+    "glmark-1080": {
+      "score": 939,
+      "validate": [
+        26,
+        1,
+        6
+      ],
+      "scenes": [
+        {
+          "name": "[build] use-vbo=false",
+          "fps": 998,
+          "frametime_ms": 1.002
+        },
+        {
+          "name": "[build] use-vbo=true",
+          "fps": 1475,
+          "frametime_ms": 0.678
+        },
+        {
+          "name": "[texture] texture-filter=nearest",
+          "fps": 1347,
+          "frametime_ms": 0.743
+        },
+        {
+          "name": "[texture] texture-filter=linear",
+          "fps": 1351,
+          "frametime_ms": 0.74
+        },
+        {
+          "name": "[texture] texture-filter=mipmap",
+          "fps": 1352,
+          "frametime_ms": 0.74
+        },
+        {
+          "name": "[shading] shading=gouraud",
+          "fps": 1315,
+          "frametime_ms": 0.761
+        },
+        {
+          "name": "[shading] shading=blinn-phong-inf",
+          "fps": 1287,
+          "frametime_ms": 0.777
+        },
+        {
+          "name": "[shading] shading=phong",
+          "fps": 1165,
+          "frametime_ms": 0.859
+        },
+        {
+          "name": "[shading] shading=cel",
+          "fps": 1148,
+          "frametime_ms": 0.872
+        },
+        {
+          "name": "[bump] bump-render=high-poly",
+          "fps": 943,
+          "frametime_ms": 1.061
+        },
+        {
+          "name": "[bump] bump-render=normals",
+          "fps": 1485,
+          "frametime_ms": 0.674
+        },
+        {
+          "name": "[bump] bump-render=height",
+          "fps": 1396,
+          "frametime_ms": 0.716
+        },
+        {
+          "name": "[effect2d] kernel=0,1,0;1,-4,1;0,1,0;",
+          "fps": 927,
+          "frametime_ms": 1.079
+        },
+        {
+          "name": "[effect2d] kernel=1,1,1,1,1;1,1,1,1,1;1,1,1,1,1;",
+          "fps": 435,
+          "frametime_ms": 2.301
+        },
+        {
+          "name": "[pulsar] light=false:quads=5:texture=false",
+          "fps": 1100,
+          "frametime_ms": 0.909
+        },
+        {
+          "name": "[desktop] blur-radius=5:effect=blur:passes=1:separable=true:windows=4",
+          "fps": 172,
+          "frametime_ms": 5.844
+        },
+        {
+          "name": "[desktop] effect=shadow:windows=4",
+          "fps": 571,
+          "frametime_ms": 1.754
+        },
+        {
+          "name": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=map",
+          "fps": 45,
+          "frametime_ms": 22.579
+        },
+        {
+          "name": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=subdata",
+          "fps": 45,
+          "frametime_ms": 22.655
+        },
+        {
+          "name": "[buffer] columns=200:interleave=true:update-dispersion=0.9:update-fraction=0.5:update-method=map",
+          "fps": 65,
+          "frametime_ms": 15.508
+        },
+        {
+          "name": "[ideas] speed=duration",
+          "fps": 404,
+          "frametime_ms": 2.477
+        },
+        {
+          "name": "[jellyfish] <default>",
+          "fps": 752,
+          "frametime_ms": 1.33
+        },
+        {
+          "name": "[terrain] <default>",
+          "fps": 36,
+          "frametime_ms": 28.133
+        },
+        {
+          "name": "[conditionals] fragment-steps=0:vertex-steps=0",
+          "fps": 1208,
+          "frametime_ms": 0.828
+        },
+        {
+          "name": "[conditionals] fragment-steps=5:vertex-steps=0",
+          "fps": 1156,
+          "frametime_ms": 0.865
+        },
+        {
+          "name": "[conditionals] fragment-steps=0:vertex-steps=5",
+          "fps": 1213,
+          "frametime_ms": 0.825
+        },
+        {
+          "name": "[function] fragment-complexity=low:fragment-steps=5",
+          "fps": 1209,
+          "frametime_ms": 0.827
+        },
+        {
+          "name": "[function] fragment-complexity=medium:fragment-steps=5",
+          "fps": 1075,
+          "frametime_ms": 0.931
+        },
+        {
+          "name": "[loop] fragment-loop=false:fragment-steps=5:vertex-steps=5",
+          "fps": 1209,
+          "frametime_ms": 0.827
+        },
+        {
+          "name": "[loop] fragment-steps=5:fragment-uniform=false:vertex-steps=5",
+          "fps": 1207,
+          "frametime_ms": 0.829
+        },
+        {
+          "name": "[loop] fragment-steps=5:fragment-uniform=true:vertex-steps=5",
+          "fps": 1070,
+          "frametime_ms": 0.935
+        }
+      ],
+      "clean": false,
+      "result": false,
+      "errors": []
+    },
+    "glmark-720": {
+      "score": 1156,
+      "validate": [
+        26,
+        1,
+        6
+      ],
+      "scenes": [
+        {
+          "name": "[build] use-vbo=false",
+          "fps": 1126,
+          "frametime_ms": 0.889
+        },
+        {
+          "name": "[build] use-vbo=true",
+          "fps": 1741,
+          "frametime_ms": 0.575
+        },
+        {
+          "name": "[texture] texture-filter=nearest",
+          "fps": 1752,
+          "frametime_ms": 0.571
+        },
+        {
+          "name": "[texture] texture-filter=linear",
+          "fps": 1751,
+          "frametime_ms": 0.571
+        },
+        {
+          "name": "[texture] texture-filter=mipmap",
+          "fps": 1743,
+          "frametime_ms": 0.574
+        },
+        {
+          "name": "[shading] shading=gouraud",
+          "fps": 1548,
+          "frametime_ms": 0.646
+        },
+        {
+          "name": "[shading] shading=blinn-phong-inf",
+          "fps": 1526,
+          "frametime_ms": 0.655
+        },
+        {
+          "name": "[shading] shading=phong",
+          "fps": 1431,
+          "frametime_ms": 0.699
+        },
+        {
+          "name": "[shading] shading=cel",
+          "fps": 1425,
+          "frametime_ms": 0.702
+        },
+        {
+          "name": "[bump] bump-render=high-poly",
+          "fps": 1071,
+          "frametime_ms": 0.934
+        },
+        {
+          "name": "[bump] bump-render=normals",
+          "fps": 1880,
+          "frametime_ms": 0.532
+        },
+        {
+          "name": "[bump] bump-render=height",
+          "fps": 1811,
+          "frametime_ms": 0.552
+        },
+        {
+          "name": "[effect2d] kernel=0,1,0;1,-4,1;0,1,0;",
+          "fps": 1481,
+          "frametime_ms": 0.676
+        },
+        {
+          "name": "[effect2d] kernel=1,1,1,1,1;1,1,1,1,1;1,1,1,1,1;",
+          "fps": 834,
+          "frametime_ms": 1.199
+        },
+        {
+          "name": "[pulsar] light=false:quads=5:texture=false",
+          "fps": 1389,
+          "frametime_ms": 0.72
+        },
+        {
+          "name": "[desktop] blur-radius=5:effect=blur:passes=1:separable=true:windows=4",
+          "fps": 230,
+          "frametime_ms": 4.354
+        },
+        {
+          "name": "[desktop] effect=shadow:windows=4",
+          "fps": 694,
+          "frametime_ms": 1.442
+        },
+        {
+          "name": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=map",
+          "fps": 46,
+          "frametime_ms": 21.762
+        },
+        {
+          "name": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=subdata",
+          "fps": 46,
+          "frametime_ms": 21.813
+        },
+        {
+          "name": "[buffer] columns=200:interleave=true:update-dispersion=0.9:update-fraction=0.5:update-method=map",
+          "fps": 66,
+          "frametime_ms": 15.378
+        },
+        {
+          "name": "[ideas] speed=duration",
+          "fps": 439,
+          "frametime_ms": 2.28
+        },
+        {
+          "name": "[jellyfish] <default>",
+          "fps": 1109,
+          "frametime_ms": 0.902
+        },
+        {
+          "name": "[terrain] <default>",
+          "fps": 40,
+          "frametime_ms": 25.15
+        },
+        {
+          "name": "[shadow] <default>",
+          "fps": 749,
+          "frametime_ms": 1.337
+        },
+        {
+          "name": "[refract] <default>",
+          "fps": 135,
+          "frametime_ms": 7.417
+        },
+        {
+          "name": "[conditionals] fragment-steps=0:vertex-steps=0",
+          "fps": 1555,
+          "frametime_ms": 0.643
+        },
+        {
+          "name": "[conditionals] fragment-steps=5:vertex-steps=0",
+          "fps": 1491,
+          "frametime_ms": 0.671
+        },
+        {
+          "name": "[conditionals] fragment-steps=0:vertex-steps=5",
+          "fps": 1562,
+          "frametime_ms": 0.641
+        },
+        {
+          "name": "[function] fragment-complexity=low:fragment-steps=5",
+          "fps": 1557,
+          "frametime_ms": 0.642
+        },
+        {
+          "name": "[function] fragment-complexity=medium:fragment-steps=5",
+          "fps": 1432,
+          "frametime_ms": 0.699
+        },
+        {
+          "name": "[loop] fragment-loop=false:fragment-steps=5:vertex-steps=5",
+          "fps": 1554,
+          "frametime_ms": 0.644
+        },
+        {
+          "name": "[loop] fragment-steps=5:fragment-uniform=false:vertex-steps=5",
+          "fps": 1545,
+          "frametime_ms": 0.647
+        },
+        {
+          "name": "[loop] fragment-steps=5:fragment-uniform=true:vertex-steps=5",
+          "fps": 1427,
+          "frametime_ms": 0.701
+        }
+      ],
+      "clean": true,
+      "result": true,
+      "errors": []
+    },
+    "ioctl": {
+      "cases": {
+        "basic": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 516.25,
+          "min_us": 494.375,
+          "max_us": 580.417
+        },
+        "vm-create": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 720.183,
+          "min_us": 680.75,
+          "max_us": 830.375
+        },
+        "bo-create": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 942.71,
+          "min_us": 860.416,
+          "max_us": 1024.917
+        },
+        "bo-lifecycle": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 1327.39,
+          "min_us": 1260.584,
+          "max_us": 1451.625
+        },
+        "bo-mmap": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 937.883,
+          "min_us": 895.417,
+          "max_us": 1001.0
+        },
+        "vm-bind": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 7130.696,
+          "min_us": 7043.75,
+          "max_us": 7242.667
+        },
+        "vm-bind-async-sync": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 1684.871,
+          "min_us": 1607.375,
+          "max_us": 1868.416
+        },
+        "vm-state-flush": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 808.223,
+          "min_us": 772.917,
+          "max_us": 847.583
+        },
+        "syncobj-lifecycle": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 540.429,
+          "min_us": 524.125,
+          "max_us": 581.0
+        },
+        "syncobj-wait": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 991.113,
+          "min_us": 953.458,
+          "max_us": 1050.584
+        },
+        "syncobj-transfer": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 846.621,
+          "min_us": 800.042,
+          "max_us": 931.583
+        },
+        "syncobj-timeline-wait": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 1433.221,
+          "min_us": 1361.5,
+          "max_us": 1496.25
+        },
+        "syncobj-signal-query": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 1352.925,
+          "min_us": 1292.958,
+          "max_us": 1514.041
+        },
+        "sync-file-snapshot": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 43196.125,
+          "min_us": 42630.875,
+          "max_us": 44125.667
+        },
+        "group-lifecycle": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 1617.175,
+          "min_us": 1493.042,
+          "max_us": 2414.708
+        },
+        "group-submit-syncpoint": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 1832.381,
+          "min_us": 1709.166,
+          "max_us": 1955.625
+        },
+        "tiler-heap-lifecycle": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 1465.027,
+          "min_us": 1241.041,
+          "max_us": 2041.375
+        }
+      },
+      "matrix_pass": true
+    },
+    "ml-all": {
+      "result": true,
+      "kernels": {
+        "gemm_512_fp32": {
+          "samples": 100,
+          "warmup": 5,
+          "min_us": 29318.0,
+          "avg_us": 29344.36,
+          "max_us": 29571.0
+        },
+        "conv2d_64x64x32_3x3_fp32": {
+          "samples": 100,
+          "warmup": 5,
+          "min_us": 33156.0,
+          "avg_us": 33890.11,
+          "max_us": 34446.0
+        },
+        "depthwise_conv_128x128x128_3x3_fp32": {
+          "samples": 100,
+          "warmup": 5,
+          "min_us": 21789.0,
+          "avg_us": 21877.63,
+          "max_us": 22200.0
+        },
+        "block_reduction_32mib_fp32": {
+          "samples": 100,
+          "warmup": 5,
+          "min_us": 9502.0,
+          "avg_us": 10653.09,
+          "max_us": 119019.0
+        },
+        "row_softmax_16384x256_fp32": {
+          "samples": 100,
+          "warmup": 5,
+          "min_us": 19071.0,
+          "avg_us": 19401.76,
+          "max_us": 20196.0
+        },
+        "single_head_attention_256x64_fp32": {
+          "samples": 100,
+          "warmup": 5,
+          "min_us": 772066.0,
+          "avg_us": 777307.38,
+          "max_us": 786298.0
+        }
+      }
+    },
+    "ncnn-mobilenet_v2": {
+      "model_pass": true,
+      "qualification": true,
+      "avg_ms": 32.17,
+      "errors": []
+    },
+    "ncnn-mobilenet_v3": {
+      "model_pass": true,
+      "qualification": true,
+      "avg_ms": 28.92,
+      "errors": []
+    },
+    "ncnn-resnet50": {
+      "model_pass": false,
+      "qualification": true,
+      "avg_ms": null,
+      "errors": [
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkWaitForFences failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)",
+        "vkEndCommandBuffer failed -2",
+        "vkQueueSubmit failed -4",
+        "NCNN_MODEL_RESULT=FAIL rc=0 timing=/root/ncnn/models/resnet50.param  min =    4.73  max =    6.93  avg =    5.24 vk_error=MESA: error: DRM_IOCTL_PANTHOR_BO_CREATE failed (err=12)"
+      ]
+    }
+  },
+  "dual": {
+    "dual-0": {
+      "iter_us": {
+        "min": 3462.0,
+        "avg": 3951.69,
+        "max": 14218.0,
+        "total": 395169.0
+      },
+      "correct": true,
+      "renderer": [
+        "Mali-G610 (Panfrost)"
+      ],
+      "phases_us": {
+        "cpu_prepare": {
+          "samples": 100.0,
+          "min": 1801.0,
+          "avg": 2025.61,
+          "max": 2289.0,
+          "total": 202561.0
+        },
+        "buffer_upload": {
+          "samples": 100.0,
+          "min": 790.0,
+          "avg": 883.9,
+          "max": 1063.0,
+          "total": 88390.0
+        },
+        "dispatch_call": {
+          "samples": 100.0,
+          "min": 367.0,
+          "avg": 543.76,
+          "max": 10117.0,
+          "total": 54376.0
+        },
+        "memory_barrier": {
+          "samples": 100.0,
+          "min": 81.0,
+          "avg": 92.33,
+          "max": 192.0,
+          "total": 9233.0
+        },
+        "map_wait": {
+          "samples": 100.0,
+          "min": 170.0,
+          "avg": 403.74,
+          "max": 770.0,
+          "total": 40374.0
+        },
+        "unmap": {
+          "samples": 100.0,
+          "min": 1.0,
+          "avg": 2.35,
+          "max": 4.0,
+          "total": 235.0
+        },
+        "iter_total": {
+          "samples": 100.0,
+          "min": 3462.0,
+          "avg": 3951.69,
+          "max": 14218.0,
+          "total": 395169.0
+        }
+      },
+      "config": [
+        "PERF_CONFIG iterations=100 warmup=5 count=1048576 bytes=4194304 alu_iters=1",
+        "PERF_CPU_PREPARE_EXCLUDED=0"
+      ]
+    },
+    "dual-1": {
+      "iter_us": {
+        "min": 3643.0,
+        "avg": 3914.28,
+        "max": 4232.0,
+        "total": 391428.0
+      },
+      "correct": true,
+      "renderer": [
+        "Mali-G610 (Panfrost)"
+      ],
+      "phases_us": {
+        "cpu_prepare": {
+          "samples": 100.0,
+          "min": 1930.0,
+          "avg": 2058.62,
+          "max": 2251.0,
+          "total": 205862.0
+        },
+        "buffer_upload": {
+          "samples": 100.0,
+          "min": 820.0,
+          "avg": 906.28,
+          "max": 1110.0,
+          "total": 90628.0
+        },
+        "dispatch_call": {
+          "samples": 100.0,
+          "min": 381.0,
+          "avg": 443.47,
+          "max": 699.0,
+          "total": 44347.0
+        },
+        "memory_barrier": {
+          "samples": 100.0,
+          "min": 86.0,
+          "avg": 94.19,
+          "max": 149.0,
+          "total": 9419.0
+        },
+        "map_wait": {
+          "samples": 100.0,
+          "min": 141.0,
+          "avg": 409.4,
+          "max": 598.0,
+          "total": 40940.0
+        },
+        "unmap": {
+          "samples": 100.0,
+          "min": 1.0,
+          "avg": 2.32,
+          "max": 4.0,
+          "total": 232.0
+        },
+        "iter_total": {
+          "samples": 100.0,
+          "min": 3643.0,
+          "avg": 3914.28,
+          "max": 4232.0,
+          "total": 391428.0
+        }
+      },
+      "config": [
+        "PERF_CONFIG iterations=100 warmup=5 count=1048576 bytes=4194304 alu_iters=1",
+        "PERF_CPU_PREPARE_EXCLUDED=0"
+      ]
+    }
+  },
+  "native": {
+    "attention-320": {
+      "result": true,
+      "kernels": {
+        "single_head_attention_320x64_fp32": {
+          "samples": 10,
+          "warmup": 2,
+          "min_us": 1220898.0,
+          "avg_us": 1221822.9,
+          "max_us": 1223490.0
+        }
+      }
+    },
+    "compute-128": {
+      "iter_us": {
+        "min": 35542.0,
+        "avg": 35604.65,
+        "max": 35650.0,
+        "total": 712093.0
+      },
+      "correct": true,
+      "renderer": [
+        "Mali-G610 (Panfrost)"
+      ],
+      "phases_us": {
+        "cpu_prepare": {
+          "samples": 20.0,
+          "min": 56613.0,
+          "avg": 56624.4,
+          "max": 56632.0,
+          "total": 1132488.0
+        },
+        "buffer_upload": {
+          "samples": 20.0,
+          "min": 24797.0,
+          "avg": 24824.6,
+          "max": 24852.0,
+          "total": 496492.0
+        },
+        "dispatch_call": {
+          "samples": 20.0,
+          "min": 284.0,
+          "avg": 292.8,
+          "max": 323.0,
+          "total": 5856.0
+        },
+        "memory_barrier": {
+          "samples": 20.0,
+          "min": 40.0,
+          "avg": 40.35,
+          "max": 41.0,
+          "total": 807.0
+        },
+        "map_wait": {
+          "samples": 20.0,
+          "min": 10381.0,
+          "avg": 10444.85,
+          "max": 10477.0,
+          "total": 208897.0
+        },
+        "unmap": {
+          "samples": 20.0,
+          "min": 2.0,
+          "avg": 2.05,
+          "max": 3.0,
+          "total": 41.0
+        },
+        "iter_total": {
+          "samples": 20.0,
+          "min": 35542.0,
+          "avg": 35604.65,
+          "max": 35650.0,
+          "total": 712093.0
+        }
+      },
+      "config": [
+        "PERF_CONFIG iterations=20 warmup=5 count=33554432 bytes=134217728 alu_iters=1",
+        "PERF_CPU_PREPARE_EXCLUDED=1"
+      ]
+    },
+    "compute-16": {
+      "iter_us": {
+        "min": 4674.0,
+        "avg": 4708.94,
+        "max": 4759.0,
+        "total": 470894.0
+      },
+      "correct": true,
+      "renderer": [
+        "Mali-G610 (Panfrost)"
+      ],
+      "phases_us": {
+        "cpu_prepare": {
+          "samples": 100.0,
+          "min": 7080.0,
+          "avg": 7100.65,
+          "max": 7113.0,
+          "total": 710065.0
+        },
+        "buffer_upload": {
+          "samples": 100.0,
+          "min": 3052.0,
+          "avg": 3071.53,
+          "max": 3097.0,
+          "total": 307153.0
+        },
+        "dispatch_call": {
+          "samples": 100.0,
+          "min": 220.0,
+          "avg": 227.75,
+          "max": 249.0,
+          "total": 22775.0
+        },
+        "memory_barrier": {
+          "samples": 100.0,
+          "min": 38.0,
+          "avg": 40.56,
+          "max": 60.0,
+          "total": 4056.0
+        },
+        "map_wait": {
+          "samples": 100.0,
+          "min": 1341.0,
+          "avg": 1367.1,
+          "max": 1405.0,
+          "total": 136710.0
+        },
+        "unmap": {
+          "samples": 100.0,
+          "min": 1.0,
+          "avg": 2.0,
+          "max": 3.0,
+          "total": 200.0
+        },
+        "iter_total": {
+          "samples": 100.0,
+          "min": 4674.0,
+          "avg": 4708.94,
+          "max": 4759.0,
+          "total": 470894.0
+        }
+      },
+      "config": [
+        "PERF_CONFIG iterations=100 warmup=5 count=4194304 bytes=16777216 alu_iters=1",
+        "PERF_CPU_PREPARE_EXCLUDED=1"
+      ]
+    },
+    "compute-4": {
+      "iter_us": {
+        "min": 1330.0,
+        "avg": 1361.6,
+        "max": 1454.0,
+        "total": 136160.0
+      },
+      "correct": true,
+      "renderer": [
+        "Mali-G610 (Panfrost)"
+      ],
+      "phases_us": {
+        "cpu_prepare": {
+          "samples": 100.0,
+          "min": 1769.0,
+          "avg": 1783.11,
+          "max": 1836.0,
+          "total": 178311.0
+        },
+        "buffer_upload": {
+          "samples": 100.0,
+          "min": 739.0,
+          "avg": 750.21,
+          "max": 808.0,
+          "total": 75021.0
+        },
+        "dispatch_call": {
+          "samples": 100.0,
+          "min": 177.0,
+          "avg": 195.33,
+          "max": 255.0,
+          "total": 19533.0
+        },
+        "memory_barrier": {
+          "samples": 100.0,
+          "min": 38.0,
+          "avg": 40.86,
+          "max": 68.0,
+          "total": 4086.0
+        },
+        "map_wait": {
+          "samples": 100.0,
+          "min": 342.0,
+          "avg": 373.62,
+          "max": 453.0,
+          "total": 37362.0
+        },
+        "unmap": {
+          "samples": 100.0,
+          "min": 1.0,
+          "avg": 1.58,
+          "max": 2.0,
+          "total": 158.0
+        },
+        "iter_total": {
+          "samples": 100.0,
+          "min": 1330.0,
+          "avg": 1361.6,
+          "max": 1454.0,
+          "total": 136160.0
+        }
+      },
+      "config": [
+        "PERF_CONFIG iterations=100 warmup=5 count=1048576 bytes=4194304 alu_iters=1",
+        "PERF_CPU_PREPARE_EXCLUDED=1"
+      ]
+    },
+    "compute-64": {
+      "iter_us": {
+        "min": 17747.0,
+        "avg": 17788.15,
+        "max": 17825.0,
+        "total": 355763.0
+      },
+      "correct": true,
+      "renderer": [
+        "Mali-G610 (Panfrost)"
+      ],
+      "phases_us": {
+        "cpu_prepare": {
+          "samples": 20.0,
+          "min": 28321.0,
+          "avg": 28327.9,
+          "max": 28333.0,
+          "total": 566558.0
+        },
+        "buffer_upload": {
+          "samples": 20.0,
+          "min": 12354.0,
+          "avg": 12371.9,
+          "max": 12392.0,
+          "total": 247438.0
+        },
+        "dispatch_call": {
+          "samples": 20.0,
+          "min": 280.0,
+          "avg": 285.85,
+          "max": 313.0,
+          "total": 5717.0
+        },
+        "memory_barrier": {
+          "samples": 20.0,
+          "min": 39.0,
+          "avg": 39.75,
+          "max": 41.0,
+          "total": 795.0
+        },
+        "map_wait": {
+          "samples": 20.0,
+          "min": 5059.0,
+          "avg": 5088.7,
+          "max": 5119.0,
+          "total": 101774.0
+        },
+        "unmap": {
+          "samples": 20.0,
+          "min": 1.0,
+          "avg": 1.95,
+          "max": 2.0,
+          "total": 39.0
+        },
+        "iter_total": {
+          "samples": 20.0,
+          "min": 17747.0,
+          "avg": 17788.15,
+          "max": 17825.0,
+          "total": 355763.0
+        }
+      },
+      "config": [
+        "PERF_CONFIG iterations=20 warmup=5 count=16777216 bytes=67108864 alu_iters=1",
+        "PERF_CPU_PREPARE_EXCLUDED=1"
+      ]
+    },
+    "dual-0": {
+      "iter_us": {
+        "min": 3238.0,
+        "avg": 3312.3,
+        "max": 3506.0,
+        "total": 331230.0
+      },
+      "correct": true,
+      "renderer": [
+        "Mali-G610 (Panfrost)"
+      ],
+      "phases_us": {
+        "cpu_prepare": {
+          "samples": 100.0,
+          "min": 1776.0,
+          "avg": 1794.79,
+          "max": 1858.0,
+          "total": 179479.0
+        },
+        "buffer_upload": {
+          "samples": 100.0,
+          "min": 815.0,
+          "avg": 841.46,
+          "max": 923.0,
+          "total": 84146.0
+        },
+        "dispatch_call": {
+          "samples": 100.0,
+          "min": 163.0,
+          "avg": 184.13,
+          "max": 295.0,
+          "total": 18413.0
+        },
+        "memory_barrier": {
+          "samples": 100.0,
+          "min": 38.0,
+          "avg": 40.24,
+          "max": 61.0,
+          "total": 4024.0
+        },
+        "map_wait": {
+          "samples": 100.0,
+          "min": 425.0,
+          "avg": 450.28,
+          "max": 501.0,
+          "total": 45028.0
+        },
+        "unmap": {
+          "samples": 100.0,
+          "min": 1.0,
+          "avg": 1.4,
+          "max": 2.0,
+          "total": 140.0
+        },
+        "iter_total": {
+          "samples": 100.0,
+          "min": 3238.0,
+          "avg": 3312.3,
+          "max": 3506.0,
+          "total": 331230.0
+        }
+      },
+      "config": [
+        "PERF_CONFIG iterations=100 warmup=5 count=1048576 bytes=4194304 alu_iters=1",
+        "PERF_CPU_PREPARE_EXCLUDED=0"
+      ]
+    },
+    "dual-1": {
+      "iter_us": {
+        "min": 3253.0,
+        "avg": 3323.26,
+        "max": 3580.0,
+        "total": 332326.0
+      },
+      "correct": true,
+      "renderer": [
+        "Mali-G610 (Panfrost)"
+      ],
+      "phases_us": {
+        "cpu_prepare": {
+          "samples": 100.0,
+          "min": 1773.0,
+          "avg": 1791.77,
+          "max": 1891.0,
+          "total": 179177.0
+        },
+        "buffer_upload": {
+          "samples": 100.0,
+          "min": 785.0,
+          "avg": 836.08,
+          "max": 1118.0,
+          "total": 83608.0
+        },
+        "dispatch_call": {
+          "samples": 100.0,
+          "min": 175.0,
+          "avg": 190.71,
+          "max": 253.0,
+          "total": 19071.0
+        },
+        "memory_barrier": {
+          "samples": 100.0,
+          "min": 38.0,
+          "avg": 39.99,
+          "max": 45.0,
+          "total": 3999.0
+        },
+        "map_wait": {
+          "samples": 100.0,
+          "min": 428.0,
+          "avg": 463.21,
+          "max": 555.0,
+          "total": 46321.0
+        },
+        "unmap": {
+          "samples": 100.0,
+          "min": 1.0,
+          "avg": 1.5,
+          "max": 3.0,
+          "total": 150.0
+        },
+        "iter_total": {
+          "samples": 100.0,
+          "min": 3253.0,
+          "avg": 3323.26,
+          "max": 3580.0,
+          "total": 332326.0
+        }
+      },
+      "config": [
+        "PERF_CONFIG iterations=100 warmup=5 count=1048576 bytes=4194304 alu_iters=1",
+        "PERF_CPU_PREPARE_EXCLUDED=0"
+      ]
+    },
+    "glmark-1080": {
+      "score": 997,
+      "validate": [
+        26,
+        1,
+        6
+      ],
+      "scenes": [
+        {
+          "name": "[build] use-vbo=false",
+          "fps": 748,
+          "frametime_ms": 1.338
+        },
+        {
+          "name": "[build] use-vbo=true",
+          "fps": 1785,
+          "frametime_ms": 0.56
+        },
+        {
+          "name": "[texture] texture-filter=nearest",
+          "fps": 1571,
+          "frametime_ms": 0.637
+        },
+        {
+          "name": "[texture] texture-filter=linear",
+          "fps": 1580,
+          "frametime_ms": 0.633
+        },
+        {
+          "name": "[texture] texture-filter=mipmap",
+          "fps": 1585,
+          "frametime_ms": 0.631
+        },
+        {
+          "name": "[shading] shading=gouraud",
+          "fps": 1531,
+          "frametime_ms": 0.654
+        },
+        {
+          "name": "[shading] shading=blinn-phong-inf",
+          "fps": 1449,
+          "frametime_ms": 0.69
+        },
+        {
+          "name": "[shading] shading=phong",
+          "fps": 1267,
+          "frametime_ms": 0.79
+        },
+        {
+          "name": "[shading] shading=cel",
+          "fps": 1240,
+          "frametime_ms": 0.807
+        },
+        {
+          "name": "[bump] bump-render=high-poly",
+          "fps": 944,
+          "frametime_ms": 1.06
+        },
+        {
+          "name": "[bump] bump-render=normals",
+          "fps": 1826,
+          "frametime_ms": 0.548
+        },
+        {
+          "name": "[bump] bump-render=height",
+          "fps": 1651,
+          "frametime_ms": 0.606
+        },
+        {
+          "name": "[effect2d] kernel=0,1,0;1,-4,1;0,1,0;",
+          "fps": 937,
+          "frametime_ms": 1.067
+        },
+        {
+          "name": "[effect2d] kernel=1,1,1,1,1;1,1,1,1,1;1,1,1,1,1;",
+          "fps": 447,
+          "frametime_ms": 2.237
+        },
+        {
+          "name": "[pulsar] light=false:quads=5:texture=false",
+          "fps": 1179,
+          "frametime_ms": 0.849
+        },
+        {
+          "name": "[desktop] blur-radius=5:effect=blur:passes=1:separable=true:windows=4",
+          "fps": 233,
+          "frametime_ms": 4.293
+        },
+        {
+          "name": "[desktop] effect=shadow:windows=4",
+          "fps": 579,
+          "frametime_ms": 1.727
+        },
+        {
+          "name": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=map",
+          "fps": 47,
+          "frametime_ms": 21.482
+        },
+        {
+          "name": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=subdata",
+          "fps": 47,
+          "frametime_ms": 21.554
+        },
+        {
+          "name": "[buffer] columns=200:interleave=true:update-dispersion=0.9:update-fraction=0.5:update-method=map",
+          "fps": 65,
+          "frametime_ms": 15.424
+        },
+        {
+          "name": "[ideas] speed=duration",
+          "fps": 426,
+          "frametime_ms": 2.352
+        },
+        {
+          "name": "[jellyfish] <default>",
+          "fps": 763,
+          "frametime_ms": 1.312
+        },
+        {
+          "name": "[terrain] <default>",
+          "fps": 57,
+          "frametime_ms": 17.58
+        },
+        {
+          "name": "[shadow] <default>",
+          "fps": 687,
+          "frametime_ms": 1.456
+        },
+        {
+          "name": "[refract] <default>",
+          "fps": 144,
+          "frametime_ms": 6.975
+        },
+        {
+          "name": "[conditionals] fragment-steps=0:vertex-steps=0",
+          "fps": 1358,
+          "frametime_ms": 0.737
+        },
+        {
+          "name": "[conditionals] fragment-steps=5:vertex-steps=0",
+          "fps": 1259,
+          "frametime_ms": 0.795
+        },
+        {
+          "name": "[conditionals] fragment-steps=0:vertex-steps=5",
+          "fps": 1337,
+          "frametime_ms": 0.748
+        },
+        {
+          "name": "[function] fragment-complexity=low:fragment-steps=5",
+          "fps": 1362,
+          "frametime_ms": 0.734
+        },
+        {
+          "name": "[function] fragment-complexity=medium:fragment-steps=5",
+          "fps": 1093,
+          "frametime_ms": 0.915
+        },
+        {
+          "name": "[loop] fragment-loop=false:fragment-steps=5:vertex-steps=5",
+          "fps": 1328,
+          "frametime_ms": 0.753
+        },
+        {
+          "name": "[loop] fragment-steps=5:fragment-uniform=false:vertex-steps=5",
+          "fps": 1331,
+          "frametime_ms": 0.751
+        },
+        {
+          "name": "[loop] fragment-steps=5:fragment-uniform=true:vertex-steps=5",
+          "fps": 1082,
+          "frametime_ms": 0.924
+        }
+      ],
+      "clean": true,
+      "result": true,
+      "errors": []
+    },
+    "glmark-720": {
+      "score": 1437,
+      "validate": [
+        26,
+        1,
+        6
+      ],
+      "scenes": [
+        {
+          "name": "[build] use-vbo=false",
+          "fps": 994,
+          "frametime_ms": 1.006
+        },
+        {
+          "name": "[build] use-vbo=true",
+          "fps": 2299,
+          "frametime_ms": 0.435
+        },
+        {
+          "name": "[texture] texture-filter=nearest",
+          "fps": 2311,
+          "frametime_ms": 0.433
+        },
+        {
+          "name": "[texture] texture-filter=linear",
+          "fps": 2321,
+          "frametime_ms": 0.431
+        },
+        {
+          "name": "[texture] texture-filter=mipmap",
+          "fps": 2307,
+          "frametime_ms": 0.433
+        },
+        {
+          "name": "[shading] shading=gouraud",
+          "fps": 1919,
+          "frametime_ms": 0.521
+        },
+        {
+          "name": "[shading] shading=blinn-phong-inf",
+          "fps": 1890,
+          "frametime_ms": 0.529
+        },
+        {
+          "name": "[shading] shading=phong",
+          "fps": 1709,
+          "frametime_ms": 0.585
+        },
+        {
+          "name": "[shading] shading=cel",
+          "fps": 1705,
+          "frametime_ms": 0.587
+        },
+        {
+          "name": "[bump] bump-render=high-poly",
+          "fps": 1086,
+          "frametime_ms": 0.921
+        },
+        {
+          "name": "[bump] bump-render=normals",
+          "fps": 2611,
+          "frametime_ms": 0.383
+        },
+        {
+          "name": "[bump] bump-render=height",
+          "fps": 2462,
+          "frametime_ms": 0.406
+        },
+        {
+          "name": "[effect2d] kernel=0,1,0;1,-4,1;0,1,0;",
+          "fps": 1783,
+          "frametime_ms": 0.561
+        },
+        {
+          "name": "[effect2d] kernel=1,1,1,1,1;1,1,1,1,1;1,1,1,1,1;",
+          "fps": 829,
+          "frametime_ms": 1.206
+        },
+        {
+          "name": "[pulsar] light=false:quads=5:texture=false",
+          "fps": 1686,
+          "frametime_ms": 0.593
+        },
+        {
+          "name": "[desktop] blur-radius=5:effect=blur:passes=1:separable=true:windows=4",
+          "fps": 388,
+          "frametime_ms": 2.58
+        },
+        {
+          "name": "[desktop] effect=shadow:windows=4",
+          "fps": 845,
+          "frametime_ms": 1.184
+        },
+        {
+          "name": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=map",
+          "fps": 47,
+          "frametime_ms": 21.413
+        },
+        {
+          "name": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=subdata",
+          "fps": 47,
+          "frametime_ms": 21.472
+        },
+        {
+          "name": "[buffer] columns=200:interleave=true:update-dispersion=0.9:update-fraction=0.5:update-method=map",
+          "fps": 66,
+          "frametime_ms": 15.277
+        },
+        {
+          "name": "[ideas] speed=duration",
+          "fps": 480,
+          "frametime_ms": 2.086
+        },
+        {
+          "name": "[jellyfish] <default>",
+          "fps": 1210,
+          "frametime_ms": 0.826
+        },
+        {
+          "name": "[terrain] <default>",
+          "fps": 78,
+          "frametime_ms": 12.965
+        },
+        {
+          "name": "[shadow] <default>",
+          "fps": 982,
+          "frametime_ms": 1.019
+        },
+        {
+          "name": "[refract] <default>",
+          "fps": 196,
+          "frametime_ms": 5.128
+        },
+        {
+          "name": "[conditionals] fragment-steps=0:vertex-steps=0",
+          "fps": 1980,
+          "frametime_ms": 0.505
+        },
+        {
+          "name": "[conditionals] fragment-steps=5:vertex-steps=0",
+          "fps": 1862,
+          "frametime_ms": 0.537
+        },
+        {
+          "name": "[conditionals] fragment-steps=0:vertex-steps=5",
+          "fps": 1976,
+          "frametime_ms": 0.506
+        },
+        {
+          "name": "[function] fragment-complexity=low:fragment-steps=5",
+          "fps": 1973,
+          "frametime_ms": 0.507
+        },
+        {
+          "name": "[function] fragment-complexity=medium:fragment-steps=5",
+          "fps": 1747,
+          "frametime_ms": 0.573
+        },
+        {
+          "name": "[loop] fragment-loop=false:fragment-steps=5:vertex-steps=5",
+          "fps": 1971,
+          "frametime_ms": 0.507
+        },
+        {
+          "name": "[loop] fragment-steps=5:fragment-uniform=false:vertex-steps=5",
+          "fps": 1970,
+          "frametime_ms": 0.508
+        },
+        {
+          "name": "[loop] fragment-steps=5:fragment-uniform=true:vertex-steps=5",
+          "fps": 1737,
+          "frametime_ms": 0.576
+        }
+      ],
+      "clean": true,
+      "result": true,
+      "errors": []
+    },
+    "ioctl": {
+      "cases": {
+        "basic": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 23.655,
+          "min_us": 23.042,
+          "max_us": 26.542
+        },
+        "vm-create": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 39.959,
+          "min_us": 38.209,
+          "max_us": 48.709
+        },
+        "bo-create": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 60.755,
+          "min_us": 58.335,
+          "max_us": 67.959
+        },
+        "bo-lifecycle": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 109.684,
+          "min_us": 106.46,
+          "max_us": 116.086
+        },
+        "bo-mmap": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 106.986,
+          "min_us": 103.252,
+          "max_us": 121.336
+        },
+        "vm-bind": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 2472.866,
+          "min_us": 2366.93,
+          "max_us": 2638.769
+        },
+        "vm-bind-async-sync": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 203.894,
+          "min_us": 179.379,
+          "max_us": 256.381
+        },
+        "vm-state-flush": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 69.929,
+          "min_us": 68.252,
+          "max_us": 71.168
+        },
+        "syncobj-lifecycle": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 39.522,
+          "min_us": 36.168,
+          "max_us": 48.126
+        },
+        "syncobj-wait": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 49.497,
+          "min_us": 49.001,
+          "max_us": 52.793
+        },
+        "syncobj-transfer": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 42.745,
+          "min_us": 41.126,
+          "max_us": 50.751
+        },
+        "syncobj-timeline-wait": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 72.306,
+          "min_us": 69.71,
+          "max_us": 88.669
+        },
+        "syncobj-signal-query": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 65.583,
+          "min_us": 65.043,
+          "max_us": 66.21
+        },
+        "sync-file-snapshot": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 1718.525,
+          "min_us": 1643.58,
+          "max_us": 2156.633
+        },
+        "group-lifecycle": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 202.174,
+          "min_us": 191.337,
+          "max_us": 215.839
+        },
+        "group-submit-syncpoint": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 238.457,
+          "min_us": 225.463,
+          "max_us": 261.047
+        },
+        "tiler-heap-lifecycle": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 284.002,
+          "min_us": 275.631,
+          "max_us": 295.466
+        }
+      },
+      "matrix_pass": true
+    },
+    "ml-all": {
+      "result": true,
+      "kernels": {
+        "gemm_512_fp32": {
+          "samples": 100,
+          "warmup": 5,
+          "min_us": 29096.0,
+          "avg_us": 29115.8,
+          "max_us": 29195.0
+        },
+        "conv2d_64x64x32_3x3_fp32": {
+          "samples": 100,
+          "warmup": 5,
+          "min_us": 33582.0,
+          "avg_us": 34135.14,
+          "max_us": 35822.0
+        },
+        "depthwise_conv_128x128x128_3x3_fp32": {
+          "samples": 100,
+          "warmup": 5,
+          "min_us": 21852.0,
+          "avg_us": 21894.38,
+          "max_us": 21988.0
+        },
+        "block_reduction_32mib_fp32": {
+          "samples": 100,
+          "warmup": 5,
+          "min_us": 9247.0,
+          "avg_us": 10695.14,
+          "max_us": 141594.0
+        },
+        "row_softmax_16384x256_fp32": {
+          "samples": 100,
+          "warmup": 5,
+          "min_us": 19194.0,
+          "avg_us": 19404.15,
+          "max_us": 19843.0
+        },
+        "single_head_attention_256x64_fp32": {
+          "samples": 100,
+          "warmup": 5,
+          "min_us": 771951.0,
+          "avg_us": 773543.43,
+          "max_us": 775404.0
+        }
+      }
+    },
+    "ncnn-mobilenet_v2": {
+      "model_pass": true,
+      "qualification": true,
+      "avg_ms": 31.26,
+      "errors": []
+    },
+    "ncnn-mobilenet_v3": {
+      "model_pass": true,
+      "qualification": true,
+      "avg_ms": 28.36,
+      "errors": []
+    },
+    "ncnn-resnet50": {
+      "model_pass": true,
+      "qualification": true,
+      "avg_ms": 1162.99,
+      "errors": []
+    }
+  },
+  "_sources": {
+    "current": "GPU-SFTP/log/realm-xshm/current-p42-clean-suite-20261018",
+    "failed_batch": "GPU-SFTP/log/realm-xshm/current-p42-suite-r2-20261018",
+    "dual": "GPU-SFTP/log/realm-xshm/current-p42-dual-perf-20261018",
+    "native": "GPU-SFTP/log/native-current/native-p42-comparison-20261018"
+  }
+}

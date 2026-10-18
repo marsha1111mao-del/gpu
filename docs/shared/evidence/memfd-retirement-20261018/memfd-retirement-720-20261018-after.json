@@ -1,0 +1,48 @@
+{
+  "role": "rk",
+  "role_verified": true,
+  "hostname": "opencca-rock5b-rk3588",
+  "kernel": "6.12.0-opencca-pmthor-opp3",
+  "online_cpus": "0-1",
+  "gpu_driver": "/sys/bus/platform/drivers/pmthor",
+  "memory": {
+    "MemTotal": 3467894784,
+    "MemAvailable": 3279699968,
+    "SwapTotal": 0,
+    "SwapFree": 0
+  },
+  "disks": {
+    "/": {
+      "total_bytes": 31181299712,
+      "available_bytes": 14996860928,
+      "free_inodes": 1825788
+    },
+    "/tmp": {
+      "total_bytes": 1733947392,
+      "available_bytes": 1733947392,
+      "free_inodes": 1048569
+    },
+    "/root/GPU-SFTP": {
+      "total_bytes": 31181299712,
+      "available_bytes": 14996860928,
+      "free_inodes": 1825788
+    }
+  },
+  "active_lab_processes": [],
+  "snapshots": [],
+  "mounts": {
+    "rc": 0,
+    "stdout": "/sys sysfs sysfs\n/proc proc proc\n/dev udev devtmpfs\n/dev/pts devpts devpts\n/run tmpfs tmpfs\n/ /dev/mmcblk1p4 ext4\n/sys/kernel/security securityfs securityfs\n/dev/shm tmpfs tmpfs\n/sys/fs/cgroup cgroup2 cgroup2\n/sys/fs/pstore pstore pstore\n/sys/fs/bpf bpf bpf\n/tmp tmpfs tmpfs\n/dev/hugepages hugetlbfs hugetlbfs\n/sys/kernel/debug debugfs debugfs\n/sys/kernel/tracing tracefs tracefs\n/dev/mqueue mqueue mqueue\n/run/lock tmpfs tmpfs\n/run/credentials/systemd-journald.service tmpfs tmpfs\n/sys/kernel/config configfs configfs\n/sys/fs/fuse/connections fusectl fusectl\n/run/credentials/systemd-resolved.service tmpfs tmpfs\n/efi systemd-1 autofs\n/run/credentials/systemd-networkd.service tmpfs tmpfs\n/run/credentials/getty@tty1.service tmpfs tmpfs\n/run/credentials/serial-getty@ttyS2.service tmpfs tmpfs\n/run/user/1000 tmpfs tmpfs\n/run/user/0 tmpfs tmpfs",
+    "stderr": ""
+  },
+  "loops": {
+    "rc": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "usage": {
+    "rc": 0,
+    "stdout": "52658176\t/root/GPU-SFTP/linux-host-kernel\n2708058112\t/root/GPU-SFTP/firecracker-bins\n278528\t/root/GPU-SFTP/panthor_fw\n8192\t/root/GPU-SFTP/.vscode.example\n905433088\t/root/GPU-SFTP/artifacts\n5111808\t/root/GPU-SFTP/tests\n2970583040\t/root/GPU-SFTP/log\n6642192384\t/root/GPU-SFTP",
+    "stderr": ""
+  }
+}

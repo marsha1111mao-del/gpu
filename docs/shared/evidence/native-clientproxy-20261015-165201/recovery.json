@@ -1,0 +1,8 @@
+{
+  "started_utc": "2026-10-15T09:37:48.010953+00:00",
+  "cause_log": "host-native-unbind-oops.log",
+  "regular_reboot": "sync completed, /sbin/reboot -f blocked in device_shutdown; local SSH wait exceeded 20s",
+  "regular_reboot_pid": 55456,
+  "action": "SysRq b after regular reboot blocked; no firmware or storage flashing",
+  "ssh_timeout_seconds": 10
+}

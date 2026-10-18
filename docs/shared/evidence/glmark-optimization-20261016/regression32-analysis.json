@@ -1,0 +1,776 @@
+{
+  "run_id": "glmark-opt-20261016-opp3-regression32",
+  "cases": [
+    {
+      "name": "preflight",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-preflight",
+      "log": "preflight.log"
+    },
+    {
+      "name": "ioctl",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-ioctl",
+      "log": "ioctl.log"
+    },
+    {
+      "name": "vm-create",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-vm-create",
+      "log": "vm-create.log"
+    },
+    {
+      "name": "bo-create",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-bo-create",
+      "log": "bo-create.log"
+    },
+    {
+      "name": "bo-lifecycle",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-bo-lifecycle",
+      "log": "bo-lifecycle.log"
+    },
+    {
+      "name": "bo-mmap",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-bo-mmap",
+      "log": "bo-mmap.log"
+    },
+    {
+      "name": "vm-bind",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-vm-bind",
+      "log": "vm-bind.log"
+    },
+    {
+      "name": "vm-bind-async-sync",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-vm-bind-async-sync",
+      "log": "vm-bind-async-sync.log"
+    },
+    {
+      "name": "vm-state-flush",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-vm-state-flush",
+      "log": "vm-state-flush.log"
+    },
+    {
+      "name": "syncobj-lifecycle",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-syncobj-lifecycle",
+      "log": "syncobj-lifecycle.log"
+    },
+    {
+      "name": "syncobj-wait",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-syncobj-wait",
+      "log": "syncobj-wait.log"
+    },
+    {
+      "name": "syncobj-transfer",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-syncobj-transfer",
+      "log": "syncobj-transfer.log"
+    },
+    {
+      "name": "syncobj-timeline-wait",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-syncobj-timeline-wait",
+      "log": "syncobj-timeline-wait.log"
+    },
+    {
+      "name": "syncobj-signal-query",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-syncobj-signal-query",
+      "log": "syncobj-signal-query.log"
+    },
+    {
+      "name": "sync-file-snapshot",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-sync-file-snapshot",
+      "log": "sync-file-snapshot.log"
+    },
+    {
+      "name": "group-lifecycle",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-group-lifecycle",
+      "log": "group-lifecycle.log"
+    },
+    {
+      "name": "group-submit-syncpoint",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-group-submit-syncpoint",
+      "log": "group-submit-syncpoint.log"
+    },
+    {
+      "name": "tiler-heap-lifecycle",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-tiler-heap-lifecycle",
+      "log": "tiler-heap-lifecycle.log"
+    },
+    {
+      "name": "pfn-lifetime",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-pfn-lifetime",
+      "log": "pfn-lifetime.log"
+    },
+    {
+      "name": "pfn-log-check",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-pfn-log-check",
+      "log": "pfn-log-check.log"
+    },
+    {
+      "name": "compute-4mib",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-compute-4mib",
+      "log": "compute-4mib.log"
+    },
+    {
+      "name": "compute-16mib",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-compute-16mib",
+      "log": "compute-16mib.log"
+    },
+    {
+      "name": "compute-64mib",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-compute-64mib",
+      "log": "compute-64mib.log"
+    },
+    {
+      "name": "compute-128mib",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-compute-128mib",
+      "log": "compute-128mib.log"
+    },
+    {
+      "name": "ml-all",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-ml-all",
+      "log": "ml-all.log"
+    },
+    {
+      "name": "attention320",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-attention320",
+      "log": "attention320.log"
+    },
+    {
+      "name": "ncnn",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-ncnn",
+      "log": "ncnn.log"
+    },
+    {
+      "name": "glmark-1280x720",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-glmark-1280x720",
+      "log": "glmark-1280x720.log"
+    },
+    {
+      "name": "glmark-1920x1080",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-glmark-1920x1080",
+      "log": "glmark-1920x1080.log"
+    },
+    {
+      "name": "two-client",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-two-client",
+      "log": "two-client.log"
+    },
+    {
+      "name": "passthrough",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-passthrough",
+      "log": "passthrough.log"
+    },
+    {
+      "name": "idle-after",
+      "returncode": 0,
+      "run_id": "glmark-opt-20261016-opp3-regression32-idle-after",
+      "log": "idle-after.log"
+    }
+  ],
+  "scope": "32 cases, includes native/passthrough. Two-client uses default-off cache/concurrent path.",
+  "glmark": {
+    "1280x720": {
+      "run_id": "glmark-opt-20261016-opp3-regression32-glmark-1280x720",
+      "score": 1058,
+      "validation": {
+        "success": 26,
+        "known_failure": 1,
+        "unknown": 6,
+        "unexpected_failure": 0
+      },
+      "counters": {
+        "poll_us": 1000,
+        "waits": 349427,
+        "polls": 695371,
+        "total_wait_ns": 634456669546,
+        "errors": 0,
+        "completed_exports": 0,
+        "lazy_discards": 0,
+        "timeline_flags_0": 0,
+        "timeline_flags_1": 503556,
+        "timeline_flags_2": 0,
+        "timeline_flags_3": 0,
+        "timeline_flags_4": 0,
+        "timeline_flags_5": 0,
+        "timeline_flags_6": 0,
+        "timeline_flags_7": 0,
+        "timeline_flags_8": 0,
+        "timeline_flags_9": 0,
+        "timeline_flags_a": 0,
+        "timeline_flags_b": 0,
+        "timeline_flags_c": 0,
+        "timeline_flags_d": 0,
+        "timeline_flags_e": 0,
+        "timeline_flags_f": 0,
+        "timeline_nonblock": 503527,
+        "timeline_success": 503521,
+        "timeline_pending": 35,
+        "cache_hits": 383980,
+        "cache_candidates": 887507,
+        "cache_records": 503492,
+        "cache_mutations": 1916372,
+        "cache_miss_empty": 4,
+        "cache_miss_point": 450268,
+        "cache_miss_epoch": 53255,
+        "cache_miss_blocked": 0
+      },
+      "scenes": [
+        {
+          "scene": "[build] use-vbo=false:",
+          "fps": 1020,
+          "ms": 0.981,
+          "prior_dma1_fps": 1011,
+          "vs_prior_dma1_pct": 0.8902077151335286
+        },
+        {
+          "scene": "[build] use-vbo=true:",
+          "fps": 1524,
+          "ms": 0.656,
+          "prior_dma1_fps": 1505,
+          "vs_prior_dma1_pct": 1.2624584717608078
+        },
+        {
+          "scene": "[texture] texture-filter=nearest:",
+          "fps": 1509,
+          "ms": 0.663,
+          "prior_dma1_fps": 1490,
+          "vs_prior_dma1_pct": 1.2751677852349097
+        },
+        {
+          "scene": "[texture] texture-filter=linear:",
+          "fps": 1508,
+          "ms": 0.663,
+          "prior_dma1_fps": 1492,
+          "vs_prior_dma1_pct": 1.072386058981234
+        },
+        {
+          "scene": "[texture] texture-filter=mipmap:",
+          "fps": 1509,
+          "ms": 0.663,
+          "prior_dma1_fps": 1490,
+          "vs_prior_dma1_pct": 1.2751677852349097
+        },
+        {
+          "scene": "[shading] shading=gouraud:",
+          "fps": 1432,
+          "ms": 0.698,
+          "prior_dma1_fps": 1417,
+          "vs_prior_dma1_pct": 1.0585744530698715
+        },
+        {
+          "scene": "[shading] shading=blinn-phong-inf:",
+          "fps": 1422,
+          "ms": 0.704,
+          "prior_dma1_fps": 1405,
+          "vs_prior_dma1_pct": 1.2099644128113818
+        },
+        {
+          "scene": "[shading] shading=phong:",
+          "fps": 1337,
+          "ms": 0.748,
+          "prior_dma1_fps": 1321,
+          "vs_prior_dma1_pct": 1.2112036336108911
+        },
+        {
+          "scene": "[shading] shading=cel:",
+          "fps": 1335,
+          "ms": 0.75,
+          "prior_dma1_fps": 1317,
+          "vs_prior_dma1_pct": 1.3667425968109326
+        },
+        {
+          "scene": "[bump] bump-render=high-poly:",
+          "fps": 1014,
+          "ms": 0.987,
+          "prior_dma1_fps": 1012,
+          "vs_prior_dma1_pct": 0.19762845849802257
+        },
+        {
+          "scene": "[bump] bump-render=normals:",
+          "fps": 1545,
+          "ms": 0.647,
+          "prior_dma1_fps": 1520,
+          "vs_prior_dma1_pct": 1.6447368421052655
+        },
+        {
+          "scene": "[bump] bump-render=height:",
+          "fps": 1527,
+          "ms": 0.655,
+          "prior_dma1_fps": 1507,
+          "vs_prior_dma1_pct": 1.3271400132714106
+        },
+        {
+          "scene": "[effect2d] kernel=0,1,0;1,-4,1;0,1,0;:",
+          "fps": 1385,
+          "ms": 0.722,
+          "prior_dma1_fps": 1368,
+          "vs_prior_dma1_pct": 1.242690058479523
+        },
+        {
+          "scene": "[effect2d] kernel=1,1,1,1,1;1,1,1,1,1;1,1,1,1,1;:",
+          "fps": 748,
+          "ms": 1.338,
+          "prior_dma1_fps": 748,
+          "vs_prior_dma1_pct": 0.0
+        },
+        {
+          "scene": "[pulsar] light=false:quads=5:texture=false:",
+          "fps": 1234,
+          "ms": 0.811,
+          "prior_dma1_fps": 1219,
+          "vs_prior_dma1_pct": 1.2305168170631653
+        },
+        {
+          "scene": "[desktop] blur-radius=5:effect=blur:passes=1:separable=true:windows=4:",
+          "fps": 256,
+          "ms": 3.912,
+          "prior_dma1_fps": 249,
+          "vs_prior_dma1_pct": 2.8112449799196693
+        },
+        {
+          "scene": "[desktop] effect=shadow:windows=4:",
+          "fps": 681,
+          "ms": 1.469,
+          "prior_dma1_fps": 673,
+          "vs_prior_dma1_pct": 1.1887072808320909
+        },
+        {
+          "scene": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=map:",
+          "fps": 46,
+          "ms": 22.085,
+          "prior_dma1_fps": 46,
+          "vs_prior_dma1_pct": 0.0
+        },
+        {
+          "scene": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=subdata:",
+          "fps": 46,
+          "ms": 22.143,
+          "prior_dma1_fps": 46,
+          "vs_prior_dma1_pct": 0.0
+        },
+        {
+          "scene": "[buffer] columns=200:interleave=true:update-dispersion=0.9:update-fraction=0.5:update-method=map:",
+          "fps": 65,
+          "ms": 15.418,
+          "prior_dma1_fps": 64,
+          "vs_prior_dma1_pct": 1.5625
+        },
+        {
+          "scene": "[ideas] speed=duration:",
+          "fps": 404,
+          "ms": 2.477,
+          "prior_dma1_fps": 402,
+          "vs_prior_dma1_pct": 0.4975124378109541
+        },
+        {
+          "scene": "[jellyfish] <default>:",
+          "fps": 1055,
+          "ms": 0.948,
+          "prior_dma1_fps": 1049,
+          "vs_prior_dma1_pct": 0.5719733079122991
+        },
+        {
+          "scene": "[terrain] <default>:",
+          "fps": 51,
+          "ms": 19.942,
+          "prior_dma1_fps": 54,
+          "vs_prior_dma1_pct": -5.555555555555558
+        },
+        {
+          "scene": "[shadow] <default>:",
+          "fps": 779,
+          "ms": 1.285,
+          "prior_dma1_fps": 739,
+          "vs_prior_dma1_pct": 5.41271989174561
+        },
+        {
+          "scene": "[refract] <default>:",
+          "fps": 161,
+          "ms": 6.244,
+          "prior_dma1_fps": 168,
+          "vs_prior_dma1_pct": -4.1666666666666625
+        },
+        {
+          "scene": "[conditionals] fragment-steps=0:vertex-steps=0:",
+          "fps": 1440,
+          "ms": 0.695,
+          "prior_dma1_fps": 1344,
+          "vs_prior_dma1_pct": 7.14285714285714
+        },
+        {
+          "scene": "[conditionals] fragment-steps=5:vertex-steps=0:",
+          "fps": 1410,
+          "ms": 0.709,
+          "prior_dma1_fps": 1294,
+          "vs_prior_dma1_pct": 8.964451313755806
+        },
+        {
+          "scene": "[conditionals] fragment-steps=0:vertex-steps=5:",
+          "fps": 1449,
+          "ms": 0.69,
+          "prior_dma1_fps": 1347,
+          "vs_prior_dma1_pct": 7.572383073496658
+        },
+        {
+          "scene": "[function] fragment-complexity=low:fragment-steps=5:",
+          "fps": 1448,
+          "ms": 0.691,
+          "prior_dma1_fps": 1349,
+          "vs_prior_dma1_pct": 7.338769458858407
+        },
+        {
+          "scene": "[function] fragment-complexity=medium:fragment-steps=5:",
+          "fps": 1359,
+          "ms": 0.736,
+          "prior_dma1_fps": 1230,
+          "vs_prior_dma1_pct": 10.48780487804879
+        },
+        {
+          "scene": "[loop] fragment-loop=false:fragment-steps=5:vertex-steps=5:",
+          "fps": 1448,
+          "ms": 0.691,
+          "prior_dma1_fps": 1348,
+          "vs_prior_dma1_pct": 7.41839762611276
+        },
+        {
+          "scene": "[loop] fragment-steps=5:fragment-uniform=false:vertex-steps=5:",
+          "fps": 1448,
+          "ms": 0.691,
+          "prior_dma1_fps": 1348,
+          "vs_prior_dma1_pct": 7.41839762611276
+        },
+        {
+          "scene": "[loop] fragment-steps=5:fragment-uniform=true:vertex-steps=5:",
+          "fps": 1357,
+          "ms": 0.737,
+          "prior_dma1_fps": 1224,
+          "vs_prior_dma1_pct": 10.86601307189543
+        }
+      ]
+    },
+    "1920x1080": {
+      "run_id": "glmark-opt-20261016-opp3-regression32-glmark-1920x1080",
+      "score": 847,
+      "validation": {
+        "success": 26,
+        "known_failure": 1,
+        "unknown": 6,
+        "unexpected_failure": 0
+      },
+      "counters": {
+        "poll_us": 1000,
+        "waits": 279885,
+        "polls": 559303,
+        "total_wait_ns": 525333412901,
+        "errors": 0,
+        "completed_exports": 0,
+        "lazy_discards": 0,
+        "timeline_flags_0": 0,
+        "timeline_flags_1": 412397,
+        "timeline_flags_2": 0,
+        "timeline_flags_3": 0,
+        "timeline_flags_4": 0,
+        "timeline_flags_5": 0,
+        "timeline_flags_6": 0,
+        "timeline_flags_7": 0,
+        "timeline_flags_8": 0,
+        "timeline_flags_9": 0,
+        "timeline_flags_a": 0,
+        "timeline_flags_b": 0,
+        "timeline_flags_c": 0,
+        "timeline_flags_d": 0,
+        "timeline_flags_e": 0,
+        "timeline_flags_f": 0,
+        "timeline_nonblock": 412368,
+        "timeline_success": 412344,
+        "timeline_pending": 53,
+        "cache_hits": 311791,
+        "cache_candidates": 724159,
+        "cache_records": 412315,
+        "cache_mutations": 1545768,
+        "cache_miss_empty": 3,
+        "cache_miss_point": 368253,
+        "cache_miss_epoch": 44112,
+        "cache_miss_blocked": 0
+      },
+      "scenes": [
+        {
+          "scene": "[build] use-vbo=false:",
+          "fps": 954,
+          "ms": 1.049,
+          "prior_dma1_fps": 947,
+          "vs_prior_dma1_pct": 0.7391763463569179
+        },
+        {
+          "scene": "[build] use-vbo=true:",
+          "fps": 1380,
+          "ms": 0.725,
+          "prior_dma1_fps": 1368,
+          "vs_prior_dma1_pct": 0.8771929824561431
+        },
+        {
+          "scene": "[texture] texture-filter=nearest:",
+          "fps": 1235,
+          "ms": 0.81,
+          "prior_dma1_fps": 1232,
+          "vs_prior_dma1_pct": 0.24350649350648457
+        },
+        {
+          "scene": "[texture] texture-filter=linear:",
+          "fps": 1236,
+          "ms": 0.809,
+          "prior_dma1_fps": 1232,
+          "vs_prior_dma1_pct": 0.32467532467532756
+        },
+        {
+          "scene": "[texture] texture-filter=mipmap:",
+          "fps": 1239,
+          "ms": 0.807,
+          "prior_dma1_fps": 1234,
+          "vs_prior_dma1_pct": 0.4051863857374327
+        },
+        {
+          "scene": "[shading] shading=gouraud:",
+          "fps": 1210,
+          "ms": 0.827,
+          "prior_dma1_fps": 1205,
+          "vs_prior_dma1_pct": 0.4149377593360981
+        },
+        {
+          "scene": "[shading] shading=blinn-phong-inf:",
+          "fps": 1194,
+          "ms": 0.838,
+          "prior_dma1_fps": 1186,
+          "vs_prior_dma1_pct": 0.6745362563237878
+        },
+        {
+          "scene": "[shading] shading=phong:",
+          "fps": 1094,
+          "ms": 0.914,
+          "prior_dma1_fps": 1087,
+          "vs_prior_dma1_pct": 0.6439742410303539
+        },
+        {
+          "scene": "[shading] shading=cel:",
+          "fps": 1079,
+          "ms": 0.927,
+          "prior_dma1_fps": 1070,
+          "vs_prior_dma1_pct": 0.8411214953271129
+        },
+        {
+          "scene": "[bump] bump-render=high-poly:",
+          "fps": 883,
+          "ms": 1.133,
+          "prior_dma1_fps": 896,
+          "vs_prior_dma1_pct": -1.4508928571428603
+        },
+        {
+          "scene": "[bump] bump-render=normals:",
+          "fps": 1390,
+          "ms": 0.72,
+          "prior_dma1_fps": 1375,
+          "vs_prior_dma1_pct": 1.090909090909098
+        },
+        {
+          "scene": "[bump] bump-render=height:",
+          "fps": 1290,
+          "ms": 0.775,
+          "prior_dma1_fps": 1275,
+          "vs_prior_dma1_pct": 1.17647058823529
+        },
+        {
+          "scene": "[effect2d] kernel=0,1,0;1,-4,1;0,1,0;:",
+          "fps": 860,
+          "ms": 1.163,
+          "prior_dma1_fps": 853,
+          "vs_prior_dma1_pct": 0.8206330597889888
+        },
+        {
+          "scene": "[effect2d] kernel=1,1,1,1,1;1,1,1,1,1;1,1,1,1,1;:",
+          "fps": 376,
+          "ms": 2.667,
+          "prior_dma1_fps": 373,
+          "vs_prior_dma1_pct": 0.8042895442359255
+        },
+        {
+          "scene": "[pulsar] light=false:quads=5:texture=false:",
+          "fps": 1032,
+          "ms": 0.969,
+          "prior_dma1_fps": 1030,
+          "vs_prior_dma1_pct": 0.1941747572815622
+        },
+        {
+          "scene": "[desktop] blur-radius=5:effect=blur:passes=1:separable=true:windows=4:",
+          "fps": 209,
+          "ms": 4.804,
+          "prior_dma1_fps": 208,
+          "vs_prior_dma1_pct": 0.48076923076922906
+        },
+        {
+          "scene": "[desktop] effect=shadow:windows=4:",
+          "fps": 562,
+          "ms": 1.78,
+          "prior_dma1_fps": 553,
+          "vs_prior_dma1_pct": 1.6274864376130127
+        },
+        {
+          "scene": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=map:",
+          "fps": 44,
+          "ms": 23.247,
+          "prior_dma1_fps": 44,
+          "vs_prior_dma1_pct": 0.0
+        },
+        {
+          "scene": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=subdata:",
+          "fps": 43,
+          "ms": 23.288,
+          "prior_dma1_fps": 44,
+          "vs_prior_dma1_pct": -2.2727272727272707
+        },
+        {
+          "scene": "[buffer] columns=200:interleave=true:update-dispersion=0.9:update-fraction=0.5:update-method=map:",
+          "fps": 65,
+          "ms": 15.532,
+          "prior_dma1_fps": 64,
+          "vs_prior_dma1_pct": 1.5625
+        },
+        {
+          "scene": "[ideas] speed=duration:",
+          "fps": 374,
+          "ms": 2.679,
+          "prior_dma1_fps": 373,
+          "vs_prior_dma1_pct": 0.2680965147453085
+        },
+        {
+          "scene": "[jellyfish] <default>:",
+          "fps": 712,
+          "ms": 1.405,
+          "prior_dma1_fps": 708,
+          "vs_prior_dma1_pct": 0.5649717514124353
+        },
+        {
+          "scene": "[terrain] <default>:",
+          "fps": 48,
+          "ms": 21.219,
+          "prior_dma1_fps": 47,
+          "vs_prior_dma1_pct": 2.127659574468077
+        },
+        {
+          "scene": "[shadow] <default>:",
+          "fps": 610,
+          "ms": 1.64,
+          "prior_dma1_fps": 600,
+          "vs_prior_dma1_pct": 1.6666666666666607
+        },
+        {
+          "scene": "[refract] <default>:",
+          "fps": 138,
+          "ms": 7.274,
+          "prior_dma1_fps": 137,
+          "vs_prior_dma1_pct": 0.7299270072992803
+        },
+        {
+          "scene": "[conditionals] fragment-steps=0:vertex-steps=0:",
+          "fps": 1128,
+          "ms": 0.887,
+          "prior_dma1_fps": 1117,
+          "vs_prior_dma1_pct": 0.9847806624888156
+        },
+        {
+          "scene": "[conditionals] fragment-steps=5:vertex-steps=0:",
+          "fps": 1081,
+          "ms": 0.926,
+          "prior_dma1_fps": 1069,
+          "vs_prior_dma1_pct": 1.1225444340505097
+        },
+        {
+          "scene": "[conditionals] fragment-steps=0:vertex-steps=5:",
+          "fps": 1129,
+          "ms": 0.886,
+          "prior_dma1_fps": 1120,
+          "vs_prior_dma1_pct": 0.8035714285714368
+        },
+        {
+          "scene": "[function] fragment-complexity=low:fragment-steps=5:",
+          "fps": 1126,
+          "ms": 0.889,
+          "prior_dma1_fps": 1119,
+          "vs_prior_dma1_pct": 0.6255585344057124
+        },
+        {
+          "scene": "[function] fragment-complexity=medium:fragment-steps=5:",
+          "fps": 1013,
+          "ms": 0.988,
+          "prior_dma1_fps": 1006,
+          "vs_prior_dma1_pct": 0.6958250497017815
+        },
+        {
+          "scene": "[loop] fragment-loop=false:fragment-steps=5:vertex-steps=5:",
+          "fps": 1126,
+          "ms": 0.888,
+          "prior_dma1_fps": 1119,
+          "vs_prior_dma1_pct": 0.6255585344057124
+        },
+        {
+          "scene": "[loop] fragment-steps=5:fragment-uniform=false:vertex-steps=5:",
+          "fps": 1127,
+          "ms": 0.888,
+          "prior_dma1_fps": 1119,
+          "vs_prior_dma1_pct": 0.71492403932083
+        },
+        {
+          "scene": "[loop] fragment-steps=5:fragment-uniform=true:vertex-steps=5:",
+          "fps": 1009,
+          "ms": 0.991,
+          "prior_dma1_fps": 1000,
+          "vs_prior_dma1_pct": 0.8999999999999897
+        }
+      ]
+    }
+  },
+  "clock_samples": {
+    "1280x720": {
+      "samples": 67,
+      "actual_hz_values": [
+        594000000
+      ],
+      "gpu_temp_mc_min": 49923,
+      "gpu_temp_mc_max": 53615
+    },
+    "1920x1080": {
+      "samples": 67,
+      "actual_hz_values": [
+        594000000
+      ],
+      "gpu_temp_mc_min": 49923,
+      "gpu_temp_mc_max": 53615
+    }
+  }
+}

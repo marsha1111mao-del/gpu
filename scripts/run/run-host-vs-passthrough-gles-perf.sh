@@ -9,7 +9,7 @@ SFTP_LOG_ROOT=${SFTP_LOG_ROOT:-"${SFTP_ROOT}/log"}
 
 REMOTE_HOST=${REMOTE_HOST:-192.168.31.18}
 REMOTE_USER=${REMOTE_USER:-root}
-REMOTE_PASS=${REMOTE_PASS:-root}
+REMOTE_PASS=${REMOTE_PASS:?Set REMOTE_PASS in the local environment}
 REMOTE_ROOT=${REMOTE_ROOT:-/root/GPU-SFTP}
 REMOTE_BINS=${REMOTE_BINS:-"${REMOTE_ROOT}/firecracker-bins"}
 REMOTE_LOG_ROOT=${REMOTE_LOG_ROOT:-"${REMOTE_ROOT}/log"}
@@ -490,7 +490,7 @@ sync_to_remote() {
 		tar_sync_to_remote
 	fi
 
-	migrate_remote_gpu_sftp_layout
+	prepare_remote_gpu_sftp_layout
 }
 
 run_remote_perf() {

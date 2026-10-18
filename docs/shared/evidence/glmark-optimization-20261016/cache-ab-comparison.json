@@ -1,0 +1,319 @@
+{
+  "runs": [
+    {
+      "run_id": "glmark-opt-20261016-opp3-cache-ab-off1",
+      "on": false,
+      "scenes": [
+        {
+          "scene": "[build] duration=5:use-vbo=true:",
+          "fps": 1429
+        },
+        {
+          "scene": "[desktop] blur-radius=5:duration=5:effect=blur:passes=1:separable=true:windows=4:",
+          "fps": 240
+        },
+        {
+          "scene": "[terrain] duration=5:",
+          "fps": 50
+        },
+        {
+          "scene": "[conditionals] duration=5:fragment-steps=5:vertex-steps=0:",
+          "fps": 1297
+        },
+        {
+          "scene": "[buffer] columns=200:duration=5:interleave=true:update-dispersion=0.9:update-fraction=0.5:update-method=map:",
+          "fps": 65
+        }
+      ],
+      "counters": {
+        "poll_us": 1000,
+        "waits": 15431,
+        "polls": 30768,
+        "total_wait_ns": 28246053534,
+        "errors": 0,
+        "completed_exports": 0,
+        "lazy_discards": 0,
+        "timeline_flags_0": 0,
+        "timeline_flags_1": 80475,
+        "timeline_flags_2": 0,
+        "timeline_flags_3": 0,
+        "timeline_flags_4": 0,
+        "timeline_flags_5": 0,
+        "timeline_flags_6": 0,
+        "timeline_flags_7": 0,
+        "timeline_flags_8": 0,
+        "timeline_flags_9": 0,
+        "timeline_flags_a": 0,
+        "timeline_flags_b": 0,
+        "timeline_flags_c": 0,
+        "timeline_flags_d": 0,
+        "timeline_flags_e": 0,
+        "timeline_flags_f": 0,
+        "timeline_nonblock": 80446,
+        "timeline_success": 80450,
+        "timeline_pending": 25,
+        "cache_hits": 0,
+        "cache_candidates": 0,
+        "cache_records": 0,
+        "cache_mutations": 0,
+        "cache_miss_empty": 0,
+        "cache_miss_point": 0,
+        "cache_miss_epoch": 0,
+        "cache_miss_blocked": 0
+      },
+      "log": "GPU-SFTP/log/shared/vmshm-1client/glmark-opt-20261016-opp3-cache-ab-off1/client.log"
+    },
+    {
+      "run_id": "glmark-opt-20261016-opp3-cache-ab-on1",
+      "on": true,
+      "scenes": [
+        {
+          "scene": "[build] duration=5:use-vbo=true:",
+          "fps": 1512
+        },
+        {
+          "scene": "[desktop] blur-radius=5:duration=5:effect=blur:passes=1:separable=true:windows=4:",
+          "fps": 251
+        },
+        {
+          "scene": "[terrain] duration=5:",
+          "fps": 54
+        },
+        {
+          "scene": "[conditionals] duration=5:fragment-steps=5:vertex-steps=0:",
+          "fps": 1298
+        },
+        {
+          "scene": "[buffer] columns=200:duration=5:interleave=true:update-dispersion=0.9:update-fraction=0.5:update-method=map:",
+          "fps": 65
+        }
+      ],
+      "counters": {
+        "poll_us": 1000,
+        "waits": 15923,
+        "polls": 31716,
+        "total_wait_ns": 29395017844,
+        "errors": 0,
+        "completed_exports": 0,
+        "lazy_discards": 0,
+        "timeline_flags_0": 0,
+        "timeline_flags_1": 60186,
+        "timeline_flags_2": 0,
+        "timeline_flags_3": 0,
+        "timeline_flags_4": 0,
+        "timeline_flags_5": 0,
+        "timeline_flags_6": 0,
+        "timeline_flags_7": 0,
+        "timeline_flags_8": 0,
+        "timeline_flags_9": 0,
+        "timeline_flags_a": 0,
+        "timeline_flags_b": 0,
+        "timeline_flags_c": 0,
+        "timeline_flags_d": 0,
+        "timeline_flags_e": 0,
+        "timeline_flags_f": 0,
+        "timeline_nonblock": 60157,
+        "timeline_success": 60154,
+        "timeline_pending": 32,
+        "cache_hits": 24025,
+        "cache_candidates": 84182,
+        "cache_records": 60125,
+        "cache_mutations": 131984,
+        "cache_miss_empty": 3,
+        "cache_miss_point": 42930,
+        "cache_miss_epoch": 17224,
+        "cache_miss_blocked": 0
+      },
+      "log": "GPU-SFTP/log/shared/vmshm-1client/glmark-opt-20261016-opp3-cache-ab-on1/client.log"
+    },
+    {
+      "run_id": "glmark-opt-20261016-opp3-cache-ab-off2",
+      "on": false,
+      "scenes": [
+        {
+          "scene": "[build] duration=5:use-vbo=true:",
+          "fps": 1421
+        },
+        {
+          "scene": "[desktop] blur-radius=5:duration=5:effect=blur:passes=1:separable=true:windows=4:",
+          "fps": 239
+        },
+        {
+          "scene": "[terrain] duration=5:",
+          "fps": 50
+        },
+        {
+          "scene": "[conditionals] duration=5:fragment-steps=5:vertex-steps=0:",
+          "fps": 1282
+        },
+        {
+          "scene": "[buffer] columns=200:duration=5:interleave=true:update-dispersion=0.9:update-fraction=0.5:update-method=map:",
+          "fps": 65
+        }
+      ],
+      "counters": {
+        "poll_us": 1000,
+        "waits": 15311,
+        "polls": 30508,
+        "total_wait_ns": 28179114473,
+        "errors": 0,
+        "completed_exports": 0,
+        "lazy_discards": 0,
+        "timeline_flags_0": 0,
+        "timeline_flags_1": 79788,
+        "timeline_flags_2": 0,
+        "timeline_flags_3": 0,
+        "timeline_flags_4": 0,
+        "timeline_flags_5": 0,
+        "timeline_flags_6": 0,
+        "timeline_flags_7": 0,
+        "timeline_flags_8": 0,
+        "timeline_flags_9": 0,
+        "timeline_flags_a": 0,
+        "timeline_flags_b": 0,
+        "timeline_flags_c": 0,
+        "timeline_flags_d": 0,
+        "timeline_flags_e": 0,
+        "timeline_flags_f": 0,
+        "timeline_nonblock": 79759,
+        "timeline_success": 79758,
+        "timeline_pending": 30,
+        "cache_hits": 0,
+        "cache_candidates": 0,
+        "cache_records": 0,
+        "cache_mutations": 0,
+        "cache_miss_empty": 0,
+        "cache_miss_point": 0,
+        "cache_miss_epoch": 0,
+        "cache_miss_blocked": 0
+      },
+      "log": "GPU-SFTP/log/shared/vmshm-1client/glmark-opt-20261016-opp3-cache-ab-off2/client.log"
+    },
+    {
+      "run_id": "glmark-opt-20261016-opp3-cache-ab-on2",
+      "on": true,
+      "scenes": [
+        {
+          "scene": "[build] duration=5:use-vbo=true:",
+          "fps": 1513
+        },
+        {
+          "scene": "[desktop] blur-radius=5:duration=5:effect=blur:passes=1:separable=true:windows=4:",
+          "fps": 251
+        },
+        {
+          "scene": "[terrain] duration=5:",
+          "fps": 54
+        },
+        {
+          "scene": "[conditionals] duration=5:fragment-steps=5:vertex-steps=0:",
+          "fps": 1291
+        },
+        {
+          "scene": "[buffer] columns=200:duration=5:interleave=true:update-dispersion=0.9:update-fraction=0.5:update-method=map:",
+          "fps": 64
+        }
+      ],
+      "counters": {
+        "poll_us": 1000,
+        "waits": 15890,
+        "polls": 31658,
+        "total_wait_ns": 29428318667,
+        "errors": 0,
+        "completed_exports": 0,
+        "lazy_discards": 0,
+        "timeline_flags_0": 0,
+        "timeline_flags_1": 60166,
+        "timeline_flags_2": 0,
+        "timeline_flags_3": 0,
+        "timeline_flags_4": 0,
+        "timeline_flags_5": 0,
+        "timeline_flags_6": 0,
+        "timeline_flags_7": 0,
+        "timeline_flags_8": 0,
+        "timeline_flags_9": 0,
+        "timeline_flags_a": 0,
+        "timeline_flags_b": 0,
+        "timeline_flags_c": 0,
+        "timeline_flags_d": 0,
+        "timeline_flags_e": 0,
+        "timeline_flags_f": 0,
+        "timeline_nonblock": 60137,
+        "timeline_success": 60133,
+        "timeline_pending": 33,
+        "cache_hits": 24081,
+        "cache_candidates": 84218,
+        "cache_records": 60104,
+        "cache_mutations": 131923,
+        "cache_miss_empty": 4,
+        "cache_miss_point": 42941,
+        "cache_miss_epoch": 17192,
+        "cache_miss_blocked": 0
+      },
+      "log": "GPU-SFTP/log/shared/vmshm-1client/glmark-opt-20261016-opp3-cache-ab-on2/client.log"
+    }
+  ],
+  "summary": [
+    {
+      "scene": "[build] duration=5:use-vbo=true:",
+      "off_fps": [
+        1429,
+        1421
+      ],
+      "on_fps": [
+        1512,
+        1513
+      ],
+      "change_pct": 6.140350877192979
+    },
+    {
+      "scene": "[desktop] blur-radius=5:duration=5:effect=blur:passes=1:separable=true:windows=4:",
+      "off_fps": [
+        240,
+        239
+      ],
+      "on_fps": [
+        251,
+        251
+      ],
+      "change_pct": 4.801670146137793
+    },
+    {
+      "scene": "[terrain] duration=5:",
+      "off_fps": [
+        50,
+        50
+      ],
+      "on_fps": [
+        54,
+        54
+      ],
+      "change_pct": 8.000000000000007
+    },
+    {
+      "scene": "[conditionals] duration=5:fragment-steps=5:vertex-steps=0:",
+      "off_fps": [
+        1297,
+        1282
+      ],
+      "on_fps": [
+        1298,
+        1291
+      ],
+      "change_pct": 0.3877471888328765
+    },
+    {
+      "scene": "[buffer] columns=200:duration=5:interleave=true:update-dispersion=0.9:update-fraction=0.5:update-method=map:",
+      "off_fps": [
+        65,
+        65
+      ],
+      "on_fps": [
+        65,
+        64
+      ],
+      "change_pct": -0.7692307692307665
+    }
+  ],
+  "scope": "Same e800 Client/formal Proxy, opp3 Host; exact-point cache OFF/ON/OFF/ON. Concurrent RPC on; fused/lazy/completed snapshot off. Standard OPP requested 600MHz, actual 594MHz, restored 300MHz after every run. Two 5s samples per scene/condition and strict 33-scene validation each run."
+}

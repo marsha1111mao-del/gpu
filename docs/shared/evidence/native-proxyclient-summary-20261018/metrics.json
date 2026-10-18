@@ -1,0 +1,2527 @@
+{
+  "scope": "2026-10-18 latest valid per test; mixed versions explicitly labeled; no new hardware measurement",
+  "counts": {
+    "comparison_rows": 33,
+    "bo_fix_remeasured_rows": 21,
+    "p42_reference_rows": 12,
+    "dual_scenario_separate": 1
+  },
+  "rows": [
+    {
+      "group": "IOCTL",
+      "name": "basic",
+      "native": 23.655,
+      "proxyclient": 527.348,
+      "unit": "us/case",
+      "proxy_run_id": "bo-cap512-targets-r2-20261018",
+      "version": "BO修复后",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 4.485652737850528,
+      "proxy_native_ratio": 22.29329951384485,
+      "change_pct": 2129.329951384485,
+      "higher_is_better": false
+    },
+    {
+      "group": "IOCTL",
+      "name": "vm-create",
+      "native": 39.959,
+      "proxyclient": 709.216,
+      "unit": "us/case",
+      "proxy_run_id": "bo-cap512-targets-r2-20261018",
+      "version": "BO修复后",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 5.6342496503180985,
+      "proxy_native_ratio": 17.74859230711479,
+      "change_pct": 1674.859230711479,
+      "higher_is_better": false
+    },
+    {
+      "group": "IOCTL",
+      "name": "bo-create",
+      "native": 60.755,
+      "proxyclient": 1630.475,
+      "unit": "us/case",
+      "proxy_run_id": "bo-cap512-targets-r2-20261018",
+      "version": "BO修复后",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 3.7262147533694177,
+      "proxy_native_ratio": 26.83688585301621,
+      "change_pct": 2583.688585301621,
+      "higher_is_better": false
+    },
+    {
+      "group": "IOCTL",
+      "name": "bo-lifecycle",
+      "native": 109.684,
+      "proxyclient": 2085.621,
+      "unit": "us/case",
+      "proxy_run_id": "bo-cap512-targets-r2-20261018",
+      "version": "BO修复后",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 5.2590571345417025,
+      "proxy_native_ratio": 19.014815287553336,
+      "change_pct": 1801.4815287553336,
+      "higher_is_better": false
+    },
+    {
+      "group": "IOCTL",
+      "name": "bo-mmap",
+      "native": 106.986,
+      "proxyclient": 1690.996,
+      "unit": "us/case",
+      "proxy_run_id": "bo-cap512-targets-r2-20261018",
+      "version": "BO修复后",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 6.326803848146299,
+      "proxy_native_ratio": 15.805768979118763,
+      "change_pct": 1480.5768979118764,
+      "higher_is_better": false
+    },
+    {
+      "group": "IOCTL",
+      "name": "vm-bind",
+      "native": 2472.866,
+      "proxyclient": 7910.846,
+      "unit": "us/case",
+      "proxy_run_id": "bo-cap512-targets-r2-20261018",
+      "version": "BO修复后",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 31.259185174379585,
+      "proxy_native_ratio": 3.199059714517487,
+      "change_pct": 219.9059714517487,
+      "higher_is_better": false
+    },
+    {
+      "group": "IOCTL",
+      "name": "vm-bind-async-sync",
+      "native": 203.894,
+      "proxyclient": 2430.254,
+      "unit": "us/case",
+      "proxy_run_id": "bo-cap512-targets-r2-20261018",
+      "version": "BO修复后",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 8.38982262759366,
+      "proxy_native_ratio": 11.919203115344247,
+      "change_pct": 1091.9203115344249,
+      "higher_is_better": false
+    },
+    {
+      "group": "IOCTL",
+      "name": "vm-state-flush",
+      "native": 69.929,
+      "proxyclient": 814.727,
+      "unit": "us/case",
+      "proxy_run_id": "bo-cap512-targets-r2-20261018",
+      "version": "BO修复后",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 8.583120480848185,
+      "proxy_native_ratio": 11.65077435684766,
+      "change_pct": 1065.077435684766,
+      "higher_is_better": false
+    },
+    {
+      "group": "IOCTL",
+      "name": "syncobj-lifecycle",
+      "native": 39.522,
+      "proxyclient": 537.994,
+      "unit": "us/case",
+      "proxy_run_id": "bo-cap512-targets-r2-20261018",
+      "version": "BO修复后",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 7.34617858191727,
+      "proxy_native_ratio": 13.612519609331512,
+      "change_pct": 1261.2519609331512,
+      "higher_is_better": false
+    },
+    {
+      "group": "IOCTL",
+      "name": "syncobj-wait",
+      "native": 49.497,
+      "proxyclient": 990.121,
+      "unit": "us/case",
+      "proxy_run_id": "bo-cap512-targets-r2-20261018",
+      "version": "BO修复后",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 4.9990859703006,
+      "proxy_native_ratio": 20.003656787280036,
+      "change_pct": 1900.3656787280036,
+      "higher_is_better": false
+    },
+    {
+      "group": "IOCTL",
+      "name": "syncobj-transfer",
+      "native": 42.745,
+      "proxyclient": 845.177,
+      "unit": "us/case",
+      "proxy_run_id": "bo-cap512-targets-r2-20261018",
+      "version": "BO修复后",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 5.057520495706816,
+      "proxy_native_ratio": 19.772534799391742,
+      "change_pct": 1877.2534799391742,
+      "higher_is_better": false
+    },
+    {
+      "group": "IOCTL",
+      "name": "syncobj-timeline-wait",
+      "native": 72.306,
+      "proxyclient": 1403.894,
+      "unit": "us/case",
+      "proxy_run_id": "bo-cap512-targets-r2-20261018",
+      "version": "BO修复后",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 5.150388847021214,
+      "proxy_native_ratio": 19.416009736398088,
+      "change_pct": 1841.600973639809,
+      "higher_is_better": false
+    },
+    {
+      "group": "IOCTL",
+      "name": "syncobj-signal-query",
+      "native": 65.583,
+      "proxyclient": 1325.362,
+      "unit": "us/case",
+      "proxy_run_id": "bo-cap512-targets-r2-20261018",
+      "version": "BO修复后",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 4.948308462140909,
+      "proxy_native_ratio": 20.20892609365232,
+      "change_pct": 1920.892609365232,
+      "higher_is_better": false
+    },
+    {
+      "group": "IOCTL",
+      "name": "sync-file-snapshot",
+      "native": 1718.525,
+      "proxyclient": 43067.675,
+      "unit": "us/case",
+      "proxy_run_id": "bo-cap512-targets-r2-20261018",
+      "version": "BO修复后",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 3.9902897010344764,
+      "proxy_native_ratio": 25.06083705503266,
+      "change_pct": 2406.083705503266,
+      "higher_is_better": false
+    },
+    {
+      "group": "IOCTL",
+      "name": "group-lifecycle",
+      "native": 202.174,
+      "proxyclient": 1523.244,
+      "unit": "us/case",
+      "proxy_run_id": "bo-cap512-targets-r2-20261018",
+      "version": "BO修复后",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 13.272594541649271,
+      "proxy_native_ratio": 7.534321920721754,
+      "change_pct": 653.4321920721754,
+      "higher_is_better": false
+    },
+    {
+      "group": "IOCTL",
+      "name": "group-submit-syncpoint",
+      "native": 238.457,
+      "proxyclient": 1948.931,
+      "unit": "us/case",
+      "proxy_run_id": "bo-cap512-targets-r2-20261018",
+      "version": "BO修复后",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 12.235271541167952,
+      "proxy_native_ratio": 8.173092004009108,
+      "change_pct": 717.3092004009109,
+      "higher_is_better": false
+    },
+    {
+      "group": "IOCTL",
+      "name": "tiler-heap-lifecycle",
+      "native": 284.002,
+      "proxyclient": 1434.854,
+      "unit": "us/case",
+      "proxy_run_id": "bo-cap512-targets-r2-20261018",
+      "version": "BO修复后",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 19.793093931508015,
+      "proxy_native_ratio": 5.052267237554665,
+      "change_pct": 405.22672375546654,
+      "higher_is_better": false
+    },
+    {
+      "group": "Compute",
+      "name": "compute-4",
+      "native": 1.3616,
+      "proxyclient": 1.69085,
+      "unit": "ms/iter",
+      "proxy_run_id": "current-p42-clean-suite-20261018",
+      "version": "P42参考",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 80.52754531744388,
+      "proxy_native_ratio": 1.2418111045828437,
+      "change_pct": 24.181110458284373,
+      "higher_is_better": false
+    },
+    {
+      "group": "Compute",
+      "name": "compute-16",
+      "native": 4.708939999999999,
+      "proxyclient": 5.3034799999999995,
+      "unit": "ms/iter",
+      "proxy_run_id": "current-p42-clean-suite-20261018",
+      "version": "P42参考",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 88.7896249255206,
+      "proxy_native_ratio": 1.1262577140502958,
+      "change_pct": 12.625771405029585,
+      "higher_is_better": false
+    },
+    {
+      "group": "Compute",
+      "name": "compute-64",
+      "native": 17.78815,
+      "proxyclient": 19.27385,
+      "unit": "ms/iter",
+      "proxy_run_id": "current-p42-clean-suite-20261018",
+      "version": "P42参考",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 92.29162829429514,
+      "proxy_native_ratio": 1.0835218951942724,
+      "change_pct": 8.352189519427245,
+      "higher_is_better": false
+    },
+    {
+      "group": "Compute",
+      "name": "compute-128",
+      "native": 35.60465,
+      "proxyclient": 37.7245,
+      "unit": "ms/iter",
+      "proxy_run_id": "bo-cap512-targets-r2-20261018",
+      "version": "BO修复后",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 94.38070749777995,
+      "proxy_native_ratio": 1.0595385715068115,
+      "change_pct": 5.953857150681152,
+      "higher_is_better": false
+    },
+    {
+      "group": "ML/Attention",
+      "name": "gemm_512_fp32",
+      "native": 29.1158,
+      "proxyclient": 29.38159,
+      "unit": "ms/iter",
+      "proxy_run_id": "current-p42-clean-suite-20261018",
+      "version": "P42参考",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 99.09538592023101,
+      "proxy_native_ratio": 1.009128720488532,
+      "change_pct": 0.9128720488531972,
+      "higher_is_better": false
+    },
+    {
+      "group": "ML/Attention",
+      "name": "conv2d_64x64x32_3x3_fp32",
+      "native": 34.13514,
+      "proxyclient": 33.86672,
+      "unit": "ms/iter",
+      "proxy_run_id": "current-p42-clean-suite-20261018",
+      "version": "P42参考",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 100.79257749200394,
+      "proxy_native_ratio": 0.9921365490225029,
+      "change_pct": -0.7863450977497077,
+      "higher_is_better": false
+    },
+    {
+      "group": "ML/Attention",
+      "name": "depthwise_conv_128x128x128_3x3_fp32",
+      "native": 21.89438,
+      "proxyclient": 21.89643,
+      "unit": "ms/iter",
+      "proxy_run_id": "current-p42-clean-suite-20261018",
+      "version": "P42参考",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 99.99063774323031,
+      "proxy_native_ratio": 1.0000936313337028,
+      "change_pct": 0.009363133370277055,
+      "higher_is_better": false
+    },
+    {
+      "group": "ML/Attention",
+      "name": "block_reduction_32mib_fp32",
+      "native": 10.695139999999999,
+      "proxyclient": 10.63913,
+      "unit": "ms/iter",
+      "proxy_run_id": "current-p42-clean-suite-20261018",
+      "version": "P42参考",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 100.52645282086034,
+      "proxy_native_ratio": 0.994763041905015,
+      "change_pct": -0.5236958094985034,
+      "higher_is_better": false
+    },
+    {
+      "group": "ML/Attention",
+      "name": "row_softmax_16384x256_fp32",
+      "native": 19.40415,
+      "proxyclient": 19.27666,
+      "unit": "ms/iter",
+      "proxy_run_id": "current-p42-clean-suite-20261018",
+      "version": "P42参考",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 100.66136976011406,
+      "proxy_native_ratio": 0.9934297560058027,
+      "change_pct": -0.6570243994197256,
+      "higher_is_better": false
+    },
+    {
+      "group": "ML/Attention",
+      "name": "single_head_attention_256x64_fp32",
+      "native": 773.5434300000001,
+      "proxyclient": 775.95332,
+      "unit": "ms/iter",
+      "proxy_run_id": "current-p42-clean-suite-20261018",
+      "version": "P42参考",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 99.6894284826309,
+      "proxy_native_ratio": 1.0031153906898285,
+      "change_pct": 0.3115390689828468,
+      "higher_is_better": false
+    },
+    {
+      "group": "ML/Attention",
+      "name": "single_head_attention_320x64_fp32",
+      "native": 1221.8229,
+      "proxyclient": 1224.6526000000001,
+      "unit": "ms/iter",
+      "proxy_run_id": "current-p42-clean-suite-20261018",
+      "version": "P42参考",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 99.7689385544929,
+      "proxy_native_ratio": 1.0023159657590313,
+      "change_pct": 0.23159657590312577,
+      "higher_is_better": false
+    },
+    {
+      "group": "NCNN",
+      "name": "ncnn-mobilenet_v2",
+      "native": 31.26,
+      "proxyclient": 32.14,
+      "unit": "ms/inference",
+      "proxy_run_id": "current-p42-clean-suite-20261018",
+      "version": "P42参考",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 97.26197884256379,
+      "proxy_native_ratio": 1.0281509916826614,
+      "change_pct": 2.815099168266144,
+      "higher_is_better": false
+    },
+    {
+      "group": "NCNN",
+      "name": "ncnn-mobilenet_v3",
+      "native": 28.36,
+      "proxyclient": 28.86,
+      "unit": "ms/inference",
+      "proxy_run_id": "current-p42-clean-suite-20261018",
+      "version": "P42参考",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 98.26749826749827,
+      "proxy_native_ratio": 1.0176304654442878,
+      "change_pct": 1.7630465444287813,
+      "higher_is_better": false
+    },
+    {
+      "group": "NCNN",
+      "name": "ncnn-resnet50",
+      "native": 1162.99,
+      "proxyclient": 1463.96,
+      "unit": "ms/inference",
+      "proxy_run_id": "bo-cap512-targets-r2-20261018",
+      "version": "BO修复后",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 79.44137817973169,
+      "proxy_native_ratio": 1.2587898434208378,
+      "change_pct": 25.878984342083776,
+      "higher_is_better": false
+    },
+    {
+      "group": "glmark",
+      "name": "glmark-720",
+      "native": 1437,
+      "proxyclient": 1161,
+      "unit": "score",
+      "proxy_run_id": "bo-cap512-default720-20261018",
+      "version": "BO修复后",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 80.79331941544885,
+      "proxy_native_ratio": 0.8079331941544885,
+      "change_pct": -19.20668058455115,
+      "higher_is_better": true
+    },
+    {
+      "group": "glmark",
+      "name": "glmark-1080",
+      "native": 997,
+      "proxyclient": 901,
+      "unit": "score",
+      "proxy_run_id": "bo-cap512-targets-r2-20261018",
+      "version": "BO修复后",
+      "native_run_id": "native-p42-comparison-20261018",
+      "performance_retention_pct": 90.37111334002006,
+      "proxy_native_ratio": 0.9037111334002006,
+      "change_pct": -9.62888665997994,
+      "higher_is_better": true
+    }
+  ],
+  "native": {
+    "attention-320": {
+      "result": true,
+      "kernels": {
+        "single_head_attention_320x64_fp32": {
+          "samples": 10,
+          "warmup": 2,
+          "min_us": 1220898.0,
+          "avg_us": 1221822.9,
+          "max_us": 1223490.0
+        }
+      }
+    },
+    "compute-128": {
+      "iter_us": {
+        "min": 35542.0,
+        "avg": 35604.65,
+        "max": 35650.0,
+        "total": 712093.0
+      },
+      "correct": true,
+      "renderer": [
+        "Mali-G610 (Panfrost)"
+      ],
+      "phases_us": {
+        "cpu_prepare": {
+          "samples": 20.0,
+          "min": 56613.0,
+          "avg": 56624.4,
+          "max": 56632.0,
+          "total": 1132488.0
+        },
+        "buffer_upload": {
+          "samples": 20.0,
+          "min": 24797.0,
+          "avg": 24824.6,
+          "max": 24852.0,
+          "total": 496492.0
+        },
+        "dispatch_call": {
+          "samples": 20.0,
+          "min": 284.0,
+          "avg": 292.8,
+          "max": 323.0,
+          "total": 5856.0
+        },
+        "memory_barrier": {
+          "samples": 20.0,
+          "min": 40.0,
+          "avg": 40.35,
+          "max": 41.0,
+          "total": 807.0
+        },
+        "map_wait": {
+          "samples": 20.0,
+          "min": 10381.0,
+          "avg": 10444.85,
+          "max": 10477.0,
+          "total": 208897.0
+        },
+        "unmap": {
+          "samples": 20.0,
+          "min": 2.0,
+          "avg": 2.05,
+          "max": 3.0,
+          "total": 41.0
+        },
+        "iter_total": {
+          "samples": 20.0,
+          "min": 35542.0,
+          "avg": 35604.65,
+          "max": 35650.0,
+          "total": 712093.0
+        }
+      },
+      "config": [
+        "PERF_CONFIG iterations=20 warmup=5 count=33554432 bytes=134217728 alu_iters=1",
+        "PERF_CPU_PREPARE_EXCLUDED=1"
+      ]
+    },
+    "compute-16": {
+      "iter_us": {
+        "min": 4674.0,
+        "avg": 4708.94,
+        "max": 4759.0,
+        "total": 470894.0
+      },
+      "correct": true,
+      "renderer": [
+        "Mali-G610 (Panfrost)"
+      ],
+      "phases_us": {
+        "cpu_prepare": {
+          "samples": 100.0,
+          "min": 7080.0,
+          "avg": 7100.65,
+          "max": 7113.0,
+          "total": 710065.0
+        },
+        "buffer_upload": {
+          "samples": 100.0,
+          "min": 3052.0,
+          "avg": 3071.53,
+          "max": 3097.0,
+          "total": 307153.0
+        },
+        "dispatch_call": {
+          "samples": 100.0,
+          "min": 220.0,
+          "avg": 227.75,
+          "max": 249.0,
+          "total": 22775.0
+        },
+        "memory_barrier": {
+          "samples": 100.0,
+          "min": 38.0,
+          "avg": 40.56,
+          "max": 60.0,
+          "total": 4056.0
+        },
+        "map_wait": {
+          "samples": 100.0,
+          "min": 1341.0,
+          "avg": 1367.1,
+          "max": 1405.0,
+          "total": 136710.0
+        },
+        "unmap": {
+          "samples": 100.0,
+          "min": 1.0,
+          "avg": 2.0,
+          "max": 3.0,
+          "total": 200.0
+        },
+        "iter_total": {
+          "samples": 100.0,
+          "min": 4674.0,
+          "avg": 4708.94,
+          "max": 4759.0,
+          "total": 470894.0
+        }
+      },
+      "config": [
+        "PERF_CONFIG iterations=100 warmup=5 count=4194304 bytes=16777216 alu_iters=1",
+        "PERF_CPU_PREPARE_EXCLUDED=1"
+      ]
+    },
+    "compute-4": {
+      "iter_us": {
+        "min": 1330.0,
+        "avg": 1361.6,
+        "max": 1454.0,
+        "total": 136160.0
+      },
+      "correct": true,
+      "renderer": [
+        "Mali-G610 (Panfrost)"
+      ],
+      "phases_us": {
+        "cpu_prepare": {
+          "samples": 100.0,
+          "min": 1769.0,
+          "avg": 1783.11,
+          "max": 1836.0,
+          "total": 178311.0
+        },
+        "buffer_upload": {
+          "samples": 100.0,
+          "min": 739.0,
+          "avg": 750.21,
+          "max": 808.0,
+          "total": 75021.0
+        },
+        "dispatch_call": {
+          "samples": 100.0,
+          "min": 177.0,
+          "avg": 195.33,
+          "max": 255.0,
+          "total": 19533.0
+        },
+        "memory_barrier": {
+          "samples": 100.0,
+          "min": 38.0,
+          "avg": 40.86,
+          "max": 68.0,
+          "total": 4086.0
+        },
+        "map_wait": {
+          "samples": 100.0,
+          "min": 342.0,
+          "avg": 373.62,
+          "max": 453.0,
+          "total": 37362.0
+        },
+        "unmap": {
+          "samples": 100.0,
+          "min": 1.0,
+          "avg": 1.58,
+          "max": 2.0,
+          "total": 158.0
+        },
+        "iter_total": {
+          "samples": 100.0,
+          "min": 1330.0,
+          "avg": 1361.6,
+          "max": 1454.0,
+          "total": 136160.0
+        }
+      },
+      "config": [
+        "PERF_CONFIG iterations=100 warmup=5 count=1048576 bytes=4194304 alu_iters=1",
+        "PERF_CPU_PREPARE_EXCLUDED=1"
+      ]
+    },
+    "compute-64": {
+      "iter_us": {
+        "min": 17747.0,
+        "avg": 17788.15,
+        "max": 17825.0,
+        "total": 355763.0
+      },
+      "correct": true,
+      "renderer": [
+        "Mali-G610 (Panfrost)"
+      ],
+      "phases_us": {
+        "cpu_prepare": {
+          "samples": 20.0,
+          "min": 28321.0,
+          "avg": 28327.9,
+          "max": 28333.0,
+          "total": 566558.0
+        },
+        "buffer_upload": {
+          "samples": 20.0,
+          "min": 12354.0,
+          "avg": 12371.9,
+          "max": 12392.0,
+          "total": 247438.0
+        },
+        "dispatch_call": {
+          "samples": 20.0,
+          "min": 280.0,
+          "avg": 285.85,
+          "max": 313.0,
+          "total": 5717.0
+        },
+        "memory_barrier": {
+          "samples": 20.0,
+          "min": 39.0,
+          "avg": 39.75,
+          "max": 41.0,
+          "total": 795.0
+        },
+        "map_wait": {
+          "samples": 20.0,
+          "min": 5059.0,
+          "avg": 5088.7,
+          "max": 5119.0,
+          "total": 101774.0
+        },
+        "unmap": {
+          "samples": 20.0,
+          "min": 1.0,
+          "avg": 1.95,
+          "max": 2.0,
+          "total": 39.0
+        },
+        "iter_total": {
+          "samples": 20.0,
+          "min": 17747.0,
+          "avg": 17788.15,
+          "max": 17825.0,
+          "total": 355763.0
+        }
+      },
+      "config": [
+        "PERF_CONFIG iterations=20 warmup=5 count=16777216 bytes=67108864 alu_iters=1",
+        "PERF_CPU_PREPARE_EXCLUDED=1"
+      ]
+    },
+    "dual-0": {
+      "iter_us": {
+        "min": 3238.0,
+        "avg": 3312.3,
+        "max": 3506.0,
+        "total": 331230.0
+      },
+      "correct": true,
+      "renderer": [
+        "Mali-G610 (Panfrost)"
+      ],
+      "phases_us": {
+        "cpu_prepare": {
+          "samples": 100.0,
+          "min": 1776.0,
+          "avg": 1794.79,
+          "max": 1858.0,
+          "total": 179479.0
+        },
+        "buffer_upload": {
+          "samples": 100.0,
+          "min": 815.0,
+          "avg": 841.46,
+          "max": 923.0,
+          "total": 84146.0
+        },
+        "dispatch_call": {
+          "samples": 100.0,
+          "min": 163.0,
+          "avg": 184.13,
+          "max": 295.0,
+          "total": 18413.0
+        },
+        "memory_barrier": {
+          "samples": 100.0,
+          "min": 38.0,
+          "avg": 40.24,
+          "max": 61.0,
+          "total": 4024.0
+        },
+        "map_wait": {
+          "samples": 100.0,
+          "min": 425.0,
+          "avg": 450.28,
+          "max": 501.0,
+          "total": 45028.0
+        },
+        "unmap": {
+          "samples": 100.0,
+          "min": 1.0,
+          "avg": 1.4,
+          "max": 2.0,
+          "total": 140.0
+        },
+        "iter_total": {
+          "samples": 100.0,
+          "min": 3238.0,
+          "avg": 3312.3,
+          "max": 3506.0,
+          "total": 331230.0
+        }
+      },
+      "config": [
+        "PERF_CONFIG iterations=100 warmup=5 count=1048576 bytes=4194304 alu_iters=1",
+        "PERF_CPU_PREPARE_EXCLUDED=0"
+      ]
+    },
+    "dual-1": {
+      "iter_us": {
+        "min": 3253.0,
+        "avg": 3323.26,
+        "max": 3580.0,
+        "total": 332326.0
+      },
+      "correct": true,
+      "renderer": [
+        "Mali-G610 (Panfrost)"
+      ],
+      "phases_us": {
+        "cpu_prepare": {
+          "samples": 100.0,
+          "min": 1773.0,
+          "avg": 1791.77,
+          "max": 1891.0,
+          "total": 179177.0
+        },
+        "buffer_upload": {
+          "samples": 100.0,
+          "min": 785.0,
+          "avg": 836.08,
+          "max": 1118.0,
+          "total": 83608.0
+        },
+        "dispatch_call": {
+          "samples": 100.0,
+          "min": 175.0,
+          "avg": 190.71,
+          "max": 253.0,
+          "total": 19071.0
+        },
+        "memory_barrier": {
+          "samples": 100.0,
+          "min": 38.0,
+          "avg": 39.99,
+          "max": 45.0,
+          "total": 3999.0
+        },
+        "map_wait": {
+          "samples": 100.0,
+          "min": 428.0,
+          "avg": 463.21,
+          "max": 555.0,
+          "total": 46321.0
+        },
+        "unmap": {
+          "samples": 100.0,
+          "min": 1.0,
+          "avg": 1.5,
+          "max": 3.0,
+          "total": 150.0
+        },
+        "iter_total": {
+          "samples": 100.0,
+          "min": 3253.0,
+          "avg": 3323.26,
+          "max": 3580.0,
+          "total": 332326.0
+        }
+      },
+      "config": [
+        "PERF_CONFIG iterations=100 warmup=5 count=1048576 bytes=4194304 alu_iters=1",
+        "PERF_CPU_PREPARE_EXCLUDED=0"
+      ]
+    },
+    "glmark-1080": {
+      "score": 997,
+      "validate": [
+        26,
+        1,
+        6
+      ],
+      "scenes": [
+        {
+          "name": "[build] use-vbo=false",
+          "fps": 748,
+          "frametime_ms": 1.338
+        },
+        {
+          "name": "[build] use-vbo=true",
+          "fps": 1785,
+          "frametime_ms": 0.56
+        },
+        {
+          "name": "[texture] texture-filter=nearest",
+          "fps": 1571,
+          "frametime_ms": 0.637
+        },
+        {
+          "name": "[texture] texture-filter=linear",
+          "fps": 1580,
+          "frametime_ms": 0.633
+        },
+        {
+          "name": "[texture] texture-filter=mipmap",
+          "fps": 1585,
+          "frametime_ms": 0.631
+        },
+        {
+          "name": "[shading] shading=gouraud",
+          "fps": 1531,
+          "frametime_ms": 0.654
+        },
+        {
+          "name": "[shading] shading=blinn-phong-inf",
+          "fps": 1449,
+          "frametime_ms": 0.69
+        },
+        {
+          "name": "[shading] shading=phong",
+          "fps": 1267,
+          "frametime_ms": 0.79
+        },
+        {
+          "name": "[shading] shading=cel",
+          "fps": 1240,
+          "frametime_ms": 0.807
+        },
+        {
+          "name": "[bump] bump-render=high-poly",
+          "fps": 944,
+          "frametime_ms": 1.06
+        },
+        {
+          "name": "[bump] bump-render=normals",
+          "fps": 1826,
+          "frametime_ms": 0.548
+        },
+        {
+          "name": "[bump] bump-render=height",
+          "fps": 1651,
+          "frametime_ms": 0.606
+        },
+        {
+          "name": "[effect2d] kernel=0,1,0;1,-4,1;0,1,0;",
+          "fps": 937,
+          "frametime_ms": 1.067
+        },
+        {
+          "name": "[effect2d] kernel=1,1,1,1,1;1,1,1,1,1;1,1,1,1,1;",
+          "fps": 447,
+          "frametime_ms": 2.237
+        },
+        {
+          "name": "[pulsar] light=false:quads=5:texture=false",
+          "fps": 1179,
+          "frametime_ms": 0.849
+        },
+        {
+          "name": "[desktop] blur-radius=5:effect=blur:passes=1:separable=true:windows=4",
+          "fps": 233,
+          "frametime_ms": 4.293
+        },
+        {
+          "name": "[desktop] effect=shadow:windows=4",
+          "fps": 579,
+          "frametime_ms": 1.727
+        },
+        {
+          "name": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=map",
+          "fps": 47,
+          "frametime_ms": 21.482
+        },
+        {
+          "name": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=subdata",
+          "fps": 47,
+          "frametime_ms": 21.554
+        },
+        {
+          "name": "[buffer] columns=200:interleave=true:update-dispersion=0.9:update-fraction=0.5:update-method=map",
+          "fps": 65,
+          "frametime_ms": 15.424
+        },
+        {
+          "name": "[ideas] speed=duration",
+          "fps": 426,
+          "frametime_ms": 2.352
+        },
+        {
+          "name": "[jellyfish] <default>",
+          "fps": 763,
+          "frametime_ms": 1.312
+        },
+        {
+          "name": "[terrain] <default>",
+          "fps": 57,
+          "frametime_ms": 17.58
+        },
+        {
+          "name": "[shadow] <default>",
+          "fps": 687,
+          "frametime_ms": 1.456
+        },
+        {
+          "name": "[refract] <default>",
+          "fps": 144,
+          "frametime_ms": 6.975
+        },
+        {
+          "name": "[conditionals] fragment-steps=0:vertex-steps=0",
+          "fps": 1358,
+          "frametime_ms": 0.737
+        },
+        {
+          "name": "[conditionals] fragment-steps=5:vertex-steps=0",
+          "fps": 1259,
+          "frametime_ms": 0.795
+        },
+        {
+          "name": "[conditionals] fragment-steps=0:vertex-steps=5",
+          "fps": 1337,
+          "frametime_ms": 0.748
+        },
+        {
+          "name": "[function] fragment-complexity=low:fragment-steps=5",
+          "fps": 1362,
+          "frametime_ms": 0.734
+        },
+        {
+          "name": "[function] fragment-complexity=medium:fragment-steps=5",
+          "fps": 1093,
+          "frametime_ms": 0.915
+        },
+        {
+          "name": "[loop] fragment-loop=false:fragment-steps=5:vertex-steps=5",
+          "fps": 1328,
+          "frametime_ms": 0.753
+        },
+        {
+          "name": "[loop] fragment-steps=5:fragment-uniform=false:vertex-steps=5",
+          "fps": 1331,
+          "frametime_ms": 0.751
+        },
+        {
+          "name": "[loop] fragment-steps=5:fragment-uniform=true:vertex-steps=5",
+          "fps": 1082,
+          "frametime_ms": 0.924
+        }
+      ],
+      "clean": true,
+      "result": true,
+      "errors": []
+    },
+    "glmark-720": {
+      "score": 1437,
+      "validate": [
+        26,
+        1,
+        6
+      ],
+      "scenes": [
+        {
+          "name": "[build] use-vbo=false",
+          "fps": 994,
+          "frametime_ms": 1.006
+        },
+        {
+          "name": "[build] use-vbo=true",
+          "fps": 2299,
+          "frametime_ms": 0.435
+        },
+        {
+          "name": "[texture] texture-filter=nearest",
+          "fps": 2311,
+          "frametime_ms": 0.433
+        },
+        {
+          "name": "[texture] texture-filter=linear",
+          "fps": 2321,
+          "frametime_ms": 0.431
+        },
+        {
+          "name": "[texture] texture-filter=mipmap",
+          "fps": 2307,
+          "frametime_ms": 0.433
+        },
+        {
+          "name": "[shading] shading=gouraud",
+          "fps": 1919,
+          "frametime_ms": 0.521
+        },
+        {
+          "name": "[shading] shading=blinn-phong-inf",
+          "fps": 1890,
+          "frametime_ms": 0.529
+        },
+        {
+          "name": "[shading] shading=phong",
+          "fps": 1709,
+          "frametime_ms": 0.585
+        },
+        {
+          "name": "[shading] shading=cel",
+          "fps": 1705,
+          "frametime_ms": 0.587
+        },
+        {
+          "name": "[bump] bump-render=high-poly",
+          "fps": 1086,
+          "frametime_ms": 0.921
+        },
+        {
+          "name": "[bump] bump-render=normals",
+          "fps": 2611,
+          "frametime_ms": 0.383
+        },
+        {
+          "name": "[bump] bump-render=height",
+          "fps": 2462,
+          "frametime_ms": 0.406
+        },
+        {
+          "name": "[effect2d] kernel=0,1,0;1,-4,1;0,1,0;",
+          "fps": 1783,
+          "frametime_ms": 0.561
+        },
+        {
+          "name": "[effect2d] kernel=1,1,1,1,1;1,1,1,1,1;1,1,1,1,1;",
+          "fps": 829,
+          "frametime_ms": 1.206
+        },
+        {
+          "name": "[pulsar] light=false:quads=5:texture=false",
+          "fps": 1686,
+          "frametime_ms": 0.593
+        },
+        {
+          "name": "[desktop] blur-radius=5:effect=blur:passes=1:separable=true:windows=4",
+          "fps": 388,
+          "frametime_ms": 2.58
+        },
+        {
+          "name": "[desktop] effect=shadow:windows=4",
+          "fps": 845,
+          "frametime_ms": 1.184
+        },
+        {
+          "name": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=map",
+          "fps": 47,
+          "frametime_ms": 21.413
+        },
+        {
+          "name": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=subdata",
+          "fps": 47,
+          "frametime_ms": 21.472
+        },
+        {
+          "name": "[buffer] columns=200:interleave=true:update-dispersion=0.9:update-fraction=0.5:update-method=map",
+          "fps": 66,
+          "frametime_ms": 15.277
+        },
+        {
+          "name": "[ideas] speed=duration",
+          "fps": 480,
+          "frametime_ms": 2.086
+        },
+        {
+          "name": "[jellyfish] <default>",
+          "fps": 1210,
+          "frametime_ms": 0.826
+        },
+        {
+          "name": "[terrain] <default>",
+          "fps": 78,
+          "frametime_ms": 12.965
+        },
+        {
+          "name": "[shadow] <default>",
+          "fps": 982,
+          "frametime_ms": 1.019
+        },
+        {
+          "name": "[refract] <default>",
+          "fps": 196,
+          "frametime_ms": 5.128
+        },
+        {
+          "name": "[conditionals] fragment-steps=0:vertex-steps=0",
+          "fps": 1980,
+          "frametime_ms": 0.505
+        },
+        {
+          "name": "[conditionals] fragment-steps=5:vertex-steps=0",
+          "fps": 1862,
+          "frametime_ms": 0.537
+        },
+        {
+          "name": "[conditionals] fragment-steps=0:vertex-steps=5",
+          "fps": 1976,
+          "frametime_ms": 0.506
+        },
+        {
+          "name": "[function] fragment-complexity=low:fragment-steps=5",
+          "fps": 1973,
+          "frametime_ms": 0.507
+        },
+        {
+          "name": "[function] fragment-complexity=medium:fragment-steps=5",
+          "fps": 1747,
+          "frametime_ms": 0.573
+        },
+        {
+          "name": "[loop] fragment-loop=false:fragment-steps=5:vertex-steps=5",
+          "fps": 1971,
+          "frametime_ms": 0.507
+        },
+        {
+          "name": "[loop] fragment-steps=5:fragment-uniform=false:vertex-steps=5",
+          "fps": 1970,
+          "frametime_ms": 0.508
+        },
+        {
+          "name": "[loop] fragment-steps=5:fragment-uniform=true:vertex-steps=5",
+          "fps": 1737,
+          "frametime_ms": 0.576
+        }
+      ],
+      "clean": true,
+      "result": true,
+      "errors": []
+    },
+    "ioctl": {
+      "cases": {
+        "basic": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 23.655,
+          "min_us": 23.042,
+          "max_us": 26.542
+        },
+        "vm-create": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 39.959,
+          "min_us": 38.209,
+          "max_us": 48.709
+        },
+        "bo-create": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 60.755,
+          "min_us": 58.335,
+          "max_us": 67.959
+        },
+        "bo-lifecycle": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 109.684,
+          "min_us": 106.46,
+          "max_us": 116.086
+        },
+        "bo-mmap": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 106.986,
+          "min_us": 103.252,
+          "max_us": 121.336
+        },
+        "vm-bind": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 2472.866,
+          "min_us": 2366.93,
+          "max_us": 2638.769
+        },
+        "vm-bind-async-sync": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 203.894,
+          "min_us": 179.379,
+          "max_us": 256.381
+        },
+        "vm-state-flush": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 69.929,
+          "min_us": 68.252,
+          "max_us": 71.168
+        },
+        "syncobj-lifecycle": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 39.522,
+          "min_us": 36.168,
+          "max_us": 48.126
+        },
+        "syncobj-wait": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 49.497,
+          "min_us": 49.001,
+          "max_us": 52.793
+        },
+        "syncobj-transfer": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 42.745,
+          "min_us": 41.126,
+          "max_us": 50.751
+        },
+        "syncobj-timeline-wait": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 72.306,
+          "min_us": 69.71,
+          "max_us": 88.669
+        },
+        "syncobj-signal-query": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 65.583,
+          "min_us": 65.043,
+          "max_us": 66.21
+        },
+        "sync-file-snapshot": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 1718.525,
+          "min_us": 1643.58,
+          "max_us": 2156.633
+        },
+        "group-lifecycle": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 202.174,
+          "min_us": 191.337,
+          "max_us": 215.839
+        },
+        "group-submit-syncpoint": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 238.457,
+          "min_us": 225.463,
+          "max_us": 261.047
+        },
+        "tiler-heap-lifecycle": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 284.002,
+          "min_us": 275.631,
+          "max_us": 295.466
+        }
+      },
+      "matrix_pass": true
+    },
+    "ml-all": {
+      "result": true,
+      "kernels": {
+        "gemm_512_fp32": {
+          "samples": 100,
+          "warmup": 5,
+          "min_us": 29096.0,
+          "avg_us": 29115.8,
+          "max_us": 29195.0
+        },
+        "conv2d_64x64x32_3x3_fp32": {
+          "samples": 100,
+          "warmup": 5,
+          "min_us": 33582.0,
+          "avg_us": 34135.14,
+          "max_us": 35822.0
+        },
+        "depthwise_conv_128x128x128_3x3_fp32": {
+          "samples": 100,
+          "warmup": 5,
+          "min_us": 21852.0,
+          "avg_us": 21894.38,
+          "max_us": 21988.0
+        },
+        "block_reduction_32mib_fp32": {
+          "samples": 100,
+          "warmup": 5,
+          "min_us": 9247.0,
+          "avg_us": 10695.14,
+          "max_us": 141594.0
+        },
+        "row_softmax_16384x256_fp32": {
+          "samples": 100,
+          "warmup": 5,
+          "min_us": 19194.0,
+          "avg_us": 19404.15,
+          "max_us": 19843.0
+        },
+        "single_head_attention_256x64_fp32": {
+          "samples": 100,
+          "warmup": 5,
+          "min_us": 771951.0,
+          "avg_us": 773543.43,
+          "max_us": 775404.0
+        }
+      }
+    },
+    "ncnn-mobilenet_v2": {
+      "model_pass": true,
+      "qualification": true,
+      "avg_ms": 31.26,
+      "errors": []
+    },
+    "ncnn-mobilenet_v3": {
+      "model_pass": true,
+      "qualification": true,
+      "avg_ms": 28.36,
+      "errors": []
+    },
+    "ncnn-resnet50": {
+      "model_pass": true,
+      "qualification": true,
+      "avg_ms": 1162.99,
+      "errors": []
+    }
+  },
+  "proxyclient": {
+    "attention-320": {
+      "result": true,
+      "kernels": {
+        "single_head_attention_320x64_fp32": {
+          "samples": 10,
+          "warmup": 2,
+          "min_us": 1222862.0,
+          "avg_us": 1224652.6,
+          "max_us": 1225930.0
+        }
+      }
+    },
+    "compute-128": {
+      "iter_us": {
+        "min": 37576.0,
+        "avg": 37724.5,
+        "max": 38021.0,
+        "total": 754490.0
+      },
+      "correct": true,
+      "renderer": [
+        "Mali-G610 (Panfrost)"
+      ],
+      "phases_us": {
+        "cpu_prepare": {
+          "samples": 20.0,
+          "min": 59614.0,
+          "avg": 59749.35,
+          "max": 59881.0,
+          "total": 1194987.0
+        },
+        "buffer_upload": {
+          "samples": 20.0,
+          "min": 26941.0,
+          "avg": 27083.75,
+          "max": 27242.0,
+          "total": 541675.0
+        },
+        "dispatch_call": {
+          "samples": 20.0,
+          "min": 574.0,
+          "avg": 652.55,
+          "max": 816.0,
+          "total": 13051.0
+        },
+        "memory_barrier": {
+          "samples": 20.0,
+          "min": 87.0,
+          "avg": 96.9,
+          "max": 162.0,
+          "total": 1938.0
+        },
+        "map_wait": {
+          "samples": 20.0,
+          "min": 9707.0,
+          "avg": 9888.85,
+          "max": 9989.0,
+          "total": 197777.0
+        },
+        "unmap": {
+          "samples": 20.0,
+          "min": 2.0,
+          "avg": 2.45,
+          "max": 3.0,
+          "total": 49.0
+        },
+        "iter_total": {
+          "samples": 20.0,
+          "min": 37576.0,
+          "avg": 37724.5,
+          "max": 38021.0,
+          "total": 754490.0
+        }
+      },
+      "config": [
+        "PERF_CONFIG iterations=20 warmup=5 count=33554432 bytes=134217728 alu_iters=1",
+        "PERF_CPU_PREPARE_EXCLUDED=1"
+      ]
+    },
+    "compute-16": {
+      "iter_us": {
+        "min": 5194.0,
+        "avg": 5303.48,
+        "max": 5465.0,
+        "total": 530348.0
+      },
+      "correct": true,
+      "renderer": [
+        "Mali-G610 (Panfrost)"
+      ],
+      "phases_us": {
+        "cpu_prepare": {
+          "samples": 100.0,
+          "min": 7411.0,
+          "avg": 7496.17,
+          "max": 7564.0,
+          "total": 749617.0
+        },
+        "buffer_upload": {
+          "samples": 100.0,
+          "min": 3206.0,
+          "avg": 3309.28,
+          "max": 3429.0,
+          "total": 330928.0
+        },
+        "dispatch_call": {
+          "samples": 100.0,
+          "min": 460.0,
+          "avg": 516.87,
+          "max": 714.0,
+          "total": 51687.0
+        },
+        "memory_barrier": {
+          "samples": 100.0,
+          "min": 80.0,
+          "avg": 90.3,
+          "max": 181.0,
+          "total": 9030.0
+        },
+        "map_wait": {
+          "samples": 100.0,
+          "min": 1229.0,
+          "avg": 1384.14,
+          "max": 1485.0,
+          "total": 138414.0
+        },
+        "unmap": {
+          "samples": 100.0,
+          "min": 2.0,
+          "avg": 2.89,
+          "max": 4.0,
+          "total": 289.0
+        },
+        "iter_total": {
+          "samples": 100.0,
+          "min": 5194.0,
+          "avg": 5303.48,
+          "max": 5465.0,
+          "total": 530348.0
+        }
+      },
+      "config": [
+        "PERF_CONFIG iterations=100 warmup=5 count=4194304 bytes=16777216 alu_iters=1",
+        "PERF_CPU_PREPARE_EXCLUDED=1"
+      ]
+    },
+    "compute-4": {
+      "iter_us": {
+        "min": 1595.0,
+        "avg": 1690.85,
+        "max": 1902.0,
+        "total": 169085.0
+      },
+      "correct": true,
+      "renderer": [
+        "Mali-G610 (Panfrost)"
+      ],
+      "phases_us": {
+        "cpu_prepare": {
+          "samples": 100.0,
+          "min": 1795.0,
+          "avg": 1901.05,
+          "max": 2060.0,
+          "total": 190105.0
+        },
+        "buffer_upload": {
+          "samples": 100.0,
+          "min": 769.0,
+          "avg": 795.51,
+          "max": 974.0,
+          "total": 79551.0
+        },
+        "dispatch_call": {
+          "samples": 100.0,
+          "min": 371.0,
+          "avg": 436.89,
+          "max": 640.0,
+          "total": 43689.0
+        },
+        "memory_barrier": {
+          "samples": 100.0,
+          "min": 84.0,
+          "avg": 90.91,
+          "max": 186.0,
+          "total": 9091.0
+        },
+        "map_wait": {
+          "samples": 100.0,
+          "min": 142.0,
+          "avg": 365.7,
+          "max": 529.0,
+          "total": 36570.0
+        },
+        "unmap": {
+          "samples": 100.0,
+          "min": 1.0,
+          "avg": 1.84,
+          "max": 3.0,
+          "total": 184.0
+        },
+        "iter_total": {
+          "samples": 100.0,
+          "min": 1595.0,
+          "avg": 1690.85,
+          "max": 1902.0,
+          "total": 169085.0
+        }
+      },
+      "config": [
+        "PERF_CONFIG iterations=100 warmup=5 count=1048576 bytes=4194304 alu_iters=1",
+        "PERF_CPU_PREPARE_EXCLUDED=1"
+      ]
+    },
+    "compute-64": {
+      "iter_us": {
+        "min": 19174.0,
+        "avg": 19273.85,
+        "max": 19372.0,
+        "total": 385477.0
+      },
+      "correct": true,
+      "renderer": [
+        "Mali-G610 (Panfrost)"
+      ],
+      "phases_us": {
+        "cpu_prepare": {
+          "samples": 20.0,
+          "min": 29701.0,
+          "avg": 29781.95,
+          "max": 29884.0,
+          "total": 595639.0
+        },
+        "buffer_upload": {
+          "samples": 20.0,
+          "min": 13401.0,
+          "avg": 13490.15,
+          "max": 13623.0,
+          "total": 269803.0
+        },
+        "dispatch_call": {
+          "samples": 20.0,
+          "min": 583.0,
+          "avg": 629.85,
+          "max": 866.0,
+          "total": 12597.0
+        },
+        "memory_barrier": {
+          "samples": 20.0,
+          "min": 77.0,
+          "avg": 83.35,
+          "max": 153.0,
+          "total": 1667.0
+        },
+        "map_wait": {
+          "samples": 20.0,
+          "min": 4934.0,
+          "avg": 5068.25,
+          "max": 5171.0,
+          "total": 101365.0
+        },
+        "unmap": {
+          "samples": 20.0,
+          "min": 2.0,
+          "avg": 2.25,
+          "max": 3.0,
+          "total": 45.0
+        },
+        "iter_total": {
+          "samples": 20.0,
+          "min": 19174.0,
+          "avg": 19273.85,
+          "max": 19372.0,
+          "total": 385477.0
+        }
+      },
+      "config": [
+        "PERF_CONFIG iterations=20 warmup=5 count=16777216 bytes=67108864 alu_iters=1",
+        "PERF_CPU_PREPARE_EXCLUDED=1"
+      ]
+    },
+    "glmark-720": {
+      "score": 1161,
+      "validate": [
+        26,
+        1,
+        6
+      ],
+      "scenes": [
+        {
+          "name": "[build] use-vbo=false",
+          "fps": 1124,
+          "frametime_ms": 0.89
+        },
+        {
+          "name": "[build] use-vbo=true",
+          "fps": 1759,
+          "frametime_ms": 0.569
+        },
+        {
+          "name": "[texture] texture-filter=nearest",
+          "fps": 1762,
+          "frametime_ms": 0.568
+        },
+        {
+          "name": "[texture] texture-filter=linear",
+          "fps": 1764,
+          "frametime_ms": 0.567
+        },
+        {
+          "name": "[texture] texture-filter=mipmap",
+          "fps": 1754,
+          "frametime_ms": 0.57
+        },
+        {
+          "name": "[shading] shading=gouraud",
+          "fps": 1554,
+          "frametime_ms": 0.644
+        },
+        {
+          "name": "[shading] shading=blinn-phong-inf",
+          "fps": 1534,
+          "frametime_ms": 0.652
+        },
+        {
+          "name": "[shading] shading=phong",
+          "fps": 1437,
+          "frametime_ms": 0.696
+        },
+        {
+          "name": "[shading] shading=cel",
+          "fps": 1428,
+          "frametime_ms": 0.701
+        },
+        {
+          "name": "[bump] bump-render=high-poly",
+          "fps": 1062,
+          "frametime_ms": 0.942
+        },
+        {
+          "name": "[bump] bump-render=normals",
+          "fps": 1880,
+          "frametime_ms": 0.532
+        },
+        {
+          "name": "[bump] bump-render=height",
+          "fps": 1814,
+          "frametime_ms": 0.551
+        },
+        {
+          "name": "[effect2d] kernel=0,1,0;1,-4,1;0,1,0;",
+          "fps": 1483,
+          "frametime_ms": 0.674
+        },
+        {
+          "name": "[effect2d] kernel=1,1,1,1,1;1,1,1,1,1;1,1,1,1,1;",
+          "fps": 840,
+          "frametime_ms": 1.191
+        },
+        {
+          "name": "[pulsar] light=false:quads=5:texture=false",
+          "fps": 1400,
+          "frametime_ms": 0.714
+        },
+        {
+          "name": "[desktop] blur-radius=5:effect=blur:passes=1:separable=true:windows=4",
+          "fps": 226,
+          "frametime_ms": 4.444
+        },
+        {
+          "name": "[desktop] effect=shadow:windows=4",
+          "fps": 698,
+          "frametime_ms": 1.434
+        },
+        {
+          "name": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=map",
+          "fps": 46,
+          "frametime_ms": 21.826
+        },
+        {
+          "name": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=subdata",
+          "fps": 46,
+          "frametime_ms": 21.935
+        },
+        {
+          "name": "[buffer] columns=200:interleave=true:update-dispersion=0.9:update-fraction=0.5:update-method=map",
+          "fps": 65,
+          "frametime_ms": 15.455
+        },
+        {
+          "name": "[ideas] speed=duration",
+          "fps": 441,
+          "frametime_ms": 2.268
+        },
+        {
+          "name": "[jellyfish] <default>",
+          "fps": 1118,
+          "frametime_ms": 0.895
+        },
+        {
+          "name": "[terrain] <default>",
+          "fps": 42,
+          "frametime_ms": 24.266
+        },
+        {
+          "name": "[shadow] <default>",
+          "fps": 746,
+          "frametime_ms": 1.342
+        },
+        {
+          "name": "[refract] <default>",
+          "fps": 137,
+          "frametime_ms": 7.333
+        },
+        {
+          "name": "[conditionals] fragment-steps=0:vertex-steps=0",
+          "fps": 1562,
+          "frametime_ms": 0.64
+        },
+        {
+          "name": "[conditionals] fragment-steps=5:vertex-steps=0",
+          "fps": 1498,
+          "frametime_ms": 0.668
+        },
+        {
+          "name": "[conditionals] fragment-steps=0:vertex-steps=5",
+          "fps": 1569,
+          "frametime_ms": 0.638
+        },
+        {
+          "name": "[function] fragment-complexity=low:fragment-steps=5",
+          "fps": 1570,
+          "frametime_ms": 0.637
+        },
+        {
+          "name": "[function] fragment-complexity=medium:fragment-steps=5",
+          "fps": 1439,
+          "frametime_ms": 0.695
+        },
+        {
+          "name": "[loop] fragment-loop=false:fragment-steps=5:vertex-steps=5",
+          "fps": 1568,
+          "frametime_ms": 0.638
+        },
+        {
+          "name": "[loop] fragment-steps=5:fragment-uniform=false:vertex-steps=5",
+          "fps": 1568,
+          "frametime_ms": 0.638
+        },
+        {
+          "name": "[loop] fragment-steps=5:fragment-uniform=true:vertex-steps=5",
+          "fps": 1433,
+          "frametime_ms": 0.698
+        }
+      ],
+      "clean": true,
+      "result": true,
+      "errors": []
+    },
+    "ioctl": {
+      "cases": {
+        "basic": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 527.348,
+          "min_us": 506.333,
+          "max_us": 565.25
+        },
+        "vm-create": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 709.216,
+          "min_us": 684.542,
+          "max_us": 747.541
+        },
+        "bo-create": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 1630.475,
+          "min_us": 1573.833,
+          "max_us": 1776.25
+        },
+        "bo-lifecycle": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 2085.621,
+          "min_us": 1996.458,
+          "max_us": 2244.667
+        },
+        "bo-mmap": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 1690.996,
+          "min_us": 1621.959,
+          "max_us": 1799.292
+        },
+        "vm-bind": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 7910.846,
+          "min_us": 7795.375,
+          "max_us": 7991.667
+        },
+        "vm-bind-async-sync": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 2430.254,
+          "min_us": 2325.75,
+          "max_us": 2536.916
+        },
+        "vm-state-flush": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 814.727,
+          "min_us": 780.5,
+          "max_us": 889.875
+        },
+        "syncobj-lifecycle": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 537.994,
+          "min_us": 526.458,
+          "max_us": 614.25
+        },
+        "syncobj-wait": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 990.121,
+          "min_us": 956.958,
+          "max_us": 1068.958
+        },
+        "syncobj-transfer": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 845.177,
+          "min_us": 811.417,
+          "max_us": 958.708
+        },
+        "syncobj-timeline-wait": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 1403.894,
+          "min_us": 1345.458,
+          "max_us": 1459.791
+        },
+        "syncobj-signal-query": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 1325.362,
+          "min_us": 1289.166,
+          "max_us": 1402.334
+        },
+        "sync-file-snapshot": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 43067.675,
+          "min_us": 42706.125,
+          "max_us": 43541.75
+        },
+        "group-lifecycle": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 1523.244,
+          "min_us": 1488.667,
+          "max_us": 1593.958
+        },
+        "group-submit-syncpoint": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 1948.931,
+          "min_us": 1818.25,
+          "max_us": 2227.166
+        },
+        "tiler-heap-lifecycle": {
+          "rc": 0.0,
+          "samples": 20.0,
+          "avg_us": 1434.854,
+          "min_us": 1342.833,
+          "max_us": 1501.5
+        }
+      },
+      "matrix_pass": true
+    },
+    "ml-all": {
+      "result": true,
+      "kernels": {
+        "gemm_512_fp32": {
+          "samples": 100,
+          "warmup": 5,
+          "min_us": 29348.0,
+          "avg_us": 29381.59,
+          "max_us": 29539.0
+        },
+        "conv2d_64x64x32_3x3_fp32": {
+          "samples": 100,
+          "warmup": 5,
+          "min_us": 33307.0,
+          "avg_us": 33866.72,
+          "max_us": 34332.0
+        },
+        "depthwise_conv_128x128x128_3x3_fp32": {
+          "samples": 100,
+          "warmup": 5,
+          "min_us": 21848.0,
+          "avg_us": 21896.43,
+          "max_us": 21999.0
+        },
+        "block_reduction_32mib_fp32": {
+          "samples": 100,
+          "warmup": 5,
+          "min_us": 9493.0,
+          "avg_us": 10639.13,
+          "max_us": 118811.0
+        },
+        "row_softmax_16384x256_fp32": {
+          "samples": 100,
+          "warmup": 5,
+          "min_us": 19043.0,
+          "avg_us": 19276.66,
+          "max_us": 20155.0
+        },
+        "single_head_attention_256x64_fp32": {
+          "samples": 100,
+          "warmup": 5,
+          "min_us": 771721.0,
+          "avg_us": 775953.32,
+          "max_us": 795063.0
+        }
+      }
+    },
+    "ncnn-mobilenet_v2": {
+      "model_pass": true,
+      "qualification": true,
+      "avg_ms": 32.14,
+      "errors": []
+    },
+    "ncnn-mobilenet_v3": {
+      "model_pass": true,
+      "qualification": true,
+      "avg_ms": 28.86,
+      "errors": []
+    },
+    "glmark-1080": {
+      "score": 901,
+      "validate": [
+        26,
+        1,
+        6
+      ],
+      "scenes": [
+        {
+          "name": "[build] use-vbo=false",
+          "fps": 995,
+          "frametime_ms": 1.006
+        },
+        {
+          "name": "[build] use-vbo=true",
+          "fps": 1475,
+          "frametime_ms": 0.678
+        },
+        {
+          "name": "[texture] texture-filter=nearest",
+          "fps": 1344,
+          "frametime_ms": 0.744
+        },
+        {
+          "name": "[texture] texture-filter=linear",
+          "fps": 1347,
+          "frametime_ms": 0.743
+        },
+        {
+          "name": "[texture] texture-filter=mipmap",
+          "fps": 1347,
+          "frametime_ms": 0.743
+        },
+        {
+          "name": "[shading] shading=gouraud",
+          "fps": 1317,
+          "frametime_ms": 0.76
+        },
+        {
+          "name": "[shading] shading=blinn-phong-inf",
+          "fps": 1288,
+          "frametime_ms": 0.777
+        },
+        {
+          "name": "[shading] shading=phong",
+          "fps": 1168,
+          "frametime_ms": 0.856
+        },
+        {
+          "name": "[shading] shading=cel",
+          "fps": 1148,
+          "frametime_ms": 0.872
+        },
+        {
+          "name": "[bump] bump-render=high-poly",
+          "fps": 949,
+          "frametime_ms": 1.055
+        },
+        {
+          "name": "[bump] bump-render=normals",
+          "fps": 1478,
+          "frametime_ms": 0.677
+        },
+        {
+          "name": "[bump] bump-render=height",
+          "fps": 1389,
+          "frametime_ms": 0.72
+        },
+        {
+          "name": "[effect2d] kernel=0,1,0;1,-4,1;0,1,0;",
+          "fps": 929,
+          "frametime_ms": 1.077
+        },
+        {
+          "name": "[effect2d] kernel=1,1,1,1,1;1,1,1,1,1;1,1,1,1,1;",
+          "fps": 435,
+          "frametime_ms": 2.3
+        },
+        {
+          "name": "[pulsar] light=false:quads=5:texture=false",
+          "fps": 1100,
+          "frametime_ms": 0.909
+        },
+        {
+          "name": "[desktop] blur-radius=5:effect=blur:passes=1:separable=true:windows=4",
+          "fps": 172,
+          "frametime_ms": 5.815
+        },
+        {
+          "name": "[desktop] effect=shadow:windows=4",
+          "fps": 571,
+          "frametime_ms": 1.752
+        },
+        {
+          "name": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=map",
+          "fps": 46,
+          "frametime_ms": 22.047
+        },
+        {
+          "name": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=subdata",
+          "fps": 46,
+          "frametime_ms": 22.075
+        },
+        {
+          "name": "[buffer] columns=200:interleave=true:update-dispersion=0.9:update-fraction=0.5:update-method=map",
+          "fps": 64,
+          "frametime_ms": 15.664
+        },
+        {
+          "name": "[ideas] speed=duration",
+          "fps": 402,
+          "frametime_ms": 2.492
+        },
+        {
+          "name": "[jellyfish] <default>",
+          "fps": 757,
+          "frametime_ms": 1.322
+        },
+        {
+          "name": "[terrain] <default>",
+          "fps": 36,
+          "frametime_ms": 28.212
+        },
+        {
+          "name": "[shadow] <default>",
+          "fps": 600,
+          "frametime_ms": 1.669
+        },
+        {
+          "name": "[refract] <default>",
+          "fps": 115,
+          "frametime_ms": 8.742
+        },
+        {
+          "name": "[conditionals] fragment-steps=0:vertex-steps=0",
+          "fps": 1198,
+          "frametime_ms": 0.835
+        },
+        {
+          "name": "[conditionals] fragment-steps=5:vertex-steps=0",
+          "fps": 1144,
+          "frametime_ms": 0.875
+        },
+        {
+          "name": "[conditionals] fragment-steps=0:vertex-steps=5",
+          "fps": 1202,
+          "frametime_ms": 0.832
+        },
+        {
+          "name": "[function] fragment-complexity=low:fragment-steps=5",
+          "fps": 1199,
+          "frametime_ms": 0.834
+        },
+        {
+          "name": "[function] fragment-complexity=medium:fragment-steps=5",
+          "fps": 1066,
+          "frametime_ms": 0.939
+        },
+        {
+          "name": "[loop] fragment-loop=false:fragment-steps=5:vertex-steps=5",
+          "fps": 1199,
+          "frametime_ms": 0.834
+        },
+        {
+          "name": "[loop] fragment-steps=5:fragment-uniform=false:vertex-steps=5",
+          "fps": 1200,
+          "frametime_ms": 0.834
+        },
+        {
+          "name": "[loop] fragment-steps=5:fragment-uniform=true:vertex-steps=5",
+          "fps": 1060,
+          "frametime_ms": 0.943
+        }
+      ],
+      "clean": true,
+      "result": true,
+      "errors": []
+    },
+    "ncnn-resnet50": {
+      "model_pass": true,
+      "qualification": true,
+      "avg_ms": 1463.96,
+      "errors": []
+    }
+  },
+  "proxy_profile_sources": {
+    "attention-320": "current-p42-clean-suite-20261018",
+    "compute-128": "bo-cap512-targets-r2-20261018",
+    "compute-16": "current-p42-clean-suite-20261018",
+    "compute-4": "current-p42-clean-suite-20261018",
+    "compute-64": "current-p42-clean-suite-20261018",
+    "glmark-720": "bo-cap512-default720-20261018",
+    "ioctl": "bo-cap512-targets-r2-20261018",
+    "ml-all": "current-p42-clean-suite-20261018",
+    "ncnn-mobilenet_v2": "current-p42-clean-suite-20261018",
+    "ncnn-mobilenet_v3": "current-p42-clean-suite-20261018",
+    "glmark-1080": "bo-cap512-targets-r2-20261018",
+    "ncnn-resnet50": "bo-cap512-targets-r2-20261018"
+  },
+  "dual_reference": {
+    "dual-0": {
+      "iter_us": {
+        "min": 3462.0,
+        "avg": 3951.69,
+        "max": 14218.0,
+        "total": 395169.0
+      },
+      "correct": true,
+      "renderer": [
+        "Mali-G610 (Panfrost)"
+      ],
+      "phases_us": {
+        "cpu_prepare": {
+          "samples": 100.0,
+          "min": 1801.0,
+          "avg": 2025.61,
+          "max": 2289.0,
+          "total": 202561.0
+        },
+        "buffer_upload": {
+          "samples": 100.0,
+          "min": 790.0,
+          "avg": 883.9,
+          "max": 1063.0,
+          "total": 88390.0
+        },
+        "dispatch_call": {
+          "samples": 100.0,
+          "min": 367.0,
+          "avg": 543.76,
+          "max": 10117.0,
+          "total": 54376.0
+        },
+        "memory_barrier": {
+          "samples": 100.0,
+          "min": 81.0,
+          "avg": 92.33,
+          "max": 192.0,
+          "total": 9233.0
+        },
+        "map_wait": {
+          "samples": 100.0,
+          "min": 170.0,
+          "avg": 403.74,
+          "max": 770.0,
+          "total": 40374.0
+        },
+        "unmap": {
+          "samples": 100.0,
+          "min": 1.0,
+          "avg": 2.35,
+          "max": 4.0,
+          "total": 235.0
+        },
+        "iter_total": {
+          "samples": 100.0,
+          "min": 3462.0,
+          "avg": 3951.69,
+          "max": 14218.0,
+          "total": 395169.0
+        }
+      },
+      "config": [
+        "PERF_CONFIG iterations=100 warmup=5 count=1048576 bytes=4194304 alu_iters=1",
+        "PERF_CPU_PREPARE_EXCLUDED=0"
+      ]
+    },
+    "dual-1": {
+      "iter_us": {
+        "min": 3643.0,
+        "avg": 3914.28,
+        "max": 4232.0,
+        "total": 391428.0
+      },
+      "correct": true,
+      "renderer": [
+        "Mali-G610 (Panfrost)"
+      ],
+      "phases_us": {
+        "cpu_prepare": {
+          "samples": 100.0,
+          "min": 1930.0,
+          "avg": 2058.62,
+          "max": 2251.0,
+          "total": 205862.0
+        },
+        "buffer_upload": {
+          "samples": 100.0,
+          "min": 820.0,
+          "avg": 906.28,
+          "max": 1110.0,
+          "total": 90628.0
+        },
+        "dispatch_call": {
+          "samples": 100.0,
+          "min": 381.0,
+          "avg": 443.47,
+          "max": 699.0,
+          "total": 44347.0
+        },
+        "memory_barrier": {
+          "samples": 100.0,
+          "min": 86.0,
+          "avg": 94.19,
+          "max": 149.0,
+          "total": 9419.0
+        },
+        "map_wait": {
+          "samples": 100.0,
+          "min": 141.0,
+          "avg": 409.4,
+          "max": 598.0,
+          "total": 40940.0
+        },
+        "unmap": {
+          "samples": 100.0,
+          "min": 1.0,
+          "avg": 2.32,
+          "max": 4.0,
+          "total": 232.0
+        },
+        "iter_total": {
+          "samples": 100.0,
+          "min": 3643.0,
+          "avg": 3914.28,
+          "max": 4232.0,
+          "total": 391428.0
+        }
+      },
+      "config": [
+        "PERF_CONFIG iterations=100 warmup=5 count=1048576 bytes=4194304 alu_iters=1",
+        "PERF_CPU_PREPARE_EXCLUDED=0"
+      ]
+    }
+  },
+  "runs": {
+    "native-p42-comparison-20261018": {
+      "command": [
+        "python3",
+        "build/native-current-20261018/native-controller.py"
+      ],
+      "returncode": 0,
+      "status": "COMPLETED",
+      "started": "2026-10-18T02:24:31.074729+00:00",
+      "ended": "2026-10-18T02:42:55.860009+00:00",
+      "wrapper": "build/lab-runs/native-p42-comparison-20261018/result.json",
+      "logs": "GPU-SFTP/log/native-current/native-p42-comparison-20261018"
+    },
+    "current-p42-clean-suite-20261018": {
+      "command": [
+        "python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/native-current-20261018/qualified/clean",
+        "--workload",
+        "glmark",
+        "--performance",
+        "--benchmark-only",
+        "--suite"
+      ],
+      "returncode": 0,
+      "status": "COMPLETED",
+      "started": "2026-10-18T02:43:01.050960+00:00",
+      "ended": "2026-10-18T02:56:08.354810+00:00",
+      "wrapper": "build/lab-runs/current-p42-clean-suite-20261018/result.json",
+      "logs": "GPU-SFTP/log/realm-xshm/current-p42-clean-suite-20261018"
+    },
+    "current-p42-dual-perf-20261018": {
+      "command": [
+        "python3",
+        "build/native-current-20261018/qualified/dual/launch.py",
+        "--images",
+        "build/native-current-20261018/qualified/dual",
+        "--workload",
+        "compute",
+        "--performance"
+      ],
+      "returncode": 0,
+      "status": "COMPLETED",
+      "started": "2026-10-18T02:21:27.658737+00:00",
+      "ended": "2026-10-18T02:24:29.798965+00:00",
+      "wrapper": "build/lab-runs/current-p42-dual-perf-20261018/result.json",
+      "logs": "GPU-SFTP/log/realm-xshm/current-p42-dual-perf-20261018"
+    },
+    "bo-cap512-default720-20261018": {
+      "command": [
+        "python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/bo-capacity-20261018/cap512-qualified",
+        "--workload",
+        "glmark",
+        "--performance",
+        "--benchmark-only",
+        "--suite",
+        "--profiles",
+        "glmark-720"
+      ],
+      "returncode": 0,
+      "status": "COMPLETED",
+      "started": "2026-10-18T03:37:24.777528+00:00",
+      "ended": "2026-10-18T03:45:58.490634+00:00",
+      "wrapper": "build/lab-runs/bo-cap512-default720-20261018/result.json",
+      "logs": "GPU-SFTP/log/realm-xshm/bo-cap512-default720-20261018"
+    },
+    "bo-cap512-targets-r2-20261018": {
+      "command": [
+        "python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/bo-capacity-20261018/final",
+        "--workload",
+        "glmark",
+        "--performance",
+        "--benchmark-only",
+        "--large-pool",
+        "--suite",
+        "--profiles",
+        "ncnn-resnet50",
+        "glmark-1080",
+        "ioctl",
+        "compute-128"
+      ],
+      "returncode": 0,
+      "status": "COMPLETED",
+      "started": "2026-10-18T03:46:00.242534+00:00",
+      "ended": "2026-10-18T04:00:13.854096+00:00",
+      "wrapper": "build/lab-runs/bo-cap512-targets-r2-20261018/result.json",
+      "logs": "GPU-SFTP/log/realm-xshm/bo-cap512-targets-r2-20261018"
+    },
+    "bo-cap512-dual-isolation-20261018": {
+      "command": [
+        "python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/bo-capacity-20261018/final",
+        "--workload",
+        "compute"
+      ],
+      "returncode": 0,
+      "status": "COMPLETED",
+      "started": "2026-10-18T04:00:15.059257+00:00",
+      "ended": "2026-10-18T04:02:28.596296+00:00",
+      "wrapper": "build/lab-runs/bo-cap512-dual-isolation-20261018/result.json",
+      "logs": "GPU-SFTP/log/realm-xshm/bo-cap512-dual-isolation-20261018"
+    }
+  },
+  "input_sha256": {
+    "docs/shared/evidence/native-current-20261018/metrics.json": "008a3379880bfca9bde2e32098cd498b3a7b41840b2d1362299077c7c2842ad7",
+    "docs/shared/evidence/bo-capacity-fix-20261018/audit.json": "b878d73a01ea2c4cc9cdf0fd638ec1bdd217581c58f4c13d9903b42b2c577a3d"
+  }
+}

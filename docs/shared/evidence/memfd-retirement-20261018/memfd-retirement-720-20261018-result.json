@@ -1,0 +1,21 @@
+{
+  "run_id": "memfd-retirement-720-20261018",
+  "command": [
+    "python3",
+    "build/memfd-retirement-20261018/run-candidate.py",
+    "--workload",
+    "glmark",
+    "--performance",
+    "--benchmark-only",
+    "--suite",
+    "--profiles",
+    "glmark-720"
+  ],
+  "cwd": "/home/mzh/gpu",
+  "started": "2026-10-18T05:29:22.895967+00:00",
+  "status": "COMPLETED",
+  "allow_rk_reboot": false,
+  "recover_rk_offline": false,
+  "returncode": 0,
+  "ended": "2026-10-18T05:38:19.196699+00:00"
+}

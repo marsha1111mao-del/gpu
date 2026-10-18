@@ -1,0 +1,796 @@
+{
+  "regression_run_id": "glmark-opt-20261016-opp3-regression32",
+  "native_run_id": "glmark-opt-20261016-opp3-native-full",
+  "boot_id": "de6db746-7603-440b-bd2b-528d3adaf559",
+  "gpu_requested_hz": 600000000,
+  "gpu_actual_hz": 594000000,
+  "sample_scope": "One full run per path/resolution; paired scene comparison, not a confidence interval.",
+  "resolutions": {
+    "1280x720": {
+      "native_score": 1432,
+      "client_score": 1058,
+      "score_retention_pct": 73.88268156424581,
+      "score_decrease_pct": 26.11731843575419,
+      "scene_fps_retention_geomean_pct": 77.1715500819837,
+      "median_added_ms": 0.18199999999999994,
+      "validation": {
+        "success": 26,
+        "known_failure": 1,
+        "unknown": 6,
+        "unexpected_failure": 0
+      },
+      "native_clock_samples": 70,
+      "native_gpu_temp_mc_min": 49000,
+      "native_gpu_temp_mc_max": 53615,
+      "shared_clock_samples": {
+        "samples": 67,
+        "actual_hz_values": [
+          594000000
+        ],
+        "gpu_temp_mc_min": 49923,
+        "gpu_temp_mc_max": 53615
+      },
+      "cache_counters": {
+        "poll_us": 1000,
+        "waits": 349427,
+        "polls": 695371,
+        "total_wait_ns": 634456669546,
+        "errors": 0,
+        "completed_exports": 0,
+        "lazy_discards": 0,
+        "timeline_flags_0": 0,
+        "timeline_flags_1": 503556,
+        "timeline_flags_2": 0,
+        "timeline_flags_3": 0,
+        "timeline_flags_4": 0,
+        "timeline_flags_5": 0,
+        "timeline_flags_6": 0,
+        "timeline_flags_7": 0,
+        "timeline_flags_8": 0,
+        "timeline_flags_9": 0,
+        "timeline_flags_a": 0,
+        "timeline_flags_b": 0,
+        "timeline_flags_c": 0,
+        "timeline_flags_d": 0,
+        "timeline_flags_e": 0,
+        "timeline_flags_f": 0,
+        "timeline_nonblock": 503527,
+        "timeline_success": 503521,
+        "timeline_pending": 35,
+        "cache_hits": 383980,
+        "cache_candidates": 887507,
+        "cache_records": 503492,
+        "cache_mutations": 1916372,
+        "cache_miss_empty": 4,
+        "cache_miss_point": 450268,
+        "cache_miss_epoch": 53255,
+        "cache_miss_blocked": 0
+      },
+      "scenes": [
+        {
+          "scene": "[build] use-vbo=false:",
+          "native_fps": 947,
+          "client_fps": 1020,
+          "native_ms": 1.056,
+          "client_ms": 0.981,
+          "fps_retention_pct": 107.70855332629355,
+          "time_increase_pct": -7.156862745098036,
+          "added_ms": -0.07500000000000007
+        },
+        {
+          "scene": "[build] use-vbo=true:",
+          "native_fps": 2282,
+          "client_fps": 1524,
+          "native_ms": 0.438,
+          "client_ms": 0.656,
+          "fps_retention_pct": 66.78352322524101,
+          "time_increase_pct": 49.737532808398946,
+          "added_ms": 0.21800000000000003
+        },
+        {
+          "scene": "[texture] texture-filter=nearest:",
+          "native_fps": 2322,
+          "client_fps": 1509,
+          "native_ms": 0.431,
+          "client_ms": 0.663,
+          "fps_retention_pct": 64.98708010335918,
+          "time_increase_pct": 53.876739562624266,
+          "added_ms": 0.23200000000000004
+        },
+        {
+          "scene": "[texture] texture-filter=linear:",
+          "native_fps": 2319,
+          "client_fps": 1508,
+          "native_ms": 0.431,
+          "client_ms": 0.663,
+          "fps_retention_pct": 65.02802932298404,
+          "time_increase_pct": 53.77984084880636,
+          "added_ms": 0.23200000000000004
+        },
+        {
+          "scene": "[texture] texture-filter=mipmap:",
+          "native_fps": 2304,
+          "client_fps": 1509,
+          "native_ms": 0.434,
+          "client_ms": 0.663,
+          "fps_retention_pct": 65.49479166666667,
+          "time_increase_pct": 52.683896620278325,
+          "added_ms": 0.22900000000000004
+        },
+        {
+          "scene": "[shading] shading=gouraud:",
+          "native_fps": 1916,
+          "client_fps": 1432,
+          "native_ms": 0.522,
+          "client_ms": 0.698,
+          "fps_retention_pct": 74.73903966597078,
+          "time_increase_pct": 33.79888268156424,
+          "added_ms": 0.17599999999999993
+        },
+        {
+          "scene": "[shading] shading=blinn-phong-inf:",
+          "native_fps": 1883,
+          "client_fps": 1422,
+          "native_ms": 0.531,
+          "client_ms": 0.704,
+          "fps_retention_pct": 75.51779075942645,
+          "time_increase_pct": 32.419127988748244,
+          "added_ms": 0.17299999999999993
+        },
+        {
+          "scene": "[shading] shading=phong:",
+          "native_fps": 1717,
+          "client_fps": 1337,
+          "native_ms": 0.582,
+          "client_ms": 0.748,
+          "fps_retention_pct": 77.8683750728014,
+          "time_increase_pct": 28.42183994016454,
+          "added_ms": 0.16600000000000004
+        },
+        {
+          "scene": "[shading] shading=cel:",
+          "native_fps": 1709,
+          "client_fps": 1335,
+          "native_ms": 0.585,
+          "client_ms": 0.75,
+          "fps_retention_pct": 78.11585722644821,
+          "time_increase_pct": 28.014981273408246,
+          "added_ms": 0.16500000000000004
+        },
+        {
+          "scene": "[bump] bump-render=high-poly:",
+          "native_fps": 1069,
+          "client_fps": 1014,
+          "native_ms": 0.936,
+          "client_ms": 0.987,
+          "fps_retention_pct": 94.85500467726848,
+          "time_increase_pct": 5.424063116370803,
+          "added_ms": 0.050999999999999934
+        },
+        {
+          "scene": "[bump] bump-render=normals:",
+          "native_fps": 2611,
+          "client_fps": 1545,
+          "native_ms": 0.383,
+          "client_ms": 0.647,
+          "fps_retention_pct": 59.17273075450019,
+          "time_increase_pct": 68.9967637540453,
+          "added_ms": 0.264
+        },
+        {
+          "scene": "[bump] bump-render=height:",
+          "native_fps": 2466,
+          "client_fps": 1527,
+          "native_ms": 0.406,
+          "client_ms": 0.655,
+          "fps_retention_pct": 61.92214111922141,
+          "time_increase_pct": 61.493123772102166,
+          "added_ms": 0.249
+        },
+        {
+          "scene": "[effect2d] kernel=0,1,0;1,-4,1;0,1,0;:",
+          "native_fps": 1761,
+          "client_fps": 1385,
+          "native_ms": 0.568,
+          "client_ms": 0.722,
+          "fps_retention_pct": 78.64849517319705,
+          "time_increase_pct": 27.148014440433222,
+          "added_ms": 0.15400000000000003
+        },
+        {
+          "scene": "[effect2d] kernel=1,1,1,1,1;1,1,1,1,1;1,1,1,1,1;:",
+          "native_fps": 826,
+          "client_fps": 748,
+          "native_ms": 1.211,
+          "client_ms": 1.338,
+          "fps_retention_pct": 90.55690072639226,
+          "time_increase_pct": 10.427807486631014,
+          "added_ms": 0.127
+        },
+        {
+          "scene": "[pulsar] light=false:quads=5:texture=false:",
+          "native_fps": 1684,
+          "client_fps": 1234,
+          "native_ms": 0.594,
+          "client_ms": 0.811,
+          "fps_retention_pct": 73.27790973871734,
+          "time_increase_pct": 36.46677471636952,
+          "added_ms": 0.21700000000000008
+        },
+        {
+          "scene": "[desktop] blur-radius=5:effect=blur:passes=1:separable=true:windows=4:",
+          "native_fps": 387,
+          "client_fps": 256,
+          "native_ms": 2.589,
+          "client_ms": 3.912,
+          "fps_retention_pct": 66.14987080103359,
+          "time_increase_pct": 51.171875,
+          "added_ms": 1.323
+        },
+        {
+          "scene": "[desktop] effect=shadow:windows=4:",
+          "native_fps": 847,
+          "client_fps": 681,
+          "native_ms": 1.181,
+          "client_ms": 1.469,
+          "fps_retention_pct": 80.40141676505313,
+          "time_increase_pct": 24.37591776798824,
+          "added_ms": 0.28800000000000003
+        },
+        {
+          "scene": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=map:",
+          "native_fps": 47,
+          "client_fps": 46,
+          "native_ms": 21.355,
+          "client_ms": 22.085,
+          "fps_retention_pct": 97.87234042553192,
+          "time_increase_pct": 2.1739130434782705,
+          "added_ms": 0.7300000000000004
+        },
+        {
+          "scene": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=subdata:",
+          "native_fps": 47,
+          "client_fps": 46,
+          "native_ms": 21.432,
+          "client_ms": 22.143,
+          "fps_retention_pct": 97.87234042553192,
+          "time_increase_pct": 2.1739130434782705,
+          "added_ms": 0.7110000000000021
+        },
+        {
+          "scene": "[buffer] columns=200:interleave=true:update-dispersion=0.9:update-fraction=0.5:update-method=map:",
+          "native_fps": 66,
+          "client_fps": 65,
+          "native_ms": 15.266,
+          "client_ms": 15.418,
+          "fps_retention_pct": 98.48484848484848,
+          "time_increase_pct": 1.538461538461533,
+          "added_ms": 0.15199999999999925
+        },
+        {
+          "scene": "[ideas] speed=duration:",
+          "native_fps": 481,
+          "client_fps": 404,
+          "native_ms": 2.082,
+          "client_ms": 2.477,
+          "fps_retention_pct": 83.99168399168398,
+          "time_increase_pct": 19.059405940594054,
+          "added_ms": 0.395
+        },
+        {
+          "scene": "[jellyfish] <default>:",
+          "native_fps": 1224,
+          "client_fps": 1055,
+          "native_ms": 0.817,
+          "client_ms": 0.948,
+          "fps_retention_pct": 86.19281045751634,
+          "time_increase_pct": 16.018957345971565,
+          "added_ms": 0.131
+        },
+        {
+          "scene": "[terrain] <default>:",
+          "native_fps": 78,
+          "client_fps": 51,
+          "native_ms": 12.973,
+          "client_ms": 19.942,
+          "fps_retention_pct": 65.38461538461539,
+          "time_increase_pct": 52.941176470588225,
+          "added_ms": 6.968999999999999
+        },
+        {
+          "scene": "[shadow] <default>:",
+          "native_fps": 982,
+          "client_fps": 779,
+          "native_ms": 1.019,
+          "client_ms": 1.285,
+          "fps_retention_pct": 79.32790224032587,
+          "time_increase_pct": 26.059050064184852,
+          "added_ms": 0.266
+        },
+        {
+          "scene": "[refract] <default>:",
+          "native_fps": 196,
+          "client_fps": 161,
+          "native_ms": 5.128,
+          "client_ms": 6.244,
+          "fps_retention_pct": 82.14285714285714,
+          "time_increase_pct": 21.739130434782616,
+          "added_ms": 1.1159999999999997
+        },
+        {
+          "scene": "[conditionals] fragment-steps=0:vertex-steps=0:",
+          "native_fps": 1972,
+          "client_fps": 1440,
+          "native_ms": 0.507,
+          "client_ms": 0.695,
+          "fps_retention_pct": 73.02231237322515,
+          "time_increase_pct": 36.94444444444444,
+          "added_ms": 0.18799999999999994
+        },
+        {
+          "scene": "[conditionals] fragment-steps=5:vertex-steps=0:",
+          "native_fps": 1855,
+          "client_fps": 1410,
+          "native_ms": 0.539,
+          "client_ms": 0.709,
+          "fps_retention_pct": 76.01078167115902,
+          "time_increase_pct": 31.560283687943258,
+          "added_ms": 0.16999999999999993
+        },
+        {
+          "scene": "[conditionals] fragment-steps=0:vertex-steps=5:",
+          "native_fps": 1967,
+          "client_fps": 1449,
+          "native_ms": 0.508,
+          "client_ms": 0.69,
+          "fps_retention_pct": 73.66548042704626,
+          "time_increase_pct": 35.7487922705314,
+          "added_ms": 0.18199999999999994
+        },
+        {
+          "scene": "[function] fragment-complexity=low:fragment-steps=5:",
+          "native_fps": 1965,
+          "client_fps": 1448,
+          "native_ms": 0.509,
+          "client_ms": 0.691,
+          "fps_retention_pct": 73.68956743002545,
+          "time_increase_pct": 35.70441988950277,
+          "added_ms": 0.18199999999999994
+        },
+        {
+          "scene": "[function] fragment-complexity=medium:fragment-steps=5:",
+          "native_fps": 1737,
+          "client_fps": 1359,
+          "native_ms": 0.576,
+          "client_ms": 0.736,
+          "fps_retention_pct": 78.23834196891191,
+          "time_increase_pct": 27.81456953642385,
+          "added_ms": 0.16000000000000003
+        },
+        {
+          "scene": "[loop] fragment-loop=false:fragment-steps=5:vertex-steps=5:",
+          "native_fps": 1961,
+          "client_fps": 1448,
+          "native_ms": 0.51,
+          "client_ms": 0.691,
+          "fps_retention_pct": 73.83987761346252,
+          "time_increase_pct": 35.4281767955801,
+          "added_ms": 0.18099999999999994
+        },
+        {
+          "scene": "[loop] fragment-steps=5:fragment-uniform=false:vertex-steps=5:",
+          "native_fps": 1962,
+          "client_fps": 1448,
+          "native_ms": 0.51,
+          "client_ms": 0.691,
+          "fps_retention_pct": 73.80224260958205,
+          "time_increase_pct": 35.49723756906078,
+          "added_ms": 0.18099999999999994
+        },
+        {
+          "scene": "[loop] fragment-steps=5:fragment-uniform=true:vertex-steps=5:",
+          "native_fps": 1731,
+          "client_fps": 1357,
+          "native_ms": 0.578,
+          "client_ms": 0.737,
+          "fps_retention_pct": 78.39399191218949,
+          "time_increase_pct": 27.560795873249823,
+          "added_ms": 0.15900000000000003
+        }
+      ]
+    },
+    "1920x1080": {
+      "native_score": 997,
+      "client_score": 847,
+      "score_retention_pct": 84.95486459378134,
+      "score_decrease_pct": 15.045135406218657,
+      "scene_fps_retention_geomean_pct": 87.27470236442423,
+      "median_added_ms": 0.14900000000000002,
+      "validation": {
+        "success": 26,
+        "known_failure": 1,
+        "unknown": 6,
+        "unexpected_failure": 0
+      },
+      "native_clock_samples": 70,
+      "native_gpu_temp_mc_min": 50846,
+      "native_gpu_temp_mc_max": 54538,
+      "shared_clock_samples": {
+        "samples": 67,
+        "actual_hz_values": [
+          594000000
+        ],
+        "gpu_temp_mc_min": 49923,
+        "gpu_temp_mc_max": 53615
+      },
+      "cache_counters": {
+        "poll_us": 1000,
+        "waits": 279885,
+        "polls": 559303,
+        "total_wait_ns": 525333412901,
+        "errors": 0,
+        "completed_exports": 0,
+        "lazy_discards": 0,
+        "timeline_flags_0": 0,
+        "timeline_flags_1": 412397,
+        "timeline_flags_2": 0,
+        "timeline_flags_3": 0,
+        "timeline_flags_4": 0,
+        "timeline_flags_5": 0,
+        "timeline_flags_6": 0,
+        "timeline_flags_7": 0,
+        "timeline_flags_8": 0,
+        "timeline_flags_9": 0,
+        "timeline_flags_a": 0,
+        "timeline_flags_b": 0,
+        "timeline_flags_c": 0,
+        "timeline_flags_d": 0,
+        "timeline_flags_e": 0,
+        "timeline_flags_f": 0,
+        "timeline_nonblock": 412368,
+        "timeline_success": 412344,
+        "timeline_pending": 53,
+        "cache_hits": 311791,
+        "cache_candidates": 724159,
+        "cache_records": 412315,
+        "cache_mutations": 1545768,
+        "cache_miss_empty": 3,
+        "cache_miss_point": 368253,
+        "cache_miss_epoch": 44112,
+        "cache_miss_blocked": 0
+      },
+      "scenes": [
+        {
+          "scene": "[build] use-vbo=false:",
+          "native_fps": 742,
+          "client_fps": 954,
+          "native_ms": 1.349,
+          "client_ms": 1.049,
+          "fps_retention_pct": 128.57142857142858,
+          "time_increase_pct": -22.22222222222222,
+          "added_ms": -0.30000000000000004
+        },
+        {
+          "scene": "[build] use-vbo=true:",
+          "native_fps": 1775,
+          "client_fps": 1380,
+          "native_ms": 0.564,
+          "client_ms": 0.725,
+          "fps_retention_pct": 77.74647887323944,
+          "time_increase_pct": 28.623188405797094,
+          "added_ms": 0.16100000000000003
+        },
+        {
+          "scene": "[texture] texture-filter=nearest:",
+          "native_fps": 1560,
+          "client_fps": 1235,
+          "native_ms": 0.641,
+          "client_ms": 0.81,
+          "fps_retention_pct": 79.16666666666667,
+          "time_increase_pct": 26.315789473684205,
+          "added_ms": 0.16900000000000004
+        },
+        {
+          "scene": "[texture] texture-filter=linear:",
+          "native_fps": 1568,
+          "client_fps": 1236,
+          "native_ms": 0.638,
+          "client_ms": 0.809,
+          "fps_retention_pct": 78.8265306122449,
+          "time_increase_pct": 26.860841423948223,
+          "added_ms": 0.17100000000000004
+        },
+        {
+          "scene": "[texture] texture-filter=mipmap:",
+          "native_fps": 1566,
+          "client_fps": 1239,
+          "native_ms": 0.639,
+          "client_ms": 0.807,
+          "fps_retention_pct": 79.11877394636015,
+          "time_increase_pct": 26.39225181598064,
+          "added_ms": 0.16800000000000004
+        },
+        {
+          "scene": "[shading] shading=gouraud:",
+          "native_fps": 1517,
+          "client_fps": 1210,
+          "native_ms": 0.659,
+          "client_ms": 0.827,
+          "fps_retention_pct": 79.76268951878708,
+          "time_increase_pct": 25.371900826446293,
+          "added_ms": 0.16799999999999993
+        },
+        {
+          "scene": "[shading] shading=blinn-phong-inf:",
+          "native_fps": 1481,
+          "client_fps": 1194,
+          "native_ms": 0.675,
+          "client_ms": 0.838,
+          "fps_retention_pct": 80.62120189061444,
+          "time_increase_pct": 24.036850921273036,
+          "added_ms": 0.16299999999999992
+        },
+        {
+          "scene": "[shading] shading=phong:",
+          "native_fps": 1301,
+          "client_fps": 1094,
+          "native_ms": 0.769,
+          "client_ms": 0.914,
+          "fps_retention_pct": 84.0891621829362,
+          "time_increase_pct": 18.92138939670933,
+          "added_ms": 0.14500000000000002
+        },
+        {
+          "scene": "[shading] shading=cel:",
+          "native_fps": 1277,
+          "client_fps": 1079,
+          "native_ms": 0.783,
+          "client_ms": 0.927,
+          "fps_retention_pct": 84.49490994518402,
+          "time_increase_pct": 18.35032437442077,
+          "added_ms": 0.14400000000000002
+        },
+        {
+          "scene": "[bump] bump-render=high-poly:",
+          "native_fps": 943,
+          "client_fps": 883,
+          "native_ms": 1.061,
+          "client_ms": 1.133,
+          "fps_retention_pct": 93.6373276776246,
+          "time_increase_pct": 6.795016987542479,
+          "added_ms": 0.07200000000000006
+        },
+        {
+          "scene": "[bump] bump-render=normals:",
+          "native_fps": 1820,
+          "client_fps": 1390,
+          "native_ms": 0.55,
+          "client_ms": 0.72,
+          "fps_retention_pct": 76.37362637362638,
+          "time_increase_pct": 30.935251798561158,
+          "added_ms": 0.16999999999999993
+        },
+        {
+          "scene": "[bump] bump-render=height:",
+          "native_fps": 1620,
+          "client_fps": 1290,
+          "native_ms": 0.617,
+          "client_ms": 0.775,
+          "fps_retention_pct": 79.62962962962963,
+          "time_increase_pct": 25.581395348837212,
+          "added_ms": 0.15800000000000003
+        },
+        {
+          "scene": "[effect2d] kernel=0,1,0;1,-4,1;0,1,0;:",
+          "native_fps": 937,
+          "client_fps": 860,
+          "native_ms": 1.068,
+          "client_ms": 1.163,
+          "fps_retention_pct": 91.78228388473853,
+          "time_increase_pct": 8.953488372093021,
+          "added_ms": 0.09499999999999997
+        },
+        {
+          "scene": "[effect2d] kernel=1,1,1,1,1;1,1,1,1,1;1,1,1,1,1;:",
+          "native_fps": 448,
+          "client_fps": 376,
+          "native_ms": 2.235,
+          "client_ms": 2.667,
+          "fps_retention_pct": 83.92857142857143,
+          "time_increase_pct": 19.14893617021276,
+          "added_ms": 0.43199999999999994
+        },
+        {
+          "scene": "[pulsar] light=false:quads=5:texture=false:",
+          "native_fps": 1170,
+          "client_fps": 1032,
+          "native_ms": 0.855,
+          "client_ms": 0.969,
+          "fps_retention_pct": 88.2051282051282,
+          "time_increase_pct": 13.372093023255815,
+          "added_ms": 0.11399999999999999
+        },
+        {
+          "scene": "[desktop] blur-radius=5:effect=blur:passes=1:separable=true:windows=4:",
+          "native_fps": 233,
+          "client_fps": 209,
+          "native_ms": 4.302,
+          "client_ms": 4.804,
+          "fps_retention_pct": 89.69957081545064,
+          "time_increase_pct": 11.483253588516739,
+          "added_ms": 0.5020000000000007
+        },
+        {
+          "scene": "[desktop] effect=shadow:windows=4:",
+          "native_fps": 591,
+          "client_fps": 562,
+          "native_ms": 1.694,
+          "client_ms": 1.78,
+          "fps_retention_pct": 95.09306260575296,
+          "time_increase_pct": 5.160142348754437,
+          "added_ms": 0.08600000000000008
+        },
+        {
+          "scene": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=map:",
+          "native_fps": 47,
+          "client_fps": 44,
+          "native_ms": 21.467,
+          "client_ms": 23.247,
+          "fps_retention_pct": 93.61702127659575,
+          "time_increase_pct": 6.818181818181812,
+          "added_ms": 1.7800000000000011
+        },
+        {
+          "scene": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=subdata:",
+          "native_fps": 47,
+          "client_fps": 43,
+          "native_ms": 21.524,
+          "client_ms": 23.288,
+          "fps_retention_pct": 91.48936170212765,
+          "time_increase_pct": 9.302325581395344,
+          "added_ms": 1.7639999999999993
+        },
+        {
+          "scene": "[buffer] columns=200:interleave=true:update-dispersion=0.9:update-fraction=0.5:update-method=map:",
+          "native_fps": 65,
+          "client_fps": 65,
+          "native_ms": 15.456,
+          "client_ms": 15.532,
+          "fps_retention_pct": 100.0,
+          "time_increase_pct": 0.0,
+          "added_ms": 0.07600000000000051
+        },
+        {
+          "scene": "[ideas] speed=duration:",
+          "native_fps": 433,
+          "client_fps": 374,
+          "native_ms": 2.311,
+          "client_ms": 2.679,
+          "fps_retention_pct": 86.37413394919169,
+          "time_increase_pct": 15.775401069518713,
+          "added_ms": 0.3679999999999999
+        },
+        {
+          "scene": "[jellyfish] <default>:",
+          "native_fps": 762,
+          "client_fps": 712,
+          "native_ms": 1.313,
+          "client_ms": 1.405,
+          "fps_retention_pct": 93.43832020997375,
+          "time_increase_pct": 7.02247191011236,
+          "added_ms": 0.09200000000000008
+        },
+        {
+          "scene": "[terrain] <default>:",
+          "native_fps": 57,
+          "client_fps": 48,
+          "native_ms": 17.597,
+          "client_ms": 21.219,
+          "fps_retention_pct": 84.21052631578948,
+          "time_increase_pct": 18.75,
+          "added_ms": 3.622
+        },
+        {
+          "scene": "[shadow] <default>:",
+          "native_fps": 688,
+          "client_fps": 610,
+          "native_ms": 1.456,
+          "client_ms": 1.64,
+          "fps_retention_pct": 88.66279069767442,
+          "time_increase_pct": 12.786885245901637,
+          "added_ms": 0.18399999999999994
+        },
+        {
+          "scene": "[refract] <default>:",
+          "native_fps": 144,
+          "client_fps": 138,
+          "native_ms": 6.988,
+          "client_ms": 7.274,
+          "fps_retention_pct": 95.83333333333333,
+          "time_increase_pct": 4.347826086956519,
+          "added_ms": 0.2859999999999996
+        },
+        {
+          "scene": "[conditionals] fragment-steps=0:vertex-steps=0:",
+          "native_fps": 1356,
+          "client_fps": 1128,
+          "native_ms": 0.738,
+          "client_ms": 0.887,
+          "fps_retention_pct": 83.1858407079646,
+          "time_increase_pct": 20.21276595744681,
+          "added_ms": 0.14900000000000002
+        },
+        {
+          "scene": "[conditionals] fragment-steps=5:vertex-steps=0:",
+          "native_fps": 1250,
+          "client_fps": 1081,
+          "native_ms": 0.8,
+          "client_ms": 0.926,
+          "fps_retention_pct": 86.48,
+          "time_increase_pct": 15.633672525439412,
+          "added_ms": 0.126
+        },
+        {
+          "scene": "[conditionals] fragment-steps=0:vertex-steps=5:",
+          "native_fps": 1335,
+          "client_fps": 1129,
+          "native_ms": 0.749,
+          "client_ms": 0.886,
+          "fps_retention_pct": 84.5692883895131,
+          "time_increase_pct": 18.24623560673162,
+          "added_ms": 0.137
+        },
+        {
+          "scene": "[function] fragment-complexity=low:fragment-steps=5:",
+          "native_fps": 1333,
+          "client_fps": 1126,
+          "native_ms": 0.751,
+          "client_ms": 0.889,
+          "fps_retention_pct": 84.47111777944487,
+          "time_increase_pct": 18.383658969804628,
+          "added_ms": 0.138
+        },
+        {
+          "scene": "[function] fragment-complexity=medium:fragment-steps=5:",
+          "native_fps": 1114,
+          "client_fps": 1013,
+          "native_ms": 0.898,
+          "client_ms": 0.988,
+          "fps_retention_pct": 90.93357271095152,
+          "time_increase_pct": 9.970384995064174,
+          "added_ms": 0.08999999999999997
+        },
+        {
+          "scene": "[loop] fragment-loop=false:fragment-steps=5:vertex-steps=5:",
+          "native_fps": 1332,
+          "client_fps": 1126,
+          "native_ms": 0.751,
+          "client_ms": 0.888,
+          "fps_retention_pct": 84.53453453453453,
+          "time_increase_pct": 18.294849023090578,
+          "added_ms": 0.137
+        },
+        {
+          "scene": "[loop] fragment-steps=5:fragment-uniform=false:vertex-steps=5:",
+          "native_fps": 1331,
+          "client_fps": 1127,
+          "native_ms": 0.752,
+          "client_ms": 0.888,
+          "fps_retention_pct": 84.67317806160781,
+          "time_increase_pct": 18.10115350488022,
+          "added_ms": 0.136
+        },
+        {
+          "scene": "[loop] fragment-steps=5:fragment-uniform=true:vertex-steps=5:",
+          "native_fps": 1109,
+          "client_fps": 1009,
+          "native_ms": 0.902,
+          "client_ms": 0.991,
+          "fps_retention_pct": 90.98286744815148,
+          "time_increase_pct": 9.910802775024784,
+          "added_ms": 0.08899999999999997
+        }
+      ]
+    }
+  }
+}

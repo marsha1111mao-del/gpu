@@ -13,10 +13,6 @@
 !/log/passthrough/probe/.gitkeep
 !/log/shared/
 !/log/shared/.gitkeep
-!/log/shared/vmshm-1client/
-!/log/shared/vmshm-1client/.gitkeep
-!/log/shared/vmshm-2client/
-!/log/shared/vmshm-2client/.gitkeep
 
 # Firecracker runtime binaries and test payloads rebuilt by workspace scripts
 # under ../scripts/build/.
@@ -32,12 +28,11 @@
 !/firecracker-bins/kernels/passthrough/.gitkeep
 !/firecracker-bins/kernels/passthrough/backups/
 !/firecracker-bins/kernels/passthrough/backups/.gitkeep
-!/firecracker-bins/kernels/shared/
-!/firecracker-bins/kernels/shared/.gitkeep
-!/firecracker-bins/kernels/shared/client/
-!/firecracker-bins/kernels/shared/client/.gitkeep
-!/firecracker-bins/kernels/shared/proxy/
-!/firecracker-bins/kernels/shared/proxy/.gitkeep
+
+!/firecracker-bins/kernels/realm-xshm/
+!/firecracker-bins/kernels/realm-xshm/.gitkeep
+!/firecracker-bins/kernels/realm-xshm/proxy/
+!/firecracker-bins/kernels/realm-xshm/proxy/.gitkeep
 
 # Rootfs images, mounts, and rootfs build workdirs are local/remote artifacts.
 /firecracker-bins/rootfs/**
@@ -58,9 +53,6 @@
 
 # Built test payloads.
 /tests/panthor-ioctl-smoke/panthor_ioctl_smoke
-/tests/vmshm-test/vmshm_demo
-/tests/vmshm-lookup-probe/vmshm_lookup_probe
-/tests/vmshm-raw-rpc-probe/vmshm_raw_rpc_probe
 /tests/realm-host-access-probe/*.cmd
 /tests/realm-host-access-probe/*.ko
 /tests/realm-host-access-probe/*.mod

@@ -1,0 +1,10 @@
+{
+  "kernel_cc": "aarch64-linux-gnu-gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "musl_cc": "aarch64-linux-musl-gcc (GCC) 11.2.1 20211120",
+  "libseccomp_version": "2.5.5",
+  "libseccomp_sha256": "85398b80e66a5c5f46fbf018c95159a1682d2541e27ef39573ccd2b7ebeb5b00",
+  "rust": "1.83.0",
+  "cmake": "cmake version 4.2.3",
+  "cmake_policy_minimum": "3.5",
+  "command": "cargo build --locked --release --target aarch64-unknown-linux-musl --bin firecracker"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "GPU Lab Maintenance"
+  short_description: "Audit and maintain Pi/RK3588 lab resources"
+  default_prompt: "Use $gpu-lab-maintenance to inspect and maintain Pi/RK3588 resources."

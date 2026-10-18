@@ -2,7 +2,7 @@
 
 ## 固定运行载荷
 
-`runtime-manifest.json` 固定 2026-10-15 验证组合的归档大小、SHA-256 和归档内
+`runtime-manifest.json` 固定当前RMM共享载荷及分别注明版本的Host/直通参考载荷的归档大小、SHA-256 和归档内
 每个文件的大小/哈希。`scripts/artifacts/restore-runtime.py` 先验证完整清单，
 再恢复到本目录；重复执行幂等，默认拒绝覆盖内容不同的本地文件。
 
@@ -14,22 +14,23 @@ python3 scripts/artifacts/restore-runtime.py --check
 
 | 归档 | 内容 / 来源 |
 | --- | --- |
-| `runtime/arm64-userspace-20261015.tar.gz` | 已验证 Firecracker、broker、测试程序、NCNN Vulkan 及 glmark2 null-noop 用户态 |
+| `runtime/arm64-userspace-20261018.tar.gz` | 移除memfd共享的Firecracker、测试程序、NCNN Vulkan 及 glmark2 null-noop 用户态 |
 | `runtime/arm64-host-20261015.tar.gz` | 已验证 Host #10 pmthor Image |
-| `runtime/arm64-client-20261015.tar.gz` | 已验证共享 Client Image |
-| `runtime/arm64-proxy-20261015.tar.gz` | 已验证共享 Proxy Image |
+| `runtime/arm64-realm-client-20261018.tar.gz` | RMM-only Realm Client Image |
+| `runtime/arm64-realm-proxy-20261018.tar.gz` | RMM-only Realm Proxy Image |
+| `runtime/arm64-realm-initrd-20261018.tar.gz` | 当前Realm验证与性能initrd |
 | `runtime/arm64-passthrough-20261015.tar.gz` | 2026-07-18 验证的直通 Guest Image |
 | `runtime/ncnn-source-20260526.tar.gz` | 板端实际构建使用的 NCNN 源码，含 glslang 和许可证 |
 | `runtime/glmark2-null-noop-source.tar.gz` | 板端 glmark2 定制源码，包含许可证；不安装到运行目录 |
 
-这是明确版本的复现快照。新构建载荷可以替换运行目录中的文件；不要把不同
+这些是明确版本的载荷，**不构成一键可运行的完整板端系统**：Host #10归档是历史参考；当前Realm的Host #7/RMM匹配要求见[当前基线](../docs/shared/CURRENT_BASELINE.md)。新构建载荷可以替换运行目录中的文件；不要把不同
 内核/固件/用户态混用后的结果归到此基线。单个内核压缩包均小于 50 MiB。
 归档固定保存于 Git，替代依赖旧机器私有目录的临时缓存。更新时需一并更新清单、
 来源及回归报告，避免堆积多套历史二进制。
 
 ## 第三方来源
 
-- Firecracker、vmshm-broker、Host/Guest 内核、RMM 源码固定在各子模块，
+- Firecracker、Host/Guest 内核、RMM 源码固定在各子模块，
   保留各自 LICENSE。内核配置在 `configs/verified-20261015/`。
 - glmark2 基线为上游提交 `22c527cb0556f3a1ac4445aaa52cc532760928d5`，
   `GLStateEGL::swap()` 在 null 模式下跳过无 surface 的 `eglSwapBuffers()`。
@@ -51,19 +52,18 @@ python3 scripts/artifacts/restore-runtime.py --check
 1.75 GiB。`scripts/artifacts/fetch-rootfs.sh` 校验文件大小与 SHA-256，已有正确
 文件不会重复下载。不需要 GitHub 账号；需要能访问公开 Release 下载服务。
 
-`--sync-rootfs` 会将本地固定镜像同步到板端。运行脚本会从基础镜像制作测试副本、
-注入载荷，不应依赖旧机器曾手工修改过的副本。
+当前Realm入口要求已准备的只读Panfrost镜像，不会自动同步rootfs；使用固定清单核对，不能依赖旧机器曾手工修改的副本。
 
 ## 源码构建入口
 
 | 目标 | 仓库根目录命令 |
 | --- | --- |
 | 四种内核 Image | `./scripts/build/build-verified-kernels.sh` |
-| Firecracker/broker/client-test | `./scripts/build/build-firecracker-runtime.sh` |
+| Firecracker | `./scripts/build/build-firecracker-runtime.sh` |
 | IOCTL 测试 | `./scripts/build/build-panthor-ioctl-smoke.sh` |
 | PFN 生命周期 | `./scripts/build/build-pfn-lifetime.sh` |
-| GPA/RPC 辅助探针 | `./scripts/build/build-vmshm-lookup-probe.sh`、`build-vmshm-raw-rpc-probe.sh` |
-| GLES Compute/ML | 单项共享脚本省略 `--skip-gles-remote-build`，在 ARM64 板端从源码编译 |
+| Realm工具/initrd | `./scripts/build/build-realm-xshm.sh`、`python3 scripts/build/build-realm-xshm-initrd.py --help` |
+| GLES Compute/ML | 构建完整Realm性能initrd并按Realm工具说明打包 |
 | Host Image/模块 | `INSTALL_MODULES=1 ./scripts/build/build-host-kernel-payload.sh` |
 | Realm Host 探针模块 | `./scripts/build/build-realm-host-access-probe.sh` |
 

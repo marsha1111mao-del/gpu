@@ -1,0 +1,48 @@
+--- GPU-SFTP/tests/panthor-ioctl-smoke/panthor_ioctl_smoke.c
++++ build/native-clientproxy/ioctl_perf.c
+@@ -311,8 +311,7 @@
+ 	    get_cap(fd, DRM_CAP_SYNCOBJ, "DRM_CAP_SYNCOBJ", 1) ||
+ 	    get_cap(fd, DRM_CAP_SYNCOBJ_TIMELINE,
+ 		    "DRM_CAP_SYNCOBJ_TIMELINE", 1) ||
+-	    unsupported_fd_ioctl_checks(fd) ||
+-	    query_gpu_info(fd) ||
++		    query_gpu_info(fd) ||
+ 	    query_csif_info(fd))
+ 		return -1;
+ 
+@@ -2721,7 +2720,7 @@
+ 	return ret;
+ }
+ 
+-int main(int argc, char **argv)
++static int smoke_main(int argc, char **argv)
+ {
+ 	const char *default_nodes[] = {
+ 		"/dev/dri/card0",
+@@ -2892,3 +2891,26 @@
+ 		printf("PANTHOR_IOCTL_SMOKE=BASIC_PASS\n");
+ 	return 0;
+ }
++
++static double now_us(void) { struct timespec ts; clock_gettime(CLOCK_MONOTONIC, &ts); return ts.tv_sec*1000000.0+ts.tv_nsec/1000.0; }
++int main(int argc, char **argv) {
++ const char *modes[]={"basic","vm-create","bo-create","bo-lifecycle","bo-mmap","vm-bind","vm-bind-async-sync","vm-state-flush","syncobj-lifecycle","syncobj-wait","syncobj-transfer","syncobj-timeline-wait","syncobj-signal-query","sync-file-snapshot","group-lifecycle","group-submit-syncpoint","tiler-heap-lifecycle"};
++ const char *node="/dev/dri/renderD128"; int failed=0;
++ if(argc>2) node=argv[2];
++ puts("IOCTL_PERF_PROFILE=common-supported no_client_unsupported_fd_checks warmup=3 samples=20 clock=CLOCK_MONOTONIC includes=open+basic+case+close excludes=VM_boot");
++ for(unsigned m=0;m<sizeof(modes)/sizeof(modes[0]);m++) {
++  char opt[128]; snprintf(opt,sizeof(opt),"--%s",modes[m]); char *args[]={argv[0],opt,(char*)node,NULL};
++  double sum=0,min=1e30,max=0; int rc=0,n=0;
++  for(int i=-3;i<20;i++) {
++   fflush(stdout); int saved=dup(STDOUT_FILENO); int sink=open("/dev/null",O_WRONLY); if(i!=-3) dup2(sink,STDOUT_FILENO); close(sink);
++   double start=now_us(); rc=smoke_main(3,args); double elapsed=now_us()-start;
++   fflush(stdout); dup2(saved,STDOUT_FILENO); close(saved);
++   if(rc) break;
++   if(i>=0) { printf("IOCTL_SAMPLE mode=%s index=%d us=%.3f\n",modes[m],i,elapsed); sum+=elapsed; if(elapsed<min)min=elapsed;if(elapsed>max)max=elapsed;n++; }
++  }
++  printf("IOCTL_PERF mode=%s rc=%d samples=%d avg_us=%.3f min_us=%.3f max_us=%.3f\n",modes[m],rc,n,n?sum/n:0,n?min:0,max); fflush(stdout); if(rc)failed++;
++ }
++ printf("IOCTL_MATRIX_DONE failures=%d\n",failed);
++ if(!failed) puts("PANTHOR_IOCTL_SMOKE=BASIC_PASS");
++ return failed?1:0;
++}

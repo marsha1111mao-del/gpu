@@ -1,0 +1,88 @@
+{
+  "publication": "20261018-rmm-only-baseline",
+  "checks": [
+    {
+      "check": "runtime_archives_and_restored_files",
+      "command": [
+        "python3",
+        "scripts/artifacts/restore-runtime.py",
+        "--check"
+      ],
+      "returncode": 0,
+      "details": null
+    },
+    {
+      "check": "shell_python_syntax",
+      "command": "bash -n / ast.parse",
+      "returncode": 0,
+      "details": {
+        "scripts": 33
+      }
+    },
+    {
+      "check": "rootfs_fixed_hash",
+      "command": "GPU-SFTP/firecracker-bins/rootfs/rootfs.ext2",
+      "returncode": 0,
+      "details": null
+    },
+    {
+      "check": "rootfs_fixed_hash",
+      "command": "GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4",
+      "returncode": 0,
+      "details": null
+    },
+    {
+      "check": "source_archive_fixed_hash",
+      "command": "GPU-SFTP/runtime/glmark2-null-noop-source.tar.gz",
+      "returncode": 0,
+      "details": null
+    },
+    {
+      "check": "source_archive_fixed_hash",
+      "command": "GPU-SFTP/runtime/ncnn-source-20260526.tar.gz",
+      "returncode": 0,
+      "details": null
+    },
+    {
+      "check": "rmm_policy_checks",
+      "command": "bash scripts/check/check-rmm-xshm-events.sh",
+      "returncode": 0,
+      "details": {
+        "earlier_this_session": [
+          "endpoint",
+          "memory",
+          "gpu_lease",
+          "irq"
+        ],
+        "sanitizers": [
+          "ASan",
+          "UBSan"
+        ]
+      }
+    },
+    {
+      "check": "patch_manifest",
+      "command": "python3 opencca/scripts/setup/apply-local-patches.py --check",
+      "returncode": 0,
+      "details": {
+        "earlier_this_session": "all six patches and three loader copies verified"
+      }
+    },
+    {
+      "check": "complete_checkout",
+      "command": [
+        "python3",
+        "scripts/check/check-checkout.py"
+      ],
+      "returncode": 0,
+      "log": "build/git-publication-20261018/checkout-check.log"
+    }
+  ],
+  "hardware_tests_this_publication": "NOT_RUN",
+  "retained_limitations": [
+    "VMM test-target compilation failures remain unresolved",
+    "Historical group-submit fence timeout remains documented",
+    "No hardware GPC/GPT or cross-group shadow-page-table security claim"
+  ],
+  "logs": "build/git-publication-20261018 (ignored; not committed)"
+}

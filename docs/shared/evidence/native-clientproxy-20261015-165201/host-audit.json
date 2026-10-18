@@ -1,0 +1,71 @@
+{
+  "run_id": "native-clientproxy-20261015-165201",
+  "kernel_delta_lines": 2060,
+  "fault_patterns": [
+    "GPU reset failed",
+    "Kernel panic",
+    "WARNING: CPU:",
+    "Unable to handle kernel",
+    "Internal error: Oops",
+    "BUG:",
+    "job timeout",
+    "GPU fault",
+    "gpu fault"
+  ],
+  "fault_lines": [
+    {
+      "boot_id": "6a862330-fa72-4660-b866-355f29a54925",
+      "line": "[18366.976468] Unable to handle kernel paging request at virtual address ffff800084135000"
+    },
+    {
+      "boot_id": "6a862330-fa72-4660-b866-355f29a54925",
+      "line": "[18366.990084] Internal error: Oops: 0000000096000007 [#1] PREEMPT SMP"
+    }
+  ],
+  "boots": [
+    {
+      "boot_id": "6a862330-fa72-4660-b866-355f29a54925",
+      "kernel_delta_lines": 692,
+      "fault_lines": [
+        "[18366.976468] Unable to handle kernel paging request at virtual address ffff800084135000",
+        "[18366.990084] Internal error: Oops: 0000000096000007 [#1] PREEMPT SMP"
+      ],
+      "session_closed_count": 17,
+      "session_release_count": 17,
+      "closed_total": 368039,
+      "released_total": 368039,
+      "reference_sequences_match": true
+    },
+    {
+      "boot_id": "54e46565-8950-4ffb-871d-16a7f31718a5",
+      "kernel_delta_lines": 707,
+      "fault_lines": [],
+      "session_closed_count": 2,
+      "session_release_count": 2,
+      "closed_total": 87143,
+      "released_total": 87143,
+      "reference_sequences_match": true
+    },
+    {
+      "boot_id": "2d75489f-8aaa-4981-ba20-1c785417447e",
+      "kernel_delta_lines": 661,
+      "fault_lines": [],
+      "session_closed_count": 0,
+      "session_release_count": 0,
+      "closed_total": 0,
+      "released_total": 0,
+      "reference_sequences_match": true
+    }
+  ],
+  "session_closed_count": 19,
+  "session_release_count": 19,
+  "closed_total": 455182,
+  "released_total": 455182,
+  "reference_sequences_match": true,
+  "final_health_pass": true,
+  "before_boot_id": "6a862330-fa72-4660-b866-355f29a54925",
+  "after_boot_id": "2d75489f-8aaa-4981-ba20-1c785417447e",
+  "same_boot": false,
+  "recovery_reboots": 2,
+  "native_driver_teardown_oops": true
+}

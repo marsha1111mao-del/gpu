@@ -1,0 +1,389 @@
+[
+  {
+    "name": "preflight",
+    "returncode": 0,
+    "marker": null,
+    "required_markers": [],
+    "missing_markers": [],
+    "evidence_verified": true
+  },
+  {
+    "name": "ioctl",
+    "returncode": 0,
+    "marker": "RESULT: PASS",
+    "required_markers": [
+      "RESULT: PASS",
+      "PANTHOR_IOCTL_SMOKE=BASIC_PASS",
+      "PANTHOR_IOCTL_INIT=PASS"
+    ],
+    "missing_markers": [],
+    "evidence_verified": true
+  },
+  {
+    "name": "vm-create",
+    "returncode": 0,
+    "marker": "RESULT: PASS",
+    "required_markers": [
+      "RESULT: PASS",
+      "PANTHOR_IOCTL_SMOKE=VM_CREATE_PASS",
+      "PANTHOR_IOCTL_INIT=PASS"
+    ],
+    "missing_markers": [],
+    "evidence_verified": true
+  },
+  {
+    "name": "bo-create",
+    "returncode": 0,
+    "marker": "RESULT: PASS",
+    "required_markers": [
+      "RESULT: PASS",
+      "PANTHOR_IOCTL_SMOKE=BO_CREATE_PASS",
+      "PANTHOR_IOCTL_INIT=PASS"
+    ],
+    "missing_markers": [],
+    "evidence_verified": true
+  },
+  {
+    "name": "bo-lifecycle",
+    "returncode": 0,
+    "marker": "RESULT: PASS",
+    "required_markers": [
+      "RESULT: PASS",
+      "PANTHOR_IOCTL_SMOKE=BO_LIFECYCLE_PASS",
+      "PANTHOR_IOCTL_INIT=PASS"
+    ],
+    "missing_markers": [],
+    "evidence_verified": true
+  },
+  {
+    "name": "bo-mmap",
+    "returncode": 0,
+    "marker": "RESULT: PASS",
+    "required_markers": [
+      "RESULT: PASS",
+      "PANTHOR_IOCTL_SMOKE=BO_MMAP_PASS",
+      "PANTHOR_IOCTL_INIT=PASS"
+    ],
+    "missing_markers": [],
+    "evidence_verified": true
+  },
+  {
+    "name": "vm-bind",
+    "returncode": 0,
+    "marker": "RESULT: PASS",
+    "required_markers": [
+      "RESULT: PASS",
+      "PANTHOR_IOCTL_SMOKE=VM_BIND_PASS",
+      "PANTHOR_IOCTL_INIT=PASS"
+    ],
+    "missing_markers": [],
+    "evidence_verified": true
+  },
+  {
+    "name": "vm-bind-async-sync",
+    "returncode": 0,
+    "marker": "RESULT: PASS",
+    "required_markers": [
+      "RESULT: PASS",
+      "PANTHOR_IOCTL_SMOKE=VM_BIND_ASYNC_SYNC_PASS",
+      "PANTHOR_IOCTL_INIT=PASS"
+    ],
+    "missing_markers": [],
+    "evidence_verified": true
+  },
+  {
+    "name": "vm-state-flush",
+    "returncode": 0,
+    "marker": "RESULT: PASS",
+    "required_markers": [
+      "RESULT: PASS",
+      "PANTHOR_IOCTL_SMOKE=VM_STATE_FLUSH_PASS",
+      "PANTHOR_IOCTL_INIT=PASS"
+    ],
+    "missing_markers": [],
+    "evidence_verified": true
+  },
+  {
+    "name": "syncobj-lifecycle",
+    "returncode": 0,
+    "marker": "RESULT: PASS",
+    "required_markers": [
+      "RESULT: PASS",
+      "PANTHOR_IOCTL_SMOKE=SYNCOBJ_LIFECYCLE_PASS",
+      "PANTHOR_IOCTL_INIT=PASS"
+    ],
+    "missing_markers": [],
+    "evidence_verified": true
+  },
+  {
+    "name": "syncobj-wait",
+    "returncode": 0,
+    "marker": "RESULT: PASS",
+    "required_markers": [
+      "RESULT: PASS",
+      "PANTHOR_IOCTL_SMOKE=SYNCOBJ_WAIT_PASS",
+      "PANTHOR_IOCTL_INIT=PASS"
+    ],
+    "missing_markers": [],
+    "evidence_verified": true
+  },
+  {
+    "name": "syncobj-transfer",
+    "returncode": 0,
+    "marker": "RESULT: PASS",
+    "required_markers": [
+      "RESULT: PASS",
+      "PANTHOR_IOCTL_SMOKE=SYNCOBJ_TRANSFER_PASS",
+      "PANTHOR_IOCTL_INIT=PASS"
+    ],
+    "missing_markers": [],
+    "evidence_verified": true
+  },
+  {
+    "name": "syncobj-timeline-wait",
+    "returncode": 0,
+    "marker": "RESULT: PASS",
+    "required_markers": [
+      "RESULT: PASS",
+      "PANTHOR_IOCTL_SMOKE=SYNCOBJ_TIMELINE_WAIT_PASS",
+      "PANTHOR_IOCTL_INIT=PASS"
+    ],
+    "missing_markers": [],
+    "evidence_verified": true
+  },
+  {
+    "name": "syncobj-signal-query",
+    "returncode": 0,
+    "marker": "RESULT: PASS",
+    "required_markers": [
+      "RESULT: PASS",
+      "PANTHOR_IOCTL_SMOKE=SYNCOBJ_SIGNAL_QUERY_PASS",
+      "PANTHOR_IOCTL_INIT=PASS"
+    ],
+    "missing_markers": [],
+    "evidence_verified": true
+  },
+  {
+    "name": "sync-file-snapshot",
+    "returncode": 0,
+    "marker": "RESULT: PASS",
+    "required_markers": [
+      "RESULT: PASS",
+      "PANTHOR_IOCTL_SMOKE=SYNC_FILE_SNAPSHOT_PASS",
+      "PANTHOR_IOCTL_INIT=PASS"
+    ],
+    "missing_markers": [],
+    "evidence_verified": true
+  },
+  {
+    "name": "group-lifecycle",
+    "returncode": 0,
+    "marker": "RESULT: PASS",
+    "required_markers": [
+      "RESULT: PASS",
+      "PANTHOR_IOCTL_SMOKE=GROUP_LIFECYCLE_PASS",
+      "PANTHOR_IOCTL_INIT=PASS"
+    ],
+    "missing_markers": [],
+    "evidence_verified": true
+  },
+  {
+    "name": "group-submit-syncpoint",
+    "returncode": 0,
+    "marker": "RESULT: PASS",
+    "required_markers": [
+      "RESULT: PASS",
+      "PANTHOR_IOCTL_SMOKE=GROUP_SUBMIT_SYNCPOINT_PASS",
+      "PANTHOR_IOCTL_INIT=PASS"
+    ],
+    "missing_markers": [],
+    "evidence_verified": true
+  },
+  {
+    "name": "tiler-heap-lifecycle",
+    "returncode": 0,
+    "marker": "RESULT: PASS",
+    "required_markers": [
+      "RESULT: PASS",
+      "PANTHOR_IOCTL_SMOKE=TILER_HEAP_LIFECYCLE_PASS",
+      "PANTHOR_IOCTL_INIT=PASS"
+    ],
+    "missing_markers": [],
+    "evidence_verified": true
+  },
+  {
+    "name": "pfn-lifetime",
+    "returncode": 0,
+    "marker": null,
+    "required_markers": [
+      "PMTHOR_PFN_TRANSLATION_RESULT=PASS",
+      "PMTHOR_PFN_TEST order=vm-first phase=pass",
+      "PMTHOR_PFN_TEST order=device-first phase=pass"
+    ],
+    "missing_markers": [],
+    "evidence_verified": true
+  },
+  {
+    "name": "pfn-log-check",
+    "returncode": 0,
+    "marker": "PMTHOR_PFN_LIFETIME_RESULT=PASS",
+    "required_markers": [
+      "PMTHOR_PFN_LIFETIME_RESULT=PASS"
+    ],
+    "missing_markers": [],
+    "evidence_verified": true
+  },
+  {
+    "name": "compute-4mib",
+    "returncode": 0,
+    "marker": "RESULT: PASS",
+    "required_markers": [
+      "RESULT: PASS",
+      "COMPUTE_CHECK=PASS",
+      "GPU_SMOKE_RESULT=PASS",
+      "PERF_CPU_PREPARE_EXCLUDED=1"
+    ],
+    "missing_markers": [],
+    "evidence_verified": true
+  },
+  {
+    "name": "compute-16mib",
+    "returncode": 0,
+    "marker": "RESULT: PASS",
+    "required_markers": [
+      "RESULT: PASS",
+      "COMPUTE_CHECK=PASS",
+      "GPU_SMOKE_RESULT=PASS",
+      "PERF_CPU_PREPARE_EXCLUDED=1"
+    ],
+    "missing_markers": [],
+    "evidence_verified": true
+  },
+  {
+    "name": "compute-64mib",
+    "returncode": 0,
+    "marker": "RESULT: PASS",
+    "required_markers": [
+      "RESULT: PASS",
+      "COMPUTE_CHECK=PASS",
+      "GPU_SMOKE_RESULT=PASS",
+      "PERF_CPU_PREPARE_EXCLUDED=1"
+    ],
+    "missing_markers": [],
+    "evidence_verified": true
+  },
+  {
+    "name": "compute-128mib",
+    "returncode": 0,
+    "marker": "RESULT: PASS",
+    "required_markers": [
+      "RESULT: PASS",
+      "COMPUTE_CHECK=PASS",
+      "GPU_SMOKE_RESULT=PASS",
+      "PERF_CPU_PREPARE_EXCLUDED=1"
+    ],
+    "missing_markers": [],
+    "evidence_verified": true
+  },
+  {
+    "name": "ml-all",
+    "returncode": 0,
+    "marker": "RESULT: PASS",
+    "required_markers": [
+      "RESULT: PASS",
+      "ML_RESULT=PASS",
+      "ML_CLEAN_RESULT=PASS",
+      "GPU_SMOKE_RESULT=PASS"
+    ],
+    "missing_markers": [],
+    "evidence_verified": true
+  },
+  {
+    "name": "attention320",
+    "returncode": 0,
+    "marker": "RESULT: PASS",
+    "required_markers": [
+      "RESULT: PASS",
+      "ML_RESULT=PASS",
+      "ML_CLEAN_RESULT=PASS",
+      "GPU_SMOKE_RESULT=PASS"
+    ],
+    "missing_markers": [],
+    "evidence_verified": true
+  },
+  {
+    "name": "ncnn",
+    "returncode": 0,
+    "marker": "RESULT: PASS",
+    "required_markers": [
+      "RESULT: PASS",
+      "NCNN_RESULT=PASS",
+      "NCNN_FAILED_MODELS=0",
+      "NCNN_BACKEND_QUALIFICATION=PASS"
+    ],
+    "missing_markers": [],
+    "evidence_verified": true
+  },
+  {
+    "name": "glmark-1280x720",
+    "returncode": 0,
+    "marker": "RESULT: PASS",
+    "required_markers": [
+      "RESULT: PASS",
+      "GLMARK_RESULT=PASS",
+      "GLMARK_VALIDATE=PASS",
+      "GLMARK_CLEAN_RESULT=PASS",
+      "GLMARK_UNEXPECTED_FRAMEBUFFER_ERRORS=0",
+      "GLMARK_BO_CREATE_ERRORS=0",
+      "GLMARK_EXPORT_ERRORS=0",
+      "GLMARK_VM_BIND_ERRORS=0"
+    ],
+    "missing_markers": [],
+    "evidence_verified": true
+  },
+  {
+    "name": "glmark-1920x1080",
+    "returncode": 0,
+    "marker": "RESULT: PASS",
+    "required_markers": [
+      "RESULT: PASS",
+      "GLMARK_RESULT=PASS",
+      "GLMARK_VALIDATE=PASS",
+      "GLMARK_CLEAN_RESULT=PASS",
+      "GLMARK_UNEXPECTED_FRAMEBUFFER_ERRORS=0",
+      "GLMARK_BO_CREATE_ERRORS=0",
+      "GLMARK_EXPORT_ERRORS=0",
+      "GLMARK_VM_BIND_ERRORS=0"
+    ],
+    "missing_markers": [],
+    "evidence_verified": true
+  },
+  {
+    "name": "two-client",
+    "returncode": 0,
+    "marker": "RESULT: GLES_PASS",
+    "required_markers": [
+      "RESULT: GLES_PASS"
+    ],
+    "missing_markers": [],
+    "evidence_verified": true
+  },
+  {
+    "name": "passthrough",
+    "returncode": 0,
+    "marker": "RESULT: PASS",
+    "required_markers": [
+      "RESULT: PASS"
+    ],
+    "missing_markers": [],
+    "evidence_verified": true
+  },
+  {
+    "name": "idle-after",
+    "returncode": 0,
+    "marker": null,
+    "required_markers": [],
+    "missing_markers": [],
+    "evidence_verified": true
+  }
+]

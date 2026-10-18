@@ -1,0 +1,435 @@
+[
+  {
+    "name": "preflight",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "proxy-ioctl-matrix",
+    "returncode": 0,
+    "missing_markers": [
+      "IOCTL_MATRIX_DONE failures=0"
+    ],
+    "verified": false
+  },
+  {
+    "name": "health-after-proxy-ioctl",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "native-ioctl-matrix",
+    "returncode": 1,
+    "missing_markers": [
+      "IOCTL_MATRIX_DONE failures=0"
+    ],
+    "verified": false
+  },
+  {
+    "name": "health-after-ioctl-matrix",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "proxy-compute-4mib",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "health-after-proxy-compute-4mib",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "native-compute-4mib",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "health-after-compute-4mib",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "proxy-compute-16mib",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "health-after-proxy-compute-16mib",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "native-compute-16mib",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "health-after-compute-16mib",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "proxy-compute-64mib",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "health-after-proxy-compute-64mib",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "native-compute-64mib",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "health-after-compute-64mib",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "proxy-compute-128mib",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "health-after-proxy-compute-128mib",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "native-compute-128mib",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "health-after-compute-128mib",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "proxy-ml-all",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "health-after-proxy-ml-all",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "native-ml-all",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "health-after-ml-all",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "proxy-attention320",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "health-after-proxy-attention320",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "native-attention320",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "health-after-attention320",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "proxy-ncnn",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "health-after-proxy-ncnn",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "native-ncnn",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "health-after-ncnn",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "proxy-glmark-1280x720",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "health-after-proxy-glmark-1280x720",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "native-glmark-1280x720",
+    "returncode": 90,
+    "missing_markers": [
+      "RESTORED_DRIVER=pmthor"
+    ],
+    "verified": false
+  },
+  {
+    "name": "health-after-glmark-1280x720",
+    "returncode": 1,
+    "missing_markers": [
+      "HEALTH=PASS"
+    ],
+    "verified": false
+  },
+  {
+    "name": "health-after-720-recovery",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "proxy-glmark-1920x1080",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "health-after-proxy-glmark-1920x1080",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "native-glmark-1920x1080",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "health-after-glmark-1920x1080",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "proxy-two-client",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "health-after-proxy-two-client",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "native-two-client",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "health-after-two-client",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "passthrough",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "idle-after",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "health-before-supplement",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "proxy-ioctl-matrix-complete",
+    "returncode": 0,
+    "missing_markers": [
+      "IOCTL_MATRIX_DONE failures=0"
+    ],
+    "verified": false
+  },
+  {
+    "name": "health-after-proxy-ioctl-complete",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "proxy-mmap-positive",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "health-after-proxy-mmap-positive",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "native-mmap-positive",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "health-after-mmap-positive",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "proxy-compute-128mib-clean",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "health-after-proxy-128-clean",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "native-compute-128mib-clean",
+    "returncode": 255,
+    "missing_markers": [
+      "RESTORED_DRIVER=pmthor",
+      "RESTORED_CPUS=0-1"
+    ],
+    "verified": false
+  },
+  {
+    "name": "health-after-128-clean",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "proxy-ncnn-resnet-repeat",
+    "returncode": null,
+    "missing_markers": [],
+    "verified": false
+  },
+  {
+    "name": "health-after-recovery-resnet",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "prepare-group-deadline",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "proxy-group-valid-deadline",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "health-after-proxy-group-valid-deadline",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "native-ncnn-resnet-repeat",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "native-group-valid-deadline",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "native-final-state",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "payload-hashes",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  },
+  {
+    "name": "planned-final-reboot",
+    "returncode": 124,
+    "missing_markers": [],
+    "verified": false
+  },
+  {
+    "name": "final-health",
+    "returncode": 0,
+    "missing_markers": [],
+    "verified": true
+  }
+]

@@ -1,0 +1,194 @@
+[
+  {
+    "name": "preflight",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-preflight",
+    "log": "preflight.log"
+  },
+  {
+    "name": "ioctl",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-ioctl",
+    "log": "ioctl.log"
+  },
+  {
+    "name": "vm-create",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-vm-create",
+    "log": "vm-create.log"
+  },
+  {
+    "name": "bo-create",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-bo-create",
+    "log": "bo-create.log"
+  },
+  {
+    "name": "bo-lifecycle",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-bo-lifecycle",
+    "log": "bo-lifecycle.log"
+  },
+  {
+    "name": "bo-mmap",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-bo-mmap",
+    "log": "bo-mmap.log"
+  },
+  {
+    "name": "vm-bind",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-vm-bind",
+    "log": "vm-bind.log"
+  },
+  {
+    "name": "vm-bind-async-sync",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-vm-bind-async-sync",
+    "log": "vm-bind-async-sync.log"
+  },
+  {
+    "name": "vm-state-flush",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-vm-state-flush",
+    "log": "vm-state-flush.log"
+  },
+  {
+    "name": "syncobj-lifecycle",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-syncobj-lifecycle",
+    "log": "syncobj-lifecycle.log"
+  },
+  {
+    "name": "syncobj-wait",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-syncobj-wait",
+    "log": "syncobj-wait.log"
+  },
+  {
+    "name": "syncobj-transfer",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-syncobj-transfer",
+    "log": "syncobj-transfer.log"
+  },
+  {
+    "name": "syncobj-timeline-wait",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-syncobj-timeline-wait",
+    "log": "syncobj-timeline-wait.log"
+  },
+  {
+    "name": "syncobj-signal-query",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-syncobj-signal-query",
+    "log": "syncobj-signal-query.log"
+  },
+  {
+    "name": "sync-file-snapshot",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-sync-file-snapshot",
+    "log": "sync-file-snapshot.log"
+  },
+  {
+    "name": "group-lifecycle",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-group-lifecycle",
+    "log": "group-lifecycle.log"
+  },
+  {
+    "name": "group-submit-syncpoint",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-group-submit-syncpoint",
+    "log": "group-submit-syncpoint.log"
+  },
+  {
+    "name": "tiler-heap-lifecycle",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-tiler-heap-lifecycle",
+    "log": "tiler-heap-lifecycle.log"
+  },
+  {
+    "name": "pfn-lifetime",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-pfn-lifetime",
+    "log": "pfn-lifetime.log"
+  },
+  {
+    "name": "pfn-log-check",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-pfn-log-check",
+    "log": "pfn-log-check.log"
+  },
+  {
+    "name": "compute-4mib",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-compute-4mib",
+    "log": "compute-4mib.log"
+  },
+  {
+    "name": "compute-16mib",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-compute-16mib",
+    "log": "compute-16mib.log"
+  },
+  {
+    "name": "compute-64mib",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-compute-64mib",
+    "log": "compute-64mib.log"
+  },
+  {
+    "name": "compute-128mib",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-compute-128mib",
+    "log": "compute-128mib.log"
+  },
+  {
+    "name": "ml-all",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-ml-all",
+    "log": "ml-all.log"
+  },
+  {
+    "name": "attention320",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-attention320",
+    "log": "attention320.log"
+  },
+  {
+    "name": "ncnn",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-ncnn",
+    "log": "ncnn.log"
+  },
+  {
+    "name": "glmark-1280x720",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-glmark-1280x720",
+    "log": "glmark-1280x720.log"
+  },
+  {
+    "name": "glmark-1920x1080",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-glmark-1920x1080",
+    "log": "glmark-1920x1080.log"
+  },
+  {
+    "name": "two-client",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-two-client",
+    "log": "two-client.log"
+  },
+  {
+    "name": "passthrough",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-passthrough",
+    "log": "passthrough.log"
+  },
+  {
+    "name": "idle-after",
+    "returncode": 0,
+    "run_id": "acceptance-20261015-1610-full-idle-after",
+    "log": "idle-after.log"
+  }
+]

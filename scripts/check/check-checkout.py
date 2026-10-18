@@ -4,7 +4,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
-import py_compile
+import ast
 import subprocess
 import sys
 
@@ -42,7 +42,7 @@ def main():
                 run("bash", "-n", str(path))
                 count += 1
             elif path.suffix == ".py":
-                py_compile.compile(str(path), doraise=True)
+                ast.parse(path.read_text(), filename=str(path))
                 count += 1
     run(sys.executable, str(ROOT / "scripts/artifacts/restore-runtime.py"), "--check")
     runtime = json.loads((ROOT / "GPU-SFTP/runtime-manifest.json").read_text())
@@ -67,5 +67,5 @@ if __name__ == "__main__":
     try:
         main()
     except (OSError, ValueError, KeyError, subprocess.CalledProcessError,
-            py_compile.PyCompileError) as error:
+            SyntaxError) as error:
         sys.exit(str(error))
