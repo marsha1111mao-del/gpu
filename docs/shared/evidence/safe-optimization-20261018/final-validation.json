@@ -1,0 +1,140 @@
+{
+  "status": "PASS",
+  "clients": 2,
+  "simultaneous_client_bindings": 2,
+  "permission_selftests": "PASS",
+  "two_client_compute_check": "PASS",
+  "two_client_gpu_flow_check": "PASS",
+  "memory_check": "PASS",
+  "provider_replacement_check": "NOT_RUN (separate single-Client lifecycle test)",
+  "event_irq": {
+    "before": [
+      0,
+      0,
+      0
+    ],
+    "after_two_notifications": [
+      0,
+      1,
+      0
+    ],
+    "intid": 127,
+    "negative_and_coalescing": "PASS",
+    "after_workloads": [
+      3486,
+      1743,
+      1738
+    ]
+  },
+  "kernel_health": {
+    "0": {
+      "csg_update_timeout": [],
+      "fw_ping_timeout": [],
+      "gpu_translation_fault": [],
+      "kernel_warning": [],
+      "kernel_oops": []
+    },
+    "1": {
+      "csg_update_timeout": [],
+      "fw_ping_timeout": [],
+      "gpu_translation_fault": [],
+      "kernel_warning": [],
+      "kernel_oops": []
+    },
+    "2": {
+      "csg_update_timeout": [],
+      "fw_ping_timeout": [],
+      "gpu_translation_fault": [],
+      "kernel_warning": [],
+      "kernel_oops": []
+    }
+  },
+  "vm_exit_codes": [
+    0,
+    0,
+    0
+  ],
+  "inputs": {
+    "/root/GPU-SFTP/tests/realm-xshm/run-realms.py": "e7703ec7d913676cb65f87e5e92e1751943f933000a039df4bb6414edd2152e9",
+    "/root/GPU-SFTP/firecracker-bins/bin/firecracker": "1da45f6ad565434ff4bef82f8e1c15faed17f940ae8297a7a05bfc7278be6b66",
+    "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/Image": "a8bcdb5583ddcb9e1651169222308ad3a29f686af527847640aa6a3080e4f94c",
+    "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/initrd.cpio": "c3cdd4fa34c168e528460c9dd63f58354b5b66437c51973415fc5edb60931299",
+    "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/proxy/Image": "ec755087f63a87f25c47c385a2d3f3d8052297d184d8805a6972535c1f97711b",
+    "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4": "5d0c2ec8e5c1830f6a93c39d34bd8ae02a99702792e9e16a9d9034388f606d60"
+  },
+  "run_id": "safeopt-20261018-final-dual",
+  "command": [
+    "/usr/bin/python3",
+    "scripts/run/run-realm-xshm.py",
+    "--images",
+    "build/safe-optimization-20261018/final",
+    "--workload",
+    "compute"
+  ],
+  "exit_code": 0,
+  "started": "2026-10-18T09:08:58.899538+00:00",
+  "ended": "2026-10-18T09:10:59.749597+00:00",
+  "archive_sha256": "d1327a253fa8117db77f6804de0d45f9d8eee65c6be862672bfc6132f1f5bcc0",
+  "api": [
+    {
+      "client": 1,
+      "passes": [
+        "BASIC",
+        "VM_CREATE",
+        "BO_CREATE",
+        "BO_LIFECYCLE",
+        "BO_MMAP",
+        "VM_BIND",
+        "VM_BIND_ASYNC_SYNC",
+        "VM_STATE_FLUSH",
+        "SYNCOBJ_LIFECYCLE",
+        "SYNCOBJ_WAIT",
+        "SYNCOBJ_TRANSFER",
+        "SYNCOBJ_TIMELINE_WAIT",
+        "SYNCOBJ_SIGNAL_QUERY",
+        "SYNC_FILE_SNAPSHOT",
+        "GROUP_LIFECYCLE",
+        "GROUP_SUBMIT_SYNCPOINT",
+        "TILER_HEAP_LIFECYCLE"
+      ],
+      "compute_elements": 65536,
+      "checked_samples": 16,
+      "alu_iterations": 64
+    },
+    {
+      "client": 2,
+      "passes": [
+        "BASIC",
+        "VM_CREATE",
+        "BO_CREATE",
+        "BO_LIFECYCLE",
+        "BO_MMAP",
+        "VM_BIND",
+        "VM_BIND_ASYNC_SYNC",
+        "VM_STATE_FLUSH",
+        "SYNCOBJ_LIFECYCLE",
+        "SYNCOBJ_WAIT",
+        "SYNCOBJ_TRANSFER",
+        "SYNCOBJ_TIMELINE_WAIT",
+        "SYNCOBJ_SIGNAL_QUERY",
+        "SYNC_FILE_SNAPSHOT",
+        "GROUP_LIFECYCLE",
+        "GROUP_SUBMIT_SYNCPOINT",
+        "TILER_HEAP_LIFECYCLE"
+      ],
+      "compute_elements": 65536,
+      "checked_samples": 16,
+      "alu_iterations": 64
+    }
+  ],
+  "postflight": {
+    "online_cpus": "0-1",
+    "gpu_driver": "/sys/bus/platform/drivers/pmthor",
+    "active_lab_processes": [],
+    "loops": {
+      "rc": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  }
+}

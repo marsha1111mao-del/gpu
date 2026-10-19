@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 from pathlib import Path, PurePosixPath
+import re
 import runpy
 import shlex
 import subprocess
@@ -105,4 +106,18 @@ if a.workload != 'events':
         command += ['--memory-pages', '2049', '--clients', '2', '--compute-rootfs', str(rootfs)]
 evidence.write_text(json.dumps({'run_id': run_id, 'inputs': inputs,
                                'command': command}, indent=2)+'\n')
-raise SystemExit(subprocess.run(ssh+[shlex.join(command)], env=env).returncode)
+host_before = remote('dmesg', capture_output=True).stdout
+evidence.with_name('host-dmesg-before.log').write_bytes(host_before)
+returncode = subprocess.run(ssh+[shlex.join(command)], env=env).returncode
+host_after = remote('dmesg', capture_output=True).stdout
+evidence.with_name('host-dmesg-after.log').write_bytes(host_after)
+wrapped = not host_after.startswith(host_before)
+delta = host_after[len(host_before):] if not wrapped else host_after
+errors = re.findall(
+    r'[^\r\n]*(?:BUG:|Oops:|WARNING:|Unable to handle kernel|RMM GPU release failed)[^\r\n]*',
+    delta.decode(errors='replace'))
+health = {'status': 'FAIL' if wrapped or errors else 'PASS',
+          'dmesg_ring_wrapped': wrapped, 'errors': errors,
+          'realm_runner_returncode': returncode}
+evidence.with_name('host-kernel-health.json').write_text(json.dumps(health, indent=2)+'\n')
+raise SystemExit(returncode or (1 if health['status'] != 'PASS' else 0))

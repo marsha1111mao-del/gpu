@@ -1,0 +1,1235 @@
+{
+  "timestamp": "2026-10-18T09:59:28.496340+00:00",
+  "runtime_code_changed": false,
+  "performance_measured": false,
+  "retained_bundle": "build/safe-optimization-20261018/final",
+  "source_patch_sha256": "680ab1d91171a96a79991a8164053e180a1eb65f2db8f479cf6998dfb4c5efa7",
+  "archive": "build/safe-optimization-20261018/archive/experiment-source-20261018.tar.gz",
+  "archive_sha256": "f2dd78d1e2cf27d7e0114873004fa1340e426882631e93c4e033c4030e032338",
+  "archive_bytes": 1357324,
+  "deleted_files": 130,
+  "deleted_bytes": 739668764,
+  "source_snapshots_archived": 81,
+  "records": [
+    {
+      "path": "build/safe-optimization-20261018/retire-syncobjs/client-Image",
+      "bytes": 39176704,
+      "mtime_ns": 1792308782045271968,
+      "sha256": "1745edf589dc53c46baaf51d620ba35f3950b97f11c7a1f3901c530f28463f54",
+      "reason": "withdrawn candidate",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/retire-syncobjs/client.config",
+      "bytes": 301977,
+      "mtime_ns": 1792284006633756931,
+      "sha256": "37a642928a689ff18bba1fa4305e27d1de3cf9da91f00634699a2554c440eaa7",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/retire-syncobjs/guest.patch",
+      "bytes": 4980,
+      "mtime_ns": 1792308884250198854,
+      "sha256": "c312a2c95cdbd2153a2b6124a5ca76c239e959015c2196e31ced320596acf501",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/retire-syncobjs/hashes.json",
+      "bytes": 342,
+      "mtime_ns": 1792308884225148024,
+      "sha256": "cd5ed7bdcdb09716cc6412397dc807637772fff0818c788fcb6eabbb93f6277b",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/retire-syncobjs/initrd.cpio",
+      "bytes": 3100672,
+      "mtime_ns": 1792294415847253258,
+      "sha256": "c3cdd4fa34c168e528460c9dd63f58354b5b66437c51973415fc5edb60931299",
+      "reason": "withdrawn candidate",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/retire-syncobjs/proxy-Image",
+      "bytes": 39375360,
+      "mtime_ns": 1792308813625265968,
+      "sha256": "8067cf6249af505b3c0655829d18aac6660db9a3f11dc7fc57dafdde0272dca3",
+      "reason": "withdrawn candidate",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/retire-syncobjs/proxy.config",
+      "bytes": 301821,
+      "mtime_ns": 1792284020778366003,
+      "sha256": "32dff91a531a9795b08bb9066a8f85a77e291048e53e43ae99c0dd004d72b751",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/retire-syncobjs/runner.py",
+      "bytes": 34691,
+      "mtime_ns": 1792294842106806982,
+      "sha256": "e7703ec7d913676cb65f87e5e92e1751943f933000a039df4bb6414edd2152e9",
+      "reason": "withdrawn candidate",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/retire-syncobjs/source/drivers/gpu/drm/panthor-client/panthor_client_drv.c",
+      "bytes": 136263,
+      "mtime_ns": 1792308766369226627,
+      "sha256": "e2e997f4752da3ca9b56916ed0092564b20ad34a902f25f82e7ff592efd01187",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/retire-syncobjs/source/drivers/gpu/drm/panthor-proxy/panthor_proxy_drv.c",
+      "bytes": 107054,
+      "mtime_ns": 1792308766369226627,
+      "sha256": "bda8fd7b7d7553662fb17e9d0c647ce44ef72ab18fcc49e334fb934da9095501",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/retire-syncobjs/source/include/linux/panthor_vmshm.h",
+      "bytes": 23142,
+      "mtime_ns": 1792308766365226632,
+      "sha256": "ce033b97ca0c6045ada39f69798de437b40444ea064b9f8acdd350dfad0da201",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/clone-syncobj/client-Image",
+      "bytes": 39176704,
+      "mtime_ns": 1792308943545243713,
+      "sha256": "f935d02f22317cf7528d19d213eb51f01250787ae0a3d3b752c56a0210f7ee2e",
+      "reason": "withdrawn candidate",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/clone-syncobj/client.config",
+      "bytes": 301977,
+      "mtime_ns": 1792284006633756931,
+      "sha256": "37a642928a689ff18bba1fa4305e27d1de3cf9da91f00634699a2554c440eaa7",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/clone-syncobj/guest.patch",
+      "bytes": 6645,
+      "mtime_ns": 1792308980693465035,
+      "sha256": "8974578cd5a15080b0eaa394d8df61423588e0fb8c98497babcdee5fe02896f4",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/clone-syncobj/hashes.json",
+      "bytes": 342,
+      "mtime_ns": 1792308980667367800,
+      "sha256": "67151a45b95427b8ccda6da0d9c427ec0af655f73548fa705e474bfc9997bedc",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/clone-syncobj/initrd.cpio",
+      "bytes": 3100672,
+      "mtime_ns": 1792294415847253258,
+      "sha256": "c3cdd4fa34c168e528460c9dd63f58354b5b66437c51973415fc5edb60931299",
+      "reason": "withdrawn candidate",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/clone-syncobj/proxy-Image",
+      "bytes": 39375360,
+      "mtime_ns": 1792308973789244298,
+      "sha256": "bd48aa01824266922c40f859fca8e21ff8062af25f24cca7c070e0f97eee6485",
+      "reason": "withdrawn candidate",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/clone-syncobj/proxy.config",
+      "bytes": 301821,
+      "mtime_ns": 1792284020778366003,
+      "sha256": "32dff91a531a9795b08bb9066a8f85a77e291048e53e43ae99c0dd004d72b751",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/clone-syncobj/runner.py",
+      "bytes": 34691,
+      "mtime_ns": 1792294842106806982,
+      "sha256": "e7703ec7d913676cb65f87e5e92e1751943f933000a039df4bb6414edd2152e9",
+      "reason": "withdrawn candidate",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/clone-syncobj/source/drivers/gpu/drm/panthor-client/panthor_client_drv.c",
+      "bytes": 136489,
+      "mtime_ns": 1792308914285233554,
+      "sha256": "5ed59ea8f7295aba98ae495f2b2c6405c83d180161b95b3a8744a79306acb4f1",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/clone-syncobj/source/drivers/gpu/drm/panthor-proxy/panthor_proxy_drv.c",
+      "bytes": 109067,
+      "mtime_ns": 1792308931233238092,
+      "sha256": "1bb34642fad3f94858eca7330a80635c21e67dee23079a5a65ed7ba47127e2e3",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/clone-syncobj/source/include/linux/panthor_vmshm.h",
+      "bytes": 23391,
+      "mtime_ns": 1792308914285233554,
+      "sha256": "6318bea045ce83f7c033706ccdbc57f3c4b599faee2b26381deda19a65b11017",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/adaptive-poll/client-Image",
+      "bytes": 39176704,
+      "mtime_ns": 1792309073073217713,
+      "sha256": "0ea83ed0f7678972a6728e723c55e6bc3da71969258594b03a58ea19aceb7ca5",
+      "reason": "withdrawn candidate",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/adaptive-poll/client.config",
+      "bytes": 301977,
+      "mtime_ns": 1792284006633756931,
+      "sha256": "37a642928a689ff18bba1fa4305e27d1de3cf9da91f00634699a2554c440eaa7",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/adaptive-poll/guest.patch",
+      "bytes": 3201,
+      "mtime_ns": 1792309110749295301,
+      "sha256": "927b215a2ad5f53a1097f034d369c2a0237c11555ff2bee281ba00bc0f608d52",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/adaptive-poll/hashes.json",
+      "bytes": 342,
+      "mtime_ns": 1792309110721337928,
+      "sha256": "823e63eee993e817fbac640bdab992beca150aeefe11bc051e5f67ed6bd59010",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/adaptive-poll/initrd.cpio",
+      "bytes": 3100672,
+      "mtime_ns": 1792294415847253258,
+      "sha256": "c3cdd4fa34c168e528460c9dd63f58354b5b66437c51973415fc5edb60931299",
+      "reason": "withdrawn candidate",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/adaptive-poll/proxy-Image",
+      "bytes": 39375360,
+      "mtime_ns": 1792301203706079948,
+      "sha256": "37f18d657364265177611827a154008ecb0acaaf51bee61fe4807b590df748a5",
+      "reason": "withdrawn candidate",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/adaptive-poll/proxy.config",
+      "bytes": 301821,
+      "mtime_ns": 1792284020778366003,
+      "sha256": "32dff91a531a9795b08bb9066a8f85a77e291048e53e43ae99c0dd004d72b751",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/adaptive-poll/runner.py",
+      "bytes": 34691,
+      "mtime_ns": 1792294842106806982,
+      "sha256": "e7703ec7d913676cb65f87e5e92e1751943f933000a039df4bb6414edd2152e9",
+      "reason": "withdrawn candidate",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/adaptive-poll/source/drivers/char/client_vmshm_comm/client_comm_vmshm.c",
+      "bytes": 46921,
+      "mtime_ns": 1792309061533220839,
+      "sha256": "37fd6d8624785d1cdf3ad5525bca05ab4f53f1664d43c5c5502f3143a96d14e4",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/plan-lock/client-Image",
+      "bytes": 39176704,
+      "mtime_ns": 1792309309925186939,
+      "sha256": "41feded8855f0f3ca6556ad5d43278012dbf3210c5ebba65ac51af3f1dfa7b53",
+      "reason": "withdrawn candidate",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/plan-lock/client.config",
+      "bytes": 301977,
+      "mtime_ns": 1792284006633756931,
+      "sha256": "37a642928a689ff18bba1fa4305e27d1de3cf9da91f00634699a2554c440eaa7",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/plan-lock/guest.patch",
+      "bytes": 3771,
+      "mtime_ns": 1792309362501523470,
+      "sha256": "a9f4c5c4a7a104883eaba6f96d85ee4cd97918e64c98771bf5111b4bf45176b7",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/plan-lock/hashes.json",
+      "bytes": 342,
+      "mtime_ns": 1792309362476258093,
+      "sha256": "d9cee5017ccf560d890ecbbf9687dcdef36bbaa42df9ad2cf7969caa5a9cdd7b",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/plan-lock/initrd.cpio",
+      "bytes": 3100672,
+      "mtime_ns": 1792294415847253258,
+      "sha256": "c3cdd4fa34c168e528460c9dd63f58354b5b66437c51973415fc5edb60931299",
+      "reason": "withdrawn candidate",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/plan-lock/proxy-Image",
+      "bytes": 39375360,
+      "mtime_ns": 1792301203706079948,
+      "sha256": "37f18d657364265177611827a154008ecb0acaaf51bee61fe4807b590df748a5",
+      "reason": "withdrawn candidate",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/plan-lock/proxy.config",
+      "bytes": 301821,
+      "mtime_ns": 1792284020778366003,
+      "sha256": "32dff91a531a9795b08bb9066a8f85a77e291048e53e43ae99c0dd004d72b751",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/plan-lock/runner.py",
+      "bytes": 34691,
+      "mtime_ns": 1792294842106806982,
+      "sha256": "e7703ec7d913676cb65f87e5e92e1751943f933000a039df4bb6414edd2152e9",
+      "reason": "withdrawn candidate",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/plan-lock/source/drivers/gpu/drm/panthor-client/panthor_client_drv.c",
+      "bytes": 136779,
+      "mtime_ns": 1792309298285187987,
+      "sha256": "24f6649fd7f258af8c8843bb00c7cb0ea6e846ea4498bf3671850b8e3383b049",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/pipeline/client-Image",
+      "bytes": 39176704,
+      "mtime_ns": 1792301203702079948,
+      "sha256": "a8bcdb5583ddcb9e1651169222308ad3a29f686af527847640aa6a3080e4f94c",
+      "reason": "withdrawn candidate",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/pipeline/client.config",
+      "bytes": 301977,
+      "mtime_ns": 1792284006633756931,
+      "sha256": "37a642928a689ff18bba1fa4305e27d1de3cf9da91f00634699a2554c440eaa7",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/pipeline/guest.patch",
+      "bytes": 4700,
+      "mtime_ns": 1792309445000675634,
+      "sha256": "ed0fbfc35fd1816e7901b50c03de3c8f7de355a184b546179b284f1c5d8f7e06",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/pipeline/hashes.json",
+      "bytes": 342,
+      "mtime_ns": 1792309444976239397,
+      "sha256": "856fb104551d3e4cc76f7e0e2337b7c072ff8e6d746444c4d8666d9313c0a829",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/pipeline/initrd.cpio",
+      "bytes": 3100672,
+      "mtime_ns": 1792294415847253258,
+      "sha256": "c3cdd4fa34c168e528460c9dd63f58354b5b66437c51973415fc5edb60931299",
+      "reason": "withdrawn candidate",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/pipeline/proxy-Image",
+      "bytes": 39375360,
+      "mtime_ns": 1792309420877171465,
+      "sha256": "1369dc7b1c286caffddd1ba7dacc4b727e4388226a35b837c83b6ee0c553fe9a",
+      "reason": "withdrawn candidate",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/pipeline/proxy.config",
+      "bytes": 301821,
+      "mtime_ns": 1792284020778366003,
+      "sha256": "32dff91a531a9795b08bb9066a8f85a77e291048e53e43ae99c0dd004d72b751",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/pipeline/runner.py",
+      "bytes": 34691,
+      "mtime_ns": 1792294842106806982,
+      "sha256": "e7703ec7d913676cb65f87e5e92e1751943f933000a039df4bb6414edd2152e9",
+      "reason": "withdrawn candidate",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/pipeline/source/drivers/gpu/drm/panthor-proxy/panthor_proxy_drv.c",
+      "bytes": 109042,
+      "mtime_ns": 1792309408749172661,
+      "sha256": "6aa23ae772bdf4b014cff8c6de4d25d7c18a7fce6ccb2ac9c1a9d61b8108dcef",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/cache-progress/client-Image",
+      "bytes": 39176704,
+      "mtime_ns": 1792301203702079948,
+      "sha256": "a8bcdb5583ddcb9e1651169222308ad3a29f686af527847640aa6a3080e4f94c",
+      "reason": "withdrawn candidate",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/cache-progress/client.config",
+      "bytes": 301977,
+      "mtime_ns": 1792284006633756931,
+      "sha256": "37a642928a689ff18bba1fa4305e27d1de3cf9da91f00634699a2554c440eaa7",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/cache-progress/guest.patch",
+      "bytes": 2408,
+      "mtime_ns": 1792310061754871712,
+      "sha256": "d744fc85201d31a043de7dd8d0f846cd8999ee9bba90950ddcd0343a1391d229",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/cache-progress/hashes.json",
+      "bytes": 342,
+      "mtime_ns": 1792310061725236065,
+      "sha256": "67d7955efdabf51db96a7f82aa4d3abb075e9f55a36c5ebaf79cac60afe4e783",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/cache-progress/initrd.cpio",
+      "bytes": 3100672,
+      "mtime_ns": 1792294415847253258,
+      "sha256": "c3cdd4fa34c168e528460c9dd63f58354b5b66437c51973415fc5edb60931299",
+      "reason": "withdrawn candidate",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/cache-progress/proxy-Image",
+      "bytes": 39375360,
+      "mtime_ns": 1792310001425112416,
+      "sha256": "a5714b49a5a991dfb7fea1ed5e8ea9d9b53015e28f8b5743f041065f661d3c03",
+      "reason": "withdrawn candidate",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/cache-progress/proxy.config",
+      "bytes": 301821,
+      "mtime_ns": 1792284020778366003,
+      "sha256": "32dff91a531a9795b08bb9066a8f85a77e291048e53e43ae99c0dd004d72b751",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/cache-progress/runner.py",
+      "bytes": 34691,
+      "mtime_ns": 1792294842106806982,
+      "sha256": "e7703ec7d913676cb65f87e5e92e1751943f933000a039df4bb6414edd2152e9",
+      "reason": "withdrawn candidate",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/cache-progress/source/drivers/gpu/drm/panthor/panthor_sched.c",
+      "bytes": 131031,
+      "mtime_ns": 1792309985717113766,
+      "sha256": "b26f501a0a131c4d0e3823ae44a031b97c3da187e7e8903e743e37a128420667",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/cache-union/client-Image",
+      "bytes": 39176704,
+      "mtime_ns": 1792301203702079948,
+      "sha256": "a8bcdb5583ddcb9e1651169222308ad3a29f686af527847640aa6a3080e4f94c",
+      "reason": "withdrawn candidate",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/cache-union/client.config",
+      "bytes": 301977,
+      "mtime_ns": 1792284006633756931,
+      "sha256": "37a642928a689ff18bba1fa4305e27d1de3cf9da91f00634699a2554c440eaa7",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/cache-union/guest.patch",
+      "bytes": 6828,
+      "mtime_ns": 1792310654883241304,
+      "sha256": "6f05655eca9b0d1146354b2415bd7a0f891b101d2ad6fd2cf6efff351e6644fb",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/cache-union/hashes.json",
+      "bytes": 342,
+      "mtime_ns": 1792310654860473632,
+      "sha256": "263f6fdc4a060042249b27b123ee615eef7c6ecd5fbeda6ea40ee76f43f63c15",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/cache-union/initrd.cpio",
+      "bytes": 3100672,
+      "mtime_ns": 1792294415847253258,
+      "sha256": "c3cdd4fa34c168e528460c9dd63f58354b5b66437c51973415fc5edb60931299",
+      "reason": "withdrawn candidate",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/cache-union/proxy-Image",
+      "bytes": 39375360,
+      "mtime_ns": 1792310627693055688,
+      "sha256": "20750cf72e4ae0d35bb070bfc4f217636e0d0f1dfd96ad10f6697fdcc520863e",
+      "reason": "withdrawn candidate",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/cache-union/proxy.config",
+      "bytes": 301821,
+      "mtime_ns": 1792284020778366003,
+      "sha256": "32dff91a531a9795b08bb9066a8f85a77e291048e53e43ae99c0dd004d72b751",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/cache-union/runner.py",
+      "bytes": 34691,
+      "mtime_ns": 1792294842106806982,
+      "sha256": "e7703ec7d913676cb65f87e5e92e1751943f933000a039df4bb6414edd2152e9",
+      "reason": "withdrawn candidate",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/cache-union/source/drivers/gpu/drm/panthor/panthor_gem.c",
+      "bytes": 13883,
+      "mtime_ns": 1792310588085591109,
+      "sha256": "b609900e1395cff02edb8caa394a6eaa4376a2323e6d8f8457fa54e6843ac4a0",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/cache-union/source/drivers/gpu/drm/panthor/panthor_gem.h",
+      "bytes": 5638,
+      "mtime_ns": 1792310588085610166,
+      "sha256": "15b2392e2462ba01bd704cef555602f29bacc6dae020e3afc28c4f0493d09abd",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/cache-union/source/drivers/gpu/drm/panthor/panthor_mmu.c",
+      "bytes": 87097,
+      "mtime_ns": 1792310615681056226,
+      "sha256": "a9497256a2efddc376bedda63ec92f7bccaee72ac3f8ac6594fa28d26ec3b969",
+      "reason": "withdrawn candidate",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/sync-list/client-Image",
+      "bytes": 39176704,
+      "mtime_ns": 1792301203702079948,
+      "sha256": "a8bcdb5583ddcb9e1651169222308ad3a29f686af527847640aa6a3080e4f94c",
+      "reason": "duplicate of retained final bundle",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/sync-list/client.config",
+      "bytes": 301977,
+      "mtime_ns": 1792284006633756931,
+      "sha256": "37a642928a689ff18bba1fa4305e27d1de3cf9da91f00634699a2554c440eaa7",
+      "reason": "duplicate of retained final bundle",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/sync-list/guest.patch",
+      "bytes": 4678,
+      "mtime_ns": 1792309206968095121,
+      "sha256": "680ab1d91171a96a79991a8164053e180a1eb65f2db8f479cf6998dfb4c5efa7",
+      "reason": "duplicate of retained final bundle",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/sync-list/hashes.json",
+      "bytes": 342,
+      "mtime_ns": 1792309206944793235,
+      "sha256": "9b9d20e66b4b3c1983a211403d6500bbe47a3ecfaa9bd06be7d639f14cd3ea1c",
+      "reason": "duplicate of retained final bundle",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/sync-list/initrd.cpio",
+      "bytes": 3100672,
+      "mtime_ns": 1792294415847253258,
+      "sha256": "c3cdd4fa34c168e528460c9dd63f58354b5b66437c51973415fc5edb60931299",
+      "reason": "duplicate of retained final bundle",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/sync-list/proxy-Image",
+      "bytes": 39375360,
+      "mtime_ns": 1792309181413203033,
+      "sha256": "ec755087f63a87f25c47c385a2d3f3d8052297d184d8805a6972535c1f97711b",
+      "reason": "duplicate of retained final bundle",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/sync-list/proxy.config",
+      "bytes": 301821,
+      "mtime_ns": 1792284020778366003,
+      "sha256": "32dff91a531a9795b08bb9066a8f85a77e291048e53e43ae99c0dd004d72b751",
+      "reason": "duplicate of retained final bundle",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/sync-list/runner.py",
+      "bytes": 34691,
+      "mtime_ns": 1792294842106806982,
+      "sha256": "e7703ec7d913676cb65f87e5e92e1751943f933000a039df4bb6414edd2152e9",
+      "reason": "duplicate of retained final bundle",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/sync-list/source/drivers/gpu/drm/panthor/panthor_gem.c",
+      "bytes": 13883,
+      "mtime_ns": 1792309144061198611,
+      "sha256": "b609900e1395cff02edb8caa394a6eaa4376a2323e6d8f8457fa54e6843ac4a0",
+      "reason": "duplicate of retained final bundle",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/sync-list/source/drivers/gpu/drm/panthor/panthor_gem.h",
+      "bytes": 5638,
+      "mtime_ns": 1792309144061198611,
+      "sha256": "15b2392e2462ba01bd704cef555602f29bacc6dae020e3afc28c4f0493d09abd",
+      "reason": "duplicate of retained final bundle",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/sync-list/source/drivers/gpu/drm/panthor/panthor_mmu.c",
+      "bytes": 85845,
+      "mtime_ns": 1792309144073198617,
+      "sha256": "bb27571e15ad98722f645fdecf7e61d16604ec2e8b50c6f92011648a34845a38",
+      "reason": "duplicate of retained final bundle",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/freeze.py",
+      "bytes": 1120,
+      "mtime_ns": 1792309073759516827,
+      "sha256": "a541db5b665cb854cea415aa87f449dba110f8a36c4897eeacbb118bc19f5b43",
+      "reason": "completed experiment helper; archived for evidence",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/pull.py",
+      "bytes": 1022,
+      "mtime_ns": 1792309248533188590,
+      "sha256": "1f935a51b90eb0793dd30c9a1f29ef69c6c9f11fe3d0080c6b135f5ceb9ab4a2",
+      "reason": "completed experiment helper; archived for evidence",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/restore-images.py",
+      "bytes": 1597,
+      "mtime_ns": 1792313047482039115,
+      "sha256": "284cc936aa907a56de9e8d13633b14fd8800a218acde8f6079a0f55490b8a366",
+      "reason": "completed experiment helper; archived for evidence",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/summarize.py",
+      "bytes": 2372,
+      "mtime_ns": 1792311065919995202,
+      "sha256": "6d547d0ae69683d9d72174589285cd6a4aa9ac76a4e8371941294d130f2b9baa",
+      "reason": "completed experiment helper; archived for evidence",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/run-remaining.py",
+      "bytes": 1416,
+      "mtime_ns": 1792309736297142634,
+      "sha256": "542516f1d3b8a9cac56b35afd58721217d30f1ec22d4126736ac777c038b2ca5",
+      "reason": "completed experiment helper; archived for evidence",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/run-followup.py",
+      "bytes": 2172,
+      "mtime_ns": 1792310385023663414,
+      "sha256": "50bd336ed9d9b5aac91ef8ab0fed3a5aa547a9ae38c3c9cb0772a5b5f775e6ea",
+      "reason": "completed experiment helper; archived for evidence",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/run-extra.py",
+      "bytes": 2303,
+      "mtime_ns": 1792310849213402701,
+      "sha256": "cc283b8af463607de85e504f13241cc157062f66b06de788a354181437646325",
+      "reason": "completed experiment helper; archived for evidence",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/run-final.py",
+      "bytes": 1771,
+      "mtime_ns": 1792314088811585823,
+      "sha256": "648ac2adbc8d0f76f4525cc1d2945f5a6890b8b830218af8169ebe7551d37ce6",
+      "reason": "completed experiment helper; archived for evidence",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/retire-syncobj.patch",
+      "bytes": 4980,
+      "mtime_ns": 1792308790246903561,
+      "sha256": "c312a2c95cdbd2153a2b6124a5ca76c239e959015c2196e31ced320596acf501",
+      "reason": "completed experiment helper; archived for evidence",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/check-adaptive.py",
+      "bytes": 4470,
+      "mtime_ns": 1792309461095537089,
+      "sha256": "70406db3e46ca1ded98a18fb44c81b47eb2cec84de0c93a1f2099682b94ca881",
+      "reason": "completed experiment helper; archived for evidence",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/check-cache-progress.py",
+      "bytes": 6132,
+      "mtime_ns": 1792310262162051415,
+      "sha256": "5f5bf352109e514df4bb860a8f48745ca695f896be914cc6992a6cf9d00d0b74",
+      "reason": "completed experiment helper; archived for evidence",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/check-cache-union.py",
+      "bytes": 4877,
+      "mtime_ns": 1792310773240623464,
+      "sha256": "b35405fcc3be418e49971e14ccc5c21fcdaa83ec44f238bfd254bf9512ad7a93",
+      "reason": "completed experiment helper; archived for evidence",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/check-clone-client.py",
+      "bytes": 4900,
+      "mtime_ns": 1792309767210589071,
+      "sha256": "e1a60d064277fac29c1164d872f7426ac5e89cd2bf544e8c0430ff1e41917882",
+      "reason": "completed experiment helper; archived for evidence",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/check-clone.py",
+      "bytes": 3124,
+      "mtime_ns": 1792309110443905462,
+      "sha256": "dfce018c3d5fb24cfdab11f33368a2edf0bda2d99e65b78d04b596d605539de5",
+      "reason": "completed experiment helper; archived for evidence",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/check-pipeline.py",
+      "bytes": 6048,
+      "mtime_ns": 1792309533390220609,
+      "sha256": "dc8953cb0373e9214a669189d343b9048c9882c6b5e03d491c29a98fa1d28567",
+      "reason": "completed experiment helper; archived for evidence",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/check-plan-lock.py",
+      "bytes": 6588,
+      "mtime_ns": 1792309662897149241,
+      "sha256": "0558317c514f97beb714ee1d909fb2d5dc2cbda22a6148d99f4aef9b604f8946",
+      "reason": "completed experiment helper; archived for evidence",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/check-retire.py",
+      "bytes": 10289,
+      "mtime_ns": 1792308819816377550,
+      "sha256": "527370509fa480c32e90c19c02591ea3e2fb1a11289969cb09847b4459fbe820",
+      "reason": "completed experiment helper; archived for evidence",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/check-sync-list.py",
+      "bytes": 5712,
+      "mtime_ns": 1792309576557154612,
+      "sha256": "50ad03ca4f275d81563aa0f0414ba1550672dca43bf7a564a1fca78c730f155f",
+      "reason": "completed experiment helper; archived for evidence",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/adaptive-check",
+      "bytes": 62016,
+      "mtime_ns": 1792309461218107496,
+      "sha256": "c185f8088f2ea47489b092970657bad6fa4520a0631e558f362216f7462b121b",
+      "reason": "rebuildable native test executable",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/adaptive-check.c",
+      "bytes": 6083,
+      "mtime_ns": 1792309461114235940,
+      "sha256": "55fd60bb5405e5c71d1901f8d2a9dd1f3347d272d53cb0efbc466fd2b3e846cc",
+      "reason": "generated function-check harness",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/cache-progress-check",
+      "bytes": 82544,
+      "mtime_ns": 1792310262329906759,
+      "sha256": "912d5c73a904da9a655cf6fb0712ad28c9f8f36b552fbf88d2d1cd5f76e1acc4",
+      "reason": "rebuildable native test executable",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/cache-progress-check-empty-scan",
+      "bytes": 82416,
+      "mtime_ns": 1792310262629104171,
+      "sha256": "e7512733fc78513bec6ba11f9605fcd2b0749215fd67bdc86d3ca95f40714aba",
+      "reason": "rebuildable native test executable",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/cache-progress-check-empty-scan.c",
+      "bytes": 6603,
+      "mtime_ns": 1792310262484891238,
+      "sha256": "1a494c6e2df6fc1ed077bd1e901b52cc6f9cebafa2b15959fda7322e8ca51e88",
+      "reason": "generated function-check harness",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/cache-progress-check-ignore-cache-error",
+      "bytes": 82584,
+      "mtime_ns": 1792310262768105114,
+      "sha256": "13cc4b8db300a66d47ef60ff6820c7b440f7b36d8344a2456b91e705e05c3b43",
+      "reason": "rebuildable native test executable",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/cache-progress-check-ignore-cache-error.c",
+      "bytes": 6602,
+      "mtime_ns": 1792310262633305945,
+      "sha256": "97f58c330b4dfb166daa162284af5a22033a0f57c6fb2f0a70b3aa7ba88c3bf8",
+      "reason": "generated function-check harness",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/cache-progress-check-uncaptured-progress",
+      "bytes": 82816,
+      "mtime_ns": 1792310262481065674,
+      "sha256": "419cce2b9e718940fe469bb47a174e593bbcaad6599200a561a6b98ee1c4f1e9",
+      "reason": "rebuildable native test executable",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/cache-progress-check-uncaptured-progress.c",
+      "bytes": 6636,
+      "mtime_ns": 1792310262336435180,
+      "sha256": "8210008073d47b05d69634540e73a5e86a3058aea9289c53e9db35e68b86d82e",
+      "reason": "generated function-check harness",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/cache-progress-check.c",
+      "bytes": 6593,
+      "mtime_ns": 1792310262181639715,
+      "sha256": "ef20717e289623e3396964879fcf0c284b33ceddbe0b76b288ce72776f09d698",
+      "reason": "generated function-check harness",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/cache-union-check",
+      "bytes": 130544,
+      "mtime_ns": 1792310773491382178,
+      "sha256": "b7e3bd4737d4bfbe745c0455ca740374d59508d5d284c823ef41e5af42d8e095",
+      "reason": "rebuildable native test executable",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/cache-union-check.c",
+      "bytes": 10230,
+      "mtime_ns": 1792310773259921191,
+      "sha256": "de4d9c1f9af61bc12a5ed0c98e687ac76cdf39bc0351c44ee4abf4ce03351b05",
+      "reason": "generated function-check harness",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/clone-check",
+      "bytes": 57144,
+      "mtime_ns": 1792309110558324929,
+      "sha256": "2e74f29bfad9f861ba6bc5e0714cbc7aa8499584663009c599353838410af198",
+      "reason": "rebuildable native test executable",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/clone-check.c",
+      "bytes": 8499,
+      "mtime_ns": 1792309110460355645,
+      "sha256": "4762848a1d8831986c9a12e87d960f325bd2ee6c7c6595cdfecc3d84813164fd",
+      "reason": "generated function-check harness",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/clone-client-check",
+      "bytes": 53480,
+      "mtime_ns": 1792309767341847170,
+      "sha256": "5f53549835da72d540d7771423440f1a5bcca6cda89431f695491003a265a70a",
+      "reason": "rebuildable native test executable",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/clone-client-check.c",
+      "bytes": 6191,
+      "mtime_ns": 1792309767239565215,
+      "sha256": "0e93cba70adfdeb2010f9243a56c122102645622e371440e0583fc7703c465a6",
+      "reason": "generated function-check harness",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/pipeline-check",
+      "bytes": 68000,
+      "mtime_ns": 1792309533512312873,
+      "sha256": "33960e62e7b2a8fe752ba7d0c7dd076d2ebf0b935fd821e7ccdf47440b61e9de",
+      "reason": "rebuildable native test executable",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/pipeline-check.c",
+      "bytes": 8082,
+      "mtime_ns": 1792309533406616583,
+      "sha256": "445e6f91ea7ec75ad1831ed72c9906ec4b38eb5dc16f7730b5fea4433e303fdc",
+      "reason": "generated function-check harness",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/plan-lock-check",
+      "bytes": 82224,
+      "mtime_ns": 1792309663077150125,
+      "sha256": "6fe8b377041d22f25bec4dd4dd5c746a5b69811bfe1d12436b07ec60b57d97fb",
+      "reason": "rebuildable native test executable",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/plan-lock-check.c",
+      "bytes": 9579,
+      "mtime_ns": 1792309662920633609,
+      "sha256": "241c8b33236039589d26e2f063bd606aa462366ffff2116bafb802c494ee751f",
+      "reason": "generated function-check harness",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/retire-v42-check",
+      "bytes": 127800,
+      "mtime_ns": 1792308820133730548,
+      "sha256": "aa699ce20210d750eaab3b1c0af94fd77313938eb5de24b3392c2783d2266eae",
+      "reason": "rebuildable native test executable",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/retire-v42-check-duplicate-retire",
+      "bytes": 123600,
+      "mtime_ns": 1792308820622500205,
+      "sha256": "4ee3fe88e4a37b0af598c30b45b9f590b030d9a32f1f3d3f630b3a22bc2fb38c",
+      "reason": "rebuildable native test executable",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/retire-v42-check-duplicate-retire.c",
+      "bytes": 14010,
+      "mtime_ns": 1792308820389685110,
+      "sha256": "064c55f45ed1310721f3d4ccebcf2fd0f65e2ac9c7b83ae4b6e4e33edc12f0bb",
+      "reason": "generated function-check harness",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/retire-v42-check-early-release",
+      "bytes": 127856,
+      "mtime_ns": 1792308820385461848,
+      "sha256": "c9b73835e4c45c0cd77a0fa4b5ee47dfb54934c92f6598d0dc0d987568003eb6",
+      "reason": "rebuildable native test executable",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/retire-v42-check-early-release.c",
+      "bytes": 14040,
+      "mtime_ns": 1792308820146183041,
+      "sha256": "fe5b30678c0e28a4013069fc878a88604356e9f74778f2a6a9f431f205da1070",
+      "reason": "generated function-check harness",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/retire-v42-check-source-retire",
+      "bytes": 123144,
+      "mtime_ns": 1792308820864217079,
+      "sha256": "5109618d2103940a8b56ba7c134658f9de68720ee3e860f1ef443f4acc254d0e",
+      "reason": "rebuildable native test executable",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/retire-v42-check-source-retire.c",
+      "bytes": 13951,
+      "mtime_ns": 1792308820627826328,
+      "sha256": "3a0f2bd86dfd1917843b325905123beb3c35ff2c5231fdaacbe79491dccdfb64",
+      "reason": "generated function-check harness",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/retire-v42-check.c",
+      "bytes": 14001,
+      "mtime_ns": 1792308819839160081,
+      "sha256": "65a3a63b88e980466d3db4dc9d5bca51df97f1720b4eebe254de66b84d0781d5",
+      "reason": "generated function-check harness",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/sync-list-check",
+      "bytes": 80296,
+      "mtime_ns": 1792309576777414597,
+      "sha256": "4dd3535035623b8067a853aafa6a0258069de07b5af75b38cc4349103455986e",
+      "reason": "rebuildable native test executable",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/safe-optimization-20261018/sync-list-check.c",
+      "bytes": 7333,
+      "mtime_ns": 1792309576601148433,
+      "sha256": "9225a0e1df2b5b527109e799f94b5f9fff7e696c623ee90a53371a42a88f3c1e",
+      "reason": "generated function-check harness",
+      "archived": true,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/verified-kernels/client/arch/arm64/boot/Image",
+      "bytes": 39176704,
+      "mtime_ns": 1792309309925186939,
+      "sha256": "41feded8855f0f3ca6556ad5d43278012dbf3210c5ebba65ac51af3f1dfa7b53",
+      "reason": "stale Image from withdrawn plan-lock candidate; final frozen Image preserved",
+      "archived": false,
+      "status": "DELETED"
+    },
+    {
+      "path": "build/verified-kernels/proxy/arch/arm64/boot/Image",
+      "bytes": 39375360,
+      "mtime_ns": 1792310627693055688,
+      "sha256": "20750cf72e4ae0d35bb070bfc4f217636e0d0f1dfd96ad10f6697fdcc520863e",
+      "reason": "stale Image from withdrawn cache-union candidate; final frozen Image preserved",
+      "archived": false,
+      "status": "DELETED"
+    }
+  ],
+  "verification": {
+    "only_retained_three_file_patch": true,
+    "untracked_guest_source_files": 0,
+    "non_retained_files": [
+      {
+        "path": "Linux-Guest-GPU/drivers/char/client_vmshm_comm/client_comm_vmshm.c",
+        "sha256": "04e2bd1ae3031d05c9a17514004df8de4cbbbc3c3b95fef58d30dc0e8e8aa310",
+        "exact_baseline": true
+      },
+      {
+        "path": "Linux-Guest-GPU/drivers/gpu/drm/panthor-client/panthor_client_drv.c",
+        "sha256": "4c4e02b6f2723aefde00d5aa1e60f10fe1b639b90d29b9d0b893e49ce9f77372",
+        "exact_baseline": true
+      },
+      {
+        "path": "Linux-Guest-GPU/drivers/gpu/drm/panthor-proxy/panthor_proxy_drv.c",
+        "sha256": "48424f98445324ada9dadd48263243f18019dffeb11276e929682ddfa84b8e61",
+        "exact_baseline": true
+      },
+      {
+        "path": "Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_sched.c",
+        "sha256": "97af68b5448ea2d915089d58dc78e42be1a860c52c3e39da50af51766d92ce10",
+        "exact_baseline": true
+      },
+      {
+        "path": "Linux-Guest-GPU/include/linux/panthor_vmshm.h",
+        "sha256": "eb88ce86e33f9513fcc7711a46a09a4ca5216648ad2036226b813fc61e596813",
+        "exact_baseline": true
+      }
+    ],
+    "removed_markers": [
+      "PANTHOR_VMSHM_FEATURE_SYNCOBJ_RETIRE",
+      "PANTHOR_VMSHM_RETIRE_PUBLIC",
+      "PANTHOR_VMSHM_FEATURE_SYNCOBJ_CLONE",
+      "PANTHOR_VMSHM_MSG_SYNCOBJ_CLONE_REQ",
+      "panthor_client_plan_slot_available",
+      "panthor_proxy_pipeline_req",
+      "panthor_proxy_pipeline_wq",
+      "panthor_proxy_pipeline_pending",
+      "panthor_realm_sync_range",
+      "panthor_vm_sync_ranges",
+      "poll_budget_us[16]",
+      "completed_seqnos[MAX_CS_PER_CSG]"
+    ],
+    "all60_source_hashes_match": true,
+    "final_frozen_hashes_match": true,
+    "all_deleted_paths_absent": true,
+    "archive_sha256_verified": true,
+    "net_reclaimed_bytes": 738311440
+  }
+}

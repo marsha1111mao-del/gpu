@@ -23,6 +23,17 @@ BUILD_ROOT="$PWD/build/realm-kernels" bash scripts/build/build-verified-kernels.
 
 当前成绩及按项版本来源见[完整性能汇总](../../docs/shared/GPU_NATIVE_PROXYCLIENT_COMPARISON_20261018.md)。不凭相同配置推断未测源码组合通过。
 
+Host配置启用`CONFIG_KVM_ARM_OPENCCA`，供当前非安全世界OpenCCA monitor使用，
+将普通VM与Realm的硬件VMID分到下半区/上半区，并允许EL1 Host初始化Realm管理。
+它要求配套RMM采用真实CPU的VMID位宽并执行同一分区；不提供真实RME隔离，
+也不自动建立Host任务MMIO保护。受保护启动、实际Realm运行与性能须独立验收。
+
+当前#29受保护候选要求主启动项`kvm_arm.mode=protected maxcpus=4`，使CPU0–3在启动时
+完成特征核验；空闲时仍恢复CPU0–1，性能runner才临时上线CPU2/3。配套U-Boot不得再
+追加`maxcpus=2`，不能通过放宽pKVM特征检查代替正确初始化。RMM timer修订及实际硬件
+验证见[受保护Realm验证](../../docs/shared/GPU_PROTECTED_REALM_VALIDATION_20261019.md)，
+旧VHE成绩不能继承给protected组合。
+
 ## 历史对照
 
 旧memfd/irqfd runner和配置已移除。历史版本、SHA、命令和结果查[2026-10-16性能报告](../../docs/archive/20261018/history/GPU_GLMARK_PERFORMANCE_REPORT_20261016.md)及[优化记录](../../docs/archive/20261018/history/GPU_GLMARK_OPTIMIZATION_20261016.md)，不再作为当前可执行入口。

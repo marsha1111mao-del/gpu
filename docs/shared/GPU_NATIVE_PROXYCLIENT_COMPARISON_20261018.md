@@ -1,10 +1,22 @@
 # Native 与 Proxy/Client 全部有效测试对照汇总（2026-10-18）
 
+**2026-10-19 当前Host MMIO候选：完整720p1159。** 改动目的｜可信Host stage-2拒绝任务MMIO及异常返回｜Host #29的1152 → Host #31的1159｜**+7分/+0.61%**｜同RMM timer v6、完整33场景720p、256MiB、GPU请求600/实际594MHz、null-noop/finish、CPU未锁恒频；Host stage-2/异常处理同时变化，单轮仅记录组合观测｜`glmark720-host-mmio-denial-20261019-a`、退出0，命令与日志见[资源归属验收](GPU_HOST_MMIO_ENFORCEMENT_20261019.md)；正确性、Host/Guest健康及恢复通过｜保留局部实现，不替换原冻结1171/1170。Host内核与用户直接访问拒绝通过，普通VM物理访问仍FAIL_BYPASS_DETECTED。后续[失败复核](GPU_FAILURE_STATUS_AUDIT_20261019.md)已独立通过#31双Client各17项API/实际计算及生命周期健康；选定模拟主流程通过，完整物理对抗隔离不作完成声明。本轮仅修改测试入口/异常清理及文档，无新增性能测量，其他性能未重测。
+
+**2026-10-19 上一受保护Host/Realm兼容候选（历史保留）：完整720p1152。** 改动目的｜EL1 Host/VMID/CPU初始化及RMM timer兼容修复｜Host #27/VHE的1168 → Host #29/protected/RMM timer v6的1152｜**−16分/−1.37%**｜同完整33场景720p、256MiB、GPU请求600/实际594MHz、null-noop/finish、CPU未锁恒频；Host/RMM、protected、VMID与CPU/timer机制同时变化，只归因组合效果｜`glmark720-protected-realm-20261019-c`、退出0，完整命令与日志见[受保护Realm验证](GPU_PROTECTED_REALM_VALIDATION_20261019.md)；validation、Host/Guest健康及资源恢复通过｜保留运行兼容候选，不替换原冻结1171/1170。双Client各17项API及计算已独立复验，其他性能未重测；protected模式Host内核物理写负例仍为FAIL_BYPASS_DETECTED，整体安全未完成。
+
+**2026-10-19 上一IOMMU故障中断候选：完整720p1168。** 改动目的｜将managed IOMMU故障寄存器操作迁入RMM、修复绑定失败引用保留｜Host #26/RMM device-grant的1173 → Host #27/本轮RMM1168｜**−5分/−0.43%**，对原冻结均值1170.5为−2.5分/−0.21%｜完整33场景720p、256 MiB、GPU请求600/实际594MHz、null-noop/finish、CPU未锁恒频；Host/RMM同时变化，性能包不变，无并行探针｜`glmark720-iommu-irq-20261019-a`、退出0，命令与原始日志见[本轮报告](GPU_IOMMU_FAULT_VALIDATION_20261019.md)；正确性、Host健康和资源恢复通过｜保留开发候选，只记录组合观测，不替换原冻结1171/1170，不宣称稳定回退或提分。双Client功能/电源循环已独立复验，Native与其余性能未重测；Host物理MMIO负例仍FAIL。
+
+**2026-10-19 上一设备授权/电源顺序候选：完整720p1173，对原冻结1171/1170均值1170.5为+2.5分/+0.21%。** 上一阶段1167→本版1173为+6/+0.51%，中间相同RMM/Host #23的1170→最终Host #26的1173为+3/+0.26%。run-id `glmark720-device-grant-20261019-b`、退出0，完整33场景、默认256 MiB、GPU请求600/实际594 MHz、离屏null-noop/finish；正确性、退出后内核健康与资源恢复通过。Host/RMM组合变化且各为单轮，只记录观测，不归因稳定优化。双Client各17项API/计算已独立重跑；其余性能未测，不替换原冻结基线。命令与证据见[当前设备授权验收](GPU_DEVICE_ASSIGNMENT_VALIDATION_20261019.md)。
+
+**2026-10-19 此前安全服务开发候选：完整720p 1167，对原冻结1171/1170均值1170.5为−3.5分/−0.30%。** run-id `glmark720-gmem-reclaim-20261019-b`、退出0，完整33场景、默认256 MiB、GPU请求600/实际594 MHz，正确性、内核健康及资源恢复通过；Host/RMM/Proxy组合均有变化，只归因组合效果。双Client各17项API/计算重新验收通过，Native及其余性能未重测；不替换原冻结组合，下文33条与历史版本记录保留。命令、日志、失败与未执行项见[开发验收](SECURE_SERVICES_VALIDATION_20261019.md)。
+
+**最新局部优化（本地）：GPUVM同步列表完整720p1171 / 1170；同期基线1162 / 1160，均值+9.5分/+0.82%。** 相对Native历史1437约保留81.5%，本轮未重测Native。新版本双Client各17项API/实际计算/权限/IRQ功能验收通过，但其他性能条目未重测。输入及逐次证据见[六方向优化实验](SAFE_PERFORMANCE_OPTIMIZATION_20261018.md)。下文原有33条对照及旧阶段分数保留其版本边界。
+
 按每个测试的**最新有效记录**汇总：33 项单 Client 比较条目（17 IOCTL + 4 Compute + 7 ML/Attention + 3 NCNN + 2 glmark），另列 1 个双进程/双 Client 并发场景。它们不是历史“完整 32 项回归”的同一套编号，不能据此标注 32/32。
 
 **版本边界：21 项来自 BO 修复后的实测，12 项沿用 P42 参考；双 Client 性能也沿用 P42。** 所列 Native 均来自同日原生测量，没有在 BO 修复后重新测量。当前版本未复测的条目不宣称当前 PASS，历史记录不覆盖旧失败。
 
-**后续memfd退役复测：当前RMM-only完整720p为1157（Native参考1437，保留80.5%），相对下文清理前1161为−4/−0.34%。** 新run-id为`memfd-retirement-720-20261018`；验证、完整命令与新哈希见[退役记录](MEMFD_RETIREMENT_20261018.md)。下文33项总表及逐场景数据保留为清理前对照，其余性能项未在退役后复测，不能据此宣称新代码全项通过。
+**memfd退役阶段复测：该阶段RMM-only完整720p为1157（Native参考1437，保留80.5%），相对下文清理前1161为−4/−0.34%。** 新run-id为`memfd-retirement-720-20261018`；验证、完整命令与新哈希见[退役记录](MEMFD_RETIREMENT_20261018.md)。下文33项总表及逐场景数据保留为清理前对照，其余性能项未在退役后复测，不能据此宣称新代码全项通过。
 
 | 分组 | 有有效 Native / Proxy 对照 | BO 修复后重新测量 | 仅 P42 参考 |
 | --- | --- | --- | --- |

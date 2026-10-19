@@ -1,0 +1,312 @@
+{
+  "archive": {
+    "archive": "build/dma-guard-20261018/transfer-evidence.tar.gz",
+    "size": 86150,
+    "sha256": "326b6b10043e8e28d7f8e03793403b05401517197fbc9d577da4662a746be9ae",
+    "verified_run_results": [
+      "dma-guard-real-transfer-20261018",
+      "dma-guard-real-rw-dmac0-20261018",
+      "dma-guard-real-rw-dmac1-20261018",
+      "dma-guard-real-rw-dmac2-20261018",
+      "dma-guard-runner-compat-20261018"
+    ]
+  },
+  "cleanup_run_id": "dma-guard-transfer-cleanup-20261018",
+  "cleanup_wrapper": {
+    "run_id": "dma-guard-transfer-cleanup-20261018",
+    "command": [
+      "python3",
+      "build/dma-guard-20261018/cleanup-transfer-staging.py"
+    ],
+    "cwd": "/home/mzh/gpu",
+    "started": "2026-10-18T14:00:11.919398+00:00",
+    "status": "COMPLETED",
+    "allow_rk_reboot": false,
+    "recover_rk_offline": false,
+    "returncode": 0,
+    "ended": "2026-10-18T14:00:15.868653+00:00"
+  },
+  "cleanup": {
+    "returncode": 0,
+    "phases": [
+      {
+        "phase": "PLAN",
+        "records": [
+          {
+            "path": "/root/GPU-SFTP/log/dma-guard/dma-guard-real-transfer-20261018/opencca_dma_transfer_probe.ko",
+            "size": 91512,
+            "mtime_ns": 1792331424682699886,
+            "sha256": "75b0f4dfcb719bffd48efef11c1791a8963b0b48690afcfacde692a0f941d128",
+            "reason": "verified unused upload; controller inputs and rollback retained"
+          },
+          {
+            "path": "/root/GPU-SFTP/log/dma-guard/dma-guard-real-rw-dmac0-20261018/opencca_dma_transfer_probe.ko",
+            "size": 94600,
+            "mtime_ns": 1792331617727267134,
+            "sha256": "7b47a154512ff43417f468266c449431579ce3635099ebb87bb5a83a7a0f5ca1",
+            "reason": "verified unused upload; controller inputs and rollback retained"
+          },
+          {
+            "path": "/root/GPU-SFTP/log/dma-guard/dma-guard-real-rw-dmac1-20261018/opencca_dma_transfer_probe.ko",
+            "size": 94600,
+            "mtime_ns": 1792331668244388485,
+            "sha256": "7b47a154512ff43417f468266c449431579ce3635099ebb87bb5a83a7a0f5ca1",
+            "reason": "verified unused upload; controller inputs and rollback retained"
+          },
+          {
+            "path": "/root/GPU-SFTP/log/dma-guard/dma-guard-real-rw-dmac2-20261018/opencca_dma_transfer_probe.ko",
+            "size": 94600,
+            "mtime_ns": 1792331695520983333,
+            "sha256": "7b47a154512ff43417f468266c449431579ce3635099ebb87bb5a83a7a0f5ca1",
+            "reason": "verified unused upload; controller inputs and rollback retained"
+          },
+          {
+            "path": "/root/GPU-SFTP/log/dma-guard/dma-guard-runner-compat-20261018/opencca_dma_probe.ko",
+            "size": 79320,
+            "mtime_ns": 1792331745938064794,
+            "sha256": "006b80877c34e4db769127476212b9937ed87645a8a30ff9542782caa1d30c7d",
+            "reason": "verified unused upload; controller inputs and rollback retained"
+          }
+        ]
+      },
+      {
+        "phase": "RESULT",
+        "records": [
+          {
+            "path": "/root/GPU-SFTP/log/dma-guard/dma-guard-real-transfer-20261018/opencca_dma_transfer_probe.ko",
+            "size": 91512,
+            "mtime_ns": 1792331424682699886,
+            "sha256": "75b0f4dfcb719bffd48efef11c1791a8963b0b48690afcfacde692a0f941d128",
+            "reason": "verified unused upload; controller inputs and rollback retained",
+            "result": "REMOVED"
+          },
+          {
+            "path": "/root/GPU-SFTP/log/dma-guard/dma-guard-real-rw-dmac0-20261018/opencca_dma_transfer_probe.ko",
+            "size": 94600,
+            "mtime_ns": 1792331617727267134,
+            "sha256": "7b47a154512ff43417f468266c449431579ce3635099ebb87bb5a83a7a0f5ca1",
+            "reason": "verified unused upload; controller inputs and rollback retained",
+            "result": "REMOVED"
+          },
+          {
+            "path": "/root/GPU-SFTP/log/dma-guard/dma-guard-real-rw-dmac1-20261018/opencca_dma_transfer_probe.ko",
+            "size": 94600,
+            "mtime_ns": 1792331668244388485,
+            "sha256": "7b47a154512ff43417f468266c449431579ce3635099ebb87bb5a83a7a0f5ca1",
+            "reason": "verified unused upload; controller inputs and rollback retained",
+            "result": "REMOVED"
+          },
+          {
+            "path": "/root/GPU-SFTP/log/dma-guard/dma-guard-real-rw-dmac2-20261018/opencca_dma_transfer_probe.ko",
+            "size": 94600,
+            "mtime_ns": 1792331695520983333,
+            "sha256": "7b47a154512ff43417f468266c449431579ce3635099ebb87bb5a83a7a0f5ca1",
+            "reason": "verified unused upload; controller inputs and rollback retained",
+            "result": "REMOVED"
+          },
+          {
+            "path": "/root/GPU-SFTP/log/dma-guard/dma-guard-runner-compat-20261018/opencca_dma_probe.ko",
+            "size": 79320,
+            "mtime_ns": 1792331745938064794,
+            "sha256": "006b80877c34e4db769127476212b9937ed87645a8a30ff9542782caa1d30c7d",
+            "reason": "verified unused upload; controller inputs and rollback retained",
+            "result": "REMOVED"
+          }
+        ],
+        "freed_bytes": 454632,
+        "retained_rollback": "/root/GPU-SFTP/log/host-deploy/dma-guard-host-deploy-v4-20261018/kernel-before"
+      }
+    ]
+  },
+  "final_resources": {
+    "timestamp": "2026-10-18T14:01:09.510751+00:00",
+    "reports": [
+      {
+        "role": "pi",
+        "role_verified": true,
+        "hostname": "MZH",
+        "kernel": "6.12.75+rpt-rpi-v8",
+        "online_cpus": "0-3",
+        "gpu_driver": null,
+        "memory": {
+          "MemTotal": 949989376,
+          "MemAvailable": 680050688,
+          "SwapTotal": 948957184,
+          "SwapFree": 903868416
+        },
+        "disks": {
+          "/": {
+            "total_bytes": 30800633856,
+            "available_bytes": 16753324032,
+            "free_inodes": 1734813
+          },
+          "/tmp": {
+            "total_bytes": 474996736,
+            "available_bytes": 474992640,
+            "free_inodes": 1048563
+          },
+          "/home/mzh/opencca-flash": {
+            "total_bytes": 30800633856,
+            "available_bytes": 16753324032,
+            "free_inodes": 1734813
+          }
+        },
+        "active_lab_processes": [],
+        "snapshots": [
+          {
+            "name": "glmark-dma1-baseline-kernel.img",
+            "bytes": 134217728,
+            "allocated_bytes": 134217728,
+            "mtime_ns": 1792095404994370845
+          },
+          {
+            "name": "idbloader.img",
+            "bytes": 268288,
+            "allocated_bytes": 270336,
+            "mtime_ns": 1784356444748021157
+          },
+          {
+            "name": "kernel-glmark-dma1-extlinux.img",
+            "bytes": 134217728,
+            "allocated_bytes": 134217728,
+            "mtime_ns": 1792095912197174201
+          },
+          {
+            "name": "kernel-opp3-extlinux.img",
+            "bytes": 134217728,
+            "allocated_bytes": 134217728,
+            "mtime_ns": 1792105815049928798
+          },
+          {
+            "name": "kernel-pmthor-final-session-pfn-20261015.img",
+            "bytes": 134217728,
+            "allocated_bytes": 134217728,
+            "mtime_ns": 1792038266658268638
+          },
+          {
+            "name": "kernel-pmthor-joint-session-pfn-20261015.img",
+            "bytes": 134217728,
+            "allocated_bytes": 134217728,
+            "mtime_ns": 1792036762353712200
+          },
+          {
+            "name": "kernel-pmthor-rootfs-matched-extlinux.img",
+            "bytes": 134217728,
+            "allocated_bytes": 134217728,
+            "mtime_ns": 1781192490006185524
+          },
+          {
+            "name": "kernel-rme-populate-extlinux.img",
+            "bytes": 134217728,
+            "allocated_bytes": 134221824,
+            "mtime_ns": 1792234769303800682
+          },
+          {
+            "name": "kernel-trusted-irq-extlinux.img",
+            "bytes": 134217728,
+            "allocated_bytes": 134217728,
+            "mtime_ns": 1792241615059069418
+          },
+          {
+            "name": "opencca-image-rockchip-rock5b-rk3588.img",
+            "bytes": 4000000000,
+            "allocated_bytes": 4000006144,
+            "mtime_ns": 1781169630795890048
+          },
+          {
+            "name": "opp2-baseline-kernel-partition.img",
+            "bytes": 134217728,
+            "allocated_bytes": 134217728,
+            "mtime_ns": 1792105371304819956
+          },
+          {
+            "name": "tf-rmm.elf",
+            "bytes": 2487176,
+            "allocated_bytes": 2490368,
+            "mtime_ns": 1784355696118794159
+          },
+          {
+            "name": "u-boot-rockchip-spi.bin",
+            "bytes": 2121216,
+            "allocated_bytes": 2121728,
+            "mtime_ns": 1784356444763990366
+          },
+          {
+            "name": "u-boot.itb",
+            "bytes": 1728000,
+            "allocated_bytes": 1728512,
+            "mtime_ns": 1784356444752013459
+          }
+        ],
+        "mounts": {
+          "rc": 0,
+          "stdout": "/sys sysfs sysfs\n/proc proc proc\n/dev udev devtmpfs\n/dev/pts devpts devpts\n/run tmpfs tmpfs\n/ /dev/mmcblk0p2 ext4\n/sys/kernel/security securityfs securityfs\n/dev/shm tmpfs tmpfs\n/sys/fs/cgroup cgroup2 cgroup2\n/sys/fs/pstore pstore pstore\n/sys/fs/bpf bpf bpf\n/proc/sys/fs/binfmt_misc systemd-1 autofs\n/dev/mqueue mqueue mqueue\n/sys/kernel/tracing tracefs tracefs\n/run/lock tmpfs tmpfs\n/sys/kernel/debug debugfs debugfs\n/run/credentials/systemd-journald.service tmpfs tmpfs\n/sys/kernel/config configfs configfs\n/sys/fs/fuse/connections fusectl fusectl\n/tmp tmpfs tmpfs\n/boot/firmware /dev/mmcblk0p1 vfat\n/proc/sys/fs/binfmt_misc binfmt_misc binfmt_misc\n/run/rpc_pipefs sunrpc rpc_pipefs\n/run/user/1000 tmpfs tmpfs\n/run/credentials/getty@tty1.service tmpfs tmpfs\n/run/credentials/serial-getty@ttyS0.service tmpfs tmpfs\n/run/user/1000/gvfs gvfsd-fuse fuse.gvfsd-fuse\n/run/user/1000/doc portal fuse.portal",
+          "stderr": ""
+        },
+        "loops": {
+          "rc": 0,
+          "stdout": "/dev/loop0 /var/swap",
+          "stderr": ""
+        },
+        "usage": {
+          "rc": 1,
+          "stdout": "90112\t/home/mzh/opencca-flash/opencca-scripts\n3837952\t/home/mzh/opencca-flash/docker\n109096960\t/home/mzh/opencca-flash/board\n90112\t/home/mzh/opencca-flash/automation\n2207744\t/home/mzh/opencca-flash/tools\n268652544\t/home/mzh/opencca-flash/log\n5238411264\t/home/mzh/opencca-flash/snapshot\n5622435840\t/home/mzh/opencca-flash",
+          "stderr": "du: cannot access '/home/mzh/opencca-flash/docker/tools/log/log2026-06-09.txt': Permission denied\ndu: cannot access '/home/mzh/opencca-flash/tools/log/log2026-07-11.txt': Permission denied\ndu: cannot access '/home/mzh/opencca-flash/tools/log/log2026-07-18.txt': Permission denied\ndu: cannot access '/home/mzh/opencca-flash/tools/log/log2026-10-18.txt': Permission denied\ndu: cannot access '/home/mzh/opencca-flash/tools/log/log2026-10-17.txt': Permission denied\ndu: cannot access '/home/mzh/opencca-flash/tools/log/log2026-06-12.txt': Permission denied\ndu: cannot access '/home/mzh/opencca-flash/tools/log/log2026-06-09.txt': Permission denied\ndu: cannot access '/home/mzh/opencca-flash/tools/log/log2026-10-15.txt': Permission denied\ndu: cannot access '/home/mzh/opencca-flash/tools/log/log2026-10-09.txt': Permission denied\ndu: cannot access '/home/mzh/opencca-flash/tools/log/log2026-06-11.txt': Permission denied\ndu: cannot access '/home/mzh/opencca-flash/tools/log/log2026-10-16.txt': Permission denied\ndu: cannot access '/home/mzh/opencca-flash/tools/log/log2026-06-10.txt': Permission denied\ndu: cannot access '/home/mzh/opencca-flash/tools/log/log2026-10-14.txt': Permission denied"
+        }
+      },
+      {
+        "role": "rk",
+        "role_verified": true,
+        "hostname": "opencca-rock5b-rk3588",
+        "kernel": "6.12.0-opencca-pmthor-opp3",
+        "online_cpus": "0-1",
+        "gpu_driver": "/sys/bus/platform/drivers/pmthor",
+        "memory": {
+          "MemTotal": 3467829248,
+          "MemAvailable": 3283251200,
+          "SwapTotal": 0,
+          "SwapFree": 0
+        },
+        "disks": {
+          "/": {
+            "total_bytes": 31181299712,
+            "available_bytes": 14913036288,
+            "free_inodes": 1825637
+          },
+          "/tmp": {
+            "total_bytes": 1733914624,
+            "available_bytes": 1733914624,
+            "free_inodes": 1048569
+          },
+          "/root/GPU-SFTP": {
+            "total_bytes": 31181299712,
+            "available_bytes": 14913036288,
+            "free_inodes": 1825637
+          }
+        },
+        "active_lab_processes": [],
+        "snapshots": [],
+        "mounts": {
+          "rc": 0,
+          "stdout": "/sys sysfs sysfs\n/proc proc proc\n/dev udev devtmpfs\n/dev/pts devpts devpts\n/run tmpfs tmpfs\n/ /dev/mmcblk1p4 ext4\n/sys/kernel/security securityfs securityfs\n/dev/shm tmpfs tmpfs\n/sys/fs/cgroup cgroup2 cgroup2\n/sys/fs/pstore pstore pstore\n/sys/fs/bpf bpf bpf\n/run/lock tmpfs tmpfs\n/dev/hugepages hugetlbfs hugetlbfs\n/tmp tmpfs tmpfs\n/sys/kernel/debug debugfs debugfs\n/dev/mqueue mqueue mqueue\n/sys/kernel/tracing tracefs tracefs\n/run/credentials/systemd-journald.service tmpfs tmpfs\n/sys/fs/fuse/connections fusectl fusectl\n/sys/kernel/config configfs configfs\n/run/credentials/systemd-resolved.service tmpfs tmpfs\n/efi systemd-1 autofs\n/run/credentials/systemd-networkd.service tmpfs tmpfs\n/run/credentials/getty@tty1.service tmpfs tmpfs\n/run/credentials/serial-getty@ttyS2.service tmpfs tmpfs\n/run/user/1000 tmpfs tmpfs\n/run/user/0 tmpfs tmpfs",
+          "stderr": ""
+        },
+        "loops": {
+          "rc": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        "usage": {
+          "rc": 0,
+          "stdout": "52658176\t/root/GPU-SFTP/linux-host-kernel\n2708058112\t/root/GPU-SFTP/firecracker-bins\n278528\t/root/GPU-SFTP/panthor_fw\n8192\t/root/GPU-SFTP/.vscode.example\n905433088\t/root/GPU-SFTP/artifacts\n5111808\t/root/GPU-SFTP/tests\n3053912064\t/root/GPU-SFTP/log\n6725521408\t/root/GPU-SFTP",
+          "stderr": ""
+        }
+      }
+    ],
+    "issues": []
+  },
+  "preexisting_pi_loop": "/dev/loop0 /var/swap (unchanged; not owned by this test)",
+  "runtime_inputs_unchanged": "PASS",
+  "source_diff_checks": "PASS",
+  "python_compile": "PASS"
+}

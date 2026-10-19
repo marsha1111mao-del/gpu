@@ -1,0 +1,15 @@
+#ifndef OPENCCA_MMIO_TEST_KVM_EMULATE_H
+#define OPENCCA_MMIO_TEST_KVM_EMULATE_H
+
+#include <stdbool.h>
+#include <asm/ptrace.h>
+
+#define PSR_MODE_THREAD_BIT 1UL
+#define CURRENT_EL_SP_EL0_VECTOR 0UL
+#define CURRENT_EL_SP_ELx_VECTOR 0x200UL
+#define LOWER_EL_AArch64_VECTOR 0x400UL
+#define LOWER_EL_AArch32_VECTOR 0x600UL
+#define SCTLR_EL1_SPAN (1UL << 23)
+#define SCTLR_ELx_DSSBS (1UL << 44)
+
+#endif

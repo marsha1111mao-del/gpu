@@ -1,0 +1,77 @@
+{
+  "timestamp": "2026-10-18T09:11:22.492075+00:00",
+  "issues": [],
+  "reports": [
+    {
+      "role": "pi",
+      "role_verified": true,
+      "memory": {
+        "MemTotal": 949989376,
+        "MemAvailable": 664436736,
+        "SwapTotal": 948957184,
+        "SwapFree": 903868416
+      },
+      "disks": {
+        "/": {
+          "total_bytes": 30800633856,
+          "available_bytes": 16755363840,
+          "free_inodes": 1734816
+        },
+        "/tmp": {
+          "total_bytes": 474996736,
+          "available_bytes": 474992640,
+          "free_inodes": 1048563
+        },
+        "/home/mzh/opencca-flash": {
+          "total_bytes": 30800633856,
+          "available_bytes": 16755363840,
+          "free_inodes": 1734816
+        }
+      },
+      "online_cpus": "0-3",
+      "gpu_driver": null,
+      "active_lab_processes": [],
+      "loops": {
+        "rc": 0,
+        "stdout": "/dev/loop0 /var/swap",
+        "stderr": ""
+      }
+    },
+    {
+      "role": "rk",
+      "role_verified": true,
+      "memory": {
+        "MemTotal": 3467894784,
+        "MemAvailable": 3284074496,
+        "SwapTotal": 0,
+        "SwapFree": 0
+      },
+      "disks": {
+        "/": {
+          "total_bytes": 31181299712,
+          "available_bytes": 14963527680,
+          "free_inodes": 1825669
+        },
+        "/tmp": {
+          "total_bytes": 1733947392,
+          "available_bytes": 1733947392,
+          "free_inodes": 1048569
+        },
+        "/root/GPU-SFTP": {
+          "total_bytes": 31181299712,
+          "available_bytes": 14963527680,
+          "free_inodes": 1825669
+        }
+      },
+      "online_cpus": "0-1",
+      "gpu_driver": "/sys/bus/platform/drivers/pmthor",
+      "active_lab_processes": [],
+      "loops": {
+        "rc": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    }
+  ],
+  "pi_loop_note": "/dev/loop0 /var/swap is system swap, not a test mount; retained"
+}

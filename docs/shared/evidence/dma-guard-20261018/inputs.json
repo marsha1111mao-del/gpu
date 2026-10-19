@@ -1,0 +1,9 @@
+{
+  "build/dma-guard-20261018/host/arch/arm64/boot/Image": "d634efbc716a771c8bca4108475cd7866e0ae271ce7701e504c568ac49ca2cce",
+  "build/dma-guard-20261018/host/.config": "8e048510aba165dc224f4b36d28afd301b17787e1d735a8f29b1417ee890600e",
+  "build/dma-guard-20261018/firmware/tf-rmm.elf": "993b83d4bd8292b488180834e1174ccdfe3f4b418cb25cc2cadcb93b08d526ed",
+  "build/dma-guard-20261018/firmware/bl31.elf": "f2c1e019df09f71c6a4a868cb95d3941d956e1c45a18955e23d3a649e56248d5",
+  "build/dma-guard-20261018/firmware/idbloader.img": "20ec40873965a935054729982e6cd9b59bd8a2dd287d624fdae73829b5d2e202",
+  "build/dma-guard-20261018/firmware/u-boot.itb": "d3dc330f65ce2632b1baf2066f2b2ccb81b8da6ae763baadb3de65ffb23b9bc2",
+  "build/dma-guard-20261018/probe-module/opencca_dma_probe.ko": "2a231b6ddcfc24ec06efa8bc228fc5b648110a6d7d99ccfe9281d0a4dbd33c65"
+}

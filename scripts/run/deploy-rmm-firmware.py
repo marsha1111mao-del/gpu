@@ -135,6 +135,14 @@ try:
                ' value="1" if number in cpus else "0"\n'
                ' if path.read_text().strip()!=value: path.write_text(value)\n')
     ssh('rk', 'python3 -c '+quote(restore))
+    capability = ('import fcntl,os\n'
+                  'device=os.open("/dev/kvm",os.O_RDWR|os.O_CLOEXEC)\n'
+                  'try: print(fcntl.ioctl(device,0xae03,300))\n'
+                  'finally: os.close(device)\n')
+    result['rme_capability'] = int(ssh('rk', 'python3 -c '+quote(capability),
+                                       capture_output=True, text=True).stdout.strip())
+    if result['rme_capability'] != 1:
+        raise RuntimeError('Host recovered but RMM/Realm capability is unavailable')
     result['status'] = 'DEPLOYED_HOST_RECOVERED'
 except Exception as exc:
     result['status'] = 'FAIL'

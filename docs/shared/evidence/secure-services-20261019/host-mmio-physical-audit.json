@@ -1,0 +1,56 @@
+{
+  "run_id": "host-mmio-physical-audit-20261019-a",
+  "command": [
+    "python3",
+    "scripts/run/run-kvm-mmio-probe.py",
+    "--probe",
+    "build/secure-services-20261019/physical-mmio/opencca_kvm_mmio_probe",
+    "--audit-host-mmio",
+    "--uart-capture"
+  ],
+  "host_release": "6.12.0-opencca-pmthor-opp3",
+  "host_build": 26,
+  "wrapper_status": "FAILED",
+  "returncode": 2,
+  "abi_checks": {
+    "passed": 11,
+    "total": 11
+  },
+  "host_mmio_protection": "FAIL_BYPASS_DETECTED",
+  "physical_address": "0xfb000028",
+  "before": 0,
+  "requested": 1,
+  "observed": 1,
+  "restored": 0,
+  "scope": "KVM/RMM MMIO authorization, owner OPP transition and pmthor reset/release; no GPU workload or DMA; direct Host /dev/mem IRQ mask write/readback/restore in idle assigned session",
+  "host_kernel_errors": [],
+  "after": {
+    "driver": "/sys/bus/platform/drivers/pmthor",
+    "online_cpus": "0-1",
+    "active_lab_processes": [],
+    "loops": ""
+  },
+  "runtime_sources_unchanged_from_device_assignment": true,
+  "changed_validation_files": [
+    "GPU-SFTP/tests/dma-guard/README.md",
+    "GPU-SFTP/tests/dma-guard/opencca_kvm_mmio_probe.c",
+    "scripts/run/run-kvm-mmio-probe.py"
+  ],
+  "sha256": {
+    "GPU-SFTP/tests/dma-guard/opencca_kvm_mmio_probe.c": "e4f9c7a4074cf727e2f46a5fe308bd30bc5736a6332e2941e4f6392819a09849",
+    "scripts/run/run-kvm-mmio-probe.py": "58157813c12b366266d09807712add695fe74636efef91378d560efd3ca3e16c",
+    "build/secure-services-20261019/physical-mmio/opencca_kvm_mmio_probe": "1572f576cbb4065203089ee0c6f3c3c845c8863aeb1843e2d0649c3b167e7974"
+  },
+  "logs": [
+    "build/lab-runs/host-mmio-physical-audit-20261019-a/kvm-mmio-probe.log",
+    "build/lab-runs/host-mmio-physical-audit-20261019-a/kvm-mmio.json",
+    "build/lab-runs/host-mmio-physical-audit-20261019-a/kernel-dmesg.log",
+    "build/lab-runs/host-mmio-physical-audit-20261019-a/rmm-uart.log",
+    "build/lab-runs/host-mmio-physical-audit-20261019-a/result.json",
+    "build/lab-runs/host-mmio-physical-audit-20261019-a/before.json",
+    "build/lab-runs/host-mmio-physical-audit-20261019-a/after.json"
+  ],
+  "overall_security": "PARTIAL / INCOMPLETE",
+  "gpu_task_executed": false,
+  "performance_measurement": "NOT_RUN"
+}

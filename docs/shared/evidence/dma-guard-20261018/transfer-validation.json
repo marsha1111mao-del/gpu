@@ -1,0 +1,241 @@
+{
+  "status": "PARTIAL / INCOMPLETE",
+  "full_dma_protection": "INCOMPLETE",
+  "actual_dma_transfer": "VERIFIED_READ_WRITE_BYPASS",
+  "scope": "Three PL330 controllers, test-owned DELEGATED pages only; no active Realm data or GPU BO targeted",
+  "runtime_implementation_unchanged": true,
+  "runtime_sources_match_previous_stage": true,
+  "host_rmm_inputs": {
+    "build/dma-guard-20261018/host/arch/arm64/boot/Image": "d634efbc716a771c8bca4108475cd7866e0ae271ce7701e504c568ac49ca2cce",
+    "build/dma-guard-20261018/host/.config": "8e048510aba165dc224f4b36d28afd301b17787e1d735a8f29b1417ee890600e",
+    "build/dma-guard-20261018/firmware/tf-rmm.elf": "993b83d4bd8292b488180834e1174ccdfe3f4b418cb25cc2cadcb93b08d526ed",
+    "build/dma-guard-20261018/firmware/bl31.elf": "f2c1e019df09f71c6a4a868cb95d3941d956e1c45a18955e23d3a649e56248d5",
+    "build/dma-guard-20261018/firmware/idbloader.img": "20ec40873965a935054729982e6cd9b59bd8a2dd287d624fdae73829b5d2e202",
+    "build/dma-guard-20261018/firmware/u-boot.itb": "d3dc330f65ce2632b1baf2066f2b2ccb81b8da6ae763baadb3de65ffb23b9bc2",
+    "build/dma-guard-20261018/probe-module/opencca_dma_probe.ko": "2a231b6ddcfc24ec06efa8bc228fc5b648110a6d7d99ccfe9281d0a4dbd33c65"
+  },
+  "new_glmark_measurement": "NOT_RUN",
+  "previous_candidate_score": 1169,
+  "performance_difference": "NOT_APPLICABLE",
+  "hardware_firewall": "NOT_IMPLEMENTED",
+  "configuration_protection": "FAIL_BYPASS_DETECTED",
+  "reset_persistence": "NOT_RUN",
+  "runs": [
+    {
+      "run_id": "dma-guard-real-rw-dmac0-20261018",
+      "command": [
+        "python3",
+        "scripts/run/run-dma-guard.py",
+        "--transfer",
+        "--module",
+        "build/dma-guard-20261018/transfer-module-v2/opencca_dma_transfer_probe.ko"
+      ],
+      "returncode": 2,
+      "normal_dma_copy": "PASS",
+      "existing_mapping": "FAIL_BYPASS_DETECTED",
+      "new_mapping": "FAIL_BYPASS_DETECTED",
+      "probe_checks_passed": 13,
+      "dma_copies_verified": 5,
+      "bytes_per_copy": 4096,
+      "module_sha256": "7b47a154512ff43417f468266c449431579ce3635099ebb87bb5a83a7a0f5ca1",
+      "runner_sha256": "0d3670514e57a8375bade06bb59ba30b5ad25fedeff730e0408739e2d13ec93e",
+      "kernel_log": "build/lab-runs/dma-guard-real-rw-dmac0-20261018/kernel-delta.log",
+      "kernel_log_sha256": "b5cb013b670014a20c41ab41537f3e5f6c3048adf784a58f1c0816b5cd45806f",
+      "resources": {
+        "before": {
+          "kernel": "6.12.0-opencca-pmthor-opp3",
+          "online_cpus": "0-1",
+          "gpu_driver": "/sys/bus/platform/drivers/pmthor",
+          "memory": {
+            "MemTotal": 3467829248,
+            "MemAvailable": 3276365824,
+            "SwapTotal": 0,
+            "SwapFree": 0
+          },
+          "active_lab_processes": [],
+          "loops": {
+            "rc": 0,
+            "stdout": "",
+            "stderr": ""
+          }
+        },
+        "after": {
+          "kernel": "6.12.0-opencca-pmthor-opp3",
+          "online_cpus": "0-1",
+          "gpu_driver": "/sys/bus/platform/drivers/pmthor",
+          "memory": {
+            "MemTotal": 3467829248,
+            "MemAvailable": 3275194368,
+            "SwapTotal": 0,
+            "SwapFree": 0
+          },
+          "active_lab_processes": [],
+          "loops": {
+            "rc": 0,
+            "stdout": "",
+            "stderr": ""
+          }
+        }
+      }
+    },
+    {
+      "run_id": "dma-guard-real-rw-dmac1-20261018",
+      "command": [
+        "python3",
+        "scripts/run/run-dma-guard.py",
+        "--transfer",
+        "--transfer-controller",
+        "fea30000.dma-controller",
+        "--transfer-channel",
+        "dma1chan0",
+        "--module",
+        "build/dma-guard-20261018/transfer-module-v2/opencca_dma_transfer_probe.ko"
+      ],
+      "returncode": 2,
+      "normal_dma_copy": "PASS",
+      "existing_mapping": "FAIL_BYPASS_DETECTED",
+      "new_mapping": "FAIL_BYPASS_DETECTED",
+      "probe_checks_passed": 13,
+      "dma_copies_verified": 5,
+      "bytes_per_copy": 4096,
+      "module_sha256": "7b47a154512ff43417f468266c449431579ce3635099ebb87bb5a83a7a0f5ca1",
+      "runner_sha256": "0d3670514e57a8375bade06bb59ba30b5ad25fedeff730e0408739e2d13ec93e",
+      "kernel_log": "build/lab-runs/dma-guard-real-rw-dmac1-20261018/kernel-delta.log",
+      "kernel_log_sha256": "5b38640cba5bf9828f2a61c9903a114a56f2da58a64cdac865be93dd5037e0cf",
+      "resources": {
+        "before": {
+          "kernel": "6.12.0-opencca-pmthor-opp3",
+          "online_cpus": "0-1",
+          "gpu_driver": "/sys/bus/platform/drivers/pmthor",
+          "memory": {
+            "MemTotal": 3467829248,
+            "MemAvailable": 3276513280,
+            "SwapTotal": 0,
+            "SwapFree": 0
+          },
+          "active_lab_processes": [],
+          "loops": {
+            "rc": 0,
+            "stdout": "",
+            "stderr": ""
+          }
+        },
+        "after": {
+          "kernel": "6.12.0-opencca-pmthor-opp3",
+          "online_cpus": "0-1",
+          "gpu_driver": "/sys/bus/platform/drivers/pmthor",
+          "memory": {
+            "MemTotal": 3467829248,
+            "MemAvailable": 3276042240,
+            "SwapTotal": 0,
+            "SwapFree": 0
+          },
+          "active_lab_processes": [],
+          "loops": {
+            "rc": 0,
+            "stdout": "",
+            "stderr": ""
+          }
+        }
+      }
+    },
+    {
+      "run_id": "dma-guard-real-rw-dmac2-20261018",
+      "command": [
+        "python3",
+        "scripts/run/run-dma-guard.py",
+        "--transfer",
+        "--transfer-controller",
+        "fed10000.dma-controller",
+        "--transfer-channel",
+        "dma2chan0",
+        "--module",
+        "build/dma-guard-20261018/transfer-module-v2/opencca_dma_transfer_probe.ko"
+      ],
+      "returncode": 2,
+      "normal_dma_copy": "PASS",
+      "existing_mapping": "FAIL_BYPASS_DETECTED",
+      "new_mapping": "FAIL_BYPASS_DETECTED",
+      "probe_checks_passed": 13,
+      "dma_copies_verified": 5,
+      "bytes_per_copy": 4096,
+      "module_sha256": "7b47a154512ff43417f468266c449431579ce3635099ebb87bb5a83a7a0f5ca1",
+      "runner_sha256": "0d3670514e57a8375bade06bb59ba30b5ad25fedeff730e0408739e2d13ec93e",
+      "kernel_log": "build/lab-runs/dma-guard-real-rw-dmac2-20261018/kernel-delta.log",
+      "kernel_log_sha256": "4657c2d86aed82f02ee15bf4c95459a3bf9b962b923cea9a5027a76a1b62a629",
+      "resources": {
+        "before": {
+          "kernel": "6.12.0-opencca-pmthor-opp3",
+          "online_cpus": "0-1",
+          "gpu_driver": "/sys/bus/platform/drivers/pmthor",
+          "memory": {
+            "MemTotal": 3467829248,
+            "MemAvailable": 3275661312,
+            "SwapTotal": 0,
+            "SwapFree": 0
+          },
+          "active_lab_processes": [],
+          "loops": {
+            "rc": 0,
+            "stdout": "",
+            "stderr": ""
+          }
+        },
+        "after": {
+          "kernel": "6.12.0-opencca-pmthor-opp3",
+          "online_cpus": "0-1",
+          "gpu_driver": "/sys/bus/platform/drivers/pmthor",
+          "memory": {
+            "MemTotal": 3467829248,
+            "MemAvailable": 3275141120,
+            "SwapTotal": 0,
+            "SwapFree": 0
+          },
+          "active_lab_processes": [],
+          "loops": {
+            "rc": 0,
+            "stdout": "",
+            "stderr": ""
+          }
+        }
+      }
+    }
+  ],
+  "totals": {
+    "controllers": 3,
+    "protection_failure_cases": 6,
+    "completed_and_byte_checked_copies": 15,
+    "probe_execution_and_recovery_checks_passed": 39,
+    "security_passes": 0
+  },
+  "admission_runner_compatibility": {
+    "run_id": "dma-guard-runner-compat-20261018",
+    "returncode": 2,
+    "admission": "PASS",
+    "configuration_protection": "FAIL_BYPASS_DETECTED"
+  },
+  "initial_write_only_probe": {
+    "run_id": "dma-guard-real-transfer-20261018",
+    "returncode": 2,
+    "counted_in_matrix": false,
+    "module_sha256": "75b0f4dfcb719bffd48efef11c1791a8963b0b48690afcfacde692a0f941d128",
+    "runner_sha256": "de3a250eacb1a10491559687eed6236d559ce4faf98022cc2e4bf7d2c6bea483"
+  },
+  "dma_controller_inventory": [
+    {
+      "node": "/sys/firmware/devicetree/base/dma-controller@fea10000",
+      "compatible": "arm,pl330,arm,primecell,",
+      "iommus": false
+    },
+    {
+      "node": "/sys/firmware/devicetree/base/dma-controller@fea30000",
+      "compatible": "arm,pl330,arm,primecell,",
+      "iommus": false
+    },
+    {
+      "node": "/sys/firmware/devicetree/base/dma-controller@fed10000",
+      "compatible": "arm,pl330,arm,primecell,",
+      "iommus": false
+    }
+  ]
+}

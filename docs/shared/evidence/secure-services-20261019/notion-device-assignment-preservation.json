@@ -1,0 +1,91 @@
+{
+  "status": "PASS",
+  "rows": {
+    "## 已实现（必须保留）": 7,
+    "## 未实现 / 部分实现（必须保留）": 7,
+    "## 当前失败 / NOT_RUN / 未解决（必须保留）": 6
+  },
+  "history_ids_retained": 39,
+  "final_runs": 9,
+  "page_url": "https://app.notion.com/p/3fd659a3b8cc806daaf9db523d4809af",
+  "retained_status_rows": {
+    "## 已实现（必须保留）": [
+      "Client Realm / RMM 通信",
+      "可信 Proxy / Panthor",
+      "GPU 内置 MMU / GPUVM",
+      "Host 标准 IOMMU 映射准入",
+      "managed-IOMMU 寄存器访问时钟",
+      "Guest RSI managed-IOMMU 路径",
+      "PM owner 生命周期（历史候选）"
+    ],
+    "## 未实现 / 部分实现（必须保留）": [
+      "统一安全 IOMMU 服务",
+      "Host 与其他 IOMMU 设备",
+      "GPUVM 安全强化",
+      "GPU MMIO 独占与受限 PM",
+      "保护模型仿真验收",
+      "跨 Client 攻击与长期稳定性",
+      "最终发布与冻结基线替换"
+    ],
+    "## 当前失败 / NOT_RUN / 未解决（必须保留）": [
+      "HISTORICAL_FAIL / 已修复",
+      "HISTORICAL_DIAGNOSTIC / 已退出使用",
+      "NOT_RUN",
+      "MUST_RERUN / 所列最终重跑已完成",
+      "UNRESOLVED",
+      "OUT_OF_SCOPE / HISTORICAL_FAIL"
+    ]
+  },
+  "retained_history_ids": [
+    "iommu-map-admission-20261018",
+    "iommu-map-live-gpu-20261018",
+    "managed-iommu-clock-fix-20261019-a",
+    "managed-iommu-gmem-reclaim-20261019-b",
+    "guest-rsi-clock-fix-20261019-a",
+    "guest-rsi-gmem-reclaim-20261019-b",
+    "kvm-mmio-gmem-reclaim-20261019-b",
+    "gpu-pm-gmem-reclaim-20261019-b",
+    "kvm-mmio-clock-fix-20261019-a",
+    "host-kvm-teardown-diag-20261019-a",
+    "kvm-mmio-teardown-diag-20261019-a",
+    "gpu-lease-gmem-reclaim-20261019-b",
+    "secure-services-20261019",
+    "dma-guard-20261018",
+    "gpu-lease-gmem-reclaim-20261019-b/",
+    "glmark720-gmem-reclaim-20261019-b",
+    "glmark720-gmem-reclaim-20261019-b/",
+    "kvm-mmio-gmem-reclaim-20261019-b/",
+    "guest-rsi-gmem-reclaim-20261019-b/",
+    "managed-iommu-gmem-reclaim-20261019-b/",
+    "guest-iommu-gmem-reclaim-20261019-b",
+    "guest-iommu-gmem-reclaim-20261019-b/",
+    "gpu-pm-gmem-reclaim-20261019-b/",
+    "gpu-lease-reclaim-20261019-a",
+    "glmark720-page-reclaim-20261019-a",
+    "glmark720-page-reclaim-20261019-a/host-kernel-review",
+    "gpu-pm-page-reclaim-20261019-a",
+    "gpu-lease-gmem-reclaim-20261019-a",
+    "secure-services-cleanup-20261019-a",
+    "secure-services-cleanup-20261019-b",
+    "secure-services-cleanup-20261019-c",
+    "secure-services-cleanup-20261019-c/",
+    "recover-rk-managed-hang-20261019-a",
+    "host-managed-clock-fix-20261019-a",
+    "kvm-mmio-clock-fix-20261019-a/",
+    "kvm-mmio-failure-dmesg-20261019-a/",
+    "gpu-pm-owner-bind-kvm-20261019-a/b",
+    "gpu-pm-owner-bind-compute-20261019-a",
+    "glmark720-owner-bind-20261019-a"
+  ],
+  "new_run_ids": [
+    "glmark720-device-grant-20261019-b",
+    "guest-device-grant-20261019-b",
+    "guest-rsi-device-grant-20261019-b",
+    "managed-iommu-device-grant-20261019-b",
+    "guest-backing-device-grant-20261019-b",
+    "gpu-backing-device-grant-20261019-b",
+    "gpu-pm-device-grant-20261019-b",
+    "gpu-power-cycle-device-grant-20261019-e",
+    "gpu-power-cycle-device-grant-20261019-f"
+  ]
+}

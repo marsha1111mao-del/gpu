@@ -1,0 +1,414 @@
+[
+  {
+    "pair": 1,
+    "scenes": [
+      {
+        "scene": "[build] use-vbo=false:",
+        "baseline_fps": 1127,
+        "candidate_fps": 1121,
+        "percent": -0.5323868677905907
+      },
+      {
+        "scene": "[build] use-vbo=true:",
+        "baseline_fps": 1753,
+        "candidate_fps": 1764,
+        "percent": 0.627495721620086
+      },
+      {
+        "scene": "[texture] texture-filter=nearest:",
+        "baseline_fps": 1758,
+        "candidate_fps": 1779,
+        "percent": 1.1945392491467643
+      },
+      {
+        "scene": "[texture] texture-filter=linear:",
+        "baseline_fps": 1757,
+        "candidate_fps": 1777,
+        "percent": 1.138303927148554
+      },
+      {
+        "scene": "[texture] texture-filter=mipmap:",
+        "baseline_fps": 1756,
+        "candidate_fps": 1775,
+        "percent": 1.0820045558086466
+      },
+      {
+        "scene": "[shading] shading=gouraud:",
+        "baseline_fps": 1557,
+        "candidate_fps": 1569,
+        "percent": 0.7707129094412402
+      },
+      {
+        "scene": "[shading] shading=blinn-phong-inf:",
+        "baseline_fps": 1537,
+        "candidate_fps": 1546,
+        "percent": 0.5855562784645496
+      },
+      {
+        "scene": "[shading] shading=phong:",
+        "baseline_fps": 1441,
+        "candidate_fps": 1452,
+        "percent": 0.7633587786259444
+      },
+      {
+        "scene": "[shading] shading=cel:",
+        "baseline_fps": 1435,
+        "candidate_fps": 1445,
+        "percent": 0.6968641114982521
+      },
+      {
+        "scene": "[bump] bump-render=high-poly:",
+        "baseline_fps": 1061,
+        "candidate_fps": 1068,
+        "percent": 0.6597549481621057
+      },
+      {
+        "scene": "[bump] bump-render=normals:",
+        "baseline_fps": 1890,
+        "candidate_fps": 1902,
+        "percent": 0.6349206349206327
+      },
+      {
+        "scene": "[bump] bump-render=height:",
+        "baseline_fps": 1821,
+        "candidate_fps": 1837,
+        "percent": 0.8786381109280539
+      },
+      {
+        "scene": "[effect2d] kernel=0,1,0;1,-4,1;0,1,0;:",
+        "baseline_fps": 1481,
+        "candidate_fps": 1489,
+        "percent": 0.5401755570560329
+      },
+      {
+        "scene": "[effect2d] kernel=1,1,1,1,1;1,1,1,1,1;1,1,1,1,1;:",
+        "baseline_fps": 839,
+        "candidate_fps": 843,
+        "percent": 0.47675804529201393
+      },
+      {
+        "scene": "[pulsar] light=false:quads=5:texture=false:",
+        "baseline_fps": 1405,
+        "candidate_fps": 1414,
+        "percent": 0.6405693950177982
+      },
+      {
+        "scene": "[desktop] blur-radius=5:effect=blur:passes=1:separable=true:windows=4:",
+        "baseline_fps": 233,
+        "candidate_fps": 237,
+        "percent": 1.716738197424883
+      },
+      {
+        "scene": "[desktop] effect=shadow:windows=4:",
+        "baseline_fps": 699,
+        "candidate_fps": 713,
+        "percent": 2.002861230329045
+      },
+      {
+        "scene": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=map:",
+        "baseline_fps": 46,
+        "candidate_fps": 46,
+        "percent": 0.0
+      },
+      {
+        "scene": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=subdata:",
+        "baseline_fps": 46,
+        "candidate_fps": 46,
+        "percent": 0.0
+      },
+      {
+        "scene": "[buffer] columns=200:interleave=true:update-dispersion=0.9:update-fraction=0.5:update-method=map:",
+        "baseline_fps": 66,
+        "candidate_fps": 65,
+        "percent": -1.5151515151515138
+      },
+      {
+        "scene": "[ideas] speed=duration:",
+        "baseline_fps": 440,
+        "candidate_fps": 439,
+        "percent": -0.2272727272727315
+      },
+      {
+        "scene": "[jellyfish] <default>:",
+        "baseline_fps": 1118,
+        "candidate_fps": 1131,
+        "percent": 1.1627906976744207
+      },
+      {
+        "scene": "[terrain] <default>:",
+        "baseline_fps": 42,
+        "candidate_fps": 42,
+        "percent": 0.0
+      },
+      {
+        "scene": "[shadow] <default>:",
+        "baseline_fps": 748,
+        "candidate_fps": 777,
+        "percent": 3.8770053475935873
+      },
+      {
+        "scene": "[refract] <default>:",
+        "baseline_fps": 137,
+        "candidate_fps": 139,
+        "percent": 1.4598540145985384
+      },
+      {
+        "scene": "[conditionals] fragment-steps=0:vertex-steps=0:",
+        "baseline_fps": 1550,
+        "candidate_fps": 1556,
+        "percent": 0.3870967741935516
+      },
+      {
+        "scene": "[conditionals] fragment-steps=5:vertex-steps=0:",
+        "baseline_fps": 1486,
+        "candidate_fps": 1509,
+        "percent": 1.5477792732166984
+      },
+      {
+        "scene": "[conditionals] fragment-steps=0:vertex-steps=5:",
+        "baseline_fps": 1572,
+        "candidate_fps": 1579,
+        "percent": 0.4452926208651453
+      },
+      {
+        "scene": "[function] fragment-complexity=low:fragment-steps=5:",
+        "baseline_fps": 1573,
+        "candidate_fps": 1580,
+        "percent": 0.4450095359186168
+      },
+      {
+        "scene": "[function] fragment-complexity=medium:fragment-steps=5:",
+        "baseline_fps": 1442,
+        "candidate_fps": 1452,
+        "percent": 0.6934812760055475
+      },
+      {
+        "scene": "[loop] fragment-loop=false:fragment-steps=5:vertex-steps=5:",
+        "baseline_fps": 1572,
+        "candidate_fps": 1578,
+        "percent": 0.3816793893129722
+      },
+      {
+        "scene": "[loop] fragment-steps=5:fragment-uniform=false:vertex-steps=5:",
+        "baseline_fps": 1571,
+        "candidate_fps": 1575,
+        "percent": 0.25461489497136114
+      },
+      {
+        "scene": "[loop] fragment-steps=5:fragment-uniform=true:vertex-steps=5:",
+        "baseline_fps": 1437,
+        "candidate_fps": 1447,
+        "percent": 0.695894224077942
+      }
+    ],
+    "improved": 27,
+    "declined": 3,
+    "equal": 3
+  },
+  {
+    "pair": 2,
+    "scenes": [
+      {
+        "scene": "[build] use-vbo=false:",
+        "baseline_fps": 1125,
+        "candidate_fps": 1127,
+        "percent": 0.1777777777777878
+      },
+      {
+        "scene": "[build] use-vbo=true:",
+        "baseline_fps": 1753,
+        "candidate_fps": 1759,
+        "percent": 0.3422703936109439
+      },
+      {
+        "scene": "[texture] texture-filter=nearest:",
+        "baseline_fps": 1748,
+        "candidate_fps": 1770,
+        "percent": 1.258581235697931
+      },
+      {
+        "scene": "[texture] texture-filter=linear:",
+        "baseline_fps": 1763,
+        "candidate_fps": 1777,
+        "percent": 0.7941009642654651
+      },
+      {
+        "scene": "[texture] texture-filter=mipmap:",
+        "baseline_fps": 1751,
+        "candidate_fps": 1763,
+        "percent": 0.6853226727584261
+      },
+      {
+        "scene": "[shading] shading=gouraud:",
+        "baseline_fps": 1558,
+        "candidate_fps": 1565,
+        "percent": 0.449293966623876
+      },
+      {
+        "scene": "[shading] shading=blinn-phong-inf:",
+        "baseline_fps": 1536,
+        "candidate_fps": 1542,
+        "percent": 0.390625
+      },
+      {
+        "scene": "[shading] shading=phong:",
+        "baseline_fps": 1441,
+        "candidate_fps": 1446,
+        "percent": 0.346981263011803
+      },
+      {
+        "scene": "[shading] shading=cel:",
+        "baseline_fps": 1435,
+        "candidate_fps": 1440,
+        "percent": 0.34843205574912606
+      },
+      {
+        "scene": "[bump] bump-render=high-poly:",
+        "baseline_fps": 1062,
+        "candidate_fps": 1068,
+        "percent": 0.5649717514124353
+      },
+      {
+        "scene": "[bump] bump-render=normals:",
+        "baseline_fps": 1887,
+        "candidate_fps": 1900,
+        "percent": 0.6889242183359734
+      },
+      {
+        "scene": "[bump] bump-render=height:",
+        "baseline_fps": 1823,
+        "candidate_fps": 1833,
+        "percent": 0.5485463521667677
+      },
+      {
+        "scene": "[effect2d] kernel=0,1,0;1,-4,1;0,1,0;:",
+        "baseline_fps": 1483,
+        "candidate_fps": 1489,
+        "percent": 0.4045853000674393
+      },
+      {
+        "scene": "[effect2d] kernel=1,1,1,1,1;1,1,1,1,1;1,1,1,1,1;:",
+        "baseline_fps": 838,
+        "candidate_fps": 842,
+        "percent": 0.4773269689737569
+      },
+      {
+        "scene": "[pulsar] light=false:quads=5:texture=false:",
+        "baseline_fps": 1402,
+        "candidate_fps": 1409,
+        "percent": 0.4992867332382245
+      },
+      {
+        "scene": "[desktop] blur-radius=5:effect=blur:passes=1:separable=true:windows=4:",
+        "baseline_fps": 233,
+        "candidate_fps": 235,
+        "percent": 0.8583690987124415
+      },
+      {
+        "scene": "[desktop] effect=shadow:windows=4:",
+        "baseline_fps": 700,
+        "candidate_fps": 707,
+        "percent": 1.0000000000000009
+      },
+      {
+        "scene": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=map:",
+        "baseline_fps": 46,
+        "candidate_fps": 46,
+        "percent": 0.0
+      },
+      {
+        "scene": "[buffer] columns=200:interleave=false:update-dispersion=0.9:update-fraction=0.5:update-method=subdata:",
+        "baseline_fps": 46,
+        "candidate_fps": 46,
+        "percent": 0.0
+      },
+      {
+        "scene": "[buffer] columns=200:interleave=true:update-dispersion=0.9:update-fraction=0.5:update-method=map:",
+        "baseline_fps": 65,
+        "candidate_fps": 66,
+        "percent": 1.538461538461533
+      },
+      {
+        "scene": "[ideas] speed=duration:",
+        "baseline_fps": 436,
+        "candidate_fps": 443,
+        "percent": 1.6055045871559592
+      },
+      {
+        "scene": "[jellyfish] <default>:",
+        "baseline_fps": 1114,
+        "candidate_fps": 1128,
+        "percent": 1.2567324955116588
+      },
+      {
+        "scene": "[terrain] <default>:",
+        "baseline_fps": 42,
+        "candidate_fps": 42,
+        "percent": 0.0
+      },
+      {
+        "scene": "[shadow] <default>:",
+        "baseline_fps": 748,
+        "candidate_fps": 771,
+        "percent": 3.074866310160429
+      },
+      {
+        "scene": "[refract] <default>:",
+        "baseline_fps": 137,
+        "candidate_fps": 139,
+        "percent": 1.4598540145985384
+      },
+      {
+        "scene": "[conditionals] fragment-steps=0:vertex-steps=0:",
+        "baseline_fps": 1562,
+        "candidate_fps": 1568,
+        "percent": 0.3841229193341844
+      },
+      {
+        "scene": "[conditionals] fragment-steps=5:vertex-steps=0:",
+        "baseline_fps": 1473,
+        "candidate_fps": 1511,
+        "percent": 2.5797691785471866
+      },
+      {
+        "scene": "[conditionals] fragment-steps=0:vertex-steps=5:",
+        "baseline_fps": 1565,
+        "candidate_fps": 1581,
+        "percent": 1.0223642172523917
+      },
+      {
+        "scene": "[function] fragment-complexity=low:fragment-steps=5:",
+        "baseline_fps": 1567,
+        "candidate_fps": 1580,
+        "percent": 0.8296107211231751
+      },
+      {
+        "scene": "[function] fragment-complexity=medium:fragment-steps=5:",
+        "baseline_fps": 1438,
+        "candidate_fps": 1453,
+        "percent": 1.0431154381084884
+      },
+      {
+        "scene": "[loop] fragment-loop=false:fragment-steps=5:vertex-steps=5:",
+        "baseline_fps": 1565,
+        "candidate_fps": 1580,
+        "percent": 0.9584664536741228
+      },
+      {
+        "scene": "[loop] fragment-steps=5:fragment-uniform=false:vertex-steps=5:",
+        "baseline_fps": 1566,
+        "candidate_fps": 1579,
+        "percent": 0.8301404853128913
+      },
+      {
+        "scene": "[loop] fragment-steps=5:fragment-uniform=true:vertex-steps=5:",
+        "baseline_fps": 1433,
+        "candidate_fps": 1447,
+        "percent": 0.976971388695036
+      }
+    ],
+    "improved": 30,
+    "declined": 0,
+    "equal": 3
+  }
+]

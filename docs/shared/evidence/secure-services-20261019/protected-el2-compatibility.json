@@ -1,0 +1,1192 @@
+{
+  "overall": "PARTIAL / INCOMPLETE",
+  "scope": "Protected boot compatibility and Host physical-write diagnostics; no runtime-code changes",
+  "protected_boot": "PASS",
+  "rmi_power_calls": "PASS",
+  "realm_integration": "FAIL_RME_UNAVAILABLE",
+  "physical_audit_mode": "Original #27 VHE after restoring the command line",
+  "protected_mode_mmio_denial": "NOT_RUN",
+  "host_mmio_protection": "FAIL_BYPASS_DETECTED",
+  "restoration": "PASS",
+  "performance": {
+    "before_720p": 1168,
+    "after_720p": "NOT_RUN",
+    "delta": "NOT_APPLICABLE",
+    "note": "No new performance measurement; original frozen1171/1170 retained"
+  },
+  "remaining": [
+    "Trusted EL2/RMM page ownership and VMID integration",
+    "Immutable Host/ordinary-VM physical MMIO and control-memory restrictions",
+    "Safe Host fault reflection and delegated-page lifetime",
+    "Restricted PM/clock/reset/SCMI access and restart protection",
+    "DMA bypass closure and full attack/fault/stability/freeze acceptance"
+  ],
+  "runs": [
+    {
+      "run_id": "protected-el2-boot-20261019-a",
+      "wrapper": {
+        "run_id": "protected-el2-boot-20261019-a",
+        "command": [
+          "python3",
+          "build/secure-services-20261019/protected-el2/boot-experiment.py"
+        ],
+        "cwd": "/home/mzh/gpu",
+        "started": "2026-10-19T08:02:53.979122+00:00",
+        "status": "FAILED",
+        "allow_rk_reboot": true,
+        "recover_rk_offline": false,
+        "returncode": 1,
+        "ended": "2026-10-19T08:03:29.295615+00:00"
+      },
+      "protected-el2.json": {
+        "run_id": "protected-el2-boot-20261019-a",
+        "status": "FAIL",
+        "security_acceptance": "NOT_RUN",
+        "performance": "NOT_RUN",
+        "storage_id": 2,
+        "before": {
+          "boot_id": "2c851545-a447-4243-b8e6-c2fbdf2b448a",
+          "uname": "Linux opencca-rock5b-rk3588 6.12.0-opencca-pmthor-opp3 #27 SMP PREEMPT Mon Oct 19 15:26:35 CST 2026 aarch64 GNU/Linux",
+          "cmdline": "root=PARTLABEL=root rootwait isolcpus=1,2,3 maxcpus=2 nohlt cpuidle.off=1 rcupdate.rcu_cpu_st maxcpus=2",
+          "cpus": "0-1",
+          "driver": "/sys/bus/platform/drivers/pmthor",
+          "gpu": {
+            "governor": "userspace",
+            "min_freq": "300000000",
+            "max_freq": "1000000000",
+            "cur_freq": "300000000"
+          },
+          "rme_capability": 1
+        },
+        "backup_sha256": "b1da1b59424052d60113a9a66291cd7b510947fe5a3f97b2b0c61fd898f0c78d"
+      },
+      "failure_reason": "Incorrect assumed extlinux path; no configuration modification or reboot"
+    },
+    {
+      "run_id": "protected-el2-boot-20261019-b",
+      "wrapper": {
+        "run_id": "protected-el2-boot-20261019-b",
+        "command": [
+          "python3",
+          "build/secure-services-20261019/protected-el2/boot-experiment.py"
+        ],
+        "cwd": "/home/mzh/gpu",
+        "started": "2026-10-19T08:03:59.727351+00:00",
+        "status": "COMPLETED",
+        "allow_rk_reboot": true,
+        "recover_rk_offline": false,
+        "returncode": 0,
+        "ended": "2026-10-19T08:06:15.024780+00:00"
+      },
+      "protected-el2.json": {
+        "run_id": "protected-el2-boot-20261019-b",
+        "status": "EXPERIMENT_COLLECTED",
+        "security_acceptance": "NOT_RUN",
+        "performance": "NOT_RUN",
+        "storage_id": 2,
+        "before": {
+          "boot_id": "2c851545-a447-4243-b8e6-c2fbdf2b448a",
+          "uname": "Linux opencca-rock5b-rk3588 6.12.0-opencca-pmthor-opp3 #27 SMP PREEMPT Mon Oct 19 15:26:35 CST 2026 aarch64 GNU/Linux",
+          "cmdline": "root=PARTLABEL=root rootwait isolcpus=1,2,3 maxcpus=2 nohlt cpuidle.off=1 rcupdate.rcu_cpu_st maxcpus=2",
+          "cpus": "0-1",
+          "driver": "/sys/bus/platform/drivers/pmthor",
+          "gpu": {
+            "governor": "userspace",
+            "min_freq": "300000000",
+            "max_freq": "1000000000",
+            "cur_freq": "300000000"
+          },
+          "rme_capability": 1
+        },
+        "backup_sha256": "240588425ce6b870719a220bcaf689b7a0b9dd4452ee47b0f9cd711709704b0e",
+        "extlinux_relative": "boot/extlinux/extlinux.conf",
+        "image_sha256": "16c6d4832169d03317ee1274f52fb313d2cf86b1487698258b60c3ac9e9df82c",
+        "protected": {
+          "boot_id": "53c57ec7-eb4f-4714-b0ca-2e3f2dc085fb",
+          "uname": "Linux opencca-rock5b-rk3588 6.12.0-opencca-pmthor-opp3 #27 SMP PREEMPT Mon Oct 19 15:26:35 CST 2026 aarch64 GNU/Linux",
+          "cmdline": "root=PARTLABEL=root rootwait isolcpus=1,2,3 maxcpus=2 nohlt cpuidle.off=1 rcupdate.rcu_cpu_st kvm_arm.mode=protected maxcpus=2",
+          "cpus": "0-1",
+          "driver": "/sys/bus/platform/drivers/pmthor",
+          "gpu": {
+            "governor": "userspace",
+            "min_freq": "300000000",
+            "max_freq": "1000000000",
+            "cur_freq": "300000000"
+          },
+          "rme_capability": 0
+        },
+        "protected_initialization": "PASS",
+        "realm_integration": "FAIL_RME_UNAVAILABLE",
+        "power_probe_sha256": "7b4fbca22f31e71f61d9bdf61a13ff3c15ba90b62aa49d66c36218f312237770",
+        "rmi_forwarding": "PASS",
+        "protected_after_probe": {
+          "boot_id": "53c57ec7-eb4f-4714-b0ca-2e3f2dc085fb",
+          "uname": "Linux opencca-rock5b-rk3588 6.12.0-opencca-pmthor-opp3 #27 SMP PREEMPT Mon Oct 19 15:26:35 CST 2026 aarch64 GNU/Linux",
+          "cmdline": "root=PARTLABEL=root rootwait isolcpus=1,2,3 maxcpus=2 nohlt cpuidle.off=1 rcupdate.rcu_cpu_st kvm_arm.mode=protected maxcpus=2",
+          "cpus": "0-1",
+          "driver": "/sys/bus/platform/drivers/pmthor",
+          "gpu": {
+            "governor": "userspace",
+            "min_freq": "300000000",
+            "max_freq": "1000000000",
+            "cur_freq": "300000000"
+          },
+          "rme_capability": 0
+        },
+        "config_restore": "PASS",
+        "after": {
+          "boot_id": "0dd46095-e0ed-471f-901c-cfd96c804851",
+          "uname": "Linux opencca-rock5b-rk3588 6.12.0-opencca-pmthor-opp3 #27 SMP PREEMPT Mon Oct 19 15:26:35 CST 2026 aarch64 GNU/Linux",
+          "cmdline": "root=PARTLABEL=root rootwait isolcpus=1,2,3 maxcpus=2 nohlt cpuidle.off=1 rcupdate.rcu_cpu_st maxcpus=2",
+          "cpus": "0-1",
+          "driver": "/sys/bus/platform/drivers/pmthor",
+          "gpu": {
+            "governor": "userspace",
+            "min_freq": "300000000",
+            "max_freq": "1000000000",
+            "cur_freq": "300000000"
+          },
+          "rme_capability": 1
+        },
+        "restoration": "PASS"
+      }
+    },
+    {
+      "run_id": "kvm-mmio-protected-restore-20261019-a",
+      "wrapper": {
+        "run_id": "kvm-mmio-protected-restore-20261019-a",
+        "command": [
+          "python3",
+          "scripts/run/run-kvm-mmio-probe.py",
+          "--probe",
+          "build/secure-services-20261019/physical-mmio/opencca_kvm_mmio_probe",
+          "--uart-capture"
+        ],
+        "cwd": "/home/mzh/gpu",
+        "started": "2026-10-19T08:08:02.425383+00:00",
+        "status": "COMPLETED",
+        "allow_rk_reboot": false,
+        "recover_rk_offline": false,
+        "returncode": 0,
+        "ended": "2026-10-19T08:08:10.435104+00:00"
+      },
+      "kvm-mmio.json": {
+        "run_id": "kvm-mmio-protected-restore-20261019-a",
+        "probe": "PASS",
+        "host_mmio_protection": "NOT_RUN",
+        "probe_sha256": "1572f576cbb4065203089ee0c6f3c3c845c8863aeb1843e2d0649c3b167e7974",
+        "runner_sha256": "3711a451ba651da6d1ccb82a4a44248b05049c3f1a774d825942915f1c03d48b",
+        "scope": "KVM/RMM MMIO authorization, owner OPP transition and pmthor reset/release; no GPU workload or DMA",
+        "probe_command": "/root/GPU-SFTP/log/kvm-mmio/kvm-mmio-protected-restore-20261019-a/opencca_kvm_mmio_probe",
+        "probe_rc": 0,
+        "checks": {
+          "non_gpu_mmio_denied": true,
+          "misaligned_gpu_mmio_denied": true,
+          "oversized_gpu_mmio_denied": true,
+          "undersized_gpu_mmio_denied": true,
+          "authorized_proxy_mmio_succeeds": true,
+          "pmthor_owner_session_opens": true,
+          "second_realm_mmio_denied": true,
+          "owner_opp_transition_succeeds": true,
+          "pmthor_owner_release_succeeds": true,
+          "pmthor_owner_session_reopens": true,
+          "destroy_releases_mmio_owner": true
+        },
+        "dmesg_rc": 0,
+        "dmesg_ring_wrapped": false,
+        "host_kernel_errors": []
+      }
+    },
+    {
+      "run_id": "host-kernel-mmio-audit-20261019-a",
+      "wrapper": {
+        "run_id": "host-kernel-mmio-audit-20261019-a",
+        "command": [
+          "python3",
+          "scripts/run/run-kvm-mmio-probe.py",
+          "--probe",
+          "build/secure-services-20261019/protected-el2/opencca_kvm_mmio_probe",
+          "--kernel-mmio-module",
+          "build/secure-services-20261019/protected-el2/kernel-module/opencca_gpu_mmio_probe.ko",
+          "--uart-capture"
+        ],
+        "cwd": "/home/mzh/gpu",
+        "started": "2026-10-19T08:14:30.608095+00:00",
+        "status": "FAILED",
+        "allow_rk_reboot": false,
+        "recover_rk_offline": false,
+        "returncode": 2,
+        "ended": "2026-10-19T08:14:40.159398+00:00"
+      },
+      "kvm-mmio.json": {
+        "run_id": "host-kernel-mmio-audit-20261019-a",
+        "probe": "PASS",
+        "host_mmio_protection": "FAIL_BYPASS_DETECTED",
+        "probe_sha256": "76038ca90ea45cf75027f5dad91d636283b25a7e76f4dfee4ed357b5afe0995e",
+        "runner_sha256": "d27a585e8bd0ab0bfce05afd0bdf53e11a94464f11d3468eafe3cf96321c75bb",
+        "scope": "KVM/RMM MMIO authorization, owner OPP transition and pmthor reset/release; no GPU workload or DMA; direct Host kernel ioremap IRQ mask write/readback/restore in idle assigned session",
+        "module_sha256": "e9131cb03df3c0a151682b2e827b2c087265f9f5b32e15a55d3868b131231a62",
+        "probe_command": "/root/GPU-SFTP/log/kvm-mmio/host-kernel-mmio-audit-20261019-a/opencca_kvm_mmio_probe --audit-host-kernel-mmio /root/GPU-SFTP/log/kvm-mmio/host-kernel-mmio-audit-20261019-a/opencca_gpu_mmio_probe.ko",
+        "probe_rc": 2,
+        "checks": {
+          "non_gpu_mmio_denied": true,
+          "misaligned_gpu_mmio_denied": true,
+          "oversized_gpu_mmio_denied": true,
+          "undersized_gpu_mmio_denied": true,
+          "authorized_proxy_mmio_succeeds": true,
+          "pmthor_owner_session_opens": true,
+          "second_realm_mmio_denied": true,
+          "owner_opp_transition_succeeds": true,
+          "pmthor_owner_release_succeeds": true,
+          "pmthor_owner_session_reopens": true,
+          "destroy_releases_mmio_owner": true
+        },
+        "module_cleanup_rc": 0,
+        "dmesg_rc": 0,
+        "dmesg_ring_wrapped": false,
+        "host_kernel_errors": [],
+        "kernel_mmio_records": [
+          "[HOST_KERNEL_MMIO_TEST] address=0xfb000028 before=0x0 requested=0x1 observed=0x1 restored=0x0 write_error=0 read_error=0 restore_error=0 restore_read_error=0"
+        ]
+      }
+    },
+    {
+      "run_id": "host-devmem-mmio-audit-20261019-c",
+      "wrapper": {
+        "run_id": "host-devmem-mmio-audit-20261019-c",
+        "command": [
+          "python3",
+          "scripts/run/run-kvm-mmio-probe.py",
+          "--probe",
+          "build/secure-services-20261019/protected-el2/opencca_kvm_mmio_probe",
+          "--audit-host-mmio",
+          "--uart-capture"
+        ],
+        "cwd": "/home/mzh/gpu",
+        "started": "2026-10-19T08:15:25.375705+00:00",
+        "status": "FAILED",
+        "allow_rk_reboot": false,
+        "recover_rk_offline": false,
+        "returncode": 2,
+        "ended": "2026-10-19T08:15:33.413009+00:00"
+      },
+      "kvm-mmio.json": {
+        "run_id": "host-devmem-mmio-audit-20261019-c",
+        "probe": "PASS",
+        "host_mmio_protection": "FAIL_BYPASS_DETECTED",
+        "probe_sha256": "76038ca90ea45cf75027f5dad91d636283b25a7e76f4dfee4ed357b5afe0995e",
+        "runner_sha256": "d27a585e8bd0ab0bfce05afd0bdf53e11a94464f11d3468eafe3cf96321c75bb",
+        "scope": "KVM/RMM MMIO authorization, owner OPP transition and pmthor reset/release; no GPU workload or DMA; direct Host /dev/mem IRQ mask write/readback/restore in idle assigned session",
+        "probe_command": "/root/GPU-SFTP/log/kvm-mmio/host-devmem-mmio-audit-20261019-c/opencca_kvm_mmio_probe --audit-host-mmio",
+        "probe_rc": 2,
+        "checks": {
+          "non_gpu_mmio_denied": true,
+          "misaligned_gpu_mmio_denied": true,
+          "oversized_gpu_mmio_denied": true,
+          "undersized_gpu_mmio_denied": true,
+          "authorized_proxy_mmio_succeeds": true,
+          "pmthor_owner_session_opens": true,
+          "second_realm_mmio_denied": true,
+          "owner_opp_transition_succeeds": true,
+          "pmthor_owner_release_succeeds": true,
+          "pmthor_owner_session_reopens": true,
+          "destroy_releases_mmio_owner": true
+        },
+        "dmesg_rc": 0,
+        "dmesg_ring_wrapped": false,
+        "host_kernel_errors": []
+      }
+    },
+    {
+      "run_id": "kvm-mmio-kernel-probe-control-20261019-a",
+      "wrapper": {
+        "run_id": "kvm-mmio-kernel-probe-control-20261019-a",
+        "command": [
+          "python3",
+          "scripts/run/run-kvm-mmio-probe.py",
+          "--probe",
+          "build/secure-services-20261019/protected-el2/opencca_kvm_mmio_probe"
+        ],
+        "cwd": "/home/mzh/gpu",
+        "started": "2026-10-19T08:16:12.529304+00:00",
+        "status": "COMPLETED",
+        "allow_rk_reboot": false,
+        "recover_rk_offline": false,
+        "returncode": 0,
+        "ended": "2026-10-19T08:16:18.277957+00:00"
+      },
+      "kvm-mmio.json": {
+        "run_id": "kvm-mmio-kernel-probe-control-20261019-a",
+        "probe": "PASS",
+        "host_mmio_protection": "NOT_RUN",
+        "probe_sha256": "76038ca90ea45cf75027f5dad91d636283b25a7e76f4dfee4ed357b5afe0995e",
+        "runner_sha256": "d27a585e8bd0ab0bfce05afd0bdf53e11a94464f11d3468eafe3cf96321c75bb",
+        "scope": "KVM/RMM MMIO authorization, owner OPP transition and pmthor reset/release; no GPU workload or DMA",
+        "probe_command": "/root/GPU-SFTP/log/kvm-mmio/kvm-mmio-kernel-probe-control-20261019-a/opencca_kvm_mmio_probe",
+        "probe_rc": 0,
+        "checks": {
+          "non_gpu_mmio_denied": true,
+          "misaligned_gpu_mmio_denied": true,
+          "oversized_gpu_mmio_denied": true,
+          "undersized_gpu_mmio_denied": true,
+          "authorized_proxy_mmio_succeeds": true,
+          "pmthor_owner_session_opens": true,
+          "second_realm_mmio_denied": true,
+          "owner_opp_transition_succeeds": true,
+          "pmthor_owner_release_succeeds": true,
+          "pmthor_owner_session_reopens": true,
+          "destroy_releases_mmio_owner": true
+        },
+        "dmesg_rc": 0,
+        "dmesg_ring_wrapped": false,
+        "host_kernel_errors": []
+      }
+    },
+    {
+      "run_id": "protected-el2-cleanup-20261019-a",
+      "wrapper": {
+        "run_id": "protected-el2-cleanup-20261019-a",
+        "command": [
+          "python3",
+          "build/secure-services-20261019/protected-el2/cleanup.py"
+        ],
+        "cwd": "/home/mzh/gpu",
+        "started": "2026-10-19T08:09:52.463633+00:00",
+        "status": "COMPLETED",
+        "allow_rk_reboot": false,
+        "recover_rk_offline": false,
+        "returncode": 0,
+        "ended": "2026-10-19T08:10:10.201682+00:00"
+      },
+      "cleanup-result.json": {
+        "status": "PASS",
+        "results": [
+          {
+            "role": "controller",
+            "removed_files": 1,
+            "removed_bytes": 20614,
+            "removed_allocated_bytes": 24576,
+            "filesystem_free_delta": 24576,
+            "records": [
+              {
+                "path": "/home/mzh/gpu/build/secure-services-20261019/protected-el2/__pycache__/boot-experiment.cpython-314.pyc",
+                "bytes": 20614,
+                "allocated_bytes": 24576,
+                "mtime_ns": 1792397039686520821,
+                "inode": 553558,
+                "device": 2096,
+                "sha256": "c3ef32de1d09eb5fd9260b97e4f2502dba9a30da40a78d6f29340fa90d639631",
+                "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+              }
+            ]
+          },
+          {
+            "role": "pi",
+            "removed_files": 2,
+            "removed_bytes": 268435456,
+            "removed_allocated_bytes": 268435456,
+            "filesystem_free_delta": 268435456,
+            "records": [
+              {
+                "path": "/home/mzh/opencca-flash/snapshot/protected-el2-boot-20261019-a-kernel-before.img",
+                "bytes": 134217728,
+                "allocated_bytes": 134217728,
+                "mtime_ns": 1792397007249037878,
+                "inode": 405459,
+                "device": 45826,
+                "sha256": "b1da1b59424052d60113a9a66291cd7b510947fe5a3f97b2b0c61fd898f0c78d",
+                "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+              },
+              {
+                "path": "/home/mzh/opencca-flash/snapshot/protected-el2-boot-20261019-b-kernel-before.img",
+                "bytes": 134217728,
+                "allocated_bytes": 134217728,
+                "mtime_ns": 1792397073382181660,
+                "inode": 405461,
+                "device": 45826,
+                "sha256": "240588425ce6b870719a220bcaf689b7a0b9dd4452ee47b0f9cd711709704b0e",
+                "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+              }
+            ]
+          },
+          {
+            "role": "rk",
+            "removed_files": 1,
+            "removed_bytes": 54352,
+            "removed_allocated_bytes": 57344,
+            "filesystem_free_delta": 57344,
+            "records": [
+              {
+                "path": "/root/GPU-SFTP/log/protected-el2/protected-el2-boot-20261019-b/power-probe.ko",
+                "bytes": 54352,
+                "allocated_bytes": 57344,
+                "mtime_ns": 1792397127340000009,
+                "inode": 300122,
+                "device": 45828,
+                "sha256": "7b4fbca22f31e71f61d9bdf61a13ff3c15ba90b62aa49d66c36218f312237770",
+                "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "run_id": "protected-el2-cleanup-20261019-b",
+      "wrapper": {
+        "run_id": "protected-el2-cleanup-20261019-b",
+        "command": [
+          "python3",
+          "build/secure-services-20261019/protected-el2/cleanup.py"
+        ],
+        "cwd": "/home/mzh/gpu",
+        "started": "2026-10-19T08:17:49.445525+00:00",
+        "status": "COMPLETED",
+        "allow_rk_reboot": false,
+        "recover_rk_offline": false,
+        "returncode": 0,
+        "ended": "2026-10-19T08:17:57.474451+00:00"
+      },
+      "cleanup-result.json": {
+        "status": "PASS",
+        "results": [
+          {
+            "role": "controller",
+            "removed_files": 14,
+            "removed_bytes": 238934,
+            "removed_allocated_bytes": 274432,
+            "filesystem_free_delta": 274432,
+            "records": [
+              {
+                "path": "/home/mzh/gpu/build/secure-services-20261019/protected-el2/kernel-module/opencca_gpu_mmio_probe.o",
+                "bytes": 30304,
+                "allocated_bytes": 32768,
+                "mtime_ns": 1792397655138768398,
+                "inode": 553810,
+                "device": 2096,
+                "sha256": "d5677d785122af79b64a7ab9e1956d8e48a2e157adc3bb9ca42eeba260eddc84",
+                "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+              },
+              {
+                "path": "/home/mzh/gpu/build/secure-services-20261019/protected-el2/kernel-module/.opencca_gpu_mmio_probe.mod.o.cmd",
+                "bytes": 56639,
+                "allocated_bytes": 57344,
+                "mtime_ns": 1792397655335631156,
+                "inode": 553820,
+                "device": 2096,
+                "sha256": "955858a7759bce9c22b18d18c98b7782827bfbfee13bcdbaeb8bf7d44cd1b72e",
+                "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+              },
+              {
+                "path": "/home/mzh/gpu/build/secure-services-20261019/protected-el2/kernel-module/.Module.symvers.cmd",
+                "bytes": 337,
+                "allocated_bytes": 4096,
+                "mtime_ns": 1792397655167366157,
+                "inode": 553817,
+                "device": 2096,
+                "sha256": "897f6648ae6c24dc03c13d94fa07814931c58fe095ccfb803eb07a9245e1b7fe",
+                "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+              },
+              {
+                "path": "/home/mzh/gpu/build/secure-services-20261019/protected-el2/kernel-module/.opencca_gpu_mmio_probe.ko.cmd",
+                "bytes": 622,
+                "allocated_bytes": 4096,
+                "mtime_ns": 1792397655501737313,
+                "inode": 553823,
+                "device": 2096,
+                "sha256": "8eb5be4e03fca0abce0112bc37bf84aa94c1e4c582f1a60ae05492ca47d290a6",
+                "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+              },
+              {
+                "path": "/home/mzh/gpu/build/secure-services-20261019/protected-el2/kernel-module/opencca_gpu_mmio_probe.mod.o",
+                "bytes": 17392,
+                "allocated_bytes": 20480,
+                "mtime_ns": 1792397655333201630,
+                "inode": 553819,
+                "device": 2096,
+                "sha256": "3808a0fa1f70171d0b22fe72b8254e228a090501bf55a501deb299915ea8653b",
+                "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+              },
+              {
+                "path": "/home/mzh/gpu/build/secure-services-20261019/protected-el2/kernel-module/opencca_gpu_mmio_probe.mod.c",
+                "bytes": 373,
+                "allocated_bytes": 4096,
+                "mtime_ns": 1792397655167366157,
+                "inode": 553815,
+                "device": 2096,
+                "sha256": "d58cece78f0cd9d5c51df34781da71f69a565ba0dca9bc3d33c73a4e9b33a78e",
+                "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+              },
+              {
+                "path": "/home/mzh/gpu/build/secure-services-20261019/protected-el2/kernel-module/.modules.order.cmd",
+                "bytes": 301,
+                "allocated_bytes": 4096,
+                "mtime_ns": 1792397655146469452,
+                "inode": 553814,
+                "device": 2096,
+                "sha256": "5e363b61ab6af8fcd06a6113dc214aec5f324d0727b71ba4e3d37aa7f00685e2",
+                "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+              },
+              {
+                "path": "/home/mzh/gpu/build/secure-services-20261019/protected-el2/kernel-module/.module-common.o",
+                "bytes": 16064,
+                "allocated_bytes": 16384,
+                "mtime_ns": 1792397655495545106,
+                "inode": 553821,
+                "device": 2096,
+                "sha256": "ab3c124e96c7c67800e9d484c5c89f3eedfd3f748aebf29556339401b6288cf8",
+                "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+              },
+              {
+                "path": "/home/mzh/gpu/build/secure-services-20261019/protected-el2/kernel-module/.opencca_gpu_mmio_probe.o.cmd",
+                "bytes": 59552,
+                "allocated_bytes": 61440,
+                "mtime_ns": 1792397655143631038,
+                "inode": 553811,
+                "device": 2096,
+                "sha256": "8b1bd9a3d551acb0e3ce24d2430b135799214e4f14bf88a4b0da80e1bf52d2ec",
+                "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+              },
+              {
+                "path": "/home/mzh/gpu/build/secure-services-20261019/protected-el2/kernel-module/opencca_gpu_mmio_probe.mod",
+                "bytes": 98,
+                "allocated_bytes": 4096,
+                "mtime_ns": 1792397655146469452,
+                "inode": 553809,
+                "device": 2096,
+                "sha256": "9d356355da4a9cb5ec6e6a2532a19a67473ffb7be087fd124bfce6751a4279b1",
+                "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+              },
+              {
+                "path": "/home/mzh/gpu/build/secure-services-20261019/protected-el2/kernel-module/..module-common.o.cmd",
+                "bytes": 56791,
+                "allocated_bytes": 57344,
+                "mtime_ns": 1792397655496438352,
+                "inode": 553822,
+                "device": 2096,
+                "sha256": "d1a9c04e79935377dfde551246651f03cb50f9860a4b5fc058caabd284786acd",
+                "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+              },
+              {
+                "path": "/home/mzh/gpu/build/secure-services-20261019/protected-el2/kernel-module/modules.order",
+                "bytes": 98,
+                "allocated_bytes": 4096,
+                "mtime_ns": 1792397655146469452,
+                "inode": 553813,
+                "device": 2096,
+                "sha256": "9d356355da4a9cb5ec6e6a2532a19a67473ffb7be087fd124bfce6751a4279b1",
+                "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+              },
+              {
+                "path": "/home/mzh/gpu/build/secure-services-20261019/protected-el2/kernel-module/Module.symvers",
+                "bytes": 0,
+                "allocated_bytes": 0,
+                "mtime_ns": 1792397655167366157,
+                "inode": 553816,
+                "device": 2096,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+              },
+              {
+                "path": "/home/mzh/gpu/build/secure-services-20261019/protected-el2/kernel-module/.opencca_gpu_mmio_probe.mod.cmd",
+                "bytes": 363,
+                "allocated_bytes": 4096,
+                "mtime_ns": 1792397655146469452,
+                "inode": 553812,
+                "device": 2096,
+                "sha256": "0d6588091f41d97d2c6f5f4130997033245f095fbcc4091c840594ca25faa37e",
+                "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+              }
+            ]
+          },
+          {
+            "role": "pi",
+            "removed_files": 0,
+            "removed_bytes": 0,
+            "removed_allocated_bytes": 0,
+            "filesystem_free_delta": 0,
+            "records": []
+          },
+          {
+            "role": "rk",
+            "removed_files": 5,
+            "removed_bytes": 3472040,
+            "removed_allocated_bytes": 3485696,
+            "filesystem_free_delta": 3485696,
+            "records": [
+              {
+                "path": "/root/GPU-SFTP/log/kvm-mmio/kvm-mmio-protected-restore-20261019-a/opencca_kvm_mmio_probe",
+                "bytes": 852704,
+                "allocated_bytes": 856064,
+                "mtime_ns": 1792397289795949573,
+                "inode": 395950,
+                "device": 45828,
+                "sha256": "1572f576cbb4065203089ee0c6f3c3c845c8863aeb1843e2d0649c3b167e7974",
+                "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+              },
+              {
+                "path": "/root/GPU-SFTP/log/kvm-mmio/host-kernel-mmio-audit-20261019-a/opencca_kvm_mmio_probe",
+                "bytes": 852848,
+                "allocated_bytes": 856064,
+                "mtime_ns": 1792397678036156303,
+                "inode": 395952,
+                "device": 45828,
+                "sha256": "76038ca90ea45cf75027f5dad91d636283b25a7e76f4dfee4ed357b5afe0995e",
+                "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+              },
+              {
+                "path": "/root/GPU-SFTP/log/kvm-mmio/host-devmem-mmio-audit-20261019-c/opencca_kvm_mmio_probe",
+                "bytes": 852848,
+                "allocated_bytes": 856064,
+                "mtime_ns": 1792397732784194544,
+                "inode": 395955,
+                "device": 45828,
+                "sha256": "76038ca90ea45cf75027f5dad91d636283b25a7e76f4dfee4ed357b5afe0995e",
+                "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+              },
+              {
+                "path": "/root/GPU-SFTP/log/kvm-mmio/kvm-mmio-kernel-probe-control-20261019-a/opencca_kvm_mmio_probe",
+                "bytes": 852848,
+                "allocated_bytes": 856064,
+                "mtime_ns": 1792397779364410109,
+                "inode": 395957,
+                "device": 45828,
+                "sha256": "76038ca90ea45cf75027f5dad91d636283b25a7e76f4dfee4ed357b5afe0995e",
+                "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+              },
+              {
+                "path": "/root/GPU-SFTP/log/kvm-mmio/host-kernel-mmio-audit-20261019-a/opencca_gpu_mmio_probe.ko",
+                "bytes": 60792,
+                "allocated_bytes": 61440,
+                "mtime_ns": 1792397678968154446,
+                "inode": 395953,
+                "device": 45828,
+                "sha256": "e9131cb03df3c0a151682b2e827b2c087265f9f5b32e15a55d3868b131231a62",
+                "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "previous_source_manifest": "build/secure-services-20261019/iommu-irq/tested-source-hashes.json",
+  "changed_since_previous": [
+    "GPU-SFTP/tests/dma-guard/Makefile",
+    "GPU-SFTP/tests/dma-guard/README.md",
+    "GPU-SFTP/tests/dma-guard/opencca_kvm_mmio_probe.c",
+    "scripts/run/run-kvm-mmio-probe.py"
+  ],
+  "source_sha256": {
+    "GPU-SFTP/tests/dma-guard/Makefile": "f90555a2c43681902ed831308cb48503ea7e517ceb65f168d21490474c82531b",
+    "GPU-SFTP/tests/dma-guard/README.md": "9ab9149c4960adb5f93a4911aa63637c3d5c60a9a0303d0ad75962fc9e3160b0",
+    "GPU-SFTP/tests/dma-guard/opencca_dma_probe.c": "4e0800ef9131983a85839857873e87965ad277e7d4bef69c860364457abbe6ac",
+    "GPU-SFTP/tests/dma-guard/opencca_dma_transfer_probe.c": "65c8a22a568b632b3531d9b9c2c8a797c9c935eaef3eb05c2cbc9e404b2eb33d",
+    "GPU-SFTP/tests/dma-guard/opencca_gpu_mmio_probe.c": "8d8b523c20c0505f243ea524c85fad7636385ef4a1bbc6e2c76d96ddd8465337",
+    "GPU-SFTP/tests/dma-guard/opencca_guest_iommu_probe.c": "8995d1d0aa7831d90d941138b6960d44270b8bfb31567d80eb3f7ddaf75ef8da",
+    "GPU-SFTP/tests/dma-guard/opencca_iommu_assignment_probe.c": "f0b328db468fa04f05ab6f4cb537fa0be5e7833bab04bf8bef04cc704b7e61cc",
+    "GPU-SFTP/tests/dma-guard/opencca_kvm_mmio_probe.c": "943b63fd71a417f508a73a379d8c04ceefc557a19d376c6322c9752dd9451921",
+    "GPU-SFTP/tests/dma-guard/opencca_lease_monitor.c": "62812c9b9da970eb361893efcb76ee23c6db372bd149ae42bbb168028513b56d",
+    "GPU-SFTP/tests/dma-guard/opencca_reclaim_probe.c": "2cdfa49c4cdf1b2a8b4eddcb2d308b6fd642c9668758e15f0221e8d9c383eed5",
+    "GPU-SFTP/tests/dma-guard/run_guest_iommu_probe.py": "afba18d69269ca9be463313481efdea3c5951653db17d19519abd6733632e736",
+    "GPU-SFTP/tests/realm-xshm/init.c": "c4a0a27bd06cc625d376d8979a522507a37d2400aa5954a3b92b3042e361e077",
+    "Linux-Guest-GPU/arch/arm64/include/asm/rsi_smc.h": "569b2c642149790d65e5873a4908bcbcf0b3d9d98d2cc8b5428e2af87c355e98",
+    "Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_device.c": "9efcd6c3b2670b4b26298db21c8a72a2c9be164eda62f7a78e4520230d4f320b",
+    "Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_gem.c": "b609900e1395cff02edb8caa394a6eaa4376a2323e6d8f8457fa54e6843ac4a0",
+    "Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_gem.h": "15b2392e2462ba01bd704cef555602f29bacc6dae020e3afc28c4f0493d09abd",
+    "Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_gpu.c": "e0eef9e67b54f8e208e6c9d7bcd16f709faf7c7e2aafc30e4e15f60d36ad0fc2",
+    "Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_mmu.c": "bb27571e15ad98722f645fdecf7e61d16604ec2e8b50c6f92011648a34845a38",
+    "Linux-Host-GPU/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi": "734f089b7c39d3a7bcff087bd861d1f8e8210a4e61853fff19779466b2f58dc2",
+    "Linux-Host-GPU/arch/arm64/include/asm/rmi_smc.h": "f03261e3436e18e1d156354bab0a6a92d1de624cdc9d8e773b2c1b2d35b3a0ec",
+    "Linux-Host-GPU/arch/arm64/kvm/arm.c": "2834c75d6fc9b4aa27e08322ece0f0a5f32f76496af90f96f133f7142c430207",
+    "Linux-Host-GPU/arch/arm64/kvm/hyp/nvhe/host.S": "4755dd5bc3784453ad0007dc8b9d756dcadf14d2c42a99f4e86f5b350b1b8c36",
+    "Linux-Host-GPU/arch/arm64/kvm/hyp/nvhe/hyp-main.c": "dfeece9430e4026dc9acf05a35015bcb38162fae048fe071b43e0cea0ea4b44f",
+    "Linux-Host-GPU/arch/arm64/kvm/hyp/nvhe/mem_protect.c": "ac7822d56204b5e1fa967a4e646672d0ee65d9e8baae4753de65d18d5bc60323",
+    "Linux-Host-GPU/arch/arm64/kvm/hyp/nvhe/pkvm.c": "78504a29fccc3127c86185fdb1367bd70eeae282a638a502a89fbd98db0a9a18",
+    "Linux-Host-GPU/arch/arm64/kvm/hyp/nvhe/switch.c": "e373e2aec24661301c101321c59c58b33dad29f74b92e78c532bcf0bc3264f85",
+    "Linux-Host-GPU/arch/arm64/kvm/mmu.c": "d6d371d6895aefbd4a5eb52643b2e0e323f9f98b2b31637829602b5930f0f0b2",
+    "Linux-Host-GPU/arch/arm64/kvm/rme.c": "7a7b6844cba4da3bb8d57544cf34207596ed99b50a69c33a58c0b9669c419711",
+    "Linux-Host-GPU/arch/arm64/kvm/vmid.c": "653a08a2f4b730980681dc91d42908126c3c4b6434055d4f3c96fc87de805204",
+    "Linux-Host-GPU/drivers/iommu/Kconfig": "020592a58569361a23c938bd39ca953ec7f7bee90104e7936dc191734afdc2ee",
+    "Linux-Host-GPU/drivers/iommu/iommu.c": "acd805efd55ef0c3ca7dfbfbec215a808514be376de338d7a1c5c50fbac65008",
+    "Linux-Host-GPU/drivers/iommu/opencca-dma-guard.h": "5ccf8e73b48f048b12932ea1e740ce8af4fbdf5b59d43fd96d1555d394aa3939",
+    "Linux-Host-GPU/drivers/iommu/rockchip-iommu.c": "f584359a1ffc5c0230167dbc33d5d897c3ea1d917031e28ec3e178e63a1c1988",
+    "Linux-Host-GPU/drivers/pmthor/pmthor_drv.c": "f1cf826bf98f969268002b49e82a2f5d3fb74885ae902ef3efeb6c721f046c11",
+    "Linux-Host-GPU/drivers/pmthor/pmthor_drv.h": "db012bc0eeaeaa06486014b740662a421247945d4a5dfdc64db747caf6484f2a",
+    "Linux-Host-GPU/include/linux/kvm_host.h": "d59d6f31ecf87b360a0cd770b65773eeb7756726898995706a6653a0f70fe090",
+    "Linux-Host-GPU/include/linux/pmthor_gpu.h": "a8a5c8cb352f6bf80fb4c2315eb371537eafa20d5df8c261bf43c68229de49d4",
+    "Linux-Host-GPU/virt/kvm/guest_memfd.c": "40ec3edc1475f84cda7aff3b7a7f5879701e2df6380734c47ce6408b435d41e2",
+    "opencca/tf-rmm/lib/arch/src/vmid.c": "25089e669209ec341e4bf56d0e587c87287b79407854c785c91402d96318e232",
+    "opencca/tf-rmm/lib/smc/include/smc-rmi.h": "90fe2af76863fcd0b0ee44056f00d2e4093a17e97b92b74fbb1c78ad3505ebb5",
+    "opencca/tf-rmm/lib/smc/include/smc-rsi.h": "59aae90f94e2c5fc8a9325bca9f14bea9d4f4feafb2b1281f682c732ed5b0fb0",
+    "opencca/tf-rmm/lib/smc/include/smc.h": "b565489097856ed108576963dac8623daf26e359eaa8512cd45e8fc485f4e7f3",
+    "opencca/tf-rmm/plat/rk3588/CMakeLists.txt": "7a30610672cc8d9d6c7c1d9db816a90005571011ee25f11b140f76a84160534b",
+    "opencca/tf-rmm/plat/rk3588/src/rk3588_gpu.c": "ebf6f7698454d087a7f90eebbfde7d1c9c33f5d88a872cee64faae599799ee6f",
+    "opencca/tf-rmm/plat/rk3588/src/rk3588_iommu.c": "57902057c759d30bf2e9a5c4f7281ff1f49ef34c69e3844727b385ba555e188a",
+    "opencca/tf-rmm/plat/rk3588/src/rk3588_setup.c": "d979d9ff912cfd2a694c50b094170038f0a18cb2190780d0b7d29df9b7bc45e9",
+    "opencca/tf-rmm/runtime/CMakeLists.txt": "c72bc8c7bae8110b786037975b19e1907ff26b199ce7e2f1d16a8c2f59a74bcd",
+    "opencca/tf-rmm/runtime/core/exit.c": "0417dc88faa7712933c455fba55886f08fc68b4f3145187323104bfeb5b202d1",
+    "opencca/tf-rmm/runtime/core/handler.c": "eaafac9ee06614a1ef2ebc4d3173a82c9917b9b7a496f474dac786d6b0d72e0b",
+    "opencca/tf-rmm/runtime/core/opencca_gpu.c": "137051a4525647cb65098e82419e8b7bdca543d020cd0dec9627a5e5efe05700",
+    "opencca/tf-rmm/runtime/core/opencca_gpu_lease.c": "940ca6e2f3c11bc4e17af2a245ac72df37ba76dfc4706dbec2b7fd3e215e0710",
+    "opencca/tf-rmm/runtime/core/opencca_iommu.c": "ba9f10de1f5acd6ee513319bf2af5a3d44766bb5f9f3f9ff83350502e074a081",
+    "opencca/tf-rmm/runtime/core/xshm_policy.c": "67190e26c3a76a4e4995b3179959be09be6b01893fb8ba0eebfa820669813f6d",
+    "opencca/tf-rmm/runtime/include/opencca_gpu.h": "542a3e14a09cc9832f84bebf06776fb76881a9bbf2bf7f0f3c64462999eaf55f",
+    "opencca/tf-rmm/runtime/include/opencca_gpu_lease.h": "336f584f4f6fd03fd51cc9c76e258dc4caee7706d6173bf5c2b47e6a2a0db29b",
+    "opencca/tf-rmm/runtime/include/opencca_iommu.h": "1d810bcd14f76a681e708e9784f968eb37e37f9443e47442ca0a6a8083dc99c2",
+    "opencca/tf-rmm/runtime/include/rsi-handler.h": "46100770653926346144f0a1f728bb4eff6a3d9a6621a129ecf86840a23b61c8",
+    "opencca/tf-rmm/runtime/include/smc-handler.h": "61975de355711a718014946884eed818048a28caa78aa5e9c3ae3f9b1682ef26",
+    "opencca/tf-rmm/runtime/rmi/granule.c": "c87e9aa02df8575564f0198b95b794916f47b0eed3590ea42c8fb5846bde9947",
+    "opencca/tf-rmm/runtime/rmi/realm.c": "8caab003032afc59b9af9e0fa6a28049839522d3808f8c3101c6b3dadf8e76ba",
+    "opencca/tf-rmm/runtime/rmi/rtt.c": "06be4bc2bd116788d21fc600836f122ab6fb85f82ac2b7c9679a7443a6f695b9",
+    "opencca/tf-rmm/runtime/rsi/opencca_gpu.c": "5541731ecf9f39bb91529b46a8c0295eee3a6dfc0588c6b1bb594b38c1208ca3",
+    "opencca/tf-rmm/runtime/rsi/opencca_iommu.c": "d4fbf5fcc86132343d5fe1defeb2cf19cc3422cc2014fb6d6c01ac498f8e3c74",
+    "opencca/tf-rmm/runtime/tests/mmio-stubs/arch_helpers.h": "b662b00d935664f9f791f2e54b81f68b81272c4bdf13eb4706f33ae5be2b331c",
+    "opencca/tf-rmm/runtime/tests/mmio-stubs/mmio.h": "5302c8aa6ad56aae5abad8ac293f028539ad8085ce89dfeb4558abe0955e0a42",
+    "opencca/tf-rmm/runtime/tests/opencca_dma_guard_test.c": "f56586ba82fd0c300c3f594c9f190116f7db639cd0c38a861f491ec684b74fdd",
+    "opencca/tf-rmm/runtime/tests/opencca_gpu_backend_test.c": "44682028d9a261188887c41b6168e8feb51ee59a65412f00ede81228ae4ed1dd",
+    "opencca/tf-rmm/runtime/tests/opencca_gpu_lease_test.c": "e766b9f65c2eeb7799a63b2f06d141a1a55ca025f2c9d55c984a5cb3ee14f870",
+    "opencca/tf-rmm/runtime/tests/opencca_iommu_backend_test.c": "91614624556e058dd71c8018cdc38976c0bcd6bf94c74423aefbf8cc13712be9",
+    "opencca/tf-rmm/runtime/tests/opencca_iommu_test.c": "ae3206d8d2ad79818da27a34de5497969efaac36104ed011d9e207b866cdde3f",
+    "scripts/check/check-secure-iommu.sh": "5f9f5e812f3b927d65e78aebf74d8ea613bbdba0aa5cf1f6d17c255c8c4756d9",
+    "scripts/run/run-gpu-pm-regression.py": "e81edfe1010f563da6f919dad0b81031b39806c516e50dae5b697104c95b771e",
+    "scripts/run/run-guest-iommu-probe.py": "a3bc66def70ee0bfb53e8083eecdf5be26649bf159128bf9a65326da10e160cc",
+    "scripts/run/run-kvm-mmio-probe.py": "d27a585e8bd0ab0bfce05afd0bdf53e11a94464f11d3468eafe3cf96321c75bb",
+    "scripts/run/run-realm-xshm.py": "6105b513a3a2710d18e24c65339279aee4e7de57262835bf5f8202948e67e119"
+  },
+  "input_sha256": {
+    "build/secure-services-20261019/protected-el2/opencca_kvm_mmio_probe": "76038ca90ea45cf75027f5dad91d636283b25a7e76f4dfee4ed357b5afe0995e",
+    "build/secure-services-20261019/protected-el2/kernel-module/opencca_gpu_mmio_probe.ko": "e9131cb03df3c0a151682b2e827b2c087265f9f5b32e15a55d3868b131231a62",
+    "build/secure-services-20261019/physical-mmio/opencca_kvm_mmio_probe": "1572f576cbb4065203089ee0c6f3c3c845c8863aeb1843e2d0649c3b167e7974",
+    "build/secure-services-20261019/device-assignment/power-module/opencca_gpu_power_probe.ko": "7b4fbca22f31e71f61d9bdf61a13ff3c15ba90b62aa49d66c36218f312237770",
+    "build/secure-services-20261019/iommu-irq/firmware/tf-rmm.elf": "208110a40dbea82b3c7c5049f2867e16c8df03a9694d3ffde7d079be5a0f7b78",
+    "build/secure-services-20261019/iommu-irq/firmware/u-boot.itb": "78ddf7acd01118e86d8ab689d9539ed6196d7368c5d4a9852190c865ca38b367"
+  },
+  "host_image_sha256": "16c6d4832169d03317ee1274f52fb313d2cf86b1487698258b60c3ac9e9df82c",
+  "cleanup": {
+    "removed_files": 23,
+    "removed_allocated_bytes": 272277504,
+    "by_run_and_role": [
+      {
+        "role": "controller",
+        "removed_files": 1,
+        "removed_bytes": 20614,
+        "removed_allocated_bytes": 24576,
+        "filesystem_free_delta": 24576,
+        "records": [
+          {
+            "path": "/home/mzh/gpu/build/secure-services-20261019/protected-el2/__pycache__/boot-experiment.cpython-314.pyc",
+            "bytes": 20614,
+            "allocated_bytes": 24576,
+            "mtime_ns": 1792397039686520821,
+            "inode": 553558,
+            "device": 2096,
+            "sha256": "c3ef32de1d09eb5fd9260b97e4f2502dba9a30da40a78d6f29340fa90d639631",
+            "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+          }
+        ]
+      },
+      {
+        "role": "pi",
+        "removed_files": 2,
+        "removed_bytes": 268435456,
+        "removed_allocated_bytes": 268435456,
+        "filesystem_free_delta": 268435456,
+        "records": [
+          {
+            "path": "/home/mzh/opencca-flash/snapshot/protected-el2-boot-20261019-a-kernel-before.img",
+            "bytes": 134217728,
+            "allocated_bytes": 134217728,
+            "mtime_ns": 1792397007249037878,
+            "inode": 405459,
+            "device": 45826,
+            "sha256": "b1da1b59424052d60113a9a66291cd7b510947fe5a3f97b2b0c61fd898f0c78d",
+            "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+          },
+          {
+            "path": "/home/mzh/opencca-flash/snapshot/protected-el2-boot-20261019-b-kernel-before.img",
+            "bytes": 134217728,
+            "allocated_bytes": 134217728,
+            "mtime_ns": 1792397073382181660,
+            "inode": 405461,
+            "device": 45826,
+            "sha256": "240588425ce6b870719a220bcaf689b7a0b9dd4452ee47b0f9cd711709704b0e",
+            "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+          }
+        ]
+      },
+      {
+        "role": "rk",
+        "removed_files": 1,
+        "removed_bytes": 54352,
+        "removed_allocated_bytes": 57344,
+        "filesystem_free_delta": 57344,
+        "records": [
+          {
+            "path": "/root/GPU-SFTP/log/protected-el2/protected-el2-boot-20261019-b/power-probe.ko",
+            "bytes": 54352,
+            "allocated_bytes": 57344,
+            "mtime_ns": 1792397127340000009,
+            "inode": 300122,
+            "device": 45828,
+            "sha256": "7b4fbca22f31e71f61d9bdf61a13ff3c15ba90b62aa49d66c36218f312237770",
+            "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+          }
+        ]
+      },
+      {
+        "role": "controller",
+        "removed_files": 14,
+        "removed_bytes": 238934,
+        "removed_allocated_bytes": 274432,
+        "filesystem_free_delta": 274432,
+        "records": [
+          {
+            "path": "/home/mzh/gpu/build/secure-services-20261019/protected-el2/kernel-module/opencca_gpu_mmio_probe.o",
+            "bytes": 30304,
+            "allocated_bytes": 32768,
+            "mtime_ns": 1792397655138768398,
+            "inode": 553810,
+            "device": 2096,
+            "sha256": "d5677d785122af79b64a7ab9e1956d8e48a2e157adc3bb9ca42eeba260eddc84",
+            "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+          },
+          {
+            "path": "/home/mzh/gpu/build/secure-services-20261019/protected-el2/kernel-module/.opencca_gpu_mmio_probe.mod.o.cmd",
+            "bytes": 56639,
+            "allocated_bytes": 57344,
+            "mtime_ns": 1792397655335631156,
+            "inode": 553820,
+            "device": 2096,
+            "sha256": "955858a7759bce9c22b18d18c98b7782827bfbfee13bcdbaeb8bf7d44cd1b72e",
+            "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+          },
+          {
+            "path": "/home/mzh/gpu/build/secure-services-20261019/protected-el2/kernel-module/.Module.symvers.cmd",
+            "bytes": 337,
+            "allocated_bytes": 4096,
+            "mtime_ns": 1792397655167366157,
+            "inode": 553817,
+            "device": 2096,
+            "sha256": "897f6648ae6c24dc03c13d94fa07814931c58fe095ccfb803eb07a9245e1b7fe",
+            "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+          },
+          {
+            "path": "/home/mzh/gpu/build/secure-services-20261019/protected-el2/kernel-module/.opencca_gpu_mmio_probe.ko.cmd",
+            "bytes": 622,
+            "allocated_bytes": 4096,
+            "mtime_ns": 1792397655501737313,
+            "inode": 553823,
+            "device": 2096,
+            "sha256": "8eb5be4e03fca0abce0112bc37bf84aa94c1e4c582f1a60ae05492ca47d290a6",
+            "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+          },
+          {
+            "path": "/home/mzh/gpu/build/secure-services-20261019/protected-el2/kernel-module/opencca_gpu_mmio_probe.mod.o",
+            "bytes": 17392,
+            "allocated_bytes": 20480,
+            "mtime_ns": 1792397655333201630,
+            "inode": 553819,
+            "device": 2096,
+            "sha256": "3808a0fa1f70171d0b22fe72b8254e228a090501bf55a501deb299915ea8653b",
+            "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+          },
+          {
+            "path": "/home/mzh/gpu/build/secure-services-20261019/protected-el2/kernel-module/opencca_gpu_mmio_probe.mod.c",
+            "bytes": 373,
+            "allocated_bytes": 4096,
+            "mtime_ns": 1792397655167366157,
+            "inode": 553815,
+            "device": 2096,
+            "sha256": "d58cece78f0cd9d5c51df34781da71f69a565ba0dca9bc3d33c73a4e9b33a78e",
+            "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+          },
+          {
+            "path": "/home/mzh/gpu/build/secure-services-20261019/protected-el2/kernel-module/.modules.order.cmd",
+            "bytes": 301,
+            "allocated_bytes": 4096,
+            "mtime_ns": 1792397655146469452,
+            "inode": 553814,
+            "device": 2096,
+            "sha256": "5e363b61ab6af8fcd06a6113dc214aec5f324d0727b71ba4e3d37aa7f00685e2",
+            "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+          },
+          {
+            "path": "/home/mzh/gpu/build/secure-services-20261019/protected-el2/kernel-module/.module-common.o",
+            "bytes": 16064,
+            "allocated_bytes": 16384,
+            "mtime_ns": 1792397655495545106,
+            "inode": 553821,
+            "device": 2096,
+            "sha256": "ab3c124e96c7c67800e9d484c5c89f3eedfd3f748aebf29556339401b6288cf8",
+            "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+          },
+          {
+            "path": "/home/mzh/gpu/build/secure-services-20261019/protected-el2/kernel-module/.opencca_gpu_mmio_probe.o.cmd",
+            "bytes": 59552,
+            "allocated_bytes": 61440,
+            "mtime_ns": 1792397655143631038,
+            "inode": 553811,
+            "device": 2096,
+            "sha256": "8b1bd9a3d551acb0e3ce24d2430b135799214e4f14bf88a4b0da80e1bf52d2ec",
+            "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+          },
+          {
+            "path": "/home/mzh/gpu/build/secure-services-20261019/protected-el2/kernel-module/opencca_gpu_mmio_probe.mod",
+            "bytes": 98,
+            "allocated_bytes": 4096,
+            "mtime_ns": 1792397655146469452,
+            "inode": 553809,
+            "device": 2096,
+            "sha256": "9d356355da4a9cb5ec6e6a2532a19a67473ffb7be087fd124bfce6751a4279b1",
+            "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+          },
+          {
+            "path": "/home/mzh/gpu/build/secure-services-20261019/protected-el2/kernel-module/..module-common.o.cmd",
+            "bytes": 56791,
+            "allocated_bytes": 57344,
+            "mtime_ns": 1792397655496438352,
+            "inode": 553822,
+            "device": 2096,
+            "sha256": "d1a9c04e79935377dfde551246651f03cb50f9860a4b5fc058caabd284786acd",
+            "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+          },
+          {
+            "path": "/home/mzh/gpu/build/secure-services-20261019/protected-el2/kernel-module/modules.order",
+            "bytes": 98,
+            "allocated_bytes": 4096,
+            "mtime_ns": 1792397655146469452,
+            "inode": 553813,
+            "device": 2096,
+            "sha256": "9d356355da4a9cb5ec6e6a2532a19a67473ffb7be087fd124bfce6751a4279b1",
+            "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+          },
+          {
+            "path": "/home/mzh/gpu/build/secure-services-20261019/protected-el2/kernel-module/Module.symvers",
+            "bytes": 0,
+            "allocated_bytes": 0,
+            "mtime_ns": 1792397655167366157,
+            "inode": 553816,
+            "device": 2096,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+          },
+          {
+            "path": "/home/mzh/gpu/build/secure-services-20261019/protected-el2/kernel-module/.opencca_gpu_mmio_probe.mod.cmd",
+            "bytes": 363,
+            "allocated_bytes": 4096,
+            "mtime_ns": 1792397655146469452,
+            "inode": 553812,
+            "device": 2096,
+            "sha256": "0d6588091f41d97d2c6f5f4130997033245f095fbcc4091c840594ca25faa37e",
+            "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+          }
+        ]
+      },
+      {
+        "role": "pi",
+        "removed_files": 0,
+        "removed_bytes": 0,
+        "removed_allocated_bytes": 0,
+        "filesystem_free_delta": 0,
+        "records": []
+      },
+      {
+        "role": "rk",
+        "removed_files": 5,
+        "removed_bytes": 3472040,
+        "removed_allocated_bytes": 3485696,
+        "filesystem_free_delta": 3485696,
+        "records": [
+          {
+            "path": "/root/GPU-SFTP/log/kvm-mmio/kvm-mmio-protected-restore-20261019-a/opencca_kvm_mmio_probe",
+            "bytes": 852704,
+            "allocated_bytes": 856064,
+            "mtime_ns": 1792397289795949573,
+            "inode": 395950,
+            "device": 45828,
+            "sha256": "1572f576cbb4065203089ee0c6f3c3c845c8863aeb1843e2d0649c3b167e7974",
+            "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+          },
+          {
+            "path": "/root/GPU-SFTP/log/kvm-mmio/host-kernel-mmio-audit-20261019-a/opencca_kvm_mmio_probe",
+            "bytes": 852848,
+            "allocated_bytes": 856064,
+            "mtime_ns": 1792397678036156303,
+            "inode": 395952,
+            "device": 45828,
+            "sha256": "76038ca90ea45cf75027f5dad91d636283b25a7e76f4dfee4ed357b5afe0995e",
+            "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+          },
+          {
+            "path": "/root/GPU-SFTP/log/kvm-mmio/host-devmem-mmio-audit-20261019-c/opencca_kvm_mmio_probe",
+            "bytes": 852848,
+            "allocated_bytes": 856064,
+            "mtime_ns": 1792397732784194544,
+            "inode": 395955,
+            "device": 45828,
+            "sha256": "76038ca90ea45cf75027f5dad91d636283b25a7e76f4dfee4ed357b5afe0995e",
+            "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+          },
+          {
+            "path": "/root/GPU-SFTP/log/kvm-mmio/kvm-mmio-kernel-probe-control-20261019-a/opencca_kvm_mmio_probe",
+            "bytes": 852848,
+            "allocated_bytes": 856064,
+            "mtime_ns": 1792397779364410109,
+            "inode": 395957,
+            "device": 45828,
+            "sha256": "76038ca90ea45cf75027f5dad91d636283b25a7e76f4dfee4ed357b5afe0995e",
+            "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+          },
+          {
+            "path": "/root/GPU-SFTP/log/kvm-mmio/host-kernel-mmio-audit-20261019-a/opencca_gpu_mmio_probe.ko",
+            "bytes": 60792,
+            "allocated_bytes": 61440,
+            "mtime_ns": 1792397678968154446,
+            "inode": 395953,
+            "device": 45828,
+            "sha256": "e9131cb03df3c0a151682b2e827b2c087265f9f5b32e15a55d3868b131231a62",
+            "reason": "OBSOLETE superseded diagnostic/deployment copy; active, selected rollback, repeat-test and recovery inputs and all failure logs retained"
+          }
+        ]
+      }
+    ]
+  },
+  "resources_after": {
+    "issues": [],
+    "reports": [
+      {
+        "role": "pi",
+        "role_verified": true,
+        "hostname": "MZH",
+        "kernel": "6.12.75+rpt-rpi-v8",
+        "online_cpus": "0-3",
+        "gpu_driver": null,
+        "memory": {
+          "MemTotal": 949989376,
+          "MemAvailable": 701943808,
+          "SwapTotal": 948957184,
+          "SwapFree": 848031744
+        },
+        "disks": {
+          "/": {
+            "total_bytes": 30800633856,
+            "available_bytes": 16764829696,
+            "free_inodes": 1734803
+          },
+          "/tmp": {
+            "total_bytes": 474996736,
+            "available_bytes": 474992640,
+            "free_inodes": 1048563
+          },
+          "/home/mzh/opencca-flash": {
+            "total_bytes": 30800633856,
+            "available_bytes": 16764829696,
+            "free_inodes": 1734803
+          }
+        },
+        "active_lab_processes": [],
+        "loops": {
+          "rc": 0,
+          "stdout": "/dev/loop0 /var/swap",
+          "stderr": ""
+        }
+      },
+      {
+        "role": "rk",
+        "role_verified": true,
+        "hostname": "opencca-rock5b-rk3588",
+        "kernel": "6.12.0-opencca-pmthor-opp3",
+        "online_cpus": "0-1",
+        "gpu_driver": "/sys/bus/platform/drivers/pmthor",
+        "memory": {
+          "MemTotal": 3467829248,
+          "MemAvailable": 3289350144,
+          "SwapTotal": 0,
+          "SwapFree": 0
+        },
+        "disks": {
+          "/": {
+            "total_bytes": 31181299712,
+            "available_bytes": 14018805760,
+            "free_inodes": 1824996
+          },
+          "/tmp": {
+            "total_bytes": 1733914624,
+            "available_bytes": 1733914624,
+            "free_inodes": 1048569
+          },
+          "/root/GPU-SFTP": {
+            "total_bytes": 31181299712,
+            "available_bytes": 14018805760,
+            "free_inodes": 1824996
+          }
+        },
+        "active_lab_processes": [],
+        "loops": {
+          "rc": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      }
+    ]
+  },
+  "log_sha256": {
+    "build/lab-runs/protected-el2-boot-20261019-a/after.json": "8c107bc73a020ea5be76f97cb00bc558ed774cd8db99816565f4fbf816774d5f",
+    "build/lab-runs/protected-el2-boot-20261019-a/protected-el2.json": "c0414812f546a4890571665341fa38b0cbfdad192c4cabf7fdcaa440db623038",
+    "build/lab-runs/protected-el2-boot-20261019-a/result.json": "ee2152f89ee87dee58eccd2f9b43f33ff2cacb7071473c4b7ded977f27f3c7b8",
+    "build/lab-runs/protected-el2-boot-20261019-a/runner.py": "95c544deba016d687af2d5ec4a0a9a2415e76c910d2653394469d53a3eaee038",
+    "build/lab-runs/protected-el2-boot-20261019-a/before.json": "b140c7566130f2eba3e4f6e5021dcefcac4bf921c1f2a028ed93170610278759",
+    "build/lab-runs/protected-el2-boot-20261019-a/before-dmesg.log": "fe794f116867dc8baddb2380cd4c7e79ccd5cf72e73e8eca40ae6f506eefa114",
+    "build/lab-runs/protected-el2-boot-20261019-b/uart.log": "405a735c1af3a707a5f0f8014ef92f9b7fa63eb7ca96ed403ce8eaf874d7d114",
+    "build/lab-runs/protected-el2-boot-20261019-b/extlinux-before.conf": "37f0a9fa89b5f84ae797f5dd59db6131ec3c58eb3fad2d8fc1f2639298e41b6f",
+    "build/lab-runs/protected-el2-boot-20261019-b/after.json": "2add7c630e19f302cd9c5d27ecc17c0d62ac0179426396b7b38b1544416c5b51",
+    "build/lab-runs/protected-el2-boot-20261019-b/protected_after_probe-dmesg.log": "02ca0e51a9d2b6e2d20404420ebd770e7eed009e4f1c03a0224766a048ba02d7",
+    "build/lab-runs/protected-el2-boot-20261019-b/protected-el2.json": "9ac310be0cabbf2421ad17f24dd1bb2107ced2c23b5ccf34ea57ee032455f71e",
+    "build/lab-runs/protected-el2-boot-20261019-b/result.json": "f7045870844f1d91773878efae3c89ab764c98409f0039cbabd9962d1a4749e2",
+    "build/lab-runs/protected-el2-boot-20261019-b/runner.py": "bb6271eae949683936531c03be8ee9899f91effd8101cf58f2ed3bd023f7f3a1",
+    "build/lab-runs/protected-el2-boot-20261019-b/protected-dmesg.log": "d164f8dc932a47a78bba067b95c8d8c45523c9edfb088bdf8b53be564ada6a12",
+    "build/lab-runs/protected-el2-boot-20261019-b/before.json": "62843d1069280b8a96b43976bda1f7e29579650246de1b9377460f6df653d542",
+    "build/lab-runs/protected-el2-boot-20261019-b/after-dmesg.log": "ac3c77e713450a7bccaf7dd3d032e2831946ba3fedefd69d0a961117f8be44e7",
+    "build/lab-runs/protected-el2-boot-20261019-b/before-dmesg.log": "6aabfe07965135e8681ad10fef63443c238b15ab6d581f4d4dff40851ae0a373",
+    "build/lab-runs/protected-el2-boot-20261019-b/extlinux-experiment.conf": "ef15b289626c04dad00d566d9b5612ecea9dc4ce966b26cc905a8ee79da7cf35",
+    "build/lab-runs/kvm-mmio-protected-restore-20261019-a/after.json": "c9502de382e732930790b22544ed31c2569337261ff3242909f4f219fb944e6c",
+    "build/lab-runs/kvm-mmio-protected-restore-20261019-a/result.json": "3b4a8e394778b86a77657ab289e5527249a017b9b49be40efd2bc3dee6db410b",
+    "build/lab-runs/kvm-mmio-protected-restore-20261019-a/before.json": "57a369613ec38043e467e5feff666c4db5436d5e5ee61106f5b9dcdb7273b5ed",
+    "build/lab-runs/kvm-mmio-protected-restore-20261019-a/rmm-uart.log": "fad81af6f4b2ddeadc6f91b33d6e36d89d90f7831b9ac0a0fb5594fb3d2c368f",
+    "build/lab-runs/kvm-mmio-protected-restore-20261019-a/kvm-mmio-probe.log": "ee3ce390511bd4b3ab176ba07808099d7fad17e297d5583a00f6f767353c88ed",
+    "build/lab-runs/kvm-mmio-protected-restore-20261019-a/kvm-mmio.json": "de4e9d4a7730beb24cd839c8e6d10ae30150539a5ca16b912263dc7b39bd5005",
+    "build/lab-runs/kvm-mmio-protected-restore-20261019-a/kernel-dmesg.log": "a28af871ec9a5778b2bde596b7acdfb6253054b2e9aac4cc76ddaecff1bad7d8",
+    "build/lab-runs/host-kernel-mmio-audit-20261019-a/after.json": "2d31c7f3f2ce60051ec74d59dd8263f005c996add35587240d91c354b449ec1d",
+    "build/lab-runs/host-kernel-mmio-audit-20261019-a/result.json": "b07bef16783616f98d470a7198b6478b378bab6770da5a1a66292c827c0d7664",
+    "build/lab-runs/host-kernel-mmio-audit-20261019-a/before.json": "e166a798af7a17bb56220fd7cd12da7f939d1a076b970df2bd4158d165e85f6f",
+    "build/lab-runs/host-kernel-mmio-audit-20261019-a/rmm-uart.log": "7b594469b21e91c00de7e3ecdc268d63c1ca57166a8bdb1f180664b0769e2f7a",
+    "build/lab-runs/host-kernel-mmio-audit-20261019-a/kvm-mmio-probe.log": "269c2143fa19f65fd884384bfe1252fae0762f6d8365eebbc6c12288c1f72270",
+    "build/lab-runs/host-kernel-mmio-audit-20261019-a/kvm-mmio.json": "e88a43e04d02ec788b5dd7aca88ee4a8ff5056138f544d566a1481e46a43acb0",
+    "build/lab-runs/host-kernel-mmio-audit-20261019-a/kernel-dmesg.log": "d82a175d6ae067509516c5937e61d840fef8fa2d84904f2680664bed1705fe8c",
+    "build/lab-runs/host-devmem-mmio-audit-20261019-c/after.json": "61943f249060aab75d116f6454a00977711cfb026ba3472ebb1d685717745948",
+    "build/lab-runs/host-devmem-mmio-audit-20261019-c/result.json": "de8ba09c3077c94d1811a4c2a98cf0b111950c7132b1ba7c1ac1026790ff2399",
+    "build/lab-runs/host-devmem-mmio-audit-20261019-c/before.json": "1e726c1eefc6143d9bd7f5a32243c38ab1ce29d2d173c4f99f938cf268605c35",
+    "build/lab-runs/host-devmem-mmio-audit-20261019-c/rmm-uart.log": "e602510daf8019f1ebb43db510e7fc7ac1083cc74f2acb12903c588609fe41d3",
+    "build/lab-runs/host-devmem-mmio-audit-20261019-c/kvm-mmio-probe.log": "1fc0a96fd7d4b6e4b0b45bb41b0997542330b263dc6d5478ea643a852ae3a149",
+    "build/lab-runs/host-devmem-mmio-audit-20261019-c/kvm-mmio.json": "9353e97f8697d650cfd5e6d4075555f0c62ee356800eb485b0ec8d86782fceef",
+    "build/lab-runs/host-devmem-mmio-audit-20261019-c/kernel-dmesg.log": "e5890a8c084e76136f74d17e235bb5b9e92b7caa05f685b4e71acb20821f3839",
+    "build/lab-runs/kvm-mmio-kernel-probe-control-20261019-a/after.json": "d816a82308bce62fac995f2777a63c3c92f8b51b54720433826832380438ed83",
+    "build/lab-runs/kvm-mmio-kernel-probe-control-20261019-a/result.json": "5d3cb6f1ae5bb8a008832d2809d5b1eba5f5b026f5cc1711486681fdcafa1a85",
+    "build/lab-runs/kvm-mmio-kernel-probe-control-20261019-a/before.json": "0e5387fd6570db92da5738b42531a5eec1f6b524b61a83881467d617097429c1",
+    "build/lab-runs/kvm-mmio-kernel-probe-control-20261019-a/kvm-mmio-probe.log": "ee3ce390511bd4b3ab176ba07808099d7fad17e297d5583a00f6f767353c88ed",
+    "build/lab-runs/kvm-mmio-kernel-probe-control-20261019-a/kvm-mmio.json": "c3355bfa3d9c7ca02b308995c76d05fab305ff7852ee0a0ccc9e2d66aa7a16c1",
+    "build/lab-runs/kvm-mmio-kernel-probe-control-20261019-a/kernel-dmesg.log": "888ba2e45976ae200ac19bfba8b58f9caa3cae3f10059bf7ff08a94a979ea088",
+    "build/lab-runs/protected-el2-cleanup-20261019-a/after.json": "7670d2a2a1db40ce3545e00210f4e5de88507836cdf6b79113509d93052657e1",
+    "build/lab-runs/protected-el2-cleanup-20261019-a/result.json": "71603f85f649e0f7ca397a3d058cdb5695028f2bf133651f76e633868f2bfbcf",
+    "build/lab-runs/protected-el2-cleanup-20261019-a/runner.py": "0f8734ca6c69e9f4f1881e5f1e23e952da2c1805b7beb094fc06056fed5cc0f1",
+    "build/lab-runs/protected-el2-cleanup-20261019-a/before.json": "eb4557027548413aa09ae64ec578f20a880f326fad773372e608e3af0eecc688",
+    "build/lab-runs/protected-el2-cleanup-20261019-a/cleanup-result.json": "c04e10f6ae264319e8c8e59204d40c14bcda47c7fdfa385ee0028a24d9eea538",
+    "build/lab-runs/protected-el2-cleanup-20261019-a/cleanup-plan.json": "915a03a3eca2e9776e5c4166c41da6112ef1075264d18c897da2aae66c8e48b9",
+    "build/lab-runs/protected-el2-cleanup-20261019-b/after.json": "476ffaa75677c7ddf78350bb9cc23134e2f6322cc2657dc9843e77e5705d47fe",
+    "build/lab-runs/protected-el2-cleanup-20261019-b/result.json": "c134b7fb5459186f269b9ea76f498d92016d5aba4ca1fd555f87bd5f166de851",
+    "build/lab-runs/protected-el2-cleanup-20261019-b/before.json": "d62ed2b0bfff58ffb761edf751a09c0774f8b5527ef90e89caf197667b7aff2d",
+    "build/lab-runs/protected-el2-cleanup-20261019-b/cleanup-result.json": "5c26bea7efc8805cc6bd391615eb49698e33dacee0e4bea8634ac935f2ca0130",
+    "build/lab-runs/protected-el2-cleanup-20261019-b/cleanup-plan.json": "72daadd2204691f267c4136e68b2852bb0233a079d83749448c24341bfbd3478"
+  }
+}

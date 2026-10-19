@@ -1,0 +1,111 @@
+{
+  "status": "PARTIAL",
+  "unit_command": "bash scripts/check/check-dma-guard.sh",
+  "unit_rc": 0,
+  "unit_log": "build/dma-guard-20261018/unit-results.log",
+  "unit_output": [
+    "GPU lease index: capacity, ownership, refcount, rollback, reuse PASS",
+    "DMA guard: GPU/DMA exclusion, rollback, aliases, partial unmap, range validation, capacity, reuse PASS"
+  ],
+  "source_diff_checks": {
+    "Linux-Host-GPU": 0,
+    "opencca/tf-rmm": 0
+  },
+  "full_dma_protection": "INCOMPLETE",
+  "actual_dma_transfer": "VERIFIED_READ_WRITE_BYPASS",
+  "hardware_firewall": "NOT_IMPLEMENTED",
+  "admission_run": "dma-guard-admission-20261018",
+  "configuration_protection": "FAIL_BYPASS_DETECTED",
+  "baseline_glmark_scores": [
+    1171,
+    1170
+  ],
+  "candidate_performance": {
+    "run_id": "dma-guard-clean-720-20261018",
+    "wrapper_rc": 0,
+    "score": 1169,
+    "baseline_mean": 1170.5,
+    "difference": -1.5,
+    "difference_pct": -0.12815036309269542,
+    "timed_probe": "NONE",
+    "kernel_health": "PASS",
+    "restoration": "PASS",
+    "conditions_difference": [
+      "Host and RMM both changed",
+      "RMM LOG_LEVEL 40 -> 50",
+      "CPU frequency not pinned",
+      "no concurrent other-device DMA stress"
+    ],
+    "extra_probe_round_score": 1166
+  },
+  "live_gpu_admission_run": "dma-guard-live-gpu-20261018",
+  "live_gpu_admission": "PASS",
+  "live_gpu_wrapper_rc": 2,
+  "live_gpu_workload_rc": 0,
+  "two_client_validation": {
+    "run_id": "dma-guard-two-client-20261018",
+    "wrapper_rc": 0,
+    "permission_selftests": "PASS",
+    "trusted_irq_negative_and_coalescing": "PASS",
+    "two_client_compute_check": "PASS",
+    "memory_check": "PASS",
+    "kernel_health": "PASS",
+    "vm_exit_codes": [
+      0,
+      0,
+      0
+    ],
+    "provider_replacement": "NOT_RUN",
+    "client_1_ioctl_markers": [
+      "BASIC_PASS",
+      "VM_CREATE_PASS",
+      "BO_CREATE_PASS",
+      "BO_LIFECYCLE_PASS",
+      "BO_MMAP_PASS",
+      "VM_BIND_PASS",
+      "VM_BIND_ASYNC_SYNC_PASS",
+      "VM_STATE_FLUSH_PASS",
+      "SYNCOBJ_LIFECYCLE_PASS",
+      "SYNCOBJ_WAIT_PASS",
+      "SYNCOBJ_TRANSFER_PASS",
+      "SYNCOBJ_TIMELINE_WAIT_PASS",
+      "SYNCOBJ_SIGNAL_QUERY_PASS",
+      "SYNC_FILE_SNAPSHOT_PASS",
+      "GROUP_LIFECYCLE_PASS",
+      "GROUP_SUBMIT_SYNCPOINT_PASS",
+      "TILER_HEAP_LIFECYCLE_PASS"
+    ],
+    "client_2_ioctl_markers": [
+      "BASIC_PASS",
+      "VM_CREATE_PASS",
+      "BO_CREATE_PASS",
+      "BO_LIFECYCLE_PASS",
+      "BO_MMAP_PASS",
+      "VM_BIND_PASS",
+      "VM_BIND_ASYNC_SYNC_PASS",
+      "VM_STATE_FLUSH_PASS",
+      "SYNCOBJ_LIFECYCLE_PASS",
+      "SYNCOBJ_WAIT_PASS",
+      "SYNCOBJ_TRANSFER_PASS",
+      "SYNCOBJ_TIMELINE_WAIT_PASS",
+      "SYNCOBJ_SIGNAL_QUERY_PASS",
+      "SYNC_FILE_SNAPSHOT_PASS",
+      "GROUP_LIFECYCLE_PASS",
+      "GROUP_SUBMIT_SYNCPOINT_PASS",
+      "TILER_HEAP_LIFECYCLE_PASS"
+    ]
+  },
+  "final_admission_run": "dma-guard-final-admission-20261018",
+  "final_admission_rc": 2,
+  "staging_cleanup": {
+    "run_id": "dma-guard-staging-cleanup-20261018",
+    "returncode": 0,
+    "freed_bytes": 174852416,
+    "rollback": "RETAINED"
+  },
+  "final_host_state": "final-host-state.json",
+  "candidate_baseline_status": "DEVELOPMENT_ONLY_NOT_FROZEN",
+  "actual_dma_transfer_before_transfer_stage": "NOT_RUN",
+  "actual_dma_transfer_scope": "Three PL330 controllers, test-owned DELEGATED pages only; no active Realm data or GPU BO targeted",
+  "transfer_validation": "transfer-validation.json"
+}

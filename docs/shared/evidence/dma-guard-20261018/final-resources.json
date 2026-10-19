@@ -1,0 +1,78 @@
+{
+  "timestamp": "2026-10-18T13:35:19.119508+00:00",
+  "issues": [],
+  "devices": [
+    {
+      "role": "pi",
+      "role_verified": true,
+      "kernel": "6.12.75+rpt-rpi-v8",
+      "gpu_driver": null,
+      "online_cpus": "0-3",
+      "memory": {
+        "MemTotal": 949989376,
+        "MemAvailable": 663687168,
+        "SwapTotal": 948957184,
+        "SwapFree": 903868416
+      },
+      "disks": {
+        "/": {
+          "total_bytes": 30800633856,
+          "available_bytes": 16753324032,
+          "free_inodes": 1734813
+        },
+        "/tmp": {
+          "total_bytes": 474996736,
+          "available_bytes": 474992640,
+          "free_inodes": 1048563
+        },
+        "/home/mzh/opencca-flash": {
+          "total_bytes": 30800633856,
+          "available_bytes": 16753324032,
+          "free_inodes": 1734813
+        }
+      },
+      "active_lab_processes": [],
+      "loops": {
+        "rc": 0,
+        "stdout": "/dev/loop0 /var/swap",
+        "stderr": ""
+      }
+    },
+    {
+      "role": "rk",
+      "role_verified": true,
+      "kernel": "6.12.0-opencca-pmthor-opp3",
+      "gpu_driver": "/sys/bus/platform/drivers/pmthor",
+      "online_cpus": "0-1",
+      "memory": {
+        "MemTotal": 3467829248,
+        "MemAvailable": 3280482304,
+        "SwapTotal": 0,
+        "SwapFree": 0
+      },
+      "disks": {
+        "/": {
+          "total_bytes": 31181299712,
+          "available_bytes": 14913036288,
+          "free_inodes": 1825637
+        },
+        "/tmp": {
+          "total_bytes": 1733914624,
+          "available_bytes": 1733914624,
+          "free_inodes": 1048569
+        },
+        "/root/GPU-SFTP": {
+          "total_bytes": 31181299712,
+          "available_bytes": 14913036288,
+          "free_inodes": 1825637
+        }
+      },
+      "active_lab_processes": [],
+      "loops": {
+        "rc": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    }
+  ]
+}

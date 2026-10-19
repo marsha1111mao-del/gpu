@@ -658,8 +658,13 @@ finally:
             memory_operation(provider, f'mem-revoke {grant}', 0)
         except Exception as exc:
             result.setdefault('grant_cleanup_errors', []).append(str(exc))
+    try:
+        restore_performance()
+    except Exception as exc:
+        result['status'] = 'FAIL'
+        result['host_restore_error'] = str(exc)
     # Touch only processes created by this invocation.
-    for proc in processes:
+    for proc in reversed(processes):
         if proc.poll() is None:
             try:
                 proc.stdin.write(b'halt\n')
@@ -676,11 +681,6 @@ finally:
     if result['status'] == 'PASS' and any(code != 0 for code in result['vm_exit_codes']):
         result['status'] = 'FAIL'
         result['error'] = 'Realm did not shut down cleanly'
-    try:
-        restore_performance()
-    except Exception as exc:
-        result['status'] = 'FAIL'
-        result['host_restore_error'] = str(exc)
     for stream in files:
         stream.close()
     sel.close()

@@ -1,0 +1,124 @@
+[
+  {
+    "candidate": "retire-syncobjs",
+    "changed_images": [
+      "client",
+      "proxy"
+    ],
+    "same_configs_runner_initrd": true,
+    "frozen_hashes_verified": {
+      "client-Image": true,
+      "proxy-Image": true,
+      "initrd.cpio": true,
+      "runner.py": true
+    },
+    "patch_applies_to_published_baseline": true,
+    "patch_sha256": "c312a2c95cdbd2153a2b6124a5ca76c239e959015c2196e31ced320596acf501"
+  },
+  {
+    "candidate": "clone-syncobj",
+    "changed_images": [
+      "client",
+      "proxy"
+    ],
+    "same_configs_runner_initrd": true,
+    "frozen_hashes_verified": {
+      "client-Image": true,
+      "proxy-Image": true,
+      "initrd.cpio": true,
+      "runner.py": true
+    },
+    "patch_applies_to_published_baseline": true,
+    "patch_sha256": "8974578cd5a15080b0eaa394d8df61423588e0fb8c98497babcdee5fe02896f4"
+  },
+  {
+    "candidate": "sync-list",
+    "changed_images": [
+      "proxy"
+    ],
+    "same_configs_runner_initrd": true,
+    "frozen_hashes_verified": {
+      "client-Image": true,
+      "proxy-Image": true,
+      "initrd.cpio": true,
+      "runner.py": true
+    },
+    "patch_applies_to_published_baseline": true,
+    "patch_sha256": "680ab1d91171a96a79991a8164053e180a1eb65f2db8f479cf6998dfb4c5efa7"
+  },
+  {
+    "candidate": "adaptive-poll",
+    "changed_images": [
+      "client"
+    ],
+    "same_configs_runner_initrd": true,
+    "frozen_hashes_verified": {
+      "client-Image": true,
+      "proxy-Image": true,
+      "initrd.cpio": true,
+      "runner.py": true
+    },
+    "patch_applies_to_published_baseline": true,
+    "patch_sha256": "927b215a2ad5f53a1097f034d369c2a0237c11555ff2bee281ba00bc0f608d52"
+  },
+  {
+    "candidate": "plan-lock",
+    "changed_images": [
+      "client"
+    ],
+    "same_configs_runner_initrd": true,
+    "frozen_hashes_verified": {
+      "client-Image": true,
+      "proxy-Image": true,
+      "initrd.cpio": true,
+      "runner.py": true
+    },
+    "patch_applies_to_published_baseline": true,
+    "patch_sha256": "a9f4c5c4a7a104883eaba6f96d85ee4cd97918e64c98771bf5111b4bf45176b7"
+  },
+  {
+    "candidate": "pipeline",
+    "changed_images": [
+      "proxy"
+    ],
+    "same_configs_runner_initrd": true,
+    "frozen_hashes_verified": {
+      "client-Image": true,
+      "proxy-Image": true,
+      "initrd.cpio": true,
+      "runner.py": true
+    },
+    "patch_applies_to_published_baseline": true,
+    "patch_sha256": "ed0fbfc35fd1816e7901b50c03de3c8f7de355a184b546179b284f1c5d8f7e06"
+  },
+  {
+    "candidate": "cache-progress",
+    "changed_images": [
+      "proxy"
+    ],
+    "same_configs_runner_initrd": true,
+    "frozen_hashes_verified": {
+      "client-Image": true,
+      "proxy-Image": true,
+      "initrd.cpio": true,
+      "runner.py": true
+    },
+    "patch_applies_to_published_baseline": true,
+    "patch_sha256": "d744fc85201d31a043de7dd8d0f846cd8999ee9bba90950ddcd0343a1391d229"
+  },
+  {
+    "candidate": "cache-union",
+    "changed_images": [
+      "proxy"
+    ],
+    "same_configs_runner_initrd": true,
+    "frozen_hashes_verified": {
+      "client-Image": true,
+      "proxy-Image": true,
+      "initrd.cpio": true,
+      "runner.py": true
+    },
+    "patch_applies_to_published_baseline": true,
+    "patch_sha256": "6f05655eca9b0d1146354b2415bd7a0f891b101d2ad6fd2cf6efff351e6644fb"
+  }
+]

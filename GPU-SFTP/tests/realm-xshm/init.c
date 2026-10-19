@@ -10,6 +10,7 @@
 #include <sys/mount.h>
 #include <sys/klog.h>
 #include <sys/reboot.h>
+#include <sys/syscall.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -107,6 +108,8 @@ int main(void)
 		int status;
 		pid_t child;
 		int graphics = 0, compute = 0, klog = 0, performance = 0;
+		int module_load = 0, module_unload = 0;
+		int iommu_device = 0;
 
 		if (!word)
 			continue;
@@ -116,6 +119,9 @@ int main(void)
 		compute = !strcmp(word, "compute");
 		performance = !strcmp(word, "performance");
 		klog = !strcmp(word, "kernel-log");
+		module_load = !strcmp(word, "insmod");
+		module_unload = !strcmp(word, "rmmod");
+		iommu_device = !strcmp(word, "iommu-device");
 		if (!strcmp(word, "gpu-smoke")) {
 			args[0] = "/panthor_ioctl_smoke";
 			word = strtok_r(NULL, " \t\r\n", &save);
@@ -134,6 +140,51 @@ int main(void)
 				gpu_workload(compute, performance && count == 3 ? args[2] : NULL);
 			if (klog)
 				kernel_log();
+			if (iommu_device) {
+				int descriptor;
+				ssize_t written;
+
+				if (count != 3 || (strcmp(args[2], "5") && strcmp(args[2], "6") &&
+						   strcmp(args[2], "11")))
+					_exit(2);
+				descriptor = open("/sys/module/opencca_guest_iommu_probe/parameters/device_action",
+						  O_WRONLY | O_CLOEXEC);
+				if (descriptor < 0)
+					_exit(1);
+				written = write(descriptor, args[2], strlen(args[2]));
+				close(descriptor);
+				_exit(written == (ssize_t)strlen(args[2]) ? 0 : 1);
+			}
+			if (module_load) {
+				char parameters[256] = "";
+				size_t offset = 0;
+				int fd;
+				if (count < 3)
+					_exit(2);
+				for (unsigned int index = 3; index < count; index++) {
+					int written = snprintf(parameters + offset,
+							       sizeof(parameters) - offset,
+							       "%s%s", index == 3 ? "" : " ", args[index]);
+					if (written < 0 || (size_t)written >= sizeof(parameters) - offset)
+						_exit(2);
+					offset += written;
+				}
+				fd = open(args[2], O_RDONLY | O_CLOEXEC);
+				if (fd < 0)
+					_exit(2);
+				errno = 0;
+				if (syscall(SYS_finit_module, fd, parameters, 0))
+					perror("insmod");
+				_exit(errno);
+			}
+			if (module_unload) {
+				if (count != 3)
+					_exit(2);
+				errno = 0;
+				if (syscall(SYS_delete_module, args[2], 0))
+					perror("rmmod");
+				_exit(errno);
+			}
 			execv(args[0], args);
 			_exit(127);
 		}

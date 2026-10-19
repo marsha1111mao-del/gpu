@@ -1,0 +1,49 @@
+{
+  "run_id": "dma-guard-real-rw-dmac0-20261018",
+  "admission": "NOT_RUN",
+  "configuration_protection": "NOT_RUN",
+  "actual_dma_transfer": "PASS",
+  "full_dma_protection": "INCOMPLETE",
+  "module_sha256": "7b47a154512ff43417f468266c449431579ce3635099ebb87bb5a83a7a0f5ca1",
+  "runner_sha256": "0d3670514e57a8375bade06bb59ba30b5ad25fedeff730e0408739e2d13ec93e",
+  "mode": "transfer",
+  "performance_comparability": "no GPU benchmark",
+  "channel_before": {
+    "path": "/sys/devices/platform/fea10000.dma-controller/dma/dma0chan10",
+    "in_use": "0",
+    "memcpy_count": "0",
+    "bytes_transferred": "0"
+  },
+  "probe_command": "insmod /root/GPU-SFTP/log/dma-guard/dma-guard-real-rw-dmac0-20261018/opencca_dma_transfer_probe.ko controller=fea10000.dma-controller channel=dma0chan10",
+  "probe_rc": 0,
+  "module_cleanup_rc": 0,
+  "channel_after": {
+    "path": "/sys/devices/platform/fea10000.dma-controller/dma/dma0chan10",
+    "in_use": "0",
+    "memcpy_count": "0",
+    "bytes_transferred": "0"
+  },
+  "checks": {
+    "exclusive_channel": true,
+    "normal_dma_complete": true,
+    "normal_data": true,
+    "existing_mapping_dma_complete": true,
+    "existing_mapping_data": true,
+    "existing_mapping_read_dma_complete": true,
+    "existing_mapping_read_data": true,
+    "new_mapping_dma_complete": true,
+    "new_mapping_data": true,
+    "new_mapping_read_dma_complete": true,
+    "new_mapping_read_data": true,
+    "reservation_recovery": true,
+    "cleanup": true
+  },
+  "delegated_page_dma_protection": {
+    "existing_mapping": "FAIL_BYPASS_DETECTED",
+    "new_mapping": "FAIL_BYPASS_DETECTED"
+  },
+  "scope": "test-owned DELEGATED page; no active Realm or GPU BO targeted",
+  "kernel_errors": [],
+  "channel_restored": true,
+  "transfer_probe": "BYPASS_REPRODUCED"
+}

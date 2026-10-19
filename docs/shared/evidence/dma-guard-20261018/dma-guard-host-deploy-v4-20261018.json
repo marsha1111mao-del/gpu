@@ -1,0 +1,19 @@
+{
+  "run_id": "dma-guard-host-deploy-v4-20261018",
+  "status": "DEPLOYED_HOST_RECOVERED",
+  "release": "6.12.0-opencca-pmthor-opp3",
+  "image_sha256": "d634efbc716a771c8bca4108475cd7866e0ae271ce7701e504c568ac49ca2cce",
+  "boot_id_before": "802e887f-7a82-42d0-ae84-7928330e145f",
+  "config_differences": [
+    "CONFIG_OPENCCA_DMA_GUARD"
+  ],
+  "backup_sha256": "159538f07696157dc3bb3a56c64e64f74d7114a0e19afe7d1ff1d346dc255ba4",
+  "boot": {
+    "extlinux": "default l0\nmenu title U-Boot menu\nprompt 0\ntimeout 1\n\nlabel l0\n\tmenu label OpenCCA RK3588 6.12.0-opencca-pmthor-opp3\n\tlinux /boot/vmlinuz-6.12.0-opencca-pmthor-opp3\n\tinitrd /boot/initrd.img-6.12.0-opencca-pmthor-opp3\n\tfdtdir /usr/lib/linux-image-6.12.0-opencca-pmthor-opp3/\n\tappend root=PARTLABEL=root rootwait isolcpus=1,2,3 maxcpus=2 nohlt cpuidle.off=1 rcupdate.rcu_cpu_st\n\nlabel l0r\n\tmenu label OpenCCA RK3588 6.12.0-opencca-pmthor-opp3 rescue\n\tlinux /boot/vmlinuz-6.12.0-opencca-pmthor-opp3\n\tinitrd /boot/initrd.img-6.12.0-opencca-pmthor-opp3\n\tfdtdir /usr/lib/linux-image-6.12.0-opencca-pmthor-opp3/\n\tappend root=PARTLABEL=root rootwait isolcpus=1,2,3 maxcpus=2 nohlt cpuidle.off=1 rcupdate.rcu_cpu_st single\n",
+    "image_path": "/root/GPU-SFTP/log/host-deploy/dma-guard-host-deploy-v4-20261018/boot/boot/vmlinuz-6.12.0-opencca-pmthor-opp3",
+    "update_mode": "in_place_with_backups",
+    "old_image_sha256": "9eb02466ea282125bd29cab14bd0c04a88849dab8b840cb551a482d1d3fbeacf",
+    "new_image_sha256": "d634efbc716a771c8bca4108475cd7866e0ae271ce7701e504c568ac49ca2cce"
+  },
+  "boot_id_after": "b72d9f0e-0caf-4cca-9a53-ade560aa9768"
+}

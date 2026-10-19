@@ -1,0 +1,135 @@
+{
+  "archive": {
+    "controller_runs": {
+      "path": "build/dma-guard-20261018/iommu-mapping-evidence.tar.gz",
+      "sha256": "25e0eae33c35d9c49efae39280e4e02151525f691fd4f0948648524902428f84",
+      "bytes": 24890
+    },
+    "board_run": {
+      "board_archive": "build/dma-guard-20261018/board-runs/iommu-map-live-gpu-20261018.tar.gz",
+      "sha256": "8f3cbfb3f0ef970738e98ca05de2bb81fd7aef8cf587a204151cb8affb0331aa",
+      "bytes": 124701,
+      "verified_files": {
+        "realm-1.json": "187a4964a998f23a046b4b8b90e7646e8c9d1d88caabdc6f9a7571a3705df15a",
+        "realm-0.log": "200ee851edf2ecfe52deca49436cf6a9fa74ec03e7b566e4feb8216b45f152bc",
+        "runner.py": "e7703ec7d913676cb65f87e5e92e1751943f933000a039df4bb6414edd2152e9",
+        "summary.json": "417ffb6695ac43d5448cc2c9ac29d8bdceabe26a28c607c41053705909770e33",
+        "commands.jsonl": "09e1341fdf47f25959c07ced0673bbda2903ac0d1b655ea5228a48bd4c30915d",
+        "realm-1.log": "89868a72894e283467c067678612745952dd04f292382110dc18a8908f3488ce",
+        "glmark-720.log": "9699bc677ab6e03a2fcab741f87218173fd46ebd9d0625f46dce7a27944a44c1",
+        "realm-0.json": "64919ed7a10432074115ea11d69e5d3aff5c7285407e3c9efe10f66091c88bc9"
+      }
+    }
+  },
+  "cleanup_run_id": "iommu-map-cleanup-20261018",
+  "cleanup_wrapper": {
+    "run_id": "iommu-map-cleanup-20261018",
+    "command": [
+      "python3",
+      "build/dma-guard-20261018/cleanup-mapping-staging.py"
+    ],
+    "cwd": "/home/mzh/gpu",
+    "started": "2026-10-18T14:25:06.323822+00:00",
+    "status": "COMPLETED",
+    "allow_rk_reboot": false,
+    "recover_rk_offline": false,
+    "returncode": 0,
+    "ended": "2026-10-18T14:25:10.258000+00:00"
+  },
+  "cleanup": {
+    "returncode": 0,
+    "phases": [
+      {
+        "phase": "PLAN",
+        "records": [
+          {
+            "path": "/root/GPU-SFTP/log/dma-guard/iommu-map-admission-20261018/opencca_dma_probe.ko",
+            "size": 95160,
+            "mtime_ns": 1792332725380504957,
+            "sha256": "e9899ff53c1cb80052667e734b1c2225b7acde3d0ad10b5108fc911ba2fe40f1",
+            "reason": "verified unused upload; controller inputs and rollback retained"
+          },
+          {
+            "path": "/root/GPU-SFTP/log/dma-guard/iommu-map-live-gpu-20261018/opencca_dma_probe.ko",
+            "size": 95160,
+            "mtime_ns": 1792332911331746800,
+            "sha256": "e9899ff53c1cb80052667e734b1c2225b7acde3d0ad10b5108fc911ba2fe40f1",
+            "reason": "verified unused upload; controller inputs and rollback retained"
+          }
+        ]
+      },
+      {
+        "phase": "RESULT",
+        "records": [
+          {
+            "path": "/root/GPU-SFTP/log/dma-guard/iommu-map-admission-20261018/opencca_dma_probe.ko",
+            "size": 95160,
+            "mtime_ns": 1792332725380504957,
+            "sha256": "e9899ff53c1cb80052667e734b1c2225b7acde3d0ad10b5108fc911ba2fe40f1",
+            "reason": "verified unused upload; controller inputs and rollback retained",
+            "result": "REMOVED"
+          },
+          {
+            "path": "/root/GPU-SFTP/log/dma-guard/iommu-map-live-gpu-20261018/opencca_dma_probe.ko",
+            "size": 95160,
+            "mtime_ns": 1792332911331746800,
+            "sha256": "e9899ff53c1cb80052667e734b1c2225b7acde3d0ad10b5108fc911ba2fe40f1",
+            "reason": "verified unused upload; controller inputs and rollback retained",
+            "result": "REMOVED"
+          }
+        ],
+        "freed_bytes": 190320,
+        "retained_rollback": "/root/GPU-SFTP/log/host-deploy/dma-guard-host-deploy-v4-20261018/kernel-before"
+      }
+    ]
+  },
+  "final_host_resources": {
+    "role": "rk",
+    "role_verified": true,
+    "hostname": "opencca-rock5b-rk3588",
+    "kernel": "6.12.0-opencca-pmthor-opp3",
+    "online_cpus": "0-1",
+    "gpu_driver": "/sys/bus/platform/drivers/pmthor",
+    "memory": {
+      "MemTotal": 3467829248,
+      "MemAvailable": 3258519552,
+      "SwapTotal": 0,
+      "SwapFree": 0
+    },
+    "disks": {
+      "/": {
+        "total_bytes": 31181299712,
+        "available_bytes": 14910132224,
+        "free_inodes": 1825628
+      },
+      "/tmp": {
+        "total_bytes": 1733914624,
+        "available_bytes": 1733914624,
+        "free_inodes": 1048569
+      },
+      "/root/GPU-SFTP": {
+        "total_bytes": 31181299712,
+        "available_bytes": 14910132224,
+        "free_inodes": 1825628
+      }
+    },
+    "active_lab_processes": [],
+    "snapshots": [],
+    "mounts": {
+      "rc": 0,
+      "stdout": "/sys sysfs sysfs\n/proc proc proc\n/dev udev devtmpfs\n/dev/pts devpts devpts\n/run tmpfs tmpfs\n/ /dev/mmcblk1p4 ext4\n/sys/kernel/security securityfs securityfs\n/dev/shm tmpfs tmpfs\n/sys/fs/cgroup cgroup2 cgroup2\n/sys/fs/pstore pstore pstore\n/sys/fs/bpf bpf bpf\n/run/lock tmpfs tmpfs\n/dev/hugepages hugetlbfs hugetlbfs\n/tmp tmpfs tmpfs\n/sys/kernel/debug debugfs debugfs\n/dev/mqueue mqueue mqueue\n/sys/kernel/tracing tracefs tracefs\n/run/credentials/systemd-journald.service tmpfs tmpfs\n/sys/fs/fuse/connections fusectl fusectl\n/sys/kernel/config configfs configfs\n/run/credentials/systemd-resolved.service tmpfs tmpfs\n/efi systemd-1 autofs\n/run/credentials/systemd-networkd.service tmpfs tmpfs\n/run/credentials/getty@tty1.service tmpfs tmpfs\n/run/credentials/serial-getty@ttyS2.service tmpfs tmpfs\n/run/user/1000 tmpfs tmpfs\n/run/user/0 tmpfs tmpfs",
+      "stderr": ""
+    },
+    "loops": {
+      "rc": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "usage": {
+      "rc": 0,
+      "stdout": "52658176\t/root/GPU-SFTP/linux-host-kernel\n2708058112\t/root/GPU-SFTP/firecracker-bins\n278528\t/root/GPU-SFTP/panthor_fw\n8192\t/root/GPU-SFTP/.vscode.example\n905433088\t/root/GPU-SFTP/artifacts\n5111808\t/root/GPU-SFTP/tests\n3056816128\t/root/GPU-SFTP/log\n6728425472\t/root/GPU-SFTP",
+      "stderr": ""
+    }
+  },
+  "pi": "not modified during this phase; resource preflight retained in build/dma-guard-20261018/iommu-scope-preflight.json"
+}

@@ -1,0 +1,21 @@
+{
+  "run_id": "dma-guard-final-admission-20261018",
+  "admission": "PASS",
+  "configuration_protection": "FAIL_BYPASS_DETECTED",
+  "actual_dma_transfer": "NOT_RUN",
+  "full_dma_protection": "INCOMPLETE",
+  "module_sha256": "2a231b6ddcfc24ec06efa8bc228fc5b648110a6d7d99ccfe9281d0a4dbd33c65",
+  "performance_comparability": "no GPU benchmark",
+  "checks": {
+    "allowed_mapping": true,
+    "existing_dma_blocks_delegation": true,
+    "allowed_unmap": true,
+    "delegation_after_unmap": true,
+    "delegated_page_mapping_denied": true,
+    "covering_mapping_denied": true,
+    "mapping_after_undelegation": true,
+    "final_unmap": true,
+    "reservation_recovery": true,
+    "direct_mapping_cleanup": true
+  }
+}

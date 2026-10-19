@@ -1,0 +1,9 @@
+obj-m += opencca_dma_probe.o
+obj-m += opencca_dma_transfer_probe.o
+obj-m += opencca_guest_iommu_probe.o
+obj-m += opencca_reclaim_probe.o
+obj-m += opencca_lease_monitor.o
+obj-m += opencca_iommu_assignment_probe.o
+obj-m += opencca_gpu_power_probe.o
+obj-m += opencca_gpu_mmio_probe.o
+obj-m += opencca_vmid_probe.o

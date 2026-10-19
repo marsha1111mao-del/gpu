@@ -1,0 +1,11 @@
+{
+  "run_id": "dma-guard-rmm-deploy-20261018",
+  "status": "DEPLOYED_HOST_RECOVERED",
+  "storage_id": 2,
+  "firmware": "/home/mzh/gpu/build/dma-guard-20261018/firmware",
+  "images": {
+    "idbloader.img": "20ec40873965a935054729982e6cd9b59bd8a2dd287d624fdae73829b5d2e202",
+    "u-boot.itb": "d3dc330f65ce2632b1baf2066f2b2ccb81b8da6ae763baadb3de65ffb23b9bc2"
+  },
+  "backup_sha256": "001859f9520eafbac32f665d8291fea5dcc6d232d7d9c1c57a6e58000b4bca21"
+}

@@ -1,0 +1,10 @@
+{
+  "kernel_oops": [],
+  "kernel_warning": [],
+  "gpu_fault": [],
+  "scope": "Host since current boot; GPU/BUG/Oops/WARNING patterns, not all system services",
+  "known_boot_messages": [
+    "[   22.024994] FAT-fs (mmcblk1p3): bogus number of reserved sectors",
+    "[   22.025535] FAT-fs (mmcblk1p3): Can't find a valid FAT filesystem"
+  ]
+}

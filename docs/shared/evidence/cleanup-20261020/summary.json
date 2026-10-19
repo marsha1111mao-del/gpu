@@ -1,0 +1,88 @@
+{
+  "date": "2026-10-20",
+  "status": "PASS_MAINTENANCE_ONLY",
+  "totals": {
+    "pi": {
+      "removed_files": 8,
+      "released_allocated_bytes": 1073745920,
+      "removed_empty_directories": 27,
+      "root_free_before_bytes": 16486354944,
+      "root_free_after_bytes": 17560211456,
+      "root_free_delta_bytes": 1073856512
+    },
+    "rk": {
+      "removed_files": 8783,
+      "released_allocated_bytes": 1889415168,
+      "removed_empty_directories": 206,
+      "root_free_before_bytes": 13346201600,
+      "root_free_after_bytes": 15228383232,
+      "root_free_delta_bytes": 1882181632
+    },
+    "controller": {
+      "removed_files": 26569,
+      "released_allocated_bytes": 6813544448,
+      "removed_empty_directories": 99,
+      "build_allocated_before_bytes": 26062413824,
+      "build_allocated_after_bytes": 20099530752,
+      "build_net_reduction_bytes": 5962883072
+    }
+  },
+  "runs": [
+    {
+      "run_id": "workspace-artifact-cleanup-20261020-a",
+      "command": [
+        "python3",
+        "build/lab-maintenance/cleanup-20261020/cleanup.py",
+        "apply"
+      ],
+      "status": "COMPLETED",
+      "returncode": 0
+    },
+    {
+      "run_id": "workspace-artifact-cleanup-20261020-b",
+      "command": [
+        "python3",
+        "build/lab-maintenance/cleanup-20261020/prune-empty.py"
+      ],
+      "status": "COMPLETED",
+      "returncode": 0
+    }
+  ],
+  "new_archived_allocated_bytes": 788074496,
+  "unchanged_runtime_source_fingerprints": 364,
+  "unchanged_component_status": [
+    "Linux-Host-GPU",
+    "Linux-Guest-GPU",
+    "opencca",
+    "opencca/tf-rmm"
+  ],
+  "retained_input_hashes_verified": 20,
+  "resource_issues": [],
+  "rk_runtime": {
+    "kernel_build": "#31 SMP PREEMPT Mon Oct 19 17:58:21 CST 2026",
+    "runtime_retained": true,
+    "obsolete_ncnn_source_build_absent": true,
+    "gpu_frequency": "300000000"
+  },
+  "new_gpu_regression": false,
+  "new_performance_measurement": false,
+  "evidence_directory": "build/lab-maintenance/cleanup-20261020",
+  "notion_status_sections": 2,
+  "implemented_items": 9,
+  "partial_items": 5,
+  "notion": {
+    "page_id": "3fd659a3-b8cc-806d-aaf9-db523d4809af",
+    "before_characters": 51829,
+    "after_characters": 1994,
+    "initial_readback_characters": 1900,
+    "readback_ignores_column_layout_metadata": true,
+    "sections": [
+      "已实现（必须保留）",
+      "未实现 / 部分实现（必须保留）"
+    ],
+    "implemented_items": 9,
+    "partial_items": 5,
+    "readback_matches_expected": true,
+    "historical_page_snapshot": "build/lab-maintenance/cleanup-20261020/notion-before.md"
+  }
+}

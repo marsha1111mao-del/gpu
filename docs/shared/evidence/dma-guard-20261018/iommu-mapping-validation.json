@@ -1,0 +1,140 @@
+{
+  "scope": "IOMMU mapping API: deny GPU/Realm protected HPA pages to other IOMMU devices",
+  "scope_source": "user narrowed requirement; direct DMA without IOMMU excluded",
+  "status": "PASS",
+  "runtime_changes_this_phase": "none; existing Host/RMM/Guest retained; probe and runner changed",
+  "not_executed": {
+    "npu": "no NPU platform device/driver enabled; codec IOMMU representative only",
+    "actual_device_dma": "probe uses an unattached domain, creates/tests real driver PTEs without issuing DMA",
+    "direct_non_iommu_dma": "OUT_OF_SCOPE",
+    "raw_pte_mmio_configuration_protection": "NOT_EVALUATED this phase; historical bypass failures retained",
+    "full_regression": "not run this phase"
+  },
+  "live_sample_limit": "one GPU lease HPA sampled under GPU load, not pinned; Realm page-state checks continue after possible GPU unmap",
+  "module": {
+    "path": "build/dma-guard-20261018/mapping-module/opencca_dma_probe.ko",
+    "sha256": "e9899ff53c1cb80052667e734b1c2225b7acde3d0ad10b5108fc911ba2fe40f1",
+    "vermagic": "6.12.0-opencca-pmthor-opp3 SMP preempt mod_unload aarch64"
+  },
+  "source_hashes": "source-hashes-mapping.json",
+  "runs": [
+    {
+      "run_id": "iommu-map-admission-20261018",
+      "command": [
+        "python3",
+        "scripts/run/run-dma-guard.py",
+        "--module",
+        "build/dma-guard-20261018/mapping-module/opencca_dma_probe.ko"
+      ],
+      "status": "COMPLETED",
+      "returncode": 0,
+      "checks_passed": 15,
+      "checks_total": 15,
+      "kernel_log": "build/lab-runs/iommu-map-admission-20261018/kernel-delta.log",
+      "kernel_log_sha256": "cd9b8e6a4f90bfa07d9de221a8724d7829b59bba92bea928bbe24e61d2188223",
+      "dma_guard_result": "iommu-map-admission-20261018-dma-guard.json",
+      "wrapper_result": "iommu-map-admission-20261018-result.json"
+    },
+    {
+      "run_id": "iommu-map-live-gpu-20261018",
+      "command": [
+        "python3",
+        "scripts/run/run-dma-guard.py",
+        "--module",
+        "build/dma-guard-20261018/mapping-module/opencca_dma_probe.ko",
+        "--images",
+        "build/safe-optimization-20261018/final"
+      ],
+      "status": "COMPLETED",
+      "returncode": 0,
+      "checks_passed": 21,
+      "checks_total": 21,
+      "kernel_log": "build/lab-runs/iommu-map-live-gpu-20261018/kernel-delta.log",
+      "kernel_log_sha256": "2a9b2c312e81aab2a0918de51866ea486246b64bdaf526ac3b24aa84a078c238",
+      "dma_guard_result": "iommu-map-live-gpu-20261018-dma-guard.json",
+      "wrapper_result": "iommu-map-live-gpu-20261018-result.json"
+    }
+  ],
+  "gpu": {
+    "status": "PASS",
+    "score": 1169,
+    "benchmark_scenes": 33,
+    "validation": {
+      "success": 26,
+      "known_failure": 1,
+      "unknown": 6,
+      "unexpected_failures": 0
+    },
+    "vm_exit_codes": [
+      0,
+      0
+    ],
+    "host_performance": {
+      "before": {
+        "online": "0-1",
+        "governor": "userspace",
+        "selected_hz": 300000000,
+        "actual_hz": 300000000
+      },
+      "selected": {
+        "online": "0-3",
+        "governor": "userspace",
+        "selected_hz": 600000000,
+        "actual_hz": 594000000
+      },
+      "restored": {
+        "online": "0-1",
+        "governor": "userspace",
+        "selected_hz": 300000000,
+        "actual_hz": 300000000
+      }
+    },
+    "kernel_health": {
+      "0": {
+        "csg_update_timeout": [],
+        "fw_ping_timeout": [],
+        "gpu_translation_fault": [],
+        "kernel_warning": [],
+        "kernel_oops": []
+      },
+      "1": {
+        "csg_update_timeout": [],
+        "fw_ping_timeout": [],
+        "gpu_translation_fault": [],
+        "kernel_warning": [],
+        "kernel_oops": []
+      }
+    },
+    "comparison": {
+      "control_run_id": "dma-guard-clean-720-20261018",
+      "control_score": 1169,
+      "current_score": 1169,
+      "delta": 0,
+      "delta_percent": 0.0,
+      "condition_difference": "current run includes transient mapping probe; not an independent performance control or estimate of hook overhead",
+      "decision": "retain current mapping admission implementation"
+    }
+  },
+  "archives": {
+    "controller_runs": {
+      "path": "build/dma-guard-20261018/iommu-mapping-evidence.tar.gz",
+      "sha256": "25e0eae33c35d9c49efae39280e4e02151525f691fd4f0948648524902428f84",
+      "bytes": 24890
+    },
+    "board_run": {
+      "board_archive": "build/dma-guard-20261018/board-runs/iommu-map-live-gpu-20261018.tar.gz",
+      "sha256": "8f3cbfb3f0ef970738e98ca05de2bb81fd7aef8cf587a204151cb8affb0331aa",
+      "bytes": 124701,
+      "verified_files": {
+        "realm-1.json": "187a4964a998f23a046b4b8b90e7646e8c9d1d88caabdc6f9a7571a3705df15a",
+        "realm-0.log": "200ee851edf2ecfe52deca49436cf6a9fa74ec03e7b566e4feb8216b45f152bc",
+        "runner.py": "e7703ec7d913676cb65f87e5e92e1751943f933000a039df4bb6414edd2152e9",
+        "summary.json": "417ffb6695ac43d5448cc2c9ac29d8bdceabe26a28c607c41053705909770e33",
+        "commands.jsonl": "09e1341fdf47f25959c07ced0673bbda2903ac0d1b655ea5228a48bd4c30915d",
+        "realm-1.log": "89868a72894e283467c067678612745952dd04f292382110dc18a8908f3488ce",
+        "glmark-720.log": "9699bc677ab6e03a2fcab741f87218173fd46ebd9d0625f46dce7a27944a44c1",
+        "realm-0.json": "64919ed7a10432074115ea11d69e5d3aff5c7285407e3c9efe10f66091c88bc9"
+      }
+    }
+  }
+}

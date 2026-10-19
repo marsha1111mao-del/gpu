@@ -1,0 +1,138 @@
+{
+  "overall_security": "PARTIAL / INCOMPLETE",
+  "live_gpu_iommu": {
+    "run_id": "managed-iommu-live-device-grant-20261019-c",
+    "command": [
+      "python3",
+      "scripts/run/run-dma-guard.py",
+      "--module",
+      "build/dma-guard-20261018/managed-probe-module/opencca_dma_probe.ko",
+      "--images",
+      "build/secure-services-20261019/final",
+      "--uart-capture"
+    ],
+    "returncode": 0,
+    "checks_passed": 28,
+    "live_gpu_mapping_check": "PASS",
+    "configuration_protection_scope": "managed direct driver only; physical MMIO bypass remains",
+    "actual_dma_transfer": "NOT_RUN",
+    "module_sha256": "3b0c0aab495169a2298c06b71c47dbc02a588e9715793bdd7e249881dde1340e",
+    "runner_sha256": "56aab48298b28c7faeb048b3fe8f2750d3a4b88047274d4da2ac76e0012b477f",
+    "kernel_errors": []
+  },
+  "glmark": {
+    "score": 1171,
+    "status": "PASS",
+    "performance_cases": [
+      {
+        "profile": "glmark-720",
+        "returncode": 0,
+        "pass_marker": true,
+        "required_markers": {
+          "GLMARK_RESULT=PASS": true,
+          "GLMARK_VALIDATE=PASS": true,
+          "GLMARK_CLEAN_RESULT=PASS": true,
+          "GLMARK_SCORE=": true
+        }
+      }
+    ],
+    "host_performance": {
+      "before": {
+        "online": "0-1",
+        "governor": "userspace",
+        "selected_hz": 300000000,
+        "actual_hz": 300000000
+      },
+      "selected": {
+        "online": "0-3",
+        "governor": "userspace",
+        "selected_hz": 600000000,
+        "actual_hz": 594000000
+      },
+      "restored": {
+        "online": "0-1",
+        "governor": "userspace",
+        "selected_hz": 300000000,
+        "actual_hz": 300000000
+      }
+    },
+    "vm_exit_codes": [
+      0,
+      0
+    ],
+    "kernel_health": {
+      "0": {
+        "csg_update_timeout": [],
+        "fw_ping_timeout": [],
+        "gpu_translation_fault": [],
+        "kernel_warning": [],
+        "kernel_oops": []
+      },
+      "1": {
+        "csg_update_timeout": [],
+        "fw_ping_timeout": [],
+        "gpu_translation_fault": [],
+        "kernel_warning": [],
+        "kernel_oops": []
+      }
+    },
+    "inputs_sha256": {
+      "/root/GPU-SFTP/tests/realm-xshm/run-realms.py": "2b984a21bba288d071fa091181d584ef65fba63f1020853df7fff91c973ff690",
+      "/root/GPU-SFTP/firecracker-bins/bin/firecracker": "1da45f6ad565434ff4bef82f8e1c15faed17f940ae8297a7a05bfc7278be6b66",
+      "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/Image": "a8bcdb5583ddcb9e1651169222308ad3a29f686af527847640aa6a3080e4f94c",
+      "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/initrd.cpio": "c3cdd4fa34c168e528460c9dd63f58354b5b66437c51973415fc5edb60931299",
+      "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/proxy/Image": "2f407eb397bb21bef4f891510b976a241d6d98de5305145d98f309ce583222b1",
+      "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4": "5d0c2ec8e5c1830f6a93c39d34bd8ae02a99702792e9e16a9d9034388f606d60"
+    },
+    "delta_vs_standalone_1173": -2,
+    "percent_vs_standalone_1173": -0.17050298380221654,
+    "conditions_differ": "IOMMU probe and UART capture during workload; not a performance-only run or an isolated optimization comparison",
+    "counted_scenarios": 33,
+    "validation": {
+      "success": 26,
+      "known_failure": 1,
+      "unknown": 6,
+      "unexpected_failures": 0
+    }
+  },
+  "final_host_mmio_audit": {
+    "run_id": "host-mmio-physical-audit-20261019-b",
+    "command": [
+      "python3",
+      "scripts/run/run-kvm-mmio-probe.py",
+      "--probe",
+      "build/secure-services-20261019/physical-mmio/opencca_kvm_mmio_probe",
+      "--audit-host-mmio",
+      "--uart-capture"
+    ],
+    "returncode": 2,
+    "host_mmio_protection": "FAIL_BYPASS_DETECTED",
+    "abi_checks_passed": 11,
+    "kernel_errors": [],
+    "runner_sha256": "3711a451ba651da6d1ccb82a4a44248b05049c3f1a774d825942915f1c03d48b",
+    "probe_sha256": "1572f576cbb4065203089ee0c6f3c3c845c8863aeb1843e2d0649c3b167e7974"
+  },
+  "runtime_changed": false,
+  "cleanup": {
+    "run_id": "host-mmio-probe-cleanup-20261019-a",
+    "returncode": 0,
+    "removed_files": 1,
+    "logical_bytes": 852704,
+    "allocated_bytes_removed": 856064,
+    "filesystem_available_delta": 856064,
+    "evidence": "build/lab-runs/host-mmio-probe-cleanup-20261019-a/cleanup-result.json",
+    "retained": "final -b probe binary, controller build input and all failure logs"
+  },
+  "source_sha256": {
+    "GPU-SFTP/tests/dma-guard/opencca_kvm_mmio_probe.c": "e4f9c7a4074cf727e2f46a5fe308bd30bc5736a6332e2941e4f6392819a09849",
+    "scripts/run/run-kvm-mmio-probe.py": "3711a451ba651da6d1ccb82a4a44248b05049c3f1a774d825942915f1c03d48b",
+    "scripts/run/run-dma-guard.py": "56aab48298b28c7faeb048b3fe8f2750d3a4b88047274d4da2ac76e0012b477f",
+    "GPU-SFTP/tests/dma-guard/opencca_dma_probe.c": "4e0800ef9131983a85839857873e87965ad277e7d4bef69c860364457abbe6ac"
+  },
+  "logs": [
+    "build/lab-runs/managed-iommu-live-device-grant-20261019-c/dma-guard.json",
+    "build/lab-runs/managed-iommu-live-device-grant-20261019-c/collected/",
+    "build/lab-runs/managed-iommu-live-device-grant-20261019-c/host-kernel-health.json",
+    "build/lab-runs/host-mmio-physical-audit-20261019-b/"
+  ]
+}

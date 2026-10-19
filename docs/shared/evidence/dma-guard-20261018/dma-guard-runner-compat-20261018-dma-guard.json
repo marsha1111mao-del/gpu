@@ -1,0 +1,26 @@
+{
+  "run_id": "dma-guard-runner-compat-20261018",
+  "admission": "PASS",
+  "configuration_protection": "FAIL_BYPASS_DETECTED",
+  "actual_dma_transfer": "NOT_RUN",
+  "full_dma_protection": "INCOMPLETE",
+  "module_sha256": "006b80877c34e4db769127476212b9937ed87645a8a30ff9542782caa1d30c7d",
+  "runner_sha256": "0d3670514e57a8375bade06bb59ba30b5ad25fedeff730e0408739e2d13ec93e",
+  "mode": "admission",
+  "performance_comparability": "no GPU benchmark",
+  "probe_command": "insmod /root/GPU-SFTP/log/dma-guard/dma-guard-runner-compat-20261018/opencca_dma_probe.ko gpu_required=0",
+  "probe_rc": 0,
+  "module_cleanup_rc": 0,
+  "checks": {
+    "allowed_mapping": true,
+    "existing_dma_blocks_delegation": true,
+    "allowed_unmap": true,
+    "delegation_after_unmap": true,
+    "delegated_page_mapping_denied": true,
+    "covering_mapping_denied": true,
+    "mapping_after_undelegation": true,
+    "final_unmap": true,
+    "reservation_recovery": true,
+    "direct_mapping_cleanup": true
+  }
+}

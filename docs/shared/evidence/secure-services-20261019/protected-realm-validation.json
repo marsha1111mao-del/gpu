@@ -1,0 +1,1049 @@
+{
+  "overall": "PARTIAL / INCOMPLETE",
+  "scope": "Protected Host/Realm compatibility, timer correction and selected independent hardware validation; physical protection remains incomplete",
+  "host_build": 29,
+  "host_release": "6.12.0-opencca-pmthor-opp3",
+  "firmware": "firmware-v6",
+  "host_mmio_protection": "FAIL_BYPASS_DETECTED",
+  "physical_enforcement": "NOT_IMPLEMENTED",
+  "performance": {
+    "before_720p": 1168,
+    "after_720p": 1152,
+    "delta": -16,
+    "percent_delta": -1.37,
+    "conditions": "33 scenes, 256MiB, null-noop/finish, GPU requested600/actual594MHz, CPU not fixed frequency; Host/RMM/protected/VMID/boot CPU and timer mechanisms changed together",
+    "attribution": "combination only",
+    "frozen_1171_1170": "UNCHANGED"
+  },
+  "runs": [
+    {
+      "run_id": "kvm-mmio-vmid-split-20261019-a",
+      "command": [
+        "python3",
+        "scripts/run/run-kvm-mmio-probe.py",
+        "--probe",
+        "build/secure-services-20261019/protected-el2/opencca_kvm_mmio_probe",
+        "--uart-capture"
+      ],
+      "returncode": 1,
+      "status": "FAILED",
+      "evidence_directory": "build/lab-runs/kvm-mmio-vmid-split-20261019-a",
+      "kvm-mmio.json": {
+        "run_id": "kvm-mmio-vmid-split-20261019-a",
+        "probe": "FAIL",
+        "host_mmio_protection": "NOT_RUN",
+        "probe_sha256": "76038ca90ea45cf75027f5dad91d636283b25a7e76f4dfee4ed357b5afe0995e",
+        "runner_sha256": "d27a585e8bd0ab0bfce05afd0bdf53e11a94464f11d3468eafe3cf96321c75bb",
+        "scope": "KVM/RMM MMIO authorization, owner OPP transition and pmthor reset/release; no GPU workload or DMA",
+        "probe_rc": 1,
+        "checks": {
+          "non_gpu_mmio_denied": false,
+          "misaligned_gpu_mmio_denied": false,
+          "oversized_gpu_mmio_denied": false,
+          "undersized_gpu_mmio_denied": false,
+          "authorized_proxy_mmio_succeeds": false,
+          "pmthor_owner_session_opens": false,
+          "second_realm_mmio_denied": false,
+          "owner_opp_transition_succeeds": false,
+          "pmthor_owner_release_succeeds": false,
+          "pmthor_owner_session_reopens": false,
+          "destroy_releases_mmio_owner": false
+        },
+        "error": "KVM MMIO authorization probe failed",
+        "dmesg_rc": 0,
+        "dmesg_ring_wrapped": false,
+        "host_kernel_errors": []
+      }
+    },
+    {
+      "run_id": "protected-realm-boot-20261019-a",
+      "command": [
+        "python3",
+        "build/secure-services-20261019/protected-realm/protected-boot.py"
+      ],
+      "returncode": 0,
+      "status": "COMPLETED",
+      "evidence_directory": "build/lab-runs/protected-realm-boot-20261019-a"
+    },
+    {
+      "run_id": "trusted-vmid-protected-20261019-a",
+      "command": [
+        "python3",
+        "scripts/run/run-opencca-vmid-probe.py",
+        "--module",
+        "build/secure-services-20261019/protected-realm/vmid-module/opencca_vmid_probe.ko"
+      ],
+      "returncode": 0,
+      "status": "COMPLETED",
+      "evidence_directory": "build/lab-runs/trusted-vmid-protected-20261019-a",
+      "vmid.json": {
+        "run_id": "trusted-vmid-protected-20261019-a",
+        "status": "PASS",
+        "module_sha256": "65ce68fdebd27960c3b8bbdef86a8ea9b73ba93f42e6d6cc7232613c75648e43",
+        "module_cleanup": "PASS",
+        "checks": {
+          "host_zero_denied": true,
+          "ordinary_upper_denied": true,
+          "realm_lower_allowed": true,
+          "duplicate_denied": true,
+          "destroy_allows_reuse": true,
+          "realm_upper_allowed": true
+        },
+        "kernel_errors": []
+      }
+    },
+    {
+      "run_id": "glmark720-protected-realm-20261019-a",
+      "command": [
+        "python3",
+        "build/secure-services-20261019/protected-realm/capture-command.py",
+        "python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/secure-services-20261019/final",
+        "--workload",
+        "glmark",
+        "--performance",
+        "--benchmark-only",
+        "--suite",
+        "--profiles",
+        "glmark-720"
+      ],
+      "returncode": 1,
+      "status": "FAILED",
+      "evidence_directory": "build/lab-runs/glmark720-protected-realm-20261019-a",
+      "host-kernel-health.json": {
+        "status": "PASS",
+        "dmesg_ring_wrapped": false,
+        "errors": [],
+        "realm_runner_returncode": 1
+      },
+      "collected/summary.json": {
+        "run_id": "glmark720-protected-realm-20261019-a",
+        "status": "FAIL",
+        "memory_pages": 65536,
+        "transport": true,
+        "trusted_events": true,
+        "parallel_boot": true,
+        "gpu_flow": true,
+        "clients": 1,
+        "pin_cpus": true,
+        "performance": true,
+        "benchmark_only": true,
+        "compute_rootfs": null,
+        "glmark_rootfs": "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4",
+        "rpc_stats": false,
+        "suite": true,
+        "large_pool": false,
+        "profiles": [
+          "glmark-720"
+        ],
+        "error": "[Errno 22] Invalid argument",
+        "host_performance": {
+          "restored": {
+            "online": "0-1",
+            "governor": "userspace",
+            "selected_hz": 300000000,
+            "actual_hz": 300000000
+          }
+        },
+        "vm_exit_codes": []
+      }
+    },
+    {
+      "run_id": "firmware-protected-cpus-20261019-a",
+      "command": [
+        "python3",
+        "build/secure-services-20261019/protected-realm/deploy-boot-cpu.py"
+      ],
+      "returncode": 0,
+      "status": "COMPLETED",
+      "evidence_directory": "build/lab-runs/firmware-protected-cpus-20261019-a"
+    },
+    {
+      "run_id": "glmark720-protected-realm-20261019-b",
+      "command": [
+        "python3",
+        "build/secure-services-20261019/protected-realm/capture-command.py",
+        "python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/secure-services-20261019/final",
+        "--workload",
+        "glmark",
+        "--performance",
+        "--benchmark-only",
+        "--suite",
+        "--profiles",
+        "glmark-720"
+      ],
+      "returncode": 1,
+      "status": "FAILED",
+      "evidence_directory": "build/lab-runs/glmark720-protected-realm-20261019-b",
+      "host-kernel-health.json": {
+        "status": "PASS",
+        "dmesg_ring_wrapped": false,
+        "errors": [],
+        "realm_runner_returncode": 1
+      },
+      "collected/summary.json": {
+        "run_id": "glmark720-protected-realm-20261019-b",
+        "status": "FAIL",
+        "memory_pages": 65536,
+        "transport": true,
+        "trusted_events": true,
+        "parallel_boot": true,
+        "gpu_flow": true,
+        "clients": 1,
+        "pin_cpus": true,
+        "performance": true,
+        "benchmark_only": true,
+        "compute_rootfs": null,
+        "glmark_rootfs": "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4",
+        "rpc_stats": false,
+        "suite": true,
+        "large_pool": false,
+        "profiles": [
+          "glmark-720"
+        ],
+        "host_performance": {
+          "before": {
+            "online": "0-1",
+            "governor": "userspace",
+            "selected_hz": 300000000,
+            "actual_hz": 300000000
+          },
+          "selected": {
+            "online": "0-3",
+            "governor": "userspace",
+            "selected_hz": 600000000,
+            "actual_hz": 594000000
+          },
+          "restored": {
+            "online": "0-1",
+            "governor": "userspace",
+            "selected_hz": 300000000,
+            "actual_hz": 300000000
+          }
+        },
+        "error": "Realm 0: timeout waiting for b'XSHM_COMMAND_EXIT='",
+        "grant_cleanup_errors": [
+          "serial response does not match command"
+        ],
+        "vm_exit_codes": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "run_id": "firmware-protected-timers-20261019-a",
+      "command": [
+        "python3",
+        "scripts/run/deploy-rmm-firmware.py",
+        "--firmware",
+        "build/secure-services-20261019/protected-realm/firmware-v4",
+        "--run-id",
+        "firmware-protected-timers-20261019-a"
+      ],
+      "returncode": 1,
+      "status": "POSTFLIGHT_FAILED",
+      "evidence_directory": "build/lab-runs/firmware-protected-timers-20261019-a",
+      "restore_mismatch": [
+        "gpu_driver"
+      ]
+    },
+    {
+      "run_id": "firmware-protected-timers-20261019-b",
+      "command": [
+        "python3",
+        "scripts/run/deploy-rmm-firmware.py",
+        "--firmware",
+        "build/secure-services-20261019/protected-realm/firmware-v5",
+        "--run-id",
+        "firmware-protected-timers-20261019-b"
+      ],
+      "returncode": 1,
+      "status": "FAILED",
+      "evidence_directory": "build/lab-runs/firmware-protected-timers-20261019-b"
+    },
+    {
+      "run_id": "firmware-protected-timers-20261019-c",
+      "command": [
+        "python3",
+        "scripts/run/deploy-rmm-firmware.py",
+        "--firmware",
+        "build/secure-services-20261019/protected-realm/firmware-v6",
+        "--run-id",
+        "firmware-protected-timers-20261019-c"
+      ],
+      "returncode": 1,
+      "status": "POSTFLIGHT_FAILED",
+      "evidence_directory": "build/lab-runs/firmware-protected-timers-20261019-c",
+      "restore_mismatch": [
+        "gpu_driver"
+      ]
+    },
+    {
+      "run_id": "glmark720-protected-realm-20261019-c",
+      "command": [
+        "python3",
+        "build/secure-services-20261019/protected-realm/capture-command.py",
+        "python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/secure-services-20261019/final",
+        "--workload",
+        "glmark",
+        "--performance",
+        "--benchmark-only",
+        "--suite",
+        "--profiles",
+        "glmark-720"
+      ],
+      "returncode": 0,
+      "status": "COMPLETED",
+      "evidence_directory": "build/lab-runs/glmark720-protected-realm-20261019-c",
+      "host-kernel-health.json": {
+        "status": "PASS",
+        "dmesg_ring_wrapped": false,
+        "errors": [],
+        "realm_runner_returncode": 0
+      },
+      "collected/summary.json": {
+        "run_id": "glmark720-protected-realm-20261019-c",
+        "status": "PASS",
+        "memory_pages": 65536,
+        "transport": true,
+        "trusted_events": true,
+        "parallel_boot": true,
+        "gpu_flow": true,
+        "clients": 1,
+        "pin_cpus": true,
+        "performance": true,
+        "benchmark_only": true,
+        "compute_rootfs": null,
+        "glmark_rootfs": "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4",
+        "rpc_stats": false,
+        "suite": true,
+        "large_pool": false,
+        "profiles": [
+          "glmark-720"
+        ],
+        "host_performance": {
+          "before": {
+            "online": "0-1",
+            "governor": "userspace",
+            "selected_hz": 300000000,
+            "actual_hz": 300000000
+          },
+          "selected": {
+            "online": "0-3",
+            "governor": "userspace",
+            "selected_hz": 600000000,
+            "actual_hz": 594000000
+          },
+          "restored": {
+            "online": "0-1",
+            "governor": "userspace",
+            "selected_hz": 300000000,
+            "actual_hz": 300000000
+          }
+        },
+        "performance_cases": [
+          {
+            "profile": "glmark-720",
+            "returncode": 0,
+            "pass_marker": true,
+            "required_markers": {
+              "GLMARK_RESULT=PASS": true,
+              "GLMARK_VALIDATE=PASS": true,
+              "GLMARK_CLEAN_RESULT=PASS": true,
+              "GLMARK_SCORE=": true
+            }
+          }
+        ],
+        "task_plans": {
+          "registered": 150,
+          "runs": 455281
+        },
+        "event_irq": {
+          "before": [
+            0,
+            0
+          ],
+          "after_workloads": [
+            1368018,
+            7856
+          ],
+          "intid": 127
+        },
+        "kernel_health": {
+          "0": {
+            "csg_update_timeout": [],
+            "fw_ping_timeout": [],
+            "gpu_translation_fault": [],
+            "kernel_warning": [],
+            "kernel_oops": []
+          },
+          "1": {
+            "csg_update_timeout": [],
+            "fw_ping_timeout": [],
+            "gpu_translation_fault": [],
+            "kernel_warning": [],
+            "kernel_oops": []
+          }
+        },
+        "vm_exit_codes": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "run_id": "host-kernel-mmio-protected-20261019-a",
+      "command": [
+        "python3",
+        "scripts/run/run-kvm-mmio-probe.py",
+        "--probe",
+        "build/secure-services-20261019/protected-el2/opencca_kvm_mmio_probe",
+        "--kernel-mmio-module",
+        "build/secure-services-20261019/protected-el2/kernel-module/opencca_gpu_mmio_probe.ko",
+        "--uart-capture"
+      ],
+      "returncode": 2,
+      "status": "FAILED",
+      "evidence_directory": "build/lab-runs/host-kernel-mmio-protected-20261019-a",
+      "kvm-mmio.json": {
+        "run_id": "host-kernel-mmio-protected-20261019-a",
+        "probe": "PASS",
+        "host_mmio_protection": "FAIL_BYPASS_DETECTED",
+        "probe_sha256": "76038ca90ea45cf75027f5dad91d636283b25a7e76f4dfee4ed357b5afe0995e",
+        "runner_sha256": "d27a585e8bd0ab0bfce05afd0bdf53e11a94464f11d3468eafe3cf96321c75bb",
+        "scope": "KVM/RMM MMIO authorization, owner OPP transition and pmthor reset/release; no GPU workload or DMA; direct Host kernel ioremap IRQ mask write/readback/restore in idle assigned session",
+        "module_sha256": "e9131cb03df3c0a151682b2e827b2c087265f9f5b32e15a55d3868b131231a62",
+        "probe_rc": 2,
+        "checks": {
+          "non_gpu_mmio_denied": true,
+          "misaligned_gpu_mmio_denied": true,
+          "oversized_gpu_mmio_denied": true,
+          "undersized_gpu_mmio_denied": true,
+          "authorized_proxy_mmio_succeeds": true,
+          "pmthor_owner_session_opens": true,
+          "second_realm_mmio_denied": true,
+          "owner_opp_transition_succeeds": true,
+          "pmthor_owner_release_succeeds": true,
+          "pmthor_owner_session_reopens": true,
+          "destroy_releases_mmio_owner": true
+        },
+        "module_cleanup_rc": 0,
+        "dmesg_rc": 0,
+        "dmesg_ring_wrapped": false,
+        "host_kernel_errors": [],
+        "kernel_mmio_records": [
+          "[HOST_KERNEL_MMIO_TEST] address=0xfb000028 before=0x0 requested=0x1 observed=0x1 restored=0x0 write_error=0 read_error=0 restore_error=0 restore_read_error=0"
+        ]
+      }
+    },
+    {
+      "run_id": "compute-protected-realm-20261019-a",
+      "command": [
+        "python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/secure-services-20261019/final",
+        "--workload",
+        "compute"
+      ],
+      "returncode": 0,
+      "status": "COMPLETED",
+      "evidence_directory": "build/lab-runs/compute-protected-realm-20261019-a",
+      "host-kernel-health.json": {
+        "status": "PASS",
+        "dmesg_ring_wrapped": false,
+        "errors": [],
+        "realm_runner_returncode": 0
+      },
+      "collected/summary.json": {
+        "run_id": "compute-protected-realm-20261019-a",
+        "status": "PASS",
+        "memory_pages": 2049,
+        "transport": true,
+        "trusted_events": true,
+        "parallel_boot": true,
+        "gpu_flow": true,
+        "clients": 2,
+        "pin_cpus": true,
+        "performance": false,
+        "benchmark_only": false,
+        "compute_rootfs": "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4",
+        "glmark_rootfs": null,
+        "rpc_stats": false,
+        "suite": false,
+        "large_pool": false,
+        "profiles": null,
+        "event_irq": {
+          "before": [
+            0,
+            0,
+            0
+          ],
+          "after_two_notifications": [
+            0,
+            1,
+            0
+          ],
+          "intid": 127,
+          "negative_and_coalescing": "PASS",
+          "after_workloads": [
+            3469,
+            1749,
+            1736
+          ]
+        },
+        "simultaneous_client_bindings": 2,
+        "permission_selftests": "PASS",
+        "two_client_compute_check": "PASS",
+        "two_client_gpu_flow_check": "PASS",
+        "memory_check": "PASS",
+        "provider_replacement_check": "NOT_RUN (separate single-Client lifecycle test)",
+        "kernel_health": {
+          "0": {
+            "csg_update_timeout": [],
+            "fw_ping_timeout": [],
+            "gpu_translation_fault": [],
+            "kernel_warning": [],
+            "kernel_oops": []
+          },
+          "1": {
+            "csg_update_timeout": [],
+            "fw_ping_timeout": [],
+            "gpu_translation_fault": [],
+            "kernel_warning": [],
+            "kernel_oops": []
+          },
+          "2": {
+            "csg_update_timeout": [],
+            "fw_ping_timeout": [],
+            "gpu_translation_fault": [],
+            "kernel_warning": [],
+            "kernel_oops": []
+          }
+        },
+        "vm_exit_codes": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "run_id": "vmid-protected-timers-20261019-a",
+      "command": [
+        "python3",
+        "scripts/run/run-opencca-vmid-probe.py",
+        "--module",
+        "build/secure-services-20261019/protected-realm/vmid-module/opencca_vmid_probe.ko"
+      ],
+      "returncode": 0,
+      "status": "COMPLETED",
+      "evidence_directory": "build/lab-runs/vmid-protected-timers-20261019-a",
+      "vmid.json": {
+        "run_id": "vmid-protected-timers-20261019-a",
+        "status": "PASS",
+        "module_sha256": "65ce68fdebd27960c3b8bbdef86a8ea9b73ba93f42e6d6cc7232613c75648e43",
+        "module_cleanup": "PASS",
+        "checks": {
+          "host_zero_denied": true,
+          "ordinary_upper_denied": true,
+          "realm_lower_allowed": true,
+          "duplicate_denied": true,
+          "destroy_allows_reuse": true,
+          "realm_upper_allowed": true
+        },
+        "kernel_errors": []
+      }
+    },
+    {
+      "run_id": "managed-iommu-protected-20261019-a",
+      "command": [
+        "python3",
+        "scripts/run/run-dma-guard.py",
+        "--module",
+        "build/dma-guard-20261018/managed-probe-module/opencca_dma_probe.ko"
+      ],
+      "returncode": 0,
+      "status": "COMPLETED",
+      "evidence_directory": "build/lab-runs/managed-iommu-protected-20261019-a",
+      "dma-guard.json": {
+        "run_id": "managed-iommu-protected-20261019-a",
+        "admission": "PASS",
+        "configuration_protection": "PASS_DIRECT_DRIVER_PATH",
+        "actual_dma_transfer": "NOT_RUN",
+        "full_dma_protection": "INCOMPLETE",
+        "module_sha256": "3b0c0aab495169a2298c06b71c47dbc02a588e9715793bdd7e249881dde1340e",
+        "runner_sha256": "56aab48298b28c7faeb048b3fe8f2750d3a4b88047274d4da2ac76e0012b477f",
+        "mode": "admission",
+        "scope": "iommu_mapping_api",
+        "iommu_mapping_firewall": "PASS",
+        "managed_iommu": "ENABLED",
+        "non_iommu_dma": "OUT_OF_SCOPE",
+        "performance_comparability": "no GPU benchmark",
+        "uart_capture": "NOT_RUN",
+        "device": {
+          "device": "fdb50000.video-codec",
+          "has_iommus": true,
+          "iommu_group": "/sys/kernel/iommu_groups/1"
+        },
+        "probe_rc": 0,
+        "module_cleanup_rc": 0,
+        "checks": {
+          "allowed_mapping": true,
+          "existing_dma_blocks_delegation": true,
+          "allowed_unmap": true,
+          "delegation_after_unmap": true,
+          "delegated_page_mapping_denied": true,
+          "covering_mapping_denied": true,
+          "mapping_after_undelegation": true,
+          "final_unmap": true,
+          "reservation_recovery": true,
+          "allowed_sg_mapping": true,
+          "allowed_sg_unmap": true,
+          "delegated_page_write_mapping_denied": true,
+          "delegated_page_alias_mapping_denied": true,
+          "delegated_sg_mapping_denied": true,
+          "delegated_sg_rollback": true,
+          "direct_driver_delegation_denied": true,
+          "managed_domain_root_ownership": true,
+          "managed_recovery_mapping": true,
+          "unbind_parking": true,
+          "managed_recovery_after_unbind": true,
+          "recovery_mapping_after_rebind": true,
+          "recovery_unmap": true
+        },
+        "kernel_errors": [],
+        "live_gpu_mapping_check": "NOT_RUN"
+      }
+    },
+    {
+      "run_id": "guest-rsi-protected-20261019-a",
+      "command": [
+        "python3",
+        "scripts/run/run-guest-iommu-probe.py",
+        "--images",
+        "build/secure-services-20261019/final",
+        "--module",
+        "build/secure-services-20261019/iommu-irq/guest-module/opencca_guest_iommu_probe.ko",
+        "--realm-init",
+        "build/secure-services-20261019/iommu-irq/realm-init"
+      ],
+      "returncode": 0,
+      "status": "COMPLETED",
+      "evidence_directory": "build/lab-runs/guest-rsi-protected-20261019-a",
+      "guest-iommu/result.json": {
+        "run_id": "guest-rsi-protected-20261019-a",
+        "status": "PASS",
+        "checks": {
+          "unowned_gpu_claim_denied": true,
+          "unowned_gpu_reset_denied": true,
+          "version": true,
+          "create": true,
+          "unassigned_codec_bind_denied": true,
+          "unpowered_vop_bind_denied": true,
+          "unassigned_codec_fault_denied": true,
+          "unpowered_vop_fault_denied": true,
+          "map": true,
+          "query": true,
+          "destroy_denied_while_mapped": true,
+          "unmap": true,
+          "query_after_unmap": true,
+          "overflow_mapping_denied": true,
+          "destroy": true,
+          "stale_handle_denied": true,
+          "result": true
+        },
+        "realm_boot": "PASS",
+        "probe_returncode": 0,
+        "module_cleanup_returncode": 0,
+        "guest_iommu_probe": "PASS",
+        "kernel_errors": [],
+        "kernel_health": "PASS",
+        "realm_exit_code": 0,
+        "host_lifecycle_errors": [],
+        "host_lifecycle_health": "PASS"
+      }
+    }
+  ],
+  "source_sha256": {
+    "GPU-SFTP/tests/dma-guard/Makefile": "c127492173b60fb9922d0794eb29c7e9eb9aad973f03441968ad435812714567",
+    "GPU-SFTP/tests/dma-guard/README.md": "5da9e35594707842bb67b319143bc8821dadfc0ec52003933c80348fdd6bf924",
+    "GPU-SFTP/tests/dma-guard/opencca_dma_probe.c": "4e0800ef9131983a85839857873e87965ad277e7d4bef69c860364457abbe6ac",
+    "GPU-SFTP/tests/dma-guard/opencca_dma_transfer_probe.c": "65c8a22a568b632b3531d9b9c2c8a797c9c935eaef3eb05c2cbc9e404b2eb33d",
+    "GPU-SFTP/tests/dma-guard/opencca_gpu_mmio_probe.c": "8d8b523c20c0505f243ea524c85fad7636385ef4a1bbc6e2c76d96ddd8465337",
+    "GPU-SFTP/tests/dma-guard/opencca_guest_iommu_probe.c": "8995d1d0aa7831d90d941138b6960d44270b8bfb31567d80eb3f7ddaf75ef8da",
+    "GPU-SFTP/tests/dma-guard/opencca_iommu_assignment_probe.c": "f0b328db468fa04f05ab6f4cb537fa0be5e7833bab04bf8bef04cc704b7e61cc",
+    "GPU-SFTP/tests/dma-guard/opencca_kvm_mmio_probe.c": "943b63fd71a417f508a73a379d8c04ceefc557a19d376c6322c9752dd9451921",
+    "GPU-SFTP/tests/dma-guard/opencca_lease_monitor.c": "62812c9b9da970eb361893efcb76ee23c6db372bd149ae42bbb168028513b56d",
+    "GPU-SFTP/tests/dma-guard/opencca_reclaim_probe.c": "2cdfa49c4cdf1b2a8b4eddcb2d308b6fd642c9668758e15f0221e8d9c383eed5",
+    "GPU-SFTP/tests/dma-guard/run_guest_iommu_probe.py": "afba18d69269ca9be463313481efdea3c5951653db17d19519abd6733632e736",
+    "GPU-SFTP/tests/realm-xshm/init.c": "c4a0a27bd06cc625d376d8979a522507a37d2400aa5954a3b92b3042e361e077",
+    "Linux-Guest-GPU/arch/arm64/include/asm/rsi_smc.h": "569b2c642149790d65e5873a4908bcbcf0b3d9d98d2cc8b5428e2af87c355e98",
+    "Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_device.c": "9efcd6c3b2670b4b26298db21c8a72a2c9be164eda62f7a78e4520230d4f320b",
+    "Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_gem.c": "b609900e1395cff02edb8caa394a6eaa4376a2323e6d8f8457fa54e6843ac4a0",
+    "Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_gem.h": "15b2392e2462ba01bd704cef555602f29bacc6dae020e3afc28c4f0493d09abd",
+    "Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_gpu.c": "e0eef9e67b54f8e208e6c9d7bcd16f709faf7c7e2aafc30e4e15f60d36ad0fc2",
+    "Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_mmu.c": "bb27571e15ad98722f645fdecf7e61d16604ec2e8b50c6f92011648a34845a38",
+    "Linux-Host-GPU/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi": "734f089b7c39d3a7bcff087bd861d1f8e8210a4e61853fff19779466b2f58dc2",
+    "Linux-Host-GPU/arch/arm64/include/asm/rmi_smc.h": "f03261e3436e18e1d156354bab0a6a92d1de624cdc9d8e773b2c1b2d35b3a0ec",
+    "Linux-Host-GPU/arch/arm64/kvm/Kconfig": "0e7d7accb387d5d3730f773bbf8b273b3cf4ef07c01a1637b5b6359d15eb472f",
+    "Linux-Host-GPU/arch/arm64/kvm/arm.c": "5cdb4afb0a2b51cbe13a9e4f2e32cb707b4fee253dd595498807582722417151",
+    "Linux-Host-GPU/arch/arm64/kvm/hyp/nvhe/host.S": "4755dd5bc3784453ad0007dc8b9d756dcadf14d2c42a99f4e86f5b350b1b8c36",
+    "Linux-Host-GPU/arch/arm64/kvm/hyp/nvhe/hyp-main.c": "dfeece9430e4026dc9acf05a35015bcb38162fae048fe071b43e0cea0ea4b44f",
+    "Linux-Host-GPU/arch/arm64/kvm/hyp/nvhe/mem_protect.c": "ac7822d56204b5e1fa967a4e646672d0ee65d9e8baae4753de65d18d5bc60323",
+    "Linux-Host-GPU/arch/arm64/kvm/hyp/nvhe/pkvm.c": "78504a29fccc3127c86185fdb1367bd70eeae282a638a502a89fbd98db0a9a18",
+    "Linux-Host-GPU/arch/arm64/kvm/hyp/nvhe/switch.c": "e373e2aec24661301c101321c59c58b33dad29f74b92e78c532bcf0bc3264f85",
+    "Linux-Host-GPU/arch/arm64/kvm/mmu.c": "3636e0e1ab588bb14f06bde081a9e0093bd5718c1778644e1fe721d45b3365d3",
+    "Linux-Host-GPU/arch/arm64/kvm/rme.c": "f404536f963014bab92c678279d39d8aa3a2dbc31f4add7c506631ed90d32042",
+    "Linux-Host-GPU/arch/arm64/kvm/vgic/vgic.c": "2a70472f29c2062885a05a3dd7b046ffddb40b6bb3cabefd00fd3ef218e96edb",
+    "Linux-Host-GPU/arch/arm64/kvm/vmid.c": "d94b037d4eae2606513b99a661868657aac0faf837030ff9da0b2f226afdca24",
+    "Linux-Host-GPU/drivers/iommu/Kconfig": "020592a58569361a23c938bd39ca953ec7f7bee90104e7936dc191734afdc2ee",
+    "Linux-Host-GPU/drivers/iommu/iommu.c": "acd805efd55ef0c3ca7dfbfbec215a808514be376de338d7a1c5c50fbac65008",
+    "Linux-Host-GPU/drivers/iommu/opencca-dma-guard.h": "5ccf8e73b48f048b12932ea1e740ce8af4fbdf5b59d43fd96d1555d394aa3939",
+    "Linux-Host-GPU/drivers/iommu/rockchip-iommu.c": "f584359a1ffc5c0230167dbc33d5d897c3ea1d917031e28ec3e178e63a1c1988",
+    "Linux-Host-GPU/drivers/pmthor/pmthor_drv.c": "f1cf826bf98f969268002b49e82a2f5d3fb74885ae902ef3efeb6c721f046c11",
+    "Linux-Host-GPU/drivers/pmthor/pmthor_drv.h": "db012bc0eeaeaa06486014b740662a421247945d4a5dfdc64db747caf6484f2a",
+    "Linux-Host-GPU/drivers/pmthor/pmthor_regs.h": "DELETED",
+    "Linux-Host-GPU/include/linux/kvm_host.h": "d59d6f31ecf87b360a0cd770b65773eeb7756726898995706a6653a0f70fe090",
+    "Linux-Host-GPU/include/linux/pmthor_gpu.h": "a8a5c8cb352f6bf80fb4c2315eb371537eafa20d5df8c261bf43c68229de49d4",
+    "Linux-Host-GPU/virt/kvm/guest_memfd.c": "40ec3edc1475f84cda7aff3b7a7f5879701e2df6380734c47ce6408b435d41e2",
+    "opencca/patches/manifest.json": "bdaaf9508ff9697992646dede29785821426ed40a7cbd787dbd8ac78002c96fe",
+    "opencca/patches/u-boot/local.patch": "aa907c5a15be0ab7c3d086cc316f4fb8833b8f43f632e3835c03e06eb84d8805",
+    "opencca/tf-rmm/lib/arch/include/arch_features.h": "a6fa28588b64febf7da7090fd2d7188295ecd151bc7bf71c6e4d960ed119ee8c",
+    "opencca/tf-rmm/lib/arch/src/vmid.c": "d7e16f5c3848d0db06202569f22ea426f7b8236307ca01f0c11b13a3c7246ff7",
+    "opencca/tf-rmm/lib/arch/tests/vmid-stubs/arch_features.h": "0ce908518ef6b331aa940ed40a765519e3b73197487b49e8a53469f4d2adecc5",
+    "opencca/tf-rmm/lib/arch/tests/vmid-stubs/atomics.h": "950fa313720489a875323dd9e94f91b8420a21d4c5c497a436f9d5d08444c743",
+    "opencca/tf-rmm/lib/arch/tests/vmid_test.c": "223b01c25c8790ba62c6230f36ce3afade083afb6648bcb1b3dd514318b6b5a0",
+    "opencca/tf-rmm/lib/opencca/include/opencca.h": "893edfd5a747c6c243cfdf18f7655d58130bcc64abe00e9153d35ed24406e927",
+    "opencca/tf-rmm/lib/smc/include/smc-rmi.h": "90fe2af76863fcd0b0ee44056f00d2e4093a17e97b92b74fbb1c78ad3505ebb5",
+    "opencca/tf-rmm/lib/smc/include/smc-rsi.h": "59aae90f94e2c5fc8a9325bca9f14bea9d4f4feafb2b1281f682c732ed5b0fb0",
+    "opencca/tf-rmm/lib/smc/include/smc.h": "b565489097856ed108576963dac8623daf26e359eaa8512cd45e8fc485f4e7f3",
+    "opencca/tf-rmm/plat/rk3588/CMakeLists.txt": "50e8f4052ca6908752abcbb0a379ffbd408422d66bbda11a6a9a52a3621a480c",
+    "opencca/tf-rmm/plat/rk3588/src/rk3588_gpu.c": "ebf6f7698454d087a7f90eebbfde7d1c9c33f5d88a872cee64faae599799ee6f",
+    "opencca/tf-rmm/plat/rk3588/src/rk3588_iommu.c": "57902057c759d30bf2e9a5c4f7281ff1f49ef34c69e3844727b385ba555e188a",
+    "opencca/tf-rmm/plat/rk3588/src/rk3588_setup.c": "f902efe1ede470f6c29e6b6e2b280845740acd341ed2ba4e6e3cfb591d3825d7",
+    "opencca/tf-rmm/plat/rk3588/src/rk3588_timers.c": "2679628dccc77937db30c2286580aa20e38538a06a310eb2c91cb3db03d56d5a",
+    "opencca/tf-rmm/runtime/CMakeLists.txt": "c72bc8c7bae8110b786037975b19e1907ff26b199ce7e2f1d16a8c2f59a74bcd",
+    "opencca/tf-rmm/runtime/core/exit.c": "0417dc88faa7712933c455fba55886f08fc68b4f3145187323104bfeb5b202d1",
+    "opencca/tf-rmm/runtime/core/handler.c": "eaafac9ee06614a1ef2ebc4d3173a82c9917b9b7a496f474dac786d6b0d72e0b",
+    "opencca/tf-rmm/runtime/core/opencca_gpu.c": "137051a4525647cb65098e82419e8b7bdca543d020cd0dec9627a5e5efe05700",
+    "opencca/tf-rmm/runtime/core/opencca_gpu_lease.c": "940ca6e2f3c11bc4e17af2a245ac72df37ba76dfc4706dbec2b7fd3e215e0710",
+    "opencca/tf-rmm/runtime/core/opencca_iommu.c": "ba9f10de1f5acd6ee513319bf2af5a3d44766bb5f9f3f9ff83350502e074a081",
+    "opencca/tf-rmm/runtime/core/opencca_timers.c": "8bc6c0f1bca910f5b64f808202fe37311100c54cc592c75840a62a13a271a3fa",
+    "opencca/tf-rmm/runtime/core/run.c": "0e29f5ed90df737c386b2f696995ac61a62eae53aba58faec7d5eb73287a9e1e",
+    "opencca/tf-rmm/runtime/core/xshm_policy.c": "67190e26c3a76a4e4995b3179959be09be6b01893fb8ba0eebfa820669813f6d",
+    "opencca/tf-rmm/runtime/include/opencca_gpu.h": "542a3e14a09cc9832f84bebf06776fb76881a9bbf2bf7f0f3c64462999eaf55f",
+    "opencca/tf-rmm/runtime/include/opencca_gpu_lease.h": "336f584f4f6fd03fd51cc9c76e258dc4caee7706d6173bf5c2b47e6a2a0db29b",
+    "opencca/tf-rmm/runtime/include/opencca_iommu.h": "1d810bcd14f76a681e708e9784f968eb37e37f9443e47442ca0a6a8083dc99c2",
+    "opencca/tf-rmm/runtime/include/rsi-handler.h": "46100770653926346144f0a1f728bb4eff6a3d9a6621a129ecf86840a23b61c8",
+    "opencca/tf-rmm/runtime/include/smc-handler.h": "61975de355711a718014946884eed818048a28caa78aa5e9c3ae3f9b1682ef26",
+    "opencca/tf-rmm/runtime/include/timers.h": "fc3392433d81919c54540bb4db851643e8cca0c909f7546c16da5715695af505",
+    "opencca/tf-rmm/runtime/rmi/granule.c": "c87e9aa02df8575564f0198b95b794916f47b0eed3590ea42c8fb5846bde9947",
+    "opencca/tf-rmm/runtime/rmi/realm.c": "8caab003032afc59b9af9e0fa6a28049839522d3808f8c3101c6b3dadf8e76ba",
+    "opencca/tf-rmm/runtime/rmi/rtt.c": "06be4bc2bd116788d21fc600836f122ab6fb85f82ac2b7c9679a7443a6f695b9",
+    "opencca/tf-rmm/runtime/rsi/opencca_gpu.c": "5541731ecf9f39bb91529b46a8c0295eee3a6dfc0588c6b1bb594b38c1208ca3",
+    "opencca/tf-rmm/runtime/rsi/opencca_iommu.c": "d4fbf5fcc86132343d5fe1defeb2cf19cc3422cc2014fb6d6c01ac498f8e3c74",
+    "opencca/tf-rmm/runtime/tests/mmio-stubs/arch_helpers.h": "b662b00d935664f9f791f2e54b81f68b81272c4bdf13eb4706f33ae5be2b331c",
+    "opencca/tf-rmm/runtime/tests/mmio-stubs/mmio.h": "5302c8aa6ad56aae5abad8ac293f028539ad8085ce89dfeb4558abe0955e0a42",
+    "opencca/tf-rmm/runtime/tests/opencca_dma_guard_test.c": "f56586ba82fd0c300c3f594c9f190116f7db639cd0c38a861f491ec684b74fdd",
+    "opencca/tf-rmm/runtime/tests/opencca_gpu_backend_test.c": "44682028d9a261188887c41b6168e8feb51ee59a65412f00ede81228ae4ed1dd",
+    "opencca/tf-rmm/runtime/tests/opencca_gpu_lease_test.c": "e766b9f65c2eeb7799a63b2f06d141a1a55ca025f2c9d55c984a5cb3ee14f870",
+    "opencca/tf-rmm/runtime/tests/opencca_iommu_backend_test.c": "91614624556e058dd71c8018cdc38976c0bcd6bf94c74423aefbf8cc13712be9",
+    "opencca/tf-rmm/runtime/tests/opencca_iommu_test.c": "ae3206d8d2ad79818da27a34de5497969efaac36104ed011d9e207b866cdde3f",
+    "opencca/tf-rmm/runtime/tests/opencca_timers_test.c": "1b5cacebc418194c05a9b577c3578c9f1ba4c3c6b57dc977a7383ef934c6a025",
+    "opencca/tf-rmm/runtime/tests/timer-stubs/arch_helpers.h": "4035da446b10f5a27fb6f232a09c66670aedaa1667aff745ba31927ce9306915",
+    "opencca/tf-rmm/runtime/tests/timer-stubs/cpuid.h": "825a3cfb32fb72693ede2302f8c41ce6d341be9d43195953b695d7a3765c939b",
+    "opencca/tf-rmm/runtime/tests/timer-stubs/mmio.h": "422307c570e5f14318de30c707d032a17973f251cdc3f1987dde6145705f7bd1",
+    "opencca/tf-rmm/runtime/tests/timer-stubs/rec.h": "c54a3211fb2dcbe4d501f16e072bd03bf48cff9974ec825f8a72c08f1eb838d5",
+    "opencca/u-boot/rk3588_fragment.config": "5d4b396c0e15c1a547d3727a20d96655140c98263d5219e01f310726079d3c65",
+    "scripts/check/check-opencca-timers.sh": "babb13227742ae35834039441eef809676260647c29ca5b191c23112aa4a4172",
+    "scripts/check/check-opencca-vmid.sh": "eb663d80f5769cb3bca45e9e279d526bc1030f02e4c99a7f9c209ea2d917eeac",
+    "scripts/check/check-secure-iommu.sh": "5f9f5e812f3b927d65e78aebf74d8ea613bbdba0aa5cf1f6d17c255c8c4756d9",
+    "scripts/run/deploy-rmm-firmware.py": "3353954ba116b39eb58301818893fdceb9913843eb0cddbbd22ed413a69b3dfb",
+    "scripts/run/run-gpu-pm-regression.py": "e81edfe1010f563da6f919dad0b81031b39806c516e50dae5b697104c95b771e",
+    "scripts/run/run-guest-iommu-probe.py": "a3bc66def70ee0bfb53e8083eecdf5be26649bf159128bf9a65326da10e160cc",
+    "scripts/run/run-kvm-mmio-probe.py": "d27a585e8bd0ab0bfce05afd0bdf53e11a94464f11d3468eafe3cf96321c75bb",
+    "scripts/run/run-opencca-vmid-probe.py": "e43f5441eb6dc33bea1d479a8c619607e44cfb2f900a8fd15c81258e36360458",
+    "scripts/run/run-realm-xshm.py": "6105b513a3a2710d18e24c65339279aee4e7de57262835bf5f8202948e67e119"
+  },
+  "input_sha256": {
+    "build/secure-services-20261019/protected-realm/host-Image-v2": "c2c524a875667f59baa4a271213b57b02c1f9752fb395c90b59f1ed046837aa6",
+    "build/secure-services-20261019/protected-realm/host.config": "87f30afabaad65d94a331e8e07f8624a600c1e090888986e548aa50935a693f8",
+    "build/secure-services-20261019/protected-realm/firmware-v6/tf-rmm.elf": "58127713a4d9dc0d0826ba791270be53a0f79755a8e7f1735546ca27ea9d3bad",
+    "build/secure-services-20261019/protected-realm/firmware-v6/u-boot.itb": "8dfa6df1d21b88c61fad094b4b99a747c3a2f755d054d5a94eba1e2bae160fed",
+    "build/secure-services-20261019/protected-realm/firmware-v6/idbloader.img": "dbaa953f5cd962ee096dd727d7331077120bb3ba713e50734d816c9f346bf126",
+    "build/secure-services-20261019/protected-realm/vmid-module/opencca_vmid_probe.ko": "65ce68fdebd27960c3b8bbdef86a8ea9b73ba93f42e6d6cc7232613c75648e43",
+    "build/secure-services-20261019/protected-el2/opencca_kvm_mmio_probe": "76038ca90ea45cf75027f5dad91d636283b25a7e76f4dfee4ed357b5afe0995e",
+    "build/secure-services-20261019/protected-el2/kernel-module/opencca_gpu_mmio_probe.ko": "e9131cb03df3c0a151682b2e827b2c087265f9f5b32e15a55d3868b131231a62",
+    "build/secure-services-20261019/final/client-Image": "a8bcdb5583ddcb9e1651169222308ad3a29f686af527847640aa6a3080e4f94c",
+    "build/secure-services-20261019/final/proxy-Image": "2f407eb397bb21bef4f891510b976a241d6d98de5305145d98f309ce583222b1",
+    "build/secure-services-20261019/final/initrd.cpio": "c3cdd4fa34c168e528460c9dd63f58354b5b66437c51973415fc5edb60931299",
+    "build/secure-services-20261019/final/runner.py": "2b984a21bba288d071fa091181d584ef65fba63f1020853df7fff91c973ff690",
+    "build/secure-services-20261019/final/hashes.json": "618bdc12064f2b0aa76bc3b0e740e2191867dcd0608cd34dcfe7a805ec20b0a8"
+  },
+  "log_sha256": {
+    "build/lab-runs/kvm-mmio-vmid-split-20261019-a/after.json": "e21098c866e47c7ed828dcb2281aad0000c1a035e735ecd4f77f11224678a4e0",
+    "build/lab-runs/kvm-mmio-vmid-split-20261019-a/result.json": "06695f96740ed839aae7371ebc74c4f918084365b3fc0055e761f20808e76d85",
+    "build/lab-runs/kvm-mmio-vmid-split-20261019-a/before.json": "d8db22886768176b7f2fac434e611cf104542d963861db31103d5eeba6797c72",
+    "build/lab-runs/kvm-mmio-vmid-split-20261019-a/rmm-uart.log": "535d985c1d4bc5e9f83e9023b48aceaeaa4b7f6ecab8d1a5a03c47447a19319c",
+    "build/lab-runs/kvm-mmio-vmid-split-20261019-a/kvm-mmio-probe.log": "2327f04477811a95564c167fd85e4189192ad9037d671c829cd401ec77a3dd93",
+    "build/lab-runs/kvm-mmio-vmid-split-20261019-a/kvm-mmio.json": "1e71a34009f27fda54be2b6b45bfef1e275eb54e5ad709c533fd838e53a8692f",
+    "build/lab-runs/kvm-mmio-vmid-split-20261019-a/kernel-dmesg.log": "f19d07521262a36144a3cba6eb6e3de12acc4c9ee80025e449ecad397790cd56",
+    "build/lab-runs/protected-realm-boot-20261019-a/uart.log": "0275556ca0c046c7bce05456c0c534885a33c3380f2447d474a6ba984a0d2c37",
+    "build/lab-runs/protected-realm-boot-20261019-a/extlinux-before.conf": "37f0a9fa89b5f84ae797f5dd59db6131ec3c58eb3fad2d8fc1f2639298e41b6f",
+    "build/lab-runs/protected-realm-boot-20261019-a/after.json": "a193804fef725e568e02b19ebcb7e31597bf65848ba0e366b112e88467e819d3",
+    "build/lab-runs/protected-realm-boot-20261019-a/protected-realm.json": "8b40d5e8052e427ff5cfff26451a7f53ad814662b482cd5c4ee2b3474d0a5aa5",
+    "build/lab-runs/protected-realm-boot-20261019-a/result.json": "0a4ca597f00ef9840995434683216f99af580de8d5003d580d5b2f4aa5995213",
+    "build/lab-runs/protected-realm-boot-20261019-a/runner.py": "1de56f05d1294e93d91796569bc7860996c14f2b23306555c056cf6dcdeea770",
+    "build/lab-runs/protected-realm-boot-20261019-a/protected-dmesg.log": "88d5467427032d154f5da731de1437f54004c483e6d6e39c83f4127d750b816c",
+    "build/lab-runs/protected-realm-boot-20261019-a/before.json": "2f15ce86eb0bd9ab577f9f6dd1b8336e51c33b099498bd7fc978b081be8186f4",
+    "build/lab-runs/protected-realm-boot-20261019-a/after-dmesg.log": "cc3d94975de5b40985e99a177d18797a7c73cca46d8c4522132b7f3df5048cd6",
+    "build/lab-runs/protected-realm-boot-20261019-a/before-dmesg.log": "e0cd066b4a1e7a94a07336ec820b38ffb0d4031494294a8c55472fd3579f99c9",
+    "build/lab-runs/protected-realm-boot-20261019-a/kvm-mmio-probe.log": "ee3ce390511bd4b3ab176ba07808099d7fad17e297d5583a00f6f767353c88ed",
+    "build/lab-runs/protected-realm-boot-20261019-a/extlinux-protected.conf": "ef15b289626c04dad00d566d9b5612ecea9dc4ce966b26cc905a8ee79da7cf35",
+    "build/lab-runs/trusted-vmid-protected-20261019-a/vmid.json": "6da94f9d40a62ed8be3dc62359d2230b203761a34d17ab89215f79af9d1fe031",
+    "build/lab-runs/trusted-vmid-protected-20261019-a/after.json": "8bbe47df88a11e30c2e19f9e8b38fb1390803f8cdd40d89b61cf12b079e1b1a6",
+    "build/lab-runs/trusted-vmid-protected-20261019-a/result.json": "e91af4201fd04d09350de9b9beb45615dfe9467118d9ec632aae84d25208692a",
+    "build/lab-runs/trusted-vmid-protected-20261019-a/vmid-probe.log": "65eb50ee4b3262942001fd25cd5f2f6118ba3c7c9c9efbb47ab27558bb347469",
+    "build/lab-runs/trusted-vmid-protected-20261019-a/before.json": "30b608a3c623b4c51e9494c54e588cb1fd8887c5ac15f7988d9ef434db5924e0",
+    "build/lab-runs/trusted-vmid-protected-20261019-a/kernel-dmesg.log": "cff523a139afc05be203c25e26347a134d150556d6d047ebd66855b6c44b969c",
+    "build/lab-runs/glmark720-protected-realm-20261019-a/host-kernel-health.json": "095e863a6d188373b99e43c65c6c563b062349d74601fba4738dd75f3a488786",
+    "build/lab-runs/glmark720-protected-realm-20261019-a/uart.log": "07c05f214f3abb488e5f7911df6d4b983591686ff6b99c38e19ad51312a542ed",
+    "build/lab-runs/glmark720-protected-realm-20261019-a/after.json": "2864f4fcf4c81affd401810e0bcc4a73e19f540ced23ca4b0cf31b1084667c27",
+    "build/lab-runs/glmark720-protected-realm-20261019-a/result.json": "b3ef9f8bbb6c43a23f6d42365e55b45b216f4b95433b7de258bb9aa42d1904ed",
+    "build/lab-runs/glmark720-protected-realm-20261019-a/host-dmesg-after.log": "ddb3a8716338da54dd4ea2909ae6507d472293fa48fe8db425981eb03f965f73",
+    "build/lab-runs/glmark720-protected-realm-20261019-a/before.json": "469c23c7d6a3f7e22231806362a4fa295e1ef1475339ed455b3ca75e660fe2ec",
+    "build/lab-runs/glmark720-protected-realm-20261019-a/host-dmesg-before.log": "cff523a139afc05be203c25e26347a134d150556d6d047ebd66855b6c44b969c",
+    "build/lab-runs/glmark720-protected-realm-20261019-a/realm-launch.json": "a3bf4271534dc6f1f17a10942e47f15de4e5c232de87357f52a9d5e4ec94ad9f",
+    "build/lab-runs/glmark720-protected-realm-20261019-a/collected/runner.py": "2b984a21bba288d071fa091181d584ef65fba63f1020853df7fff91c973ff690",
+    "build/lab-runs/glmark720-protected-realm-20261019-a/collected/summary.json": "d13d88ad377757ad998b92b8de9e2ff4aece734f2adf6a4e0c7071633079fb0b",
+    "build/lab-runs/firmware-protected-cpus-20261019-a/extlinux-before.conf": "ef15b289626c04dad00d566d9b5612ecea9dc4ce966b26cc905a8ee79da7cf35",
+    "build/lab-runs/firmware-protected-cpus-20261019-a/after.json": "81bbe25a828bab9b7bede1a7f690abe316a1e6677f8cc1feb2b1640f3eae9586",
+    "build/lab-runs/firmware-protected-cpus-20261019-a/boot-cpus.json": "dcdd125bfcdd541506cd09cd284717058ce93655032bf8bf7ea633a63cc43f44",
+    "build/lab-runs/firmware-protected-cpus-20261019-a/result.json": "e76410f9e0598eaf71043f7de1fd55a1ceedf30a4ad6b436a77da234758c7459",
+    "build/lab-runs/firmware-protected-cpus-20261019-a/runner.py": "ad4538e2b796a69fe79fdf571fd42c99f4673e4af5738f1444532c281630bd7b",
+    "build/lab-runs/firmware-protected-cpus-20261019-a/before.json": "a5311db0f824f01dd8ee43622f9ba19d95e20e65771f472fbe45d63859671b79",
+    "build/lab-runs/firmware-protected-cpus-20261019-a/after-dmesg.log": "4fae2f2d167e098daa35b3789b6f8d0d9629df36864ea4ff43f9d9b48d392bbf",
+    "build/lab-runs/firmware-protected-cpus-20261019-a/final-dmesg.log": "2be2538d7d3a048f2829bc85d9dcd34cf14d34f16e53c4b2f87e51c0be2d5f67",
+    "build/lab-runs/firmware-protected-cpus-20261019-a/hotplug.log": "ff67af32b7aa983464df418dc94959656e113843bf42f36ebdc62203e6a7df91",
+    "build/lab-runs/firmware-protected-cpus-20261019-a/extlinux-candidate.conf": "f9c83f47fd7286113a03f48333ce8c68d5800ca6122e93a0c0f7a55107d3da9e",
+    "build/lab-runs/firmware-protected-cpus-20261019-a/before-dmesg.log": "ddb3a8716338da54dd4ea2909ae6507d472293fa48fe8db425981eb03f965f73",
+    "build/lab-runs/glmark720-protected-realm-20261019-b/host-kernel-health.json": "095e863a6d188373b99e43c65c6c563b062349d74601fba4738dd75f3a488786",
+    "build/lab-runs/glmark720-protected-realm-20261019-b/uart.log": "ffd9303fc5c6f67dd50907ddbfbc0798ff4d1fd6216343cc115f966c34defc8e",
+    "build/lab-runs/glmark720-protected-realm-20261019-b/after.json": "dfa1bd07752127630060f39a595b41550e0c81a8beb5a3a693b1de686d4072a7",
+    "build/lab-runs/glmark720-protected-realm-20261019-b/result.json": "051ee20eeb46113811f223aec46456a07f69fa19a9d05134de97cb0c6a4a25cc",
+    "build/lab-runs/glmark720-protected-realm-20261019-b/host-dmesg-after.log": "79b2dbdf833edc5035d8b950a09d269117ebb10a17ae9f161f6ef2b4639b0af4",
+    "build/lab-runs/glmark720-protected-realm-20261019-b/before.json": "5c1bb26f8db2f5ff2c3a3654a351637de799540d8c6f384421cf72bfe09f5ca7",
+    "build/lab-runs/glmark720-protected-realm-20261019-b/host-dmesg-before.log": "97b62f749faa7c153d58b85e15c54ca63655e39ca7b310e2fad5dfe15764f430",
+    "build/lab-runs/glmark720-protected-realm-20261019-b/realm-launch.json": "7223b30cb5df88af6b1bc8db16ed2281e01ef471887a9b87613085f5f7ec3a89",
+    "build/lab-runs/glmark720-protected-realm-20261019-b/rmi-duration-trace.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/lab-runs/glmark720-protected-realm-20261019-b/collected/realm-0.log": "6f53346afc3081fc9686a3a61681f34f7ee2b7d60613c519b8dc8217c0aeb5e3",
+    "build/lab-runs/glmark720-protected-realm-20261019-b/collected/runner.py": "2b984a21bba288d071fa091181d584ef65fba63f1020853df7fff91c973ff690",
+    "build/lab-runs/glmark720-protected-realm-20261019-b/collected/realm-1.json": "187a4964a998f23a046b4b8b90e7646e8c9d1d88caabdc6f9a7571a3705df15a",
+    "build/lab-runs/glmark720-protected-realm-20261019-b/collected/realm-0.json": "64919ed7a10432074115ea11d69e5d3aff5c7285407e3c9efe10f66091c88bc9",
+    "build/lab-runs/glmark720-protected-realm-20261019-b/collected/realm-1.log": "7c6dfeac8529e44fc77d86e8190c1d7b37f0ba9685e26a4bfdb31fc39d815056",
+    "build/lab-runs/glmark720-protected-realm-20261019-b/collected/summary.json": "e0816fcefce20afd515837cd686fac37b0e08bc5e59d583d118d8f6c3c9ae40c",
+    "build/lab-runs/firmware-protected-timers-20261019-a/after.json": "b2eee22103cb6d415265ce74a6cc4eaeb6cdea7c9d6c82acd379a96d6f5d9fea",
+    "build/lab-runs/firmware-protected-timers-20261019-a/result.json": "01c4e3ec30ebbfb1ad29423b5e877b5a448473b1a946c1a01ef2dffc00a38972",
+    "build/lab-runs/firmware-protected-timers-20261019-a/before.json": "b9db2a505d62c2847d40c0879668cd80a0dc73b21962ac4a2b2eedd664388f1c",
+    "build/lab-runs/firmware-protected-timers-20261019-b/after.json": "b1600bbfa1dafa769640c796aaacfcd325ce5575796336e8f7880fadd18c39f5",
+    "build/lab-runs/firmware-protected-timers-20261019-b/result.json": "11dc3d71f65f1d5a1abdde1cc1d6f2c190254e154f6641b1998f0c8c66579e2f",
+    "build/lab-runs/firmware-protected-timers-20261019-b/before.json": "eb58af2a0c65e92ccd3f0a9e6b71dc1903f67dad836d2ca873ac42c42c062c97",
+    "build/lab-runs/firmware-protected-timers-20261019-c/after.json": "e5eceb13c8c8927e8edfbd7c437990679f1920afbe57b461770313ad5d75aea6",
+    "build/lab-runs/firmware-protected-timers-20261019-c/result.json": "3e41450adca788de2d0a5c3e1c84ccc28ca696b9e4ae79e485f5e9024633f673",
+    "build/lab-runs/firmware-protected-timers-20261019-c/before.json": "43d97918d74f07e24e203356d859acb91f47c16773ad6009ea60d5c747efdbe4",
+    "build/lab-runs/glmark720-protected-realm-20261019-c/host-kernel-health.json": "4178a0525ced9776bd152656b9ac2c16d23a73a4e9bc1adbc83537faa9156555",
+    "build/lab-runs/glmark720-protected-realm-20261019-c/uart.log": "5e8004a985dc128539da711b1e1649ce798ece648f17778217338d05af3a6af2",
+    "build/lab-runs/glmark720-protected-realm-20261019-c/after.json": "8ce07c9dccfa0627e391e0bbb6ff33d663359d66ca1cc02fa629d04f79a3f69b",
+    "build/lab-runs/glmark720-protected-realm-20261019-c/result.json": "71a70067a6b45d1aa8c389e90249e6968e8062415aa94b76444936f40305d8eb",
+    "build/lab-runs/glmark720-protected-realm-20261019-c/host-dmesg-after.log": "ae9b8e4debb3f6b411ef9436bc50795254e925e25879127cb41a0e1c48cb86e8",
+    "build/lab-runs/glmark720-protected-realm-20261019-c/before.json": "acf1a776e961cdd57e4fa5f8b7306339294859ed72e5456474453050bb60898d",
+    "build/lab-runs/glmark720-protected-realm-20261019-c/host-dmesg-before.log": "efb5d69c5d8aa58842fbbf6467a77b059d7369d3b4f69423896aa98ad199bbe8",
+    "build/lab-runs/glmark720-protected-realm-20261019-c/realm-launch.json": "e8060e4c1837b9b71f0695cda94d4df974c55b3f84c3a1a0397cd38b82b628f5",
+    "build/lab-runs/glmark720-protected-realm-20261019-c/collected/realm-0.log": "fa7625e3d6840a1e6550bc3237e81b8e1ed7a3be79d4c62150f11dba21f2f66c",
+    "build/lab-runs/glmark720-protected-realm-20261019-c/collected/runner.py": "2b984a21bba288d071fa091181d584ef65fba63f1020853df7fff91c973ff690",
+    "build/lab-runs/glmark720-protected-realm-20261019-c/collected/realm-1.json": "187a4964a998f23a046b4b8b90e7646e8c9d1d88caabdc6f9a7571a3705df15a",
+    "build/lab-runs/glmark720-protected-realm-20261019-c/collected/realm-0.json": "64919ed7a10432074115ea11d69e5d3aff5c7285407e3c9efe10f66091c88bc9",
+    "build/lab-runs/glmark720-protected-realm-20261019-c/collected/realm-1.log": "d53b6e9121f73330c3d3ffea272632cdd31be5fffdd63c42074520b832fd7bcd",
+    "build/lab-runs/glmark720-protected-realm-20261019-c/collected/summary.json": "a9a69269405c2393952ecde6aa9e89cfb9f1bf8382d690cdac3fabeaa39fc40b",
+    "build/lab-runs/glmark720-protected-realm-20261019-c/collected/glmark-720.log": "176fb9d71b8e8fbf79950fb2dec3b7b63772505dcb9234fa69ed2d846efabd8e",
+    "build/lab-runs/host-kernel-mmio-protected-20261019-a/after.json": "cdd968baa5408bdb7024d841f5cfc57f92f18c05722238fabc428ffb412956d1",
+    "build/lab-runs/host-kernel-mmio-protected-20261019-a/result.json": "0abe914056667ea498046985049dfdab9652c5549c2c83b841382f64a1ff7f5a",
+    "build/lab-runs/host-kernel-mmio-protected-20261019-a/before.json": "58bb3720c800344cd76c1c5ec17d0a9f76d3b0597fab93c94255b6645fb69c37",
+    "build/lab-runs/host-kernel-mmio-protected-20261019-a/rmm-uart.log": "a37947c032a2987653530b90dd8d114b23e020414e6e1a40f6121bb773bcc294",
+    "build/lab-runs/host-kernel-mmio-protected-20261019-a/kvm-mmio-probe.log": "269c2143fa19f65fd884384bfe1252fae0762f6d8365eebbc6c12288c1f72270",
+    "build/lab-runs/host-kernel-mmio-protected-20261019-a/kvm-mmio.json": "fb543c951ce8042a3e71c8fb454fe82bbe938aea50d82840815edae228889437",
+    "build/lab-runs/host-kernel-mmio-protected-20261019-a/kernel-dmesg.log": "4b774aaf1f0c800b259e192dbe1ef517479b802eeaa96ed5d1bcafef5610d662",
+    "build/lab-runs/compute-protected-realm-20261019-a/host-kernel-health.json": "4178a0525ced9776bd152656b9ac2c16d23a73a4e9bc1adbc83537faa9156555",
+    "build/lab-runs/compute-protected-realm-20261019-a/after.json": "4abca902b0bce630c9d4a4dd94dc1de99dc32bae80b033f899769cf3d948cbe8",
+    "build/lab-runs/compute-protected-realm-20261019-a/result.json": "2143236b4a5172f6a558dc6a23097d816ff3584a37a3115709fc6615fefa59cc",
+    "build/lab-runs/compute-protected-realm-20261019-a/host-dmesg-after.log": "54e9c02f9c218975fe67fec704b09f49bdf6f0081397b227977933316ddfd822",
+    "build/lab-runs/compute-protected-realm-20261019-a/before.json": "6f178f8a80468c264ca210673be8c616ba98fd093a7ee4912e7589eb85bff3fe",
+    "build/lab-runs/compute-protected-realm-20261019-a/host-dmesg-before.log": "4b774aaf1f0c800b259e192dbe1ef517479b802eeaa96ed5d1bcafef5610d662",
+    "build/lab-runs/compute-protected-realm-20261019-a/realm-launch.json": "c5994771a3c106938b0b32b3698dc36fb1be10ffa922b2c3869a1431515e6027",
+    "build/lab-runs/compute-protected-realm-20261019-a/collected/realm-0.log": "26b728a3e6b892d404e788bb0e9be841f0051722c1fda4e47ea6028e95f1ec89",
+    "build/lab-runs/compute-protected-realm-20261019-a/collected/realm-2.json": "4fc4807ff8a51580ec63ed95d343d32d11b8429f174b2e59e518b186aa34dcd0",
+    "build/lab-runs/compute-protected-realm-20261019-a/collected/realm-2.log": "34f15126d6f7f5596b2a37b49176851456164f00c5c9e91575fa3aceab752ec3",
+    "build/lab-runs/compute-protected-realm-20261019-a/collected/runner.py": "2b984a21bba288d071fa091181d584ef65fba63f1020853df7fff91c973ff690",
+    "build/lab-runs/compute-protected-realm-20261019-a/collected/realm-1.json": "a407d678d47cf6bcabd63e0d790120c16d073a6c7bc78f40de45ce378e8dd227",
+    "build/lab-runs/compute-protected-realm-20261019-a/collected/realm-0.json": "64919ed7a10432074115ea11d69e5d3aff5c7285407e3c9efe10f66091c88bc9",
+    "build/lab-runs/compute-protected-realm-20261019-a/collected/realm-1.log": "b3ec2010c188f4b95b178adeec3099264fb3279a9bf5ac49a9b6a0c72472a023",
+    "build/lab-runs/compute-protected-realm-20261019-a/collected/summary.json": "90e0f5d4e3ce837ad76d5f8ce706173f0295716113a387e78109810e2304476e",
+    "build/lab-runs/vmid-protected-timers-20261019-a/vmid.json": "7a66a08151313df4d2f3a685331dfce15cf8d182cf7431d97d5db1608a5e21c1",
+    "build/lab-runs/vmid-protected-timers-20261019-a/after.json": "66348884dbe74a4fc5b803191ab591d6e49fbdf1ab89c4f91b259d8042161b34",
+    "build/lab-runs/vmid-protected-timers-20261019-a/result.json": "afb8bbf50543b1ad7e7f2a56ad088ccbd9eff549647e709d6fa92376065899a7",
+    "build/lab-runs/vmid-protected-timers-20261019-a/vmid-probe.log": "916f34662b3373a7d11571a0a4980aa68005689867cc93ca7bf0924733691313",
+    "build/lab-runs/vmid-protected-timers-20261019-a/before.json": "b11c03bd1586cdebe274d65ab812931d1b23c9dffc04e72ef035d3e5b356f9cb",
+    "build/lab-runs/vmid-protected-timers-20261019-a/kernel-dmesg.log": "8f6275131d8ba28f4ef98f4dbe4a70b32017001f9ddc917f4ec3ca6d1edc303f",
+    "build/lab-runs/managed-iommu-protected-20261019-a/kernel-delta.log": "7ac89e8b62aa9a2e87e343d0d6652a6bb1f01e7ebf2ef84452dd10994f081637",
+    "build/lab-runs/managed-iommu-protected-20261019-a/after.json": "31c959cde742b732ee5e60928306ee9f25efd6f717b86f6f965771f1dd84a9df",
+    "build/lab-runs/managed-iommu-protected-20261019-a/result.json": "72a2c6c7d9595f1402f58e250957cdf4e121a18385a8b0fad4e7c183f6366c0c",
+    "build/lab-runs/managed-iommu-protected-20261019-a/dma-guard.json": "c8a3727c91a7ac9c45dda7dc904f76426961aeccd1b862424310752a1ffd7924",
+    "build/lab-runs/managed-iommu-protected-20261019-a/before.json": "9cd3aefb556b5d8e4235b23dbf132385f4e7d1bdeb03296b6e4f25680c888f6f",
+    "build/lab-runs/guest-rsi-protected-20261019-a/after.json": "315cc842ed74c7b88ff424dfe6358085fccce4931c4ddd7d121393ce3167137f",
+    "build/lab-runs/guest-rsi-protected-20261019-a/result.json": "a3a799dd09367e063148118f3773265b58688579f516e36993233a99786fa6c7",
+    "build/lab-runs/guest-rsi-protected-20261019-a/guest-iommu-launch.json": "5c467dc7a01a4e5b5c6b9149cd740a46f5b089b0d2ea7619a79cd1ad8fcecdc3",
+    "build/lab-runs/guest-rsi-protected-20261019-a/before.json": "a47f8c5533c43df196ff42e535cde2352800b7cfc058284c009723fbc88d88ad",
+    "build/lab-runs/guest-rsi-protected-20261019-a/guest-iommu/host-lifecycle.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/lab-runs/guest-rsi-protected-20261019-a/guest-iommu/realm.log": "d57ba22c5c6be2b26776d6cc125bcc0043c04980fc9059779c897c5eeefa5e66",
+    "build/lab-runs/guest-rsi-protected-20261019-a/guest-iommu/remote-runner.log": "53f9e98f071512fd92c12b4e5d29a44663541ff7021a2186cf5f1f6967fa0bf3",
+    "build/lab-runs/guest-rsi-protected-20261019-a/guest-iommu/result.json": "53f9e98f071512fd92c12b4e5d29a44663541ff7021a2186cf5f1f6967fa0bf3",
+    "build/lab-runs/guest-rsi-protected-20261019-a/guest-iommu/realm.json": "464030ed8b21314e9ea4fa14881208433f0bc5f22cf904be8d13452a4979b36e"
+  },
+  "collected_log_verification": {
+    "status": "PASS",
+    "runs": {
+      "glmark720-protected-realm-20261019-c": 8,
+      "compute-protected-realm-20261019-a": 9
+    }
+  },
+  "local_checks": [
+    {
+      "command": "bash scripts/check/check-opencca-timers.sh",
+      "returncode": 0,
+      "log": "build/secure-services-20261019/protected-realm/timer-unit.log",
+      "transitions": 131072,
+      "bounded_retirement_cases": 66
+    },
+    {
+      "command": "bash scripts/check/check-secure-iommu.sh",
+      "returncode": 0,
+      "log": "build/secure-services-20261019/protected-realm/timer-iommu-unit.log"
+    },
+    {
+      "command": "bash scripts/check/check-dma-guard.sh",
+      "returncode": 0,
+      "log": "build/secure-services-20261019/protected-realm/timer-dma-unit.log"
+    },
+    {
+      "command": "python3 opencca/scripts/setup/apply-local-patches.py --check",
+      "returncode": 0,
+      "log": "build/secure-services-20261019/protected-realm/patch-check-final.log"
+    }
+  ],
+  "notion_original_nonempty_content_preserved": true,
+  "notion_original_status_index": {
+    "implemented": 7,
+    "partial_or_unimplemented": 7,
+    "original_failed_not_run_unresolved": 6
+  },
+  "cleanup": {
+    "status": "NOT_RUN",
+    "reason": "Security enforcement and complete development acceptance remain incomplete; retain active inputs, failure evidence, rollback and recovery"
+  },
+  "remaining": [
+    "Host and ordinary-VM physical GPU/IOMMU MMIO and control-memory restrictions",
+    "Trusted RMM/pKVM ownership handoff and full backing lifetime",
+    "Other-device DMA bypass closure",
+    "Provider replacement, device assignment/power and backing-specific regressions on v6",
+    "Reset failure, active-task power-loss, full attack/freeze and long stability acceptance"
+  ],
+  "resources_after": {
+    "issues": [],
+    "reports": [
+      {
+        "role": "pi",
+        "role_verified": true,
+        "hostname": "MZH",
+        "kernel": "6.12.75+rpt-rpi-v8",
+        "online_cpus": "0-3",
+        "gpu_driver": null,
+        "memory": {
+          "MemTotal": 949989376,
+          "MemAvailable": 706109440,
+          "SwapTotal": 948957184,
+          "SwapFree": 848818176
+        },
+        "disks": {
+          "/": {
+            "total_bytes": 30800633856,
+            "available_bytes": 16486354944,
+            "free_inodes": 1734786
+          },
+          "/tmp": {
+            "total_bytes": 474996736,
+            "available_bytes": 474992640,
+            "free_inodes": 1048563
+          },
+          "/home/mzh/opencca-flash": {
+            "total_bytes": 30800633856,
+            "available_bytes": 16486354944,
+            "free_inodes": 1734786
+          }
+        },
+        "active_lab_processes": [],
+        "loops": {
+          "rc": 0,
+          "stdout": "/dev/loop0 /var/swap",
+          "stderr": ""
+        }
+      },
+      {
+        "role": "rk",
+        "role_verified": true,
+        "hostname": "opencca-rock5b-rk3588",
+        "kernel": "6.12.0-opencca-pmthor-opp3",
+        "online_cpus": "0-1",
+        "gpu_driver": "/sys/bus/platform/drivers/pmthor",
+        "memory": {
+          "MemTotal": 3444760576,
+          "MemAvailable": 3260334080,
+          "SwapTotal": 0,
+          "SwapFree": 0
+        },
+        "disks": {
+          "/": {
+            "total_bytes": 31181299712,
+            "available_bytes": 13818613760,
+            "free_inodes": 1824927
+          },
+          "/tmp": {
+            "total_bytes": 1722380288,
+            "available_bytes": 1722380288,
+            "free_inodes": 1048569
+          },
+          "/root/GPU-SFTP": {
+            "total_bytes": 31181299712,
+            "available_bytes": 13818613760,
+            "free_inodes": 1824927
+          }
+        },
+        "active_lab_processes": [],
+        "loops": {
+          "rc": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      }
+    ]
+  }
+}

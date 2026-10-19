@@ -1,0 +1,18 @@
+{
+  "run_id": "dma-guard-two-client-20261018",
+  "command": [
+    "python3",
+    "scripts/run/run-realm-xshm.py",
+    "--images",
+    "build/safe-optimization-20261018/final",
+    "--workload",
+    "compute"
+  ],
+  "cwd": "/home/mzh/gpu",
+  "started": "2026-10-18T13:31:22.357120+00:00",
+  "status": "COMPLETED",
+  "allow_rk_reboot": false,
+  "recover_rk_offline": false,
+  "returncode": 0,
+  "ended": "2026-10-18T13:33:13.328174+00:00"
+}

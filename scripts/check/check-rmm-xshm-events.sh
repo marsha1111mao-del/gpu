@@ -25,6 +25,7 @@ mkdir -p "$OUT_DIR"
  -fsanitize=address,undefined -fno-omit-frame-pointer \
  -I"$RMM_DIR/runtime/include" \
  "$RMM_DIR/runtime/core/opencca_gpu_lease.c" \
+ "$RMM_DIR/runtime/core/opencca_gpu.c" \
  "$RMM_DIR/runtime/tests/opencca_gpu_lease_test.c" \
  -o "$OUT_DIR/opencca-gpu-lease-test"
 "$OUT_DIR/opencca-gpu-lease-test"

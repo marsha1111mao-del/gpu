@@ -1,0 +1,12 @@
+{
+  "page_id": "3fd659a3-b8cc-806d-aaf9-db523d4809af",
+  "date": "2026-10-20",
+  "operation": "platform_capabilities_as_assumptions_and_two_status_rows_moved_to_implemented",
+  "implemented_rows": 9,
+  "partial_rows": 5,
+  "original_two_rows_preserved_in_history": true,
+  "readback_matches_only_intended_edits": true,
+  "failure_section_retained": true,
+  "runtime_code_changed": false,
+  "new_performance_measurement": false
+}

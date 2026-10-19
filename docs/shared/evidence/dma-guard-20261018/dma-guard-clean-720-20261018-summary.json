@@ -1,0 +1,97 @@
+{
+  "run_id": "dma-guard-clean-720-20261018",
+  "status": "PASS",
+  "memory_pages": 65536,
+  "transport": true,
+  "trusted_events": true,
+  "parallel_boot": true,
+  "gpu_flow": true,
+  "clients": 1,
+  "pin_cpus": true,
+  "performance": true,
+  "benchmark_only": true,
+  "compute_rootfs": null,
+  "glmark_rootfs": "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4",
+  "rpc_stats": false,
+  "suite": true,
+  "large_pool": false,
+  "profiles": [
+    "glmark-720"
+  ],
+  "inputs": {
+    "/root/GPU-SFTP/tests/realm-xshm/run-realms.py": "e7703ec7d913676cb65f87e5e92e1751943f933000a039df4bb6414edd2152e9",
+    "/root/GPU-SFTP/firecracker-bins/bin/firecracker": "1da45f6ad565434ff4bef82f8e1c15faed17f940ae8297a7a05bfc7278be6b66",
+    "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/Image": "a8bcdb5583ddcb9e1651169222308ad3a29f686af527847640aa6a3080e4f94c",
+    "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/initrd.cpio": "c3cdd4fa34c168e528460c9dd63f58354b5b66437c51973415fc5edb60931299",
+    "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/proxy/Image": "ec755087f63a87f25c47c385a2d3f3d8052297d184d8805a6972535c1f97711b",
+    "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4": "5d0c2ec8e5c1830f6a93c39d34bd8ae02a99702792e9e16a9d9034388f606d60"
+  },
+  "host_performance": {
+    "before": {
+      "online": "0-1",
+      "governor": "userspace",
+      "selected_hz": 300000000,
+      "actual_hz": 300000000
+    },
+    "selected": {
+      "online": "0-3",
+      "governor": "userspace",
+      "selected_hz": 600000000,
+      "actual_hz": 594000000
+    },
+    "restored": {
+      "online": "0-1",
+      "governor": "userspace",
+      "selected_hz": 300000000,
+      "actual_hz": 300000000
+    }
+  },
+  "performance_cases": [
+    {
+      "profile": "glmark-720",
+      "returncode": 0,
+      "pass_marker": true,
+      "required_markers": {
+        "GLMARK_RESULT=PASS": true,
+        "GLMARK_VALIDATE=PASS": true,
+        "GLMARK_CLEAN_RESULT=PASS": true,
+        "GLMARK_SCORE=": true
+      }
+    }
+  ],
+  "task_plans": {
+    "registered": 150,
+    "runs": 462322
+  },
+  "event_irq": {
+    "before": [
+      0,
+      0
+    ],
+    "after_workloads": [
+      1388424,
+      58383
+    ],
+    "intid": 127
+  },
+  "kernel_health": {
+    "0": {
+      "csg_update_timeout": [],
+      "fw_ping_timeout": [],
+      "gpu_translation_fault": [],
+      "kernel_warning": [],
+      "kernel_oops": []
+    },
+    "1": {
+      "csg_update_timeout": [],
+      "fw_ping_timeout": [],
+      "gpu_translation_fault": [],
+      "kernel_warning": [],
+      "kernel_oops": []
+    }
+  },
+  "vm_exit_codes": [
+    0,
+    0
+  ]
+}

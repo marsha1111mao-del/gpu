@@ -1,0 +1,40 @@
+{
+  "page_id": "3fd659a3-b8cc-806d-aaf9-db523d4809af",
+  "url": "https://app.notion.com/p/3fd659a3b8cc806daaf9db523d4809af",
+  "old_body_preserved_after_reversing_only_documented_additions": true,
+  "before_counts": [
+    {
+      "heading": "## 已实现（必须保留）",
+      "rows": 7
+    },
+    {
+      "heading": "## 未实现 / 部分实现（必须保留）",
+      "rows": 7
+    },
+    {
+      "heading": "## 当前失败 / NOT_RUN / 未解决（必须保留）",
+      "rows": 6
+    }
+  ],
+  "after_counts": [
+    {
+      "heading": "## 已实现（必须保留）",
+      "rows": 7
+    },
+    {
+      "heading": "## 未实现 / 部分实现（必须保留）",
+      "rows": 7
+    },
+    {
+      "heading": "## 当前失败 / NOT_RUN / 未解决（必须保留）",
+      "rows": 6
+    }
+  ],
+  "old_identifiers_checked": 82,
+  "old_identifiers_missing": [],
+  "new_run_ids_checked": 12,
+  "new_run_ids_missing": [],
+  "overall_security_still_partial": true,
+  "last_edited_at": "2026-10-19T07:53:13.225Z",
+  "normalization": "Notion collapses the inserted blank line between the two new summary paragraphs; compare after reversing that insertion and the documented historical heading changes"
+}

@@ -1,0 +1,123 @@
+{
+  "returncode": 0,
+  "phases": [
+    {
+      "phase": "PLAN",
+      "records": [
+        {
+          "path": "/root/GPU-SFTP/log/host-deploy/dma-guard-host-deploy-20261018/Image",
+          "size": 43653632,
+          "mtime_ns": 1792328563888644406,
+          "sha256": "d634efbc716a771c8bca4108475cd7866e0ae271ce7701e504c568ac49ca2cce",
+          "reason": "verified unused upload; controller inputs and rollback retained"
+        },
+        {
+          "path": "/root/GPU-SFTP/log/host-deploy/dma-guard-host-deploy-v2-20261018/Image",
+          "size": 43653632,
+          "mtime_ns": 1792328674947200840,
+          "sha256": "d634efbc716a771c8bca4108475cd7866e0ae271ce7701e504c568ac49ca2cce",
+          "reason": "verified unused upload; controller inputs and rollback retained"
+        },
+        {
+          "path": "/root/GPU-SFTP/log/host-deploy/dma-guard-host-deploy-v3-20261018/Image",
+          "size": 43653632,
+          "mtime_ns": 1792328732282658862,
+          "sha256": "d634efbc716a771c8bca4108475cd7866e0ae271ce7701e504c568ac49ca2cce",
+          "reason": "verified unused upload; controller inputs and rollback retained"
+        },
+        {
+          "path": "/root/GPU-SFTP/log/host-deploy/dma-guard-host-deploy-v4-20261018/Image",
+          "size": 43653632,
+          "mtime_ns": 1792328932045699576,
+          "sha256": "d634efbc716a771c8bca4108475cd7866e0ae271ce7701e504c568ac49ca2cce",
+          "reason": "verified unused upload; controller inputs and rollback retained"
+        },
+        {
+          "path": "/root/GPU-SFTP/log/dma-guard/dma-guard-admission-20261018/opencca_dma_probe.ko",
+          "size": 79296,
+          "mtime_ns": 1792329030609608940,
+          "sha256": "2a231b6ddcfc24ec06efa8bc228fc5b648110a6d7d99ccfe9281d0a4dbd33c65",
+          "reason": "verified unused upload; controller inputs and rollback retained"
+        },
+        {
+          "path": "/root/GPU-SFTP/log/dma-guard/dma-guard-live-gpu-20261018/opencca_dma_probe.ko",
+          "size": 79296,
+          "mtime_ns": 1792329046997862712,
+          "sha256": "2a231b6ddcfc24ec06efa8bc228fc5b648110a6d7d99ccfe9281d0a4dbd33c65",
+          "reason": "verified unused upload; controller inputs and rollback retained"
+        },
+        {
+          "path": "/root/GPU-SFTP/log/dma-guard/dma-guard-final-admission-20261018/opencca_dma_probe.ko",
+          "size": 79296,
+          "mtime_ns": 1792330448077535486,
+          "sha256": "2a231b6ddcfc24ec06efa8bc228fc5b648110a6d7d99ccfe9281d0a4dbd33c65",
+          "reason": "verified unused upload; controller inputs and rollback retained"
+        }
+      ]
+    },
+    {
+      "phase": "RESULT",
+      "records": [
+        {
+          "path": "/root/GPU-SFTP/log/host-deploy/dma-guard-host-deploy-20261018/Image",
+          "size": 43653632,
+          "mtime_ns": 1792328563888644406,
+          "sha256": "d634efbc716a771c8bca4108475cd7866e0ae271ce7701e504c568ac49ca2cce",
+          "reason": "verified unused upload; controller inputs and rollback retained",
+          "result": "REMOVED"
+        },
+        {
+          "path": "/root/GPU-SFTP/log/host-deploy/dma-guard-host-deploy-v2-20261018/Image",
+          "size": 43653632,
+          "mtime_ns": 1792328674947200840,
+          "sha256": "d634efbc716a771c8bca4108475cd7866e0ae271ce7701e504c568ac49ca2cce",
+          "reason": "verified unused upload; controller inputs and rollback retained",
+          "result": "REMOVED"
+        },
+        {
+          "path": "/root/GPU-SFTP/log/host-deploy/dma-guard-host-deploy-v3-20261018/Image",
+          "size": 43653632,
+          "mtime_ns": 1792328732282658862,
+          "sha256": "d634efbc716a771c8bca4108475cd7866e0ae271ce7701e504c568ac49ca2cce",
+          "reason": "verified unused upload; controller inputs and rollback retained",
+          "result": "REMOVED"
+        },
+        {
+          "path": "/root/GPU-SFTP/log/host-deploy/dma-guard-host-deploy-v4-20261018/Image",
+          "size": 43653632,
+          "mtime_ns": 1792328932045699576,
+          "sha256": "d634efbc716a771c8bca4108475cd7866e0ae271ce7701e504c568ac49ca2cce",
+          "reason": "verified unused upload; controller inputs and rollback retained",
+          "result": "REMOVED"
+        },
+        {
+          "path": "/root/GPU-SFTP/log/dma-guard/dma-guard-admission-20261018/opencca_dma_probe.ko",
+          "size": 79296,
+          "mtime_ns": 1792329030609608940,
+          "sha256": "2a231b6ddcfc24ec06efa8bc228fc5b648110a6d7d99ccfe9281d0a4dbd33c65",
+          "reason": "verified unused upload; controller inputs and rollback retained",
+          "result": "REMOVED"
+        },
+        {
+          "path": "/root/GPU-SFTP/log/dma-guard/dma-guard-live-gpu-20261018/opencca_dma_probe.ko",
+          "size": 79296,
+          "mtime_ns": 1792329046997862712,
+          "sha256": "2a231b6ddcfc24ec06efa8bc228fc5b648110a6d7d99ccfe9281d0a4dbd33c65",
+          "reason": "verified unused upload; controller inputs and rollback retained",
+          "result": "REMOVED"
+        },
+        {
+          "path": "/root/GPU-SFTP/log/dma-guard/dma-guard-final-admission-20261018/opencca_dma_probe.ko",
+          "size": 79296,
+          "mtime_ns": 1792330448077535486,
+          "sha256": "2a231b6ddcfc24ec06efa8bc228fc5b648110a6d7d99ccfe9281d0a4dbd33c65",
+          "reason": "verified unused upload; controller inputs and rollback retained",
+          "result": "REMOVED"
+        }
+      ],
+      "freed_bytes": 174852416,
+      "retained_rollback": "/root/GPU-SFTP/log/host-deploy/dma-guard-host-deploy-v4-20261018/kernel-before"
+    }
+  ],
+  "maintenance_source_sha256": "fe83ce703da13c88d21ccf35c306c6c59643360fd2a0665824b6adfd2627c966"
+}

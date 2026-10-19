@@ -1,0 +1,23 @@
+{
+  "run_id": "dma-guard-clean-720-20261018",
+  "command": [
+    "python3",
+    "scripts/run/run-realm-xshm.py",
+    "--images",
+    "build/safe-optimization-20261018/final",
+    "--workload",
+    "glmark",
+    "--performance",
+    "--benchmark-only",
+    "--suite",
+    "--profiles",
+    "glmark-720"
+  ],
+  "cwd": "/home/mzh/gpu",
+  "started": "2026-10-18T13:22:27.007248+00:00",
+  "status": "COMPLETED",
+  "allow_rk_reboot": false,
+  "recover_rk_offline": false,
+  "returncode": 0,
+  "ended": "2026-10-18T13:31:09.896725+00:00"
+}

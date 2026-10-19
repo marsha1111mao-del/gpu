@@ -1,0 +1,1042 @@
+{
+  "generated": "2026-10-18T09:09:34.061344+00:00",
+  "status": "COMPLETED",
+  "results": [
+    {
+      "label": "baseline",
+      "run_id": "safeopt-20261018-baseline-r1",
+      "bundle": "build/memfd-retirement-20261018/candidate",
+      "status": "COMPLETED",
+      "exit_code": 0,
+      "command": [
+        "python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/memfd-retirement-20261018/candidate",
+        "--workload",
+        "glmark",
+        "--performance",
+        "--benchmark-only",
+        "--suite",
+        "--profiles",
+        "glmark-720"
+      ],
+      "started": "2026-10-18T07:31:45.428109+00:00",
+      "ended": "2026-10-18T07:40:30.577313+00:00",
+      "workload_status": "PASS",
+      "score": 1162,
+      "scenes": 33,
+      "validation": [
+        26,
+        1,
+        6
+      ],
+      "vm_exit_codes": [
+        0,
+        0
+      ],
+      "kernel_health": {
+        "0": {
+          "csg_update_timeout": [],
+          "fw_ping_timeout": [],
+          "gpu_translation_fault": [],
+          "kernel_warning": [],
+          "kernel_oops": []
+        },
+        "1": {
+          "csg_update_timeout": [],
+          "fw_ping_timeout": [],
+          "gpu_translation_fault": [],
+          "kernel_warning": [],
+          "kernel_oops": []
+        }
+      },
+      "host_performance": {
+        "before": {
+          "online": "0-1",
+          "governor": "userspace",
+          "selected_hz": 300000000,
+          "actual_hz": 300000000
+        },
+        "selected": {
+          "online": "0-3",
+          "governor": "userspace",
+          "selected_hz": 600000000,
+          "actual_hz": 594000000
+        },
+        "restored": {
+          "online": "0-1",
+          "governor": "userspace",
+          "selected_hz": 300000000,
+          "actual_hz": 300000000
+        }
+      },
+      "inputs": {
+        "/root/GPU-SFTP/tests/realm-xshm/run-realms.py": "e7703ec7d913676cb65f87e5e92e1751943f933000a039df4bb6414edd2152e9",
+        "/root/GPU-SFTP/firecracker-bins/bin/firecracker": "1da45f6ad565434ff4bef82f8e1c15faed17f940ae8297a7a05bfc7278be6b66",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/Image": "a8bcdb5583ddcb9e1651169222308ad3a29f686af527847640aa6a3080e4f94c",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/initrd.cpio": "c3cdd4fa34c168e528460c9dd63f58354b5b66437c51973415fc5edb60931299",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/proxy/Image": "37f18d657364265177611827a154008ecb0acaaf51bee61fe4807b590df748a5",
+        "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4": "5d0c2ec8e5c1830f6a93c39d34bd8ae02a99702792e9e16a9d9034388f606d60"
+      },
+      "archive_sha256": "40efb16108235100ab22aab4ec1ceb5fa011ef8dfa85c922d1b0a587fc1b177b",
+      "logs": "build/safe-optimization-20261018/logs/safeopt-20261018-baseline-r1",
+      "postflight": {
+        "online_cpus": "0-1",
+        "gpu_driver": "/sys/bus/platform/drivers/pmthor",
+        "active_lab_processes": [],
+        "loops": {
+          "rc": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      "delta_vs_baseline_r1": 0,
+      "percent_vs_baseline_r1": 0.0
+    },
+    {
+      "label": "retire",
+      "run_id": "safeopt-20261018-retire-r1",
+      "bundle": "build/safe-optimization-20261018/retire-syncobjs",
+      "status": "COMPLETED",
+      "exit_code": 0,
+      "command": [
+        "python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/safe-optimization-20261018/retire-syncobjs",
+        "--workload",
+        "glmark",
+        "--performance",
+        "--benchmark-only",
+        "--suite",
+        "--profiles",
+        "glmark-720"
+      ],
+      "started": "2026-10-18T07:40:47.393118+00:00",
+      "ended": "2026-10-18T07:49:28.455142+00:00",
+      "workload_status": "PASS",
+      "score": 1160,
+      "scenes": 33,
+      "validation": [
+        26,
+        1,
+        6
+      ],
+      "vm_exit_codes": [
+        0,
+        0
+      ],
+      "kernel_health": {
+        "0": {
+          "csg_update_timeout": [],
+          "fw_ping_timeout": [],
+          "gpu_translation_fault": [],
+          "kernel_warning": [],
+          "kernel_oops": []
+        },
+        "1": {
+          "csg_update_timeout": [],
+          "fw_ping_timeout": [],
+          "gpu_translation_fault": [],
+          "kernel_warning": [],
+          "kernel_oops": []
+        }
+      },
+      "host_performance": {
+        "before": {
+          "online": "0-1",
+          "governor": "userspace",
+          "selected_hz": 300000000,
+          "actual_hz": 300000000
+        },
+        "selected": {
+          "online": "0-3",
+          "governor": "userspace",
+          "selected_hz": 600000000,
+          "actual_hz": 594000000
+        },
+        "restored": {
+          "online": "0-1",
+          "governor": "userspace",
+          "selected_hz": 300000000,
+          "actual_hz": 300000000
+        }
+      },
+      "inputs": {
+        "/root/GPU-SFTP/tests/realm-xshm/run-realms.py": "e7703ec7d913676cb65f87e5e92e1751943f933000a039df4bb6414edd2152e9",
+        "/root/GPU-SFTP/firecracker-bins/bin/firecracker": "1da45f6ad565434ff4bef82f8e1c15faed17f940ae8297a7a05bfc7278be6b66",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/Image": "1745edf589dc53c46baaf51d620ba35f3950b97f11c7a1f3901c530f28463f54",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/initrd.cpio": "c3cdd4fa34c168e528460c9dd63f58354b5b66437c51973415fc5edb60931299",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/proxy/Image": "8067cf6249af505b3c0655829d18aac6660db9a3f11dc7fc57dafdde0272dca3",
+        "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4": "5d0c2ec8e5c1830f6a93c39d34bd8ae02a99702792e9e16a9d9034388f606d60"
+      },
+      "archive_sha256": "5ff39eab26de045683a1ebd0b185ef53ae0a8f5d8f1370d2cafbb5ce95e3dcc6",
+      "logs": "build/safe-optimization-20261018/logs/safeopt-20261018-retire-r1",
+      "postflight": {
+        "online_cpus": "0-1",
+        "gpu_driver": "/sys/bus/platform/drivers/pmthor",
+        "active_lab_processes": [],
+        "loops": {
+          "rc": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      "delta_vs_baseline_r1": -2,
+      "percent_vs_baseline_r1": -0.1721170395869165
+    },
+    {
+      "label": "clone",
+      "run_id": "safeopt-20261018-clone-r1",
+      "bundle": "build/safe-optimization-20261018/clone-syncobj",
+      "status": "COMPLETED",
+      "exit_code": 0,
+      "command": [
+        "/usr/bin/python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/safe-optimization-20261018/clone-syncobj",
+        "--workload",
+        "glmark",
+        "--performance",
+        "--benchmark-only",
+        "--suite",
+        "--profiles",
+        "glmark-720"
+      ],
+      "started": "2026-10-18T07:49:42.638344+00:00",
+      "ended": "2026-10-18T07:58:16.548728+00:00",
+      "workload_status": "PASS",
+      "score": 1161,
+      "scenes": 33,
+      "validation": [
+        26,
+        1,
+        6
+      ],
+      "vm_exit_codes": [
+        0,
+        0
+      ],
+      "kernel_health": {
+        "0": {
+          "csg_update_timeout": [],
+          "fw_ping_timeout": [],
+          "gpu_translation_fault": [],
+          "kernel_warning": [],
+          "kernel_oops": []
+        },
+        "1": {
+          "csg_update_timeout": [],
+          "fw_ping_timeout": [],
+          "gpu_translation_fault": [],
+          "kernel_warning": [],
+          "kernel_oops": []
+        }
+      },
+      "host_performance": {
+        "before": {
+          "online": "0-1",
+          "governor": "userspace",
+          "selected_hz": 300000000,
+          "actual_hz": 300000000
+        },
+        "selected": {
+          "online": "0-3",
+          "governor": "userspace",
+          "selected_hz": 600000000,
+          "actual_hz": 594000000
+        },
+        "restored": {
+          "online": "0-1",
+          "governor": "userspace",
+          "selected_hz": 300000000,
+          "actual_hz": 300000000
+        }
+      },
+      "inputs": {
+        "/root/GPU-SFTP/tests/realm-xshm/run-realms.py": "e7703ec7d913676cb65f87e5e92e1751943f933000a039df4bb6414edd2152e9",
+        "/root/GPU-SFTP/firecracker-bins/bin/firecracker": "1da45f6ad565434ff4bef82f8e1c15faed17f940ae8297a7a05bfc7278be6b66",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/Image": "f935d02f22317cf7528d19d213eb51f01250787ae0a3d3b752c56a0210f7ee2e",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/initrd.cpio": "c3cdd4fa34c168e528460c9dd63f58354b5b66437c51973415fc5edb60931299",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/proxy/Image": "bd48aa01824266922c40f859fca8e21ff8062af25f24cca7c070e0f97eee6485",
+        "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4": "5d0c2ec8e5c1830f6a93c39d34bd8ae02a99702792e9e16a9d9034388f606d60"
+      },
+      "archive_sha256": "0232a5bf75d8cc07d55873ba4f64440e48f1b34a0176a4f193c874c508cefbb7",
+      "logs": "build/safe-optimization-20261018/logs/safeopt-20261018-clone-r1",
+      "postflight": {
+        "online_cpus": "0-1",
+        "gpu_driver": "/sys/bus/platform/drivers/pmthor",
+        "active_lab_processes": [],
+        "loops": {
+          "rc": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      "delta_vs_baseline_r1": -1,
+      "percent_vs_baseline_r1": -0.0860585197934638
+    },
+    {
+      "label": "sync-list",
+      "run_id": "safeopt-20261018-sync-list-r1",
+      "bundle": "build/safe-optimization-20261018/sync-list",
+      "status": "COMPLETED",
+      "exit_code": 0,
+      "command": [
+        "/usr/bin/python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/safe-optimization-20261018/sync-list",
+        "--workload",
+        "glmark",
+        "--performance",
+        "--benchmark-only",
+        "--suite",
+        "--profiles",
+        "glmark-720"
+      ],
+      "started": "2026-10-18T07:58:17.475356+00:00",
+      "ended": "2026-10-18T08:06:56.916952+00:00",
+      "workload_status": "PASS",
+      "score": 1171,
+      "scenes": 33,
+      "validation": [
+        26,
+        1,
+        6
+      ],
+      "vm_exit_codes": [
+        0,
+        0
+      ],
+      "kernel_health": {
+        "0": {
+          "csg_update_timeout": [],
+          "fw_ping_timeout": [],
+          "gpu_translation_fault": [],
+          "kernel_warning": [],
+          "kernel_oops": []
+        },
+        "1": {
+          "csg_update_timeout": [],
+          "fw_ping_timeout": [],
+          "gpu_translation_fault": [],
+          "kernel_warning": [],
+          "kernel_oops": []
+        }
+      },
+      "host_performance": {
+        "before": {
+          "online": "0-1",
+          "governor": "userspace",
+          "selected_hz": 300000000,
+          "actual_hz": 300000000
+        },
+        "selected": {
+          "online": "0-3",
+          "governor": "userspace",
+          "selected_hz": 600000000,
+          "actual_hz": 594000000
+        },
+        "restored": {
+          "online": "0-1",
+          "governor": "userspace",
+          "selected_hz": 300000000,
+          "actual_hz": 300000000
+        }
+      },
+      "inputs": {
+        "/root/GPU-SFTP/tests/realm-xshm/run-realms.py": "e7703ec7d913676cb65f87e5e92e1751943f933000a039df4bb6414edd2152e9",
+        "/root/GPU-SFTP/firecracker-bins/bin/firecracker": "1da45f6ad565434ff4bef82f8e1c15faed17f940ae8297a7a05bfc7278be6b66",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/Image": "a8bcdb5583ddcb9e1651169222308ad3a29f686af527847640aa6a3080e4f94c",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/initrd.cpio": "c3cdd4fa34c168e528460c9dd63f58354b5b66437c51973415fc5edb60931299",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/proxy/Image": "ec755087f63a87f25c47c385a2d3f3d8052297d184d8805a6972535c1f97711b",
+        "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4": "5d0c2ec8e5c1830f6a93c39d34bd8ae02a99702792e9e16a9d9034388f606d60"
+      },
+      "archive_sha256": "152665272da7338c434c03b7c506668c6132fc640fa2ea8be1bcf356644e2552",
+      "logs": "build/safe-optimization-20261018/logs/safeopt-20261018-sync-list-r1",
+      "postflight": {
+        "online_cpus": "0-1",
+        "gpu_driver": "/sys/bus/platform/drivers/pmthor",
+        "active_lab_processes": [],
+        "loops": {
+          "rc": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      "delta_vs_baseline_r1": 9,
+      "percent_vs_baseline_r1": 0.7745266781411297
+    },
+    {
+      "label": "adaptive",
+      "run_id": "safeopt-20261018-adaptive-r1",
+      "bundle": "build/safe-optimization-20261018/adaptive-poll",
+      "status": "COMPLETED",
+      "exit_code": 0,
+      "command": [
+        "/usr/bin/python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/safe-optimization-20261018/adaptive-poll",
+        "--workload",
+        "glmark",
+        "--performance",
+        "--benchmark-only",
+        "--suite",
+        "--profiles",
+        "glmark-720"
+      ],
+      "started": "2026-10-18T08:06:57.874022+00:00",
+      "ended": "2026-10-18T08:15:36.609165+00:00",
+      "workload_status": "PASS",
+      "score": 1161,
+      "scenes": 33,
+      "validation": [
+        26,
+        1,
+        6
+      ],
+      "vm_exit_codes": [
+        0,
+        0
+      ],
+      "kernel_health": {
+        "0": {
+          "csg_update_timeout": [],
+          "fw_ping_timeout": [],
+          "gpu_translation_fault": [],
+          "kernel_warning": [],
+          "kernel_oops": []
+        },
+        "1": {
+          "csg_update_timeout": [],
+          "fw_ping_timeout": [],
+          "gpu_translation_fault": [],
+          "kernel_warning": [],
+          "kernel_oops": []
+        }
+      },
+      "host_performance": {
+        "before": {
+          "online": "0-1",
+          "governor": "userspace",
+          "selected_hz": 300000000,
+          "actual_hz": 300000000
+        },
+        "selected": {
+          "online": "0-3",
+          "governor": "userspace",
+          "selected_hz": 600000000,
+          "actual_hz": 594000000
+        },
+        "restored": {
+          "online": "0-1",
+          "governor": "userspace",
+          "selected_hz": 300000000,
+          "actual_hz": 300000000
+        }
+      },
+      "inputs": {
+        "/root/GPU-SFTP/tests/realm-xshm/run-realms.py": "e7703ec7d913676cb65f87e5e92e1751943f933000a039df4bb6414edd2152e9",
+        "/root/GPU-SFTP/firecracker-bins/bin/firecracker": "1da45f6ad565434ff4bef82f8e1c15faed17f940ae8297a7a05bfc7278be6b66",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/Image": "0ea83ed0f7678972a6728e723c55e6bc3da71969258594b03a58ea19aceb7ca5",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/initrd.cpio": "c3cdd4fa34c168e528460c9dd63f58354b5b66437c51973415fc5edb60931299",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/proxy/Image": "37f18d657364265177611827a154008ecb0acaaf51bee61fe4807b590df748a5",
+        "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4": "5d0c2ec8e5c1830f6a93c39d34bd8ae02a99702792e9e16a9d9034388f606d60"
+      },
+      "archive_sha256": "1b40d5848a5e5d451f63ee55437426dba606fe2a675e83463537499fa649e114",
+      "logs": "build/safe-optimization-20261018/logs/safeopt-20261018-adaptive-r1",
+      "postflight": {
+        "online_cpus": "0-1",
+        "gpu_driver": "/sys/bus/platform/drivers/pmthor",
+        "active_lab_processes": [],
+        "loops": {
+          "rc": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      "delta_vs_baseline_r1": -1,
+      "percent_vs_baseline_r1": -0.0860585197934638
+    },
+    {
+      "label": "plan-lock",
+      "run_id": "safeopt-20261018-plan-lock-r1",
+      "bundle": "build/safe-optimization-20261018/plan-lock",
+      "status": "COMPLETED",
+      "exit_code": 0,
+      "command": [
+        "/usr/bin/python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/safe-optimization-20261018/plan-lock",
+        "--workload",
+        "glmark",
+        "--performance",
+        "--benchmark-only",
+        "--suite",
+        "--profiles",
+        "glmark-720"
+      ],
+      "started": "2026-10-18T08:15:37.588665+00:00",
+      "ended": "2026-10-18T08:24:30.154710+00:00",
+      "workload_status": "PASS",
+      "score": 1159,
+      "scenes": 33,
+      "validation": [
+        26,
+        1,
+        6
+      ],
+      "vm_exit_codes": [
+        0,
+        0
+      ],
+      "kernel_health": {
+        "0": {
+          "csg_update_timeout": [],
+          "fw_ping_timeout": [],
+          "gpu_translation_fault": [],
+          "kernel_warning": [],
+          "kernel_oops": []
+        },
+        "1": {
+          "csg_update_timeout": [],
+          "fw_ping_timeout": [],
+          "gpu_translation_fault": [],
+          "kernel_warning": [],
+          "kernel_oops": []
+        }
+      },
+      "host_performance": {
+        "before": {
+          "online": "0-1",
+          "governor": "userspace",
+          "selected_hz": 300000000,
+          "actual_hz": 300000000
+        },
+        "selected": {
+          "online": "0-3",
+          "governor": "userspace",
+          "selected_hz": 600000000,
+          "actual_hz": 594000000
+        },
+        "restored": {
+          "online": "0-1",
+          "governor": "userspace",
+          "selected_hz": 300000000,
+          "actual_hz": 300000000
+        }
+      },
+      "inputs": {
+        "/root/GPU-SFTP/tests/realm-xshm/run-realms.py": "e7703ec7d913676cb65f87e5e92e1751943f933000a039df4bb6414edd2152e9",
+        "/root/GPU-SFTP/firecracker-bins/bin/firecracker": "1da45f6ad565434ff4bef82f8e1c15faed17f940ae8297a7a05bfc7278be6b66",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/Image": "41feded8855f0f3ca6556ad5d43278012dbf3210c5ebba65ac51af3f1dfa7b53",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/initrd.cpio": "c3cdd4fa34c168e528460c9dd63f58354b5b66437c51973415fc5edb60931299",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/proxy/Image": "37f18d657364265177611827a154008ecb0acaaf51bee61fe4807b590df748a5",
+        "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4": "5d0c2ec8e5c1830f6a93c39d34bd8ae02a99702792e9e16a9d9034388f606d60"
+      },
+      "archive_sha256": "9090e15615f47410cec073c8bc3ecff29f7b7b49cb246e4dfd8e31eb23fadff8",
+      "logs": "build/safe-optimization-20261018/logs/safeopt-20261018-plan-lock-r1",
+      "postflight": {
+        "online_cpus": "0-1",
+        "gpu_driver": "/sys/bus/platform/drivers/pmthor",
+        "active_lab_processes": [],
+        "loops": {
+          "rc": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      "delta_vs_baseline_r1": -3,
+      "percent_vs_baseline_r1": -0.2581755593803803
+    },
+    {
+      "label": "pipeline",
+      "run_id": "safeopt-20261018-pipeline-r1",
+      "bundle": "build/safe-optimization-20261018/pipeline",
+      "status": "COMPLETED",
+      "exit_code": 0,
+      "command": [
+        "/usr/bin/python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/safe-optimization-20261018/pipeline",
+        "--workload",
+        "glmark",
+        "--performance",
+        "--benchmark-only",
+        "--suite",
+        "--profiles",
+        "glmark-720"
+      ],
+      "started": "2026-10-18T08:24:31.069868+00:00",
+      "ended": "2026-10-18T08:33:14.304562+00:00",
+      "workload_status": "PASS",
+      "score": 1156,
+      "scenes": 33,
+      "validation": [
+        26,
+        1,
+        6
+      ],
+      "vm_exit_codes": [
+        0,
+        0
+      ],
+      "kernel_health": {
+        "0": {
+          "csg_update_timeout": [],
+          "fw_ping_timeout": [],
+          "gpu_translation_fault": [],
+          "kernel_warning": [],
+          "kernel_oops": []
+        },
+        "1": {
+          "csg_update_timeout": [],
+          "fw_ping_timeout": [],
+          "gpu_translation_fault": [],
+          "kernel_warning": [],
+          "kernel_oops": []
+        }
+      },
+      "host_performance": {
+        "before": {
+          "online": "0-1",
+          "governor": "userspace",
+          "selected_hz": 300000000,
+          "actual_hz": 300000000
+        },
+        "selected": {
+          "online": "0-3",
+          "governor": "userspace",
+          "selected_hz": 600000000,
+          "actual_hz": 594000000
+        },
+        "restored": {
+          "online": "0-1",
+          "governor": "userspace",
+          "selected_hz": 300000000,
+          "actual_hz": 300000000
+        }
+      },
+      "inputs": {
+        "/root/GPU-SFTP/tests/realm-xshm/run-realms.py": "e7703ec7d913676cb65f87e5e92e1751943f933000a039df4bb6414edd2152e9",
+        "/root/GPU-SFTP/firecracker-bins/bin/firecracker": "1da45f6ad565434ff4bef82f8e1c15faed17f940ae8297a7a05bfc7278be6b66",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/Image": "a8bcdb5583ddcb9e1651169222308ad3a29f686af527847640aa6a3080e4f94c",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/initrd.cpio": "c3cdd4fa34c168e528460c9dd63f58354b5b66437c51973415fc5edb60931299",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/proxy/Image": "1369dc7b1c286caffddd1ba7dacc4b727e4388226a35b837c83b6ee0c553fe9a",
+        "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4": "5d0c2ec8e5c1830f6a93c39d34bd8ae02a99702792e9e16a9d9034388f606d60"
+      },
+      "archive_sha256": "8d8025be32c2e5f2a8b792c4a06683ab2b013fe51faf39b14f3a206083968cb7",
+      "logs": "build/safe-optimization-20261018/logs/safeopt-20261018-pipeline-r1",
+      "postflight": {
+        "online_cpus": "0-1",
+        "gpu_driver": "/sys/bus/platform/drivers/pmthor",
+        "active_lab_processes": [],
+        "loops": {
+          "rc": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      "delta_vs_baseline_r1": -6,
+      "percent_vs_baseline_r1": -0.5163511187607606
+    },
+    {
+      "label": "cache-progress",
+      "run_id": "safeopt-20261018-cache-progress-r1",
+      "bundle": "build/safe-optimization-20261018/cache-progress",
+      "status": "COMPLETED",
+      "exit_code": 0,
+      "command": [
+        "/usr/bin/python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/safe-optimization-20261018/cache-progress",
+        "--workload",
+        "glmark",
+        "--performance",
+        "--benchmark-only",
+        "--suite",
+        "--profiles",
+        "glmark-720"
+      ],
+      "started": "2026-10-18T08:33:25.188701+00:00",
+      "ended": "2026-10-18T08:42:16.669917+00:00",
+      "workload_status": "PASS",
+      "score": 1156,
+      "scenes": 33,
+      "validation": [
+        26,
+        1,
+        6
+      ],
+      "vm_exit_codes": [
+        0,
+        0
+      ],
+      "kernel_health": {
+        "0": {
+          "csg_update_timeout": [],
+          "fw_ping_timeout": [],
+          "gpu_translation_fault": [],
+          "kernel_warning": [],
+          "kernel_oops": []
+        },
+        "1": {
+          "csg_update_timeout": [],
+          "fw_ping_timeout": [],
+          "gpu_translation_fault": [],
+          "kernel_warning": [],
+          "kernel_oops": []
+        }
+      },
+      "host_performance": {
+        "before": {
+          "online": "0-1",
+          "governor": "userspace",
+          "selected_hz": 300000000,
+          "actual_hz": 300000000
+        },
+        "selected": {
+          "online": "0-3",
+          "governor": "userspace",
+          "selected_hz": 600000000,
+          "actual_hz": 594000000
+        },
+        "restored": {
+          "online": "0-1",
+          "governor": "userspace",
+          "selected_hz": 300000000,
+          "actual_hz": 300000000
+        }
+      },
+      "inputs": {
+        "/root/GPU-SFTP/tests/realm-xshm/run-realms.py": "e7703ec7d913676cb65f87e5e92e1751943f933000a039df4bb6414edd2152e9",
+        "/root/GPU-SFTP/firecracker-bins/bin/firecracker": "1da45f6ad565434ff4bef82f8e1c15faed17f940ae8297a7a05bfc7278be6b66",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/Image": "a8bcdb5583ddcb9e1651169222308ad3a29f686af527847640aa6a3080e4f94c",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/initrd.cpio": "c3cdd4fa34c168e528460c9dd63f58354b5b66437c51973415fc5edb60931299",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/proxy/Image": "a5714b49a5a991dfb7fea1ed5e8ea9d9b53015e28f8b5743f041065f661d3c03",
+        "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4": "5d0c2ec8e5c1830f6a93c39d34bd8ae02a99702792e9e16a9d9034388f606d60"
+      },
+      "archive_sha256": "2c8e5a1732e3254a41d9b347ff4cdfc57c2f5a2edf48a48fed1e0abea2b4fa6e",
+      "logs": "build/safe-optimization-20261018/logs/safeopt-20261018-cache-progress-r1",
+      "postflight": {
+        "online_cpus": "0-1",
+        "gpu_driver": "/sys/bus/platform/drivers/pmthor",
+        "active_lab_processes": [],
+        "loops": {
+          "rc": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      "delta_vs_baseline_r1": -6,
+      "percent_vs_baseline_r1": -0.5163511187607606
+    },
+    {
+      "label": "baseline",
+      "run_id": "safeopt-20261018-baseline-r2",
+      "bundle": "build/memfd-retirement-20261018/candidate",
+      "status": "COMPLETED",
+      "exit_code": 0,
+      "command": [
+        "/usr/bin/python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/memfd-retirement-20261018/candidate",
+        "--workload",
+        "glmark",
+        "--performance",
+        "--benchmark-only",
+        "--suite",
+        "--profiles",
+        "glmark-720"
+      ],
+      "started": "2026-10-18T08:42:17.602141+00:00",
+      "ended": "2026-10-18T08:51:27.438069+00:00",
+      "workload_status": "PASS",
+      "score": 1160,
+      "scenes": 33,
+      "validation": [
+        26,
+        1,
+        6
+      ],
+      "vm_exit_codes": [
+        0,
+        0
+      ],
+      "kernel_health": {
+        "0": {
+          "csg_update_timeout": [],
+          "fw_ping_timeout": [],
+          "gpu_translation_fault": [],
+          "kernel_warning": [],
+          "kernel_oops": []
+        },
+        "1": {
+          "csg_update_timeout": [],
+          "fw_ping_timeout": [],
+          "gpu_translation_fault": [],
+          "kernel_warning": [],
+          "kernel_oops": []
+        }
+      },
+      "host_performance": {
+        "before": {
+          "online": "0-1",
+          "governor": "userspace",
+          "selected_hz": 300000000,
+          "actual_hz": 300000000
+        },
+        "selected": {
+          "online": "0-3",
+          "governor": "userspace",
+          "selected_hz": 600000000,
+          "actual_hz": 594000000
+        },
+        "restored": {
+          "online": "0-1",
+          "governor": "userspace",
+          "selected_hz": 300000000,
+          "actual_hz": 300000000
+        }
+      },
+      "inputs": {
+        "/root/GPU-SFTP/tests/realm-xshm/run-realms.py": "e7703ec7d913676cb65f87e5e92e1751943f933000a039df4bb6414edd2152e9",
+        "/root/GPU-SFTP/firecracker-bins/bin/firecracker": "1da45f6ad565434ff4bef82f8e1c15faed17f940ae8297a7a05bfc7278be6b66",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/Image": "a8bcdb5583ddcb9e1651169222308ad3a29f686af527847640aa6a3080e4f94c",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/initrd.cpio": "c3cdd4fa34c168e528460c9dd63f58354b5b66437c51973415fc5edb60931299",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/proxy/Image": "37f18d657364265177611827a154008ecb0acaaf51bee61fe4807b590df748a5",
+        "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4": "5d0c2ec8e5c1830f6a93c39d34bd8ae02a99702792e9e16a9d9034388f606d60"
+      },
+      "archive_sha256": "ead0b8f4bbf887399e4982fda090604423f9bb356a2ed826b9fd4477558b30a6",
+      "logs": "build/safe-optimization-20261018/logs/safeopt-20261018-baseline-r2",
+      "postflight": {
+        "online_cpus": "0-1",
+        "gpu_driver": "/sys/bus/platform/drivers/pmthor",
+        "active_lab_processes": [],
+        "loops": {
+          "rc": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      "delta_vs_baseline_r1": -2,
+      "percent_vs_baseline_r1": -0.1721170395869165
+    },
+    {
+      "label": "sync-list",
+      "run_id": "safeopt-20261018-sync-list-r2",
+      "bundle": "build/safe-optimization-20261018/sync-list",
+      "status": "COMPLETED",
+      "exit_code": 0,
+      "command": [
+        "/usr/bin/python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/safe-optimization-20261018/sync-list",
+        "--workload",
+        "glmark",
+        "--performance",
+        "--benchmark-only",
+        "--suite",
+        "--profiles",
+        "glmark-720"
+      ],
+      "started": "2026-10-18T08:51:29.417019+00:00",
+      "ended": "2026-10-18T09:00:01.017390+00:00",
+      "workload_status": "PASS",
+      "score": 1170,
+      "scenes": 33,
+      "validation": [
+        26,
+        1,
+        6
+      ],
+      "vm_exit_codes": [
+        0,
+        0
+      ],
+      "kernel_health": {
+        "0": {
+          "csg_update_timeout": [],
+          "fw_ping_timeout": [],
+          "gpu_translation_fault": [],
+          "kernel_warning": [],
+          "kernel_oops": []
+        },
+        "1": {
+          "csg_update_timeout": [],
+          "fw_ping_timeout": [],
+          "gpu_translation_fault": [],
+          "kernel_warning": [],
+          "kernel_oops": []
+        }
+      },
+      "host_performance": {
+        "before": {
+          "online": "0-1",
+          "governor": "userspace",
+          "selected_hz": 300000000,
+          "actual_hz": 300000000
+        },
+        "selected": {
+          "online": "0-3",
+          "governor": "userspace",
+          "selected_hz": 600000000,
+          "actual_hz": 594000000
+        },
+        "restored": {
+          "online": "0-1",
+          "governor": "userspace",
+          "selected_hz": 300000000,
+          "actual_hz": 300000000
+        }
+      },
+      "inputs": {
+        "/root/GPU-SFTP/tests/realm-xshm/run-realms.py": "e7703ec7d913676cb65f87e5e92e1751943f933000a039df4bb6414edd2152e9",
+        "/root/GPU-SFTP/firecracker-bins/bin/firecracker": "1da45f6ad565434ff4bef82f8e1c15faed17f940ae8297a7a05bfc7278be6b66",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/Image": "a8bcdb5583ddcb9e1651169222308ad3a29f686af527847640aa6a3080e4f94c",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/initrd.cpio": "c3cdd4fa34c168e528460c9dd63f58354b5b66437c51973415fc5edb60931299",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/proxy/Image": "ec755087f63a87f25c47c385a2d3f3d8052297d184d8805a6972535c1f97711b",
+        "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4": "5d0c2ec8e5c1830f6a93c39d34bd8ae02a99702792e9e16a9d9034388f606d60"
+      },
+      "archive_sha256": "ba0254c401c754587e950c6d9ddf52217fb4731bae5f2f040031af4c986b1f33",
+      "logs": "build/safe-optimization-20261018/logs/safeopt-20261018-sync-list-r2",
+      "postflight": {
+        "online_cpus": "0-1",
+        "gpu_driver": "/sys/bus/platform/drivers/pmthor",
+        "active_lab_processes": [],
+        "loops": {
+          "rc": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      "delta_vs_baseline_r1": 8,
+      "percent_vs_baseline_r1": 0.688468158347666
+    },
+    {
+      "label": "cache-union",
+      "run_id": "safeopt-20261018-cache-union-r1",
+      "bundle": "build/safe-optimization-20261018/cache-union",
+      "status": "COMPLETED",
+      "exit_code": 0,
+      "command": [
+        "/usr/bin/python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/safe-optimization-20261018/cache-union",
+        "--workload",
+        "glmark",
+        "--performance",
+        "--benchmark-only",
+        "--suite",
+        "--profiles",
+        "glmark-720"
+      ],
+      "started": "2026-10-18T09:00:01.970255+00:00",
+      "ended": "2026-10-18T09:08:52.363897+00:00",
+      "workload_status": "PASS",
+      "score": 1171,
+      "scenes": 33,
+      "validation": [
+        26,
+        1,
+        6
+      ],
+      "vm_exit_codes": [
+        0,
+        0
+      ],
+      "kernel_health": {
+        "0": {
+          "csg_update_timeout": [],
+          "fw_ping_timeout": [],
+          "gpu_translation_fault": [],
+          "kernel_warning": [],
+          "kernel_oops": []
+        },
+        "1": {
+          "csg_update_timeout": [],
+          "fw_ping_timeout": [],
+          "gpu_translation_fault": [],
+          "kernel_warning": [],
+          "kernel_oops": []
+        }
+      },
+      "host_performance": {
+        "before": {
+          "online": "0-1",
+          "governor": "userspace",
+          "selected_hz": 300000000,
+          "actual_hz": 300000000
+        },
+        "selected": {
+          "online": "0-3",
+          "governor": "userspace",
+          "selected_hz": 600000000,
+          "actual_hz": 594000000
+        },
+        "restored": {
+          "online": "0-1",
+          "governor": "userspace",
+          "selected_hz": 300000000,
+          "actual_hz": 300000000
+        }
+      },
+      "inputs": {
+        "/root/GPU-SFTP/tests/realm-xshm/run-realms.py": "e7703ec7d913676cb65f87e5e92e1751943f933000a039df4bb6414edd2152e9",
+        "/root/GPU-SFTP/firecracker-bins/bin/firecracker": "1da45f6ad565434ff4bef82f8e1c15faed17f940ae8297a7a05bfc7278be6b66",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/Image": "a8bcdb5583ddcb9e1651169222308ad3a29f686af527847640aa6a3080e4f94c",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/initrd.cpio": "c3cdd4fa34c168e528460c9dd63f58354b5b66437c51973415fc5edb60931299",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/proxy/Image": "20750cf72e4ae0d35bb070bfc4f217636e0d0f1dfd96ad10f6697fdcc520863e",
+        "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4": "5d0c2ec8e5c1830f6a93c39d34bd8ae02a99702792e9e16a9d9034388f606d60"
+      },
+      "archive_sha256": "a01b87cab326a3ae2e7aae7fd53a2a6a51926ce528aa80ca6c9ef3057ddcff24",
+      "logs": "build/safe-optimization-20261018/logs/safeopt-20261018-cache-union-r1",
+      "postflight": {
+        "online_cpus": "0-1",
+        "gpu_driver": "/sys/bus/platform/drivers/pmthor",
+        "active_lab_processes": [],
+        "loops": {
+          "rc": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      "delta_vs_baseline_r1": 9,
+      "percent_vs_baseline_r1": 0.7745266781411297
+    }
+  ],
+  "retention": {
+    "retained": "sync-list",
+    "baseline_scores": [
+      1162,
+      1160
+    ],
+    "retained_scores": [
+      1171,
+      1170
+    ],
+    "mean_difference": 9.5,
+    "mean_percent": 0.818260120585702,
+    "withdrawn": [
+      "retire-syncobjs",
+      "clone-syncobj",
+      "adaptive-poll",
+      "plan-lock",
+      "pipeline",
+      "cache-progress",
+      "cache-union"
+    ],
+    "note": "cache-union includes sync-list but has no demonstrated incremental benefit; small sample, CPU frequency not fixed"
+  },
+  "completed": "2026-10-18T09:12:35.820731+00:00"
+}

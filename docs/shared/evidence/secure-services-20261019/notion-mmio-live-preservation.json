@@ -1,0 +1,13 @@
+{
+  "page_id": "3fd659a3-b8cc-806d-aaf9-db523d4809af",
+  "original_content_preserved_after_removing_only_new_section": true,
+  "status_rows": {
+    "implemented": 7,
+    "partial_or_unimplemented": 7,
+    "historical_failure_or_not_run": 6
+  },
+  "original_run_identifiers_checked": 43,
+  "missing_original_run_identifiers": [],
+  "new_run_identifiers_present": true,
+  "overall_security": "PARTIAL / INCOMPLETE"
+}

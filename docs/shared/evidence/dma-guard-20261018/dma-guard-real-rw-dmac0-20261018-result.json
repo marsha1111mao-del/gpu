@@ -1,0 +1,17 @@
+{
+  "run_id": "dma-guard-real-rw-dmac0-20261018",
+  "command": [
+    "python3",
+    "scripts/run/run-dma-guard.py",
+    "--transfer",
+    "--module",
+    "build/dma-guard-20261018/transfer-module-v2/opencca_dma_transfer_probe.ko"
+  ],
+  "cwd": "/home/mzh/gpu",
+  "started": "2026-10-18T13:53:31.885957+00:00",
+  "status": "FAILED",
+  "allow_rk_reboot": false,
+  "recover_rk_offline": false,
+  "returncode": 2,
+  "ended": "2026-10-18T13:53:38.961209+00:00"
+}

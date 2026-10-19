@@ -1,0 +1,28 @@
+{
+  "page_id": "3fd659a3-b8cc-806d-aaf9-db523d4809af",
+  "url": "https://app.notion.com/p/3fd659a3b8cc806daaf9db523d4809af",
+  "operation": "targeted_summary_update_and_audit_section_insertion",
+  "before_characters": 48077,
+  "after_characters": 49674,
+  "normalized_original_preserved_after_reversing_intentional_edits": true,
+  "preserved_status_sections": [
+    {
+      "heading": "## 已实现（必须保留）",
+      "present": true
+    },
+    {
+      "heading": "## 未实现 / 部分实现（必须保留）",
+      "present": true
+    },
+    {
+      "heading": "## 当前失败 / NOT_RUN / 未解决（必须保留）",
+      "present": true
+    },
+    {
+      "heading": "## 实现状态与缺口",
+      "present": true
+    }
+  ],
+  "acceptance": "SELECTED_SIMULATION_MAIN_FLOWS_PASS",
+  "original_failures_and_not_run_retained": true
+}

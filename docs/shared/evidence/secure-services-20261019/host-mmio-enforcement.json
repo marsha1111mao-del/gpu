@@ -1,0 +1,377 @@
+{
+  "schema": 1,
+  "status": "PARTIAL / INCOMPLETE",
+  "host_build": 31,
+  "host_image_sha256": "8c277a621abcc8cf40c2801176f25ca62fff795be6e8a0324e8d64325040999d",
+  "rmm": "timer v6",
+  "ordinary_vm_page_table_takeover": "NOT_PLANNED_USER_DIRECTION",
+  "architecture": "RMM owner gates Realm RTT mappings; physical enforcement against Non-secure access remains required and unproven on current OpenCCA.",
+  "performance": {
+    "baseline_host_build": 29,
+    "baseline_score": 1152,
+    "current_score": 1159,
+    "delta": 7,
+    "percent": 0.61,
+    "conditions": "Full 33-scene 720p; 256MiB; null-noop/finish; GPU request600 actual594MHz; CPU frequency not fixed; single-run combined Host changes."
+  },
+  "unit": {
+    "command": "bash scripts/check/check-opencca-host-mmio.sh",
+    "returncode": 0,
+    "ranges": 18581,
+    "pstate": 393216,
+    "log": "build/secure-services-20261019/host-mmio/unit.log"
+  },
+  "runs": [
+    {
+      "run_id": "host-mmio-denial-baseline-20261019-a",
+      "command": [
+        "python3",
+        "scripts/run/run-kvm-mmio-probe.py",
+        "--probe",
+        "build/secure-services-20261019/host-mmio/opencca_kvm_mmio_probe",
+        "--kernel-mmio-module",
+        "build/secure-services-20261019/host-mmio/kernel-module/opencca_gpu_mmio_probe.ko",
+        "--uart-capture"
+      ],
+      "status": "FAILED",
+      "returncode": 2,
+      "evidence_directory": "build/lab-runs/host-mmio-denial-baseline-20261019-a",
+      "kvm-mmio.json": {
+        "host_mmio_protection": "FAIL_BYPASS_DETECTED",
+        "probe_rc": 2,
+        "checks": {
+          "non_gpu_mmio_denied": true,
+          "misaligned_gpu_mmio_denied": true,
+          "oversized_gpu_mmio_denied": true,
+          "undersized_gpu_mmio_denied": true,
+          "authorized_proxy_mmio_succeeds": true,
+          "pmthor_owner_session_opens": true,
+          "second_realm_mmio_denied": true,
+          "owner_opp_transition_succeeds": true,
+          "pmthor_owner_release_succeeds": true,
+          "pmthor_owner_session_reopens": true,
+          "destroy_releases_mmio_owner": true
+        },
+        "host_kernel_errors": [],
+        "kernel_mmio_records": [
+          "[HOST_KERNEL_MMIO_TEST] address=0xfb000028 before=0x0 requested=0x1 observed=0x1 restored=0x0 write_error=0 read_error=0 restore_error=0 restore_read_error=0"
+        ]
+      }
+    },
+    {
+      "run_id": "host-mmio-denial-deploy-20261019-a",
+      "command": [
+        "python3",
+        "scripts/run/deploy-host-image.py",
+        "--image",
+        "build/secure-services-20261019/host-mmio/host-Image",
+        "--config",
+        "build/secure-services-20261019/host-mmio/host.config",
+        "--release",
+        "6.12.0-opencca-pmthor-opp3",
+        "--run-id",
+        "host-mmio-denial-deploy-20261019-a"
+      ],
+      "status": "COMPLETED",
+      "returncode": 0,
+      "evidence_directory": "build/lab-runs/host-mmio-denial-deploy-20261019-a"
+    },
+    {
+      "run_id": "host-mmio-denial-deploy-20261019-b",
+      "command": [
+        "python3",
+        "build/secure-services-20261019/protected-realm/capture-command.py",
+        "python3",
+        "scripts/run/deploy-host-image.py",
+        "--image",
+        "build/secure-services-20261019/host-mmio/host-Image-v2",
+        "--config",
+        "build/secure-services-20261019/host-mmio/host.config",
+        "--release",
+        "6.12.0-opencca-pmthor-opp3",
+        "--run-id",
+        "host-mmio-denial-deploy-20261019-b"
+      ],
+      "status": "COMPLETED",
+      "returncode": 0,
+      "evidence_directory": "build/lab-runs/host-mmio-denial-deploy-20261019-b"
+    },
+    {
+      "run_id": "glmark720-host-mmio-denial-20261019-a",
+      "command": [
+        "python3",
+        "build/secure-services-20261019/protected-realm/capture-command.py",
+        "python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/secure-services-20261019/final",
+        "--workload",
+        "glmark",
+        "--performance",
+        "--benchmark-only",
+        "--suite",
+        "--profiles",
+        "glmark-720"
+      ],
+      "status": "COMPLETED",
+      "returncode": 0,
+      "evidence_directory": "build/lab-runs/glmark720-host-mmio-denial-20261019-a",
+      "host-kernel-health.json": {
+        "status": "PASS"
+      }
+    },
+    {
+      "run_id": "host-kernel-mmio-denied-20261019-a",
+      "command": [
+        "python3",
+        "scripts/run/run-kvm-mmio-probe.py",
+        "--probe",
+        "build/secure-services-20261019/host-mmio/opencca_kvm_mmio_probe",
+        "--kernel-mmio-module",
+        "build/secure-services-20261019/host-mmio/kernel-module/opencca_gpu_mmio_probe.ko",
+        "--uart-capture"
+      ],
+      "status": "COMPLETED",
+      "returncode": 0,
+      "evidence_directory": "build/lab-runs/host-kernel-mmio-denied-20261019-a",
+      "kvm-mmio.json": {
+        "host_mmio_protection": "HOST_CPU_ACCESS_DENIED",
+        "ordinary_vm_mmio_protection": "NOT_RUN",
+        "probe_rc": 0,
+        "checks": {
+          "non_gpu_mmio_denied": true,
+          "misaligned_gpu_mmio_denied": true,
+          "oversized_gpu_mmio_denied": true,
+          "undersized_gpu_mmio_denied": true,
+          "authorized_proxy_mmio_succeeds": true,
+          "pmthor_owner_session_opens": true,
+          "second_realm_mmio_denied": true,
+          "owner_opp_transition_succeeds": true,
+          "pmthor_owner_release_succeeds": true,
+          "pmthor_owner_session_reopens": true,
+          "destroy_releases_mmio_owner": true
+        },
+        "host_kernel_errors": [],
+        "kernel_mmio_records": [
+          "[HOST_KERNEL_MMIO_TEST] blocked_address=0xfb000028 status_error=-14 raw_error=-14 mask_error=-14 write_error=-14 read_error=-14 restore_error=-14 alias_read_error=-14 alias_write_error=-14 alias_restore_error=-14 recheck_error=-14"
+        ]
+      }
+    },
+    {
+      "run_id": "host-devmem-mmio-denied-20261019-a",
+      "command": [
+        "python3",
+        "scripts/run/run-kvm-mmio-probe.py",
+        "--probe",
+        "build/secure-services-20261019/host-mmio/opencca_kvm_mmio_probe",
+        "--audit-host-mmio",
+        "--uart-capture"
+      ],
+      "status": "COMPLETED",
+      "returncode": 0,
+      "evidence_directory": "build/lab-runs/host-devmem-mmio-denied-20261019-a",
+      "kvm-mmio.json": {
+        "host_mmio_protection": "HOST_CPU_ACCESS_DENIED",
+        "ordinary_vm_mmio_protection": "NOT_RUN",
+        "probe_rc": 0,
+        "checks": {
+          "non_gpu_mmio_denied": true,
+          "misaligned_gpu_mmio_denied": true,
+          "oversized_gpu_mmio_denied": true,
+          "undersized_gpu_mmio_denied": true,
+          "authorized_proxy_mmio_succeeds": true,
+          "pmthor_owner_session_opens": true,
+          "second_realm_mmio_denied": true,
+          "owner_opp_transition_succeeds": true,
+          "pmthor_owner_release_succeeds": true,
+          "pmthor_owner_session_reopens": true,
+          "destroy_releases_mmio_owner": true
+        },
+        "host_kernel_errors": []
+      }
+    },
+    {
+      "run_id": "ordinary-vm-mmio-audit-20261019-a",
+      "command": [
+        "python3",
+        "scripts/run/run-kvm-mmio-probe.py",
+        "--probe",
+        "build/secure-services-20261019/host-mmio/opencca_kvm_mmio_probe",
+        "--ordinary-vm-probe",
+        "build/secure-services-20261019/host-mmio/opencca_ordinary_mmio_probe",
+        "--uart-capture"
+      ],
+      "status": "FAILED",
+      "returncode": 2,
+      "evidence_directory": "build/lab-runs/ordinary-vm-mmio-audit-20261019-a",
+      "kvm-mmio.json": {
+        "host_mmio_protection": "NOT_RUN",
+        "ordinary_vm_mmio_protection": "FAIL_BYPASS_DETECTED",
+        "probe_rc": 2,
+        "checks": {
+          "non_gpu_mmio_denied": true,
+          "misaligned_gpu_mmio_denied": true,
+          "oversized_gpu_mmio_denied": true,
+          "undersized_gpu_mmio_denied": true,
+          "authorized_proxy_mmio_succeeds": true,
+          "pmthor_owner_session_opens": true,
+          "second_realm_mmio_denied": true,
+          "owner_opp_transition_succeeds": true,
+          "pmthor_owner_release_succeeds": true,
+          "pmthor_owner_session_reopens": true,
+          "destroy_releases_mmio_owner": true
+        },
+        "host_kernel_errors": [],
+        "ordinary_vm_mmio_records": [
+          "[ORDINARY_VM_MMIO_TEST] address=0xfb000028 before=0 requested=0x1 observed=0x1 restored=0"
+        ]
+      }
+    },
+    {
+      "run_id": "managed-iommu-host-mmio-20261019-a",
+      "command": [
+        "python3",
+        "scripts/run/run-dma-guard.py",
+        "--module",
+        "build/dma-guard-20261018/managed-probe-module/opencca_dma_probe.ko"
+      ],
+      "status": "COMPLETED",
+      "returncode": 0,
+      "evidence_directory": "build/lab-runs/managed-iommu-host-mmio-20261019-a",
+      "dma-guard.json": {
+        "probe_rc": 0,
+        "checks": {
+          "allowed_mapping": true,
+          "existing_dma_blocks_delegation": true,
+          "allowed_unmap": true,
+          "delegation_after_unmap": true,
+          "delegated_page_mapping_denied": true,
+          "covering_mapping_denied": true,
+          "mapping_after_undelegation": true,
+          "final_unmap": true,
+          "reservation_recovery": true,
+          "allowed_sg_mapping": true,
+          "allowed_sg_unmap": true,
+          "delegated_page_write_mapping_denied": true,
+          "delegated_page_alias_mapping_denied": true,
+          "delegated_sg_mapping_denied": true,
+          "delegated_sg_rollback": true,
+          "direct_driver_delegation_denied": true,
+          "managed_domain_root_ownership": true,
+          "managed_recovery_mapping": true,
+          "unbind_parking": true,
+          "managed_recovery_after_unbind": true,
+          "recovery_mapping_after_rebind": true,
+          "recovery_unmap": true
+        },
+        "kernel_errors": [],
+        "live_gpu_mapping_check": "NOT_RUN",
+        "actual_dma_transfer": "NOT_RUN"
+      }
+    },
+    {
+      "run_id": "gpu-power-host-mmio-20261019-a",
+      "command": [
+        "python3",
+        "scripts/run/run-gpu-power-cycle.py",
+        "--module",
+        "build/secure-services-20261019/device-assignment/power-module/opencca_gpu_power_probe.ko",
+        "--kvm-probe",
+        "build/secure-services-20261019/host-mmio/opencca_kvm_mmio_probe"
+      ],
+      "status": "COMPLETED",
+      "returncode": 0,
+      "evidence_directory": "build/lab-runs/gpu-power-host-mmio-20261019-a",
+      "kvm-mmio.json": {
+        "host_mmio_protection": "NOT_RUN",
+        "ordinary_vm_mmio_protection": "NOT_RUN",
+        "probe_rc": 0,
+        "checks": {
+          "non_gpu_mmio_denied": true,
+          "misaligned_gpu_mmio_denied": true,
+          "oversized_gpu_mmio_denied": true,
+          "undersized_gpu_mmio_denied": true,
+          "authorized_proxy_mmio_succeeds": true,
+          "pmthor_owner_session_opens": true,
+          "second_realm_mmio_denied": true,
+          "owner_opp_transition_succeeds": true,
+          "pmthor_owner_release_succeeds": true,
+          "pmthor_owner_session_reopens": true,
+          "destroy_releases_mmio_owner": true
+        },
+        "host_kernel_errors": []
+      },
+      "gpu-power-cycle.json": {
+        "checks": {
+          "initial_unowned_and_illegal_opp_denied": true,
+          "unbound_rmm_off_and_illegal_opp_denied": true,
+          "rebound_rmm_unowned_and_illegal_opp_denied": true,
+          "driver_and_frequency_restored": true
+        },
+        "kernel_errors": [],
+        "status": "PASS"
+      }
+    },
+    {
+      "run_id": "guest-rsi-host-mmio-20261019-a",
+      "command": [
+        "python3",
+        "scripts/run/run-guest-iommu-probe.py",
+        "--images",
+        "build/secure-services-20261019/final",
+        "--module",
+        "build/secure-services-20261019/iommu-irq/guest-module/opencca_guest_iommu_probe.ko",
+        "--realm-init",
+        "build/secure-services-20261019/iommu-irq/realm-init"
+      ],
+      "status": "COMPLETED",
+      "returncode": 0,
+      "evidence_directory": "build/lab-runs/guest-rsi-host-mmio-20261019-a",
+      "guest-iommu/result.json": {
+        "checks": {
+          "unowned_gpu_claim_denied": true,
+          "unowned_gpu_reset_denied": true,
+          "version": true,
+          "create": true,
+          "unassigned_codec_bind_denied": true,
+          "unpowered_vop_bind_denied": true,
+          "unassigned_codec_fault_denied": true,
+          "unpowered_vop_fault_denied": true,
+          "map": true,
+          "query": true,
+          "destroy_denied_while_mapped": true,
+          "unmap": true,
+          "query_after_unmap": true,
+          "overflow_mapping_denied": true,
+          "destroy": true,
+          "stale_handle_denied": true,
+          "result": true
+        },
+        "kernel_errors": [],
+        "status": "PASS",
+        "kernel_health": "PASS",
+        "host_lifecycle_health": "PASS"
+      }
+    }
+  ],
+  "source_sha256_at_documentation": {
+    "Linux-Host-GPU/arch/arm64/kvm/hyp/nvhe/mem_protect.c": "325b4094decd4f9720b728815b82759a7b0af1bca856bbc3a663ffb6e609eb63",
+    "Linux-Host-GPU/arch/arm64/kvm/hyp/include/nvhe/opencca_mmio.h": "dd89937ba2b352a27f6b79e26811ba084d64db73d4114763e11a0cf4eda67cba",
+    "Linux-Host-GPU/arch/arm64/kvm/hyp/include/hyp/exception.h": "2577085459b71806f1d3cd233ecfd78564f9bf6e12f0247f313afaf908982941",
+    "Linux-Host-GPU/arch/arm64/kvm/hyp/exception.c": "be9c2cc931568f3c86abdc4303e1071c1444817403859dc3d9ed856cde91607e",
+    "GPU-SFTP/tests/dma-guard/opencca_gpu_mmio_probe.c": "e84be94c34a6977d0198a7348cfad4b9657d883d7f4b788bc2f6956bfe3a8cc6",
+    "GPU-SFTP/tests/dma-guard/opencca_kvm_mmio_probe.c": "7a8ff282f317766e67d22285f7f43e32a9bfad7d527d70bcc15cdd3d8c3a2494",
+    "GPU-SFTP/tests/dma-guard/opencca_ordinary_mmio_probe.c": "13b50c07bb7ccfda3d256b243646cfae98064121d9964dbf5c5b88cfa5d754d0",
+    "GPU-SFTP/tests/dma-guard/opencca_ordinary_mmio_guest.S": "2b42401fb3ce318479595f58bfd2a2251ab881ac5dea097c434cf0e0f2a989e8",
+    "scripts/run/run-kvm-mmio-probe.py": "646bf40581254eeed7b9d55ff291d474a69c8345ec7a9587abff47380fca2b44",
+    "GPU-SFTP/tests/dma-guard/opencca_host_mmio_test.c": "068857e1fe223954a81cf8c393bec2df0b3e15a0f500fbfa07fd6686362c9977",
+    "scripts/check/check-opencca-host-mmio.sh": "6e1aedd058b887becd1ceec60f49006c32d6c19a6c6e93ae28d30b2d9806086e"
+  },
+  "not_run": [
+    "Dual Client compute on Host31",
+    "Full attack/failure matrix",
+    "Other device DMA bypass closure",
+    "Full acceptance before artifact cleanup"
+  ],
+  "cleanup": "NOT_RUN; retain failures, rollback, current inputs and SD backups"
+}

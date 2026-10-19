@@ -1,0 +1,7 @@
+{
+  "uname": "Linux opencca-rock5b-rk3588 6.12.0-opencca-pmthor-opp3 #1 SMP PREEMPT Sun Oct 18 20:59:31 CST 2026 aarch64 GNU/Linux",
+  "dma_guard_enabled": true,
+  "probe_loaded": false,
+  "cpu_online": "0-1",
+  "gpu_driver": "/sys/bus/platform/drivers/pmthor"
+}

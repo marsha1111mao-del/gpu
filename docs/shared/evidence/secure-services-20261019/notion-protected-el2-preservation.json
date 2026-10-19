@@ -1,0 +1,49 @@
+{
+  "page_id": "3fd659a3-b8cc-806d-aaf9-db523d4809af",
+  "url": "https://app.notion.com/p/3fd659a3b8cc806daaf9db523d4809af",
+  "method": "Remove only newly inserted section, then compare the complete original page body exactly",
+  "old_content_exact": true,
+  "old_length": 38083,
+  "new_length": 41015,
+  "state_lists_preserved": {
+    "implemented_7": true,
+    "partial_7": true,
+    "historical_6": true
+  },
+  "new_run_ids": [
+    {
+      "id": "protected-el2-boot-20261019-a",
+      "present": true
+    },
+    {
+      "id": "protected-el2-boot-20261019-b",
+      "present": true
+    },
+    {
+      "id": "kvm-mmio-protected-restore-20261019-a",
+      "present": true
+    },
+    {
+      "id": "host-kernel-mmio-audit-20261019-a",
+      "present": true
+    },
+    {
+      "id": "host-devmem-mmio-audit-20261019-c",
+      "present": true
+    },
+    {
+      "id": "kvm-mmio-kernel-probe-control-20261019-a",
+      "present": true
+    },
+    {
+      "id": "protected-el2-cleanup-20261019-a",
+      "present": true
+    },
+    {
+      "id": "protected-el2-cleanup-20261019-b",
+      "present": true
+    }
+  ],
+  "overall": "PARTIAL / INCOMPLETE",
+  "host_mmio_protection": "FAIL_BYPASS_DETECTED"
+}
