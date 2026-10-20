@@ -1,6 +1,6 @@
 # Realm 共享、可信通知与 GPU 测试
 
-当前版本为P42 + BO容量修复。设计、冻结输入与验收边界统一见[当前基线](../../../docs/shared/CURRENT_BASELINE.md)，不再在工具说明中重复历史实验。
+当前源码包含P42、BO容量修复及GPUVM隔离v1。设计、冻结输入与验收边界统一见[当前基线](../../../docs/shared/CURRENT_BASELINE.md)，不再在工具说明中重复历史实验。
 
 ## 入口与构建
 
@@ -14,7 +14,8 @@ python3 scripts/maintenance/lab-run.py --run-id <唯一ID> -- \
 | 选项 | 实际范围 |
 | --- | --- |
 | `--workload events` | 三Realm可信事件与拒绝语义 |
-| `--workload compute` | 两个Client独立池、各17项API、实际计算、权限与IRQ检查 |
+| `--workload compute` | 两个Client独立池、各18项API（含GPUVM隔离）、实际计算、权限与IRQ检查；需匹配新版冻结包 |
+| `--workload compute --gpu-fault-isolation` | 另加实际GPU访问外域VA的翻译故障、错误fence和受害Group恢复检查 |
 | `--workload glmark --performance --benchmark-only --suite --profiles glmark-720` | 默认256 MiB，完整720p性能 |
 | 上述glmark模式加`--large-pool --profiles ncnn-resnet50 glmark-1080 ioctl compute-128` | 512 MiB池、每Realm1 GiB、CMA576 MiB；要求支持512 MiB的RMM |
 
@@ -58,5 +59,7 @@ RMM授权与IRQ不替代消息边界验证。IRQ只提示队列检查；GPU完�
 工具输出JSON：退出0为RMM成功，1为本地设备/ioctl失败，2为参数错误，3为RMM拒绝；负例必须核对具体返回，不能把任意失败当作拒绝通过。
 
 runner保存实际命令、逐项退出码、输入哈希、串口及summary；wrapper保存前后资源。性能需同时核对Mali后端、正确性、完整场景、BO/提交错误、内核健康与恢复；不能只看score或外层exit0。未选择项目记为NOT_RUN。
+
+GPUVM探针与隔离标志见[专项说明](../panthor-ioctl-smoke/GPUVM_ISOLATION.md)。互不信任Group须使用独立GPUVM并设置`DRM_PANTHOR_VM_CREATE_ISOLATED`；普通Mesa同GPUVM内的Group仍共享地址空间。预期故障只按本次准确时间戳/消息单列，其他故障仍导致健康检查失败。
 
 最新结果及历史失败：[性能汇总](../../../docs/shared/GPU_NATIVE_PROXYCLIENT_COMPARISON_20261018.md)、[BO修复](../../../docs/shared/GPU_BO_CAPACITY_FIX_20261018.md)、[历史实现记录](../../../docs/archive/20261018/history/PROXY_TASK_SERVICE_IMPLEMENTATION_20261017.md)。

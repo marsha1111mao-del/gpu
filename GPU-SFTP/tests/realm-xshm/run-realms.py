@@ -32,6 +32,7 @@ p.add_argument('--performance', action='store_true', help='600 MHz OPP, separate
 p.add_argument('--benchmark-only', action='store_true', help='Two Realms and full glmark; defer the broader lifecycle/API suite')
 p.add_argument('--suite', action='store_true', help='Remeasure common IOCTL, compute, ML, NCNN and both full glmark sizes')
 p.add_argument('--rpc-stats', action='store_true', help='Measure Client/Proxy RPC, backend submission and GPU IRQ latency (adds timing overhead)')
+p.add_argument('--gpu-fault-isolation', action='store_true', help='Require an intentional foreign-VA GPU fault and victim recovery in the two-Client suite')
 p.add_argument('--root', type=Path, default=Path('/root/GPU-SFTP'))
 a = p.parse_args()
 if a.profiles and not a.suite:
@@ -60,6 +61,8 @@ if a.benchmark_only and not a.glmark_rootfs:
     p.error('--benchmark-only requires --glmark-rootfs')
 if a.performance and not a.gpu_flow:
     p.error('--performance requires --gpu-flow')
+if a.gpu_fault_isolation and (not a.compute_rootfs or a.benchmark_only):
+    p.error('--gpu-fault-isolation requires the two-Client compute suite')
 vm_count = 2 if a.benchmark_only else 3
 workload_rootfs = a.glmark_rootfs or a.compute_rootfs
 out.mkdir(parents=True, exist_ok=False)
@@ -91,6 +94,7 @@ for path in inputs:
 (out/'runner.py').write_bytes(Path(__file__).read_bytes())
 command_log = (out/'commands.jsonl').open('w')
 host_restore = {}
+expected_gpu_fault_lines = set()
 
 
 def save():
@@ -233,14 +237,15 @@ def text_command(vm, command, markers, timeout=120, sent=False):
     return data.decode(errors='replace')
 
 
-# Exercise the same 17 DRM modes as the ordinary-VM matrix, over the
-# actual Realm transport. Host PFN and passthrough cases remain separate.
+# Exercise the baseline DRM modes and GPUVM isolation over the actual Realm
+# transport. Host PFN and passthrough cases remain separate.
 GPU_IOCTL_MODES = (
     'basic', 'vm-create', 'bo-create', 'bo-lifecycle', 'bo-mmap',
     'vm-bind', 'vm-bind-async-sync', 'vm-state-flush',
     'syncobj-lifecycle', 'syncobj-wait', 'syncobj-transfer',
     'syncobj-timeline-wait', 'syncobj-signal-query', 'sync-file-snapshot',
     'group-lifecycle', 'group-submit-syncpoint', 'tiler-heap-lifecycle',
+    'gpuvm-isolation',
 )
 
 
@@ -254,6 +259,11 @@ def kernel_issues(log):
     }
     return {name: sorted(set(re.findall(r'[^\r\n]*'+pattern+r'[^\r\n]*', log)))
             for name, pattern in patterns.items()}
+
+
+def gpu_fault_identity(line):
+    match = re.search(r'\[\s*([0-9.]+)\]\s*(.*)$', line)
+    return match.groups() if match else (None, line.strip())
 
 
 def gpu_smoke(vm, mode):
@@ -473,6 +483,7 @@ def test_two_clients(channel, endpoints):
     log = text_command(0, 'kernel-log', ['XSHM_KERNEL_LOG_END'])
     for endpoint in endpoints[1:]:
         assert f'permissions PASS owner={endpoint}' in log, f'missing permission selftest for endpoint {endpoint}'
+        assert f'GPU isolation PASS owner={endpoint}' in log, f'missing GPU lifetime selftest for endpoint {endpoint}'
     result['permission_selftests'] = 'PASS'
     for mode in GPU_IOCTL_MODES:
         command = f'gpu-smoke --{mode} /dev/dri/renderD128'
@@ -492,6 +503,18 @@ def test_two_clients(channel, endpoints):
                                 'GL_RENDERER=Mali-G610'], 300, sent=True)
             assert 'alu_iters=64' in data
         result['two_client_compute_check'] = 'PASS'
+    if a.gpu_fault_isolation:
+        before = text_command(0, 'kernel-log', ['XSHM_KERNEL_LOG_END'])
+        gpu_smoke(1, 'gpuvm-fault-isolation')
+        after = text_command(0, 'kernel-log', ['XSHM_KERNEL_LOG_END'])
+        prior_faults = {gpu_fault_identity(line) for line in kernel_issues(before)['gpu_translation_fault']}
+        new_faults = {line for line in kernel_issues(after)['gpu_translation_fault']
+                      if gpu_fault_identity(line) not in prior_faults}
+        addresses = set(re.findall(r'Unhandled Page fault in AS\d+ at VA (0x[0-9A-Fa-f]+)', after)) - set(re.findall(r'Unhandled Page fault in AS\d+ at VA (0x[0-9A-Fa-f]+)', before))
+        assert len({gpu_fault_identity(line) for line in new_faults}) == 1 and all('TRANSLATION_FAULT' in line for line in new_faults), new_faults
+        assert {int(address, 16) for address in addresses} == {0xa00000}, addresses
+        expected_gpu_fault_lines.update(gpu_fault_identity(line) for line in new_faults)
+        result['expected_gpu_fault'] = {'status': 'PASS', 'address': '0xa00000', 'lines': sorted(new_faults)}
     for vm, grant in reversed(active):
         call(vm, f'pool-unbind {grant}')
         bindings.remove((vm, grant))
@@ -639,6 +662,9 @@ try:
             files[vm].flush()
             serial = (out/f'realm-{vm}.log').read_text(errors='replace')
             issues = kernel_issues(log+'\n'+serial)
+            if vm == 0 and expected_gpu_fault_lines:
+                issues['gpu_translation_fault'] = [line for line in issues['gpu_translation_fault']
+                    if gpu_fault_identity(line) not in expected_gpu_fault_lines]
             result['kernel_health'][str(vm)] = issues
             assert not any(issues.values()), f'Realm {vm}: kernel faults: '+str(
                 {name: len(lines) for name, lines in issues.items() if lines})
@@ -646,6 +672,14 @@ try:
 except Exception as exc:
     result['status'] = 'FAIL'
     result['error'] = str(exc)
+    for vm, process in enumerate(processes):
+        if process.poll() is not None:
+            continue
+        try:
+            failure_log = text_command(vm, 'kernel-log', ['XSHM_KERNEL_LOG_END'], 15)
+            (out/f'failure-kernel-{vm}.log').write_text(failure_log)
+        except Exception as diagnostic_error:
+            result.setdefault('failure_log_errors', []).append(str(diagnostic_error))
 finally:
     for vm, grant in reversed(bindings):
         try:

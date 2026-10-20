@@ -6,6 +6,8 @@
 
 场景二的简明实现清单见[当前实现状态](SCENARIO2_IMPLEMENTATION_STATUS.md)。Notion「假设场景2实现」按用户要求仅维护已实现、未实现/部分实现两区；历史开发与失败证据在仓库原报告保留。
 
+**2026-10-20 GPUVM隔离v1已验收：** 可信Proxy/Panthor检查session/owner/generation、对象权限/类型、用户VA和不可变BO根身份；显式隔离GPUVM一生只允许一个Group。互不信任任务须使用独立GPUVM及`DRM_PANTHOR_VM_CREATE_ISOLATED`，普通Mesa同GPUVM内Group仍共享地址空间。最终F完整720p **1159**，对同Host #31/RMM timer v6既有1159为**0分/0%**；33场景、正确性、双Client各18项API/计算、实际GPU越域VA故障与受害Group恢复、Host/Guest健康和资源恢复通过。Guest源码`af4eb42a1`，开发冻结包`build/gpuvm-isolation-20261020/final-f/`；不替换原冻结1171/1170或旧runtime-manifest，见[设计](GPUVM_ISOLATION_V1_20261020.md)与[验收/范围/清理](GPUVM_ISOLATION_VALIDATION_20261020.md)。Notion最新状态迁移需连接重新认证，本地保留全部14条目。
+
 **2026-10-20三端清理完成：** 移除35,360个废弃文件和332个空目录；控制机build含迁回归档后净减5.55GiB，Pi/RK根分区可用分别增加1.00/1.75GiB。运行源码、当前构建树、冻结/回退/恢复输入与失败证据保留，RK仍为#31/pmthor/CPU0–1/300MHz。两次独占维护rc0；仅维护验证，无新增GPU回归或性能测量。命令与清单见[清理记录](WORKSPACE_ARTIFACT_CLEANUP_20261020.md)。
 
 **2026-10-20平台假设与完成状态：** 按用户确认，可信页表/控制内存、IOMMU关键配置、工作态任务MMIO及未授权CPU/DMA访问的物理保护，均假设目标平台已提供，不列为当前模拟工程待开发任务。**统一安全IOMMU服务、Host与其他IOMMU设备的托管映射控制均已实现并完成当前范围验收。** 软件owner/generation、授权/映射互斥、撤销及回收仍由代码执行；不引入EL2接管普通VM页表。历史绕过FAIL与NOT_RUN原样保留，其他软件/发布任务独立跟踪。详见[平台假设与完成范围](SCENARIO2_PLATFORM_ASSUMPTIONS_20261020.md)。本次纯文档整理，未改运行代码，无新增性能测量。
@@ -63,7 +65,7 @@ flowchart LR
     C <-->|RMM 持久事件 / 可信 IRQ127| P
 ```
 
-- **提交：** 资源注册与可复用执行计划代替直接 GROUP_SUBMIT RPC；Proxy 按会话校验引用，资源生命周期变化使计划失效。不是 GPU shadow task 或跨 Group 页表隔离。
+- **提交：** 资源注册与可复用执行计划代替直接 GROUP_SUBMIT RPC；Proxy按会话校验引用，资源生命周期变化使计划失效。提交计划不生成GPU shadow task；互不信任Group的地址空间隔离由独立真实GPUVM及隔离策略实现。
 - **共享：** RMM 校验 Realm 端点、通道和授权范围，建立长期池，支持分段 attach/detach/revoke；队列身份来自 RMM。描述符和消息先复制到私有内存再校验，队列几何及本端进度保存在私有状态。
 - **通知：** RMM 保存 pending/ack/armed 状态并控制 IRQ127；hard IRQ 只调度接收工作，worker 排空后 ACK+ARM 并重查。中断只提示检查队列，不是访问授权或 GPU 完成证明。
 - **缓存：** tiler heap 初始化后按 GPU 所有权交接，避免逐提交重复同步；固件输出按实际读取范围维护。保留真实 DMA 缓存维护及发布顺序，不能以 CPU 屏障代替。

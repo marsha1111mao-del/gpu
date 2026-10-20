@@ -6,6 +6,7 @@
 #include <linux/sync_file.h>
 #include <poll.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -49,12 +50,14 @@ enum smoke_mode {
 	SMOKE_GROUP_SUBMIT_SYNCPOINT,
 	SMOKE_TILER_HEAP_LIFECYCLE,
 	SMOKE_BO_HOLD,
+	SMOKE_GPUVM_ISOLATION,
+	SMOKE_GPUVM_FAULT_ISOLATION,
 };
 
 static void usage(const char *prog)
 {
 	fprintf(stderr,
-		"usage: %s [--basic|--vm-create|--bo-create|--bo-lifecycle|--bo-mmap|--bo-hold|--hold-sec N|--bo-size BYTES|--vm-bind|--vm-bind-async-sync|--vm-state-flush|--syncobj-lifecycle|--syncobj-wait|--syncobj-transfer|--syncobj-timeline-wait|--syncobj-signal-query|--sync-file-snapshot|--group-lifecycle|--group-submit-syncpoint|--tiler-heap-lifecycle] [drm-node]\n",
+		"usage: %s [--basic|--vm-create|--bo-create|--bo-lifecycle|--bo-mmap|--bo-hold|--hold-sec N|--bo-size BYTES|--vm-bind|--vm-bind-async-sync|--vm-state-flush|--syncobj-lifecycle|--syncobj-wait|--syncobj-transfer|--syncobj-timeline-wait|--syncobj-signal-query|--sync-file-snapshot|--group-lifecycle|--group-submit-syncpoint|--gpuvm-isolation|--gpuvm-fault-isolation|--tiler-heap-lifecycle] [drm-node]\n",
 		prog);
 }
 
@@ -2990,6 +2993,8 @@ out:
 	return ret;
 }
 
+#include "gpuvm_isolation.h"
+
 int main(int argc, char **argv)
 {
 	const char *default_nodes[] = {
@@ -3044,6 +3049,10 @@ int main(int argc, char **argv)
 			mode = SMOKE_SYNC_FILE_SNAPSHOT;
 		} else if (!strcmp(argv[i], "--group-lifecycle")) {
 			mode = SMOKE_GROUP_LIFECYCLE;
+		} else if (!strcmp(argv[i], "--gpuvm-isolation")) {
+			mode = SMOKE_GPUVM_ISOLATION;
+		} else if (!strcmp(argv[i], "--gpuvm-fault-isolation")) {
+			mode = SMOKE_GPUVM_FAULT_ISOLATION;
 		} else if (!strcmp(argv[i], "--group-submit-syncpoint")) {
 			mode = SMOKE_GROUP_SUBMIT_SYNCPOINT;
 		} else if (!strcmp(argv[i], "--tiler-heap-lifecycle")) {
@@ -3093,6 +3102,8 @@ int main(int argc, char **argv)
 	}
 
 	if (basic_checks(fd) ||
+	    ((mode == SMOKE_GPUVM_ISOLATION || mode == SMOKE_GPUVM_FAULT_ISOLATION) &&
+	     gpuvm_isolation_check(fd, path, mode == SMOKE_GPUVM_FAULT_ISOLATION)) ||
 	    (mode == SMOKE_VM_CREATE && vm_create_check(fd)) ||
 	    (mode == SMOKE_BO_CREATE && bo_create_check(fd)) ||
 	    (mode == SMOKE_BO_LIFECYCLE && bo_lifecycle_check(fd)) ||
@@ -3125,7 +3136,11 @@ int main(int argc, char **argv)
 	}
 
 	close(fd);
-	if (mode == SMOKE_BO_HOLD)
+	if (mode == SMOKE_GPUVM_FAULT_ISOLATION)
+		printf("PANTHOR_IOCTL_SMOKE=GPUVM_FAULT_ISOLATION_PASS\n");
+	else if (mode == SMOKE_GPUVM_ISOLATION)
+		printf("PANTHOR_IOCTL_SMOKE=GPUVM_ISOLATION_PASS\n");
+	else if (mode == SMOKE_BO_HOLD)
 		printf("PANTHOR_IOCTL_SMOKE=BO_HOLD_PASS\n");
 	else if (mode == SMOKE_TILER_HEAP_LIFECYCLE)
 		printf("PANTHOR_IOCTL_SMOKE=TILER_HEAP_LIFECYCLE_PASS\n");

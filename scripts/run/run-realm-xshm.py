@@ -21,6 +21,7 @@ p.add_argument('--suite', action='store_true', help='Remeasure the common perfor
 p.add_argument('--large-pool', action='store_true', help='Opt into bounded 512 MiB pool / 1024 MiB Realms; requires updated RMM')
 p.add_argument('--profiles', nargs='+', help='Explicit subset of --suite, validated by the frozen runner')
 p.add_argument('--rpc-stats', action='store_true', help='Enable RPC/submission/IRQ timing in the frozen runner when supported')
+p.add_argument('--gpu-fault-isolation', action='store_true', help='Run the intentional GPU foreign-VA fault and recovery test with compute')
 p.add_argument('--remote-root', type=PurePosixPath, default=PurePosixPath('/root/GPU-SFTP'))
 p.add_argument('--rootfs', type=PurePosixPath, help='Prepared read-only Panfrost rootfs on RK')
 a = p.parse_args()
@@ -34,6 +35,8 @@ if a.benchmark_only and a.workload != 'glmark':
     p.error('--benchmark-only requires --workload glmark')
 if a.performance and a.workload == 'events':
     p.error('--performance requires a GPU workload')
+if a.gpu_fault_isolation and a.workload != 'compute':
+    p.error('--gpu-fault-isolation requires --workload compute')
 run_id = os.getenv('RUN_ID', '')
 if not run_id or os.getenv('GPU_LAB_ALLOW_RK_REBOOT') != '0':
     p.error('run through scripts/maintenance/lab-run.py without --allow-rk-reboot')
@@ -96,6 +99,8 @@ if a.large_pool:
     command += ['--large-pool']
 if a.rpc_stats:
     command += ['--rpc-stats']
+if a.gpu_fault_isolation:
+    command += ['--gpu-fault-isolation']
 if a.workload != 'events':
     rootfs = a.rootfs or a.remote_root/'firecracker-bins/rootfs/rootfs-panfrost.ext4'
     remote('test -r '+shlex.quote(str(rootfs)))

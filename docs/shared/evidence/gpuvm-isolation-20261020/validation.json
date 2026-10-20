@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "guest_commit": "af4eb42a1244ab221b73c15e15564de428721c97",
+  "host_release": "6.12.0-opencca-pmthor-opp3 #31",
+  "rmm": "timer v6, unchanged",
+  "bundle": "build/gpuvm-isolation-20261020/final-f",
+  "runs": [
+    {
+      "run_id": "gpuvm-v1-dual-20261020-b",
+      "command": [
+        "python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/gpuvm-isolation-20261020/final-f",
+        "--workload",
+        "compute",
+        "--gpu-fault-isolation"
+      ],
+      "started": "2026-10-19T17:42:18.373603+00:00",
+      "ended": "2026-10-19T17:53:13.777900+00:00",
+      "returncode": 0,
+      "status": "PASS",
+      "vm_exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "guest_kernel_health": "PASS",
+      "wrapper_evidence": "build/lab-runs/gpuvm-v1-dual-20261020-b",
+      "board_evidence": "/root/GPU-SFTP/log/realm-xshm/gpuvm-v1-dual-20261020-b"
+    },
+    {
+      "run_id": "gpuvm-v1-720-20261020-f",
+      "command": [
+        "python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/gpuvm-isolation-20261020/final-f",
+        "--workload",
+        "glmark",
+        "--performance",
+        "--benchmark-only",
+        "--suite",
+        "--profiles",
+        "glmark-720"
+      ],
+      "started": "2026-10-19T17:53:18.403116+00:00",
+      "ended": "2026-10-19T18:02:20.528328+00:00",
+      "returncode": 0,
+      "status": "PASS",
+      "vm_exit_codes": [
+        0,
+        0
+      ],
+      "guest_kernel_health": "PASS",
+      "wrapper_evidence": "build/lab-runs/gpuvm-v1-720-20261020-f",
+      "board_evidence": "/root/GPU-SFTP/log/realm-xshm/gpuvm-v1-720-20261020-f"
+    }
+  ],
+  "dual_client": {
+    "clients": 2,
+    "api_modes_per_client": 18,
+    "snapshot_exports_per_client": 128,
+    "snapshot_imports_per_client": 64,
+    "gpuvm_execution": "Each Client: two independent isolated GPUVMs, same VA 0x401000, 32 alternating actual CSF LOAD/STORE submissions; canaries and sync-file fences PASS",
+    "negative_checks": [
+      "second Group",
+      "active root destroy",
+      "cross-root ordinary/read-only alias",
+      "BO bounds",
+      "reserved MAP/UNMAP",
+      "wrapped VA",
+      "foreign session handle",
+      "Group recreation",
+      "old BO with recycled VM handle"
+    ],
+    "root_handle_reused": true,
+    "compute": "Both Clients: Mali-G610, count65536/samples16/alu_iters64, PASS",
+    "manager_selftests": "owners19/20: permissions, control pages, stale generation, pinned reuse and zeroing PASS",
+    "expected_gpu_fault": {
+      "status": "PASS",
+      "scope": "two independent GPUVMs within Client1",
+      "address": "0xa00000",
+      "class": "TRANSLATION_FAULT_2",
+      "count": 1,
+      "attacker_fence": "error",
+      "attacker_group": "fatal",
+      "victim_canary": "unchanged",
+      "victim_resubmission": "PASS"
+    }
+  },
+  "performance": {
+    "reference_score": 1159,
+    "final_score": 1159,
+    "absolute_change": 0,
+    "percentage_change": 0,
+    "scenes": 33,
+    "validation": {
+      "success": 26,
+      "known_numeric_exception": 1,
+      "unknown": 6,
+      "unexpected_failures": 0
+    },
+    "conditions": {
+      "pool_mib": 256,
+      "profile": "full720p/null-noop/finish",
+      "shader_cache": "disabled",
+      "cpus": "0-3; Proxy1/Client2",
+      "gpu_requested_hz": 600000000,
+      "gpu_actual_hz": 594000000,
+      "cpu_frequency_fixed": false
+    },
+    "interpretation": "No significant regression observed in this comparison; no definite speedup claimed"
+  },
+  "restoration": {
+    "host_health": "PASS",
+    "resources": "PASS",
+    "cpus": "0-1",
+    "gpu_driver": "pmthor",
+    "gpu_hz": 300000000
+  },
+  "isolation_scope": "Mutually untrusted tasks require independent GPUVMs with DRM_PANTHOR_VM_CREATE_ISOLATED. Ordinary Mesa Groups in one GPUVM share the address space.",
+  "platform_assumptions": [
+    "Protected page tables and control memory",
+    "Protected critical device configuration and active-task MMIO",
+    "Unauthorized physical CPU/DMA access blocked"
+  ],
+  "not_run": [
+    "raw malicious cross-Client RPC matrix",
+    "shared-state race matrix",
+    "long stress",
+    "1080p",
+    "NCNN",
+    "multi-vCPU",
+    "side channels",
+    "on-chip residue"
+  ],
+  "cleanup": {
+    "removed_files": 22,
+    "released_allocated_bytes": 494198784,
+    "released_mib": 471.3,
+    "retained": "final-f, current build trees, manifests, source snapshots, all failure and successful-run evidence",
+    "pi": "No new build/snapshot artifacts introduced; previous cleanup retained",
+    "rk": "Current runtime and recent test/failure logs retained; no new board build tree introduced"
+  },
+  "archives": {
+    "final": {
+      "path": "build/gpuvm-isolation-20261020/final-evidence.tar.gz",
+      "sha256": "1f46fc1383e0a91e1dbb0bd6a4dbb5ebefdc7e8511ed11d74f52b1a9eb98d22f"
+    },
+    "earlier": [
+      "performance-d-e.tar.gz",
+      "dual-a-evidence.tar.gz",
+      "attempts-a-b-c.tar.gz"
+    ]
+  },
+  "publication_scope": "Development source and tested bundle; formal binary release/runtime-manifest/frozen baseline replacement remain separate",
+  "notion_sync": "Latest GPUVM row migration pending MCP reauthentication; prior two-section cleanup retained"
+}
