@@ -13,6 +13,7 @@
 #include <time.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
 #include <drm.h>
@@ -2967,6 +2968,149 @@ out_destroy_vm:
  * destruction, handle reuse, and closing the DRM file. Repeated exports also
  * exercise independent snapshot cleanup. Run on native and client DRM nodes.
  */
+static int transfer_capture_export(int fd, uint32_t handle)
+{
+	struct drm_syncobj_handle exported = {
+		.handle = handle,
+		.flags = DRM_SYNCOBJ_HANDLE_TO_FD_FLAGS_EXPORT_SYNC_FILE,
+		.fd = -1,
+	};
+
+	if (ioctl(fd, DRM_IOCTL_SYNCOBJ_HANDLE_TO_FD, &exported) < 0)
+		return -1;
+	return exported.fd;
+}
+
+static int transfer_capture_ready(int sync_fd)
+{
+	struct sync_file_info info = { 0 };
+	struct pollfd ready = { .fd = sync_fd, .events = POLLIN };
+	int ret;
+
+	do {
+		ret = poll(&ready, 1, 5000);
+	} while (ret < 0 && errno == EINTR);
+	return ret == 1 && (ready.revents & POLLIN) &&
+		!ioctl(sync_fd, SYNC_IOC_FILE_INFO, &info) && info.status == 1 ? 0 : -1;
+}
+
+static int transfer_capture_check(int fd)
+{
+	struct drm_syncobj_create source = { .flags = DRM_SYNCOBJ_CREATE_SIGNALED };
+	struct drm_syncobj_create destination = { 0 }, timeline = { 0 };
+	struct drm_syncobj_destroy destroy = { 0 };
+	struct drm_syncobj_transfer transfer = { 0 };
+	struct drm_syncobj_array reset = { .count_handles = 1 };
+	int exported[2] = { -1, -1 }, ret = -1, status;
+	unsigned int iteration, repeat;
+	pid_t child = -1;
+
+	if (ioctl(fd, DRM_IOCTL_SYNCOBJ_CREATE, &source) ||
+	    ioctl(fd, DRM_IOCTL_SYNCOBJ_CREATE, &destination) ||
+	    ioctl(fd, DRM_IOCTL_SYNCOBJ_CREATE, &timeline))
+		goto out;
+	reset.handles = (uint64_t)(uintptr_t)&destination.handle;
+	transfer.src_handle = source.handle;
+	transfer.dst_handle = destination.handle;
+	for (iteration = 0; iteration < 128; iteration++) {
+		for (repeat = 0; repeat < 4; repeat++)
+			if (ioctl(fd, DRM_IOCTL_SYNCOBJ_TRANSFER, &transfer))
+				goto out;
+		exported[0] = transfer_capture_export(fd, destination.handle);
+		exported[1] = transfer_capture_export(fd, destination.handle);
+		if (exported[0] < 0 || exported[1] < 0 ||
+		    ioctl(fd, DRM_IOCTL_SYNCOBJ_RESET, &reset))
+			goto out;
+		status = transfer_capture_export(fd, destination.handle);
+		if (status >= 0) {
+			close(status);
+			fprintf(stderr, "TRANSFER_CAPTURE exported stale fence after reset\n");
+			goto out;
+		}
+		if (errno != EINVAL)
+			goto out;
+		for (repeat = 0; repeat < 2; repeat++) {
+			if (transfer_capture_ready(exported[repeat]))
+				goto out;
+			close(exported[repeat]);
+			exported[repeat] = -1;
+		}
+	}
+	transfer.dst_handle = timeline.handle;
+	transfer.dst_point = 7;
+	if (ioctl(fd, DRM_IOCTL_SYNCOBJ_TRANSFER, &transfer))
+		goto out;
+	transfer.src_handle = timeline.handle;
+	transfer.src_point = 7;
+	transfer.dst_handle = destination.handle;
+	transfer.dst_point = 0;
+	if (ioctl(fd, DRM_IOCTL_SYNCOBJ_TRANSFER, &transfer))
+		goto out;
+	exported[0] = transfer_capture_export(fd, destination.handle);
+	if (exported[0] < 0)
+		goto out;
+	transfer.src_handle = source.handle;
+	transfer.src_point = 0;
+	transfer.dst_handle = timeline.handle;
+	transfer.dst_point = 11;
+	if (ioctl(fd, DRM_IOCTL_SYNCOBJ_TRANSFER, &transfer) ||
+	    transfer_capture_ready(exported[0]))
+		goto out;
+	close(exported[0]);
+	exported[0] = -1;
+	transfer.dst_handle = destination.handle;
+	transfer.dst_point = 0;
+	child = fork();
+	if (child < 0)
+		goto out;
+	if (!child) {
+		for (iteration = 0; iteration < 256; iteration++) {
+			int sync_fd = transfer_capture_export(fd, destination.handle);
+
+			if (sync_fd < 0) {
+				if (errno != EINVAL)
+					_exit(1);
+				continue;
+			}
+			status = transfer_capture_ready(sync_fd);
+			close(sync_fd);
+			if (status)
+				_exit(1);
+		}
+		_exit(0);
+	}
+	for (iteration = 0; iteration < 256; iteration++)
+		if (ioctl(fd, DRM_IOCTL_SYNCOBJ_RESET, &reset) ||
+		    ioctl(fd, DRM_IOCTL_SYNCOBJ_TRANSFER, &transfer))
+			goto out;
+	if (waitpid(child, &status, 0) != child || !WIFEXITED(status) || WEXITSTATUS(status))
+		goto out;
+	child = -1;
+	ret = 0;
+	printf("PANTHOR_TRANSFER_CAPTURE_SMOKE=PASS reuse=512 exports=256 reset=128 timeline=1 concurrent_mutations=256\n");
+out:
+	if (child > 0)
+		waitpid(child, &status, 0);
+	for (repeat = 0; repeat < 2; repeat++)
+		if (exported[repeat] >= 0)
+			close(exported[repeat]);
+	if (timeline.handle) {
+		destroy.handle = timeline.handle;
+		ioctl(fd, DRM_IOCTL_SYNCOBJ_DESTROY, &destroy);
+	}
+	if (destination.handle) {
+		destroy.handle = destination.handle;
+		ioctl(fd, DRM_IOCTL_SYNCOBJ_DESTROY, &destroy);
+	}
+	if (source.handle) {
+		destroy.handle = source.handle;
+		ioctl(fd, DRM_IOCTL_SYNCOBJ_DESTROY, &destroy);
+	}
+	if (ret)
+		fprintf(stderr, "TRANSFER_CAPTURE failed: %s\n", strerror(errno));
+	return ret;
+}
+
 static int sync_file_snapshot_check(int fd)
 {
 	int round, ret = -1, exported[128];
@@ -2982,6 +3126,10 @@ static int sync_file_snapshot_check(int fd)
 		.count_handles = 1,
 	};
 
+	if (transfer_capture_check(fd)) {
+		close(fd);
+		return -1;
+	}
 	for (round = 0; round < 128; round++)
 		exported[round] = -1;
 

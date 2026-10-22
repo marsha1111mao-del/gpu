@@ -167,6 +167,28 @@ static void memory_info(void)
 	_exit(0);
 }
 
+static void notify_trace_dump(void)
+{
+	char buffer[4096];
+	FILE *stream;
+	size_t count;
+
+	mkdir("/sys/kernel/debug", 0755);
+	if (mount("debugfs", "/sys/kernel/debug", "debugfs", 0, NULL) && errno != EBUSY)
+		_exit(1);
+	stream = fopen("/sys/kernel/debug/realm_xshm/notify_trace", "r");
+	if (!stream)
+		_exit(1);
+	puts("XSHM_NOTIFY_TRACE_BEGIN");
+	while ((count = fread(buffer, 1, sizeof(buffer), stream)))
+		if (fwrite(buffer, 1, count, stdout) != count)
+			_exit(1);
+	if (ferror(stream) || fclose(stream))
+		_exit(1);
+	puts("XSHM_NOTIFY_TRACE_END");
+	_exit(0);
+}
+
 int main(void)
 {
 	char *line = NULL;
@@ -232,6 +254,8 @@ int main(void)
 				kernel_log();
 			if (!strcmp(args[1], "memory-info"))
 				memory_info();
+			if (!strcmp(args[1], "notify-trace"))
+				notify_trace_dump();
 			if (iommu_device) {
 				int descriptor;
 				ssize_t written;

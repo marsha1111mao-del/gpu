@@ -1,6 +1,24 @@
 # 当前源码的 GitHub 提交快照
 
-日期：2026-10-22。本次按用户要求提交当前开发版本，依次推送 RMM、Guest、Firecracker、OpenCCA，再更新主仓库组件指针。没有改写历史、创建新分支或重新打包运行镜像。
+日期：2026-10-22。按用户要求再次保存当前开发进度；先推送组件，再更新主仓库指针。没有改写历史或创建新分支，冻结运行包和旧发布manifest保持不变。
+
+## 最新源码快照
+
+| 仓库 | 提交 | 内容 |
+| --- | --- | --- |
+| `opencca/tf-rmm` | `15c7ee14af5deacda757342c169fd98722f58f90` | 新增默认路径不启用的计时通知ABI，供拆分RMM锁与服务时间；未部署上板 |
+| `Linux-Guest-GPU` | `206c612afc921bc8b65dcfae210b1db18c858a2e` | TRANSFER捕获不可变快照、导出复用及默认关闭的通知/接收时间戳诊断 |
+| `opencca` | `8014f360db0c7d4912a6e0cd4f5c5ee18e586435` | 固定上述RMM提交 |
+
+Host和Firecracker保持下方上一快照版本。主仓库另保存扩展快照语义探针、runner开关、结果审计脚本及[实现与测试报告](GPU_TRANSFER_CAPTURE_20261022.md)。
+
+本次提交前Client/Proxy Image、RMM增量构建及Realm用户态工具构建均退出0；RMM策略ASan/UBSan检查、固定上游补丁校验、Python语法、Git空白和新增内容凭据检查通过。构建日志留在忽略目录 `build/notify-latency-20261022/checkpoint-{client,proxy,rmm}.log`。此次未运行新的硬件负载、未刷固件；新通知计时源码仍待硬件验收，Host调度关联工具与真实GPU完成至Client确认分布未实现。不能把旧冻结包PASS继承给最新源码整体。
+
+改动目的｜固定TRANSFER融合验证成果和通知诊断开发进度｜既有无计时720p关闭1158 → 开启1156，计时轮1149｜融合−2/−0.17%；开启计时较1156为−7/−0.61%｜前两轮同镜像同条件，仅切capture；第三轮增加计时，不独立归因；提交本身无新增性能测量｜run-id、命令、退出码、日志见[TRANSFER报告](GPU_TRANSFER_CAPTURE_20261022.md)｜保留默认关闭候选与未验收诊断，不宣称提分或三项优化全部完成。
+
+## 上一源码快照
+
+以下保留此前 `f22f837` 快照的组件与检查记录，当时依次推送RMM、Guest、Firecracker、OpenCCA及主仓库。
 
 ## 已推送组件
 

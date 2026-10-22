@@ -21,6 +21,7 @@ static const struct {
 	[REALM_XSHM_ACCEPT] = { "accept", 1 },
 	[REALM_XSHM_CLOSE] = { "close", 1 },
 	[REALM_XSHM_NOTIFY] = { "notify", 1 },
+	[REALM_XSHM_NOTIFY_TIMED] = { "notify-timed", 1 },
 	[REALM_XSHM_ARM] = { "arm", 2 },
 	[REALM_XSHM_ACK] = { "ack", 2 },
 	[REALM_XSHM_QUERY] = { "query", 1 },

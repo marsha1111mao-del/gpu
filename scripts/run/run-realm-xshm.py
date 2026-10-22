@@ -25,6 +25,8 @@ p.add_argument('--pool-mib', type=int, choices=(128, 160, 192, 256, 336, 384), h
 p.add_argument('--reclaim-targets', action='store_true', help='Require verified VMM reclamation and staged ResNet50 memory admission')
 p.add_argument('--profiles', nargs='+', help='Explicit subset of --suite, validated by the frozen runner')
 p.add_argument('--rpc-stats', action='store_true', help='Enable RPC/submission/IRQ timing in the frozen runner when supported')
+p.add_argument('--transfer-capture', action='store_true', help='Enable negotiated binary TRANSFER snapshot reuse')
+p.add_argument('--notify-trace', action='store_true', help='Collect RMM/notification/receive physical-counter samples')
 p.add_argument('--client-cpu-layout', choices=('shared', 'round-robin'))
 p.add_argument('--cpu-frequency-khz', type=int)
 p.add_argument('--telemetry', action='store_true')
@@ -123,6 +125,10 @@ if a.reclaim_targets:
     command += ['--reclaim-targets']
 if a.rpc_stats:
     command += ['--rpc-stats']
+if a.transfer_capture:
+    command += ['--transfer-capture']
+if a.notify_trace:
+    command += ['--notify-trace']
 if a.client_cpu_layout:
     command += ['--client-cpu-layout', a.client_cpu_layout]
 if a.cpu_frequency_khz is not None:

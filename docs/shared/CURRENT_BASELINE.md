@@ -1,5 +1,7 @@
 # 当前开发基线：RMM-only / P42 + BO 容量修复 + GPUVM同步列表
 
+**2026-10-22后续源码快照：** TRANSFER预捕获不可变快照已实现，默认关闭；冻结包完整720p同镜像关闭1158→开启1156（−2/−0.17%），双Client各19项API及计算/SG/并发快照语义通过。计时轮1149，独立快照RPC仅31次，合并TRANSFER平均59.624μs，尚无图形提分证据。通知拆分新增默认关闭的RMM/Guest诊断源码并已本地构建，尚未部署或上板验收；Host调度关联和真实GPU完成→Client确认分布仍未实现。最新源码不能继承上述冻结包的整体硬件PASS，旧载荷manifest不变。命令、失败/未执行项和验证边界见[TRANSFER报告](GPU_TRANSFER_CAPTURE_20261022.md)。
+
 **2026-10-22当前源码提交快照：** Guest分段BO/在途准入/RPC诊断、Firecracker旧目标后备回收及2 GiB RMM租约已提交并推送，主仓库固定相应组件指针、测试脚本和文档，详见[GitHub源码快照](GIT_CODE_CHECKPOINT_20261022.md)。本次未改运行代码内容，无新增性能测量；旧预编译载荷manifest不随源码提交自动更新。
 
 **2026-10-22 RPC关键路径细分已验收：** 增加既有开关下的Client五阶段及Proxy响应聚合计时，完整720p **1152**，对旧计时诊断1144为+8/+0.70%；同单Client/128MiB/CPU1.8GHz/GPU594MHz，只作诊断分差，不宣称提分。PLAN_EXEC/TRANSFER/快照融合往返76.43/53.46/56.65微秒，入队0.42–0.49、请求通知23.11–30.63微秒；Proxy聚合回复发布0.775微秒，99.42%回复已抑制通知。优先检查减少整次同步RPC及请求侧NOTIFY，不能把轮询墙钟全算本端成本或把通知全记为RMM执行。TRANSFER顺带捕获不可变快照、供后续export复用完成可行性分析，尚未实现或验证收益。33场景、既定validation/clean、健康、退出0/0、11文件SHA、租约归零及Pi/RK资源恢复通过，构建/lab/采集/审计退出0；本轮未新增Native/1080p/API/多Client。冻结诊断包 `build/rpc-path-breakdown-20261022/candidate/`，run-id `rpc-breakdown-720-20261022-a`，命令、证据和状态见[RPC关键路径排查](GPU_RPC_CRITICAL_PATH_20261022.md)。

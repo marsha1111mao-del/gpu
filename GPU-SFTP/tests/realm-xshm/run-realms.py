@@ -35,6 +35,8 @@ p.add_argument('--compact-memory', action='store_true', help='Bound benchmark RA
 p.add_argument('--reclaim-targets', action='store_true', help='Use verified target-backing reclamation and staged ResNet50 memory admission')
 p.add_argument('--pin-cpus', action='store_true', help='Explicit RK CPU 0 Proxy / CPU 1 active Client placement')
 p.add_argument('--performance', action='store_true', help='600 MHz OPP, separate CPUs, concurrent RPC, wait cache, fused/lazy snapshots and 1000 us Client reply polling')
+p.add_argument('--transfer-capture', action='store_true', help='Capture reusable immutable snapshots in binary TRANSFER replies')
+p.add_argument('--notify-trace', action='store_true', help='Record bounded RMM/notification/receive physical-counter samples')
 p.add_argument('--benchmark-only', action='store_true', help='Two Realms and full glmark; defer the broader lifecycle/API suite')
 p.add_argument('--suite', action='store_true', help='Remeasure common IOCTL, compute, ML, NCNN and both full glmark sizes')
 p.add_argument('--rpc-stats', action='store_true', help='Measure Client/Proxy RPC, backend submission and GPU IRQ latency (adds timing overhead)')
@@ -99,7 +101,9 @@ result = {'run_id': a.run_id, 'status': 'RUNNING', 'commands': commands,
           'performance': a.performance, 'benchmark_only': a.benchmark_only,
           'compute_rootfs': str(a.compute_rootfs) if a.compute_rootfs else None,
           'glmark_rootfs': str(a.glmark_rootfs) if a.glmark_rootfs else None,
-          'rpc_stats': a.rpc_stats, 'suite': a.suite, 'large_pool': a.large_pool,
+          'rpc_stats': a.rpc_stats, 'transfer_capture': a.transfer_capture,
+          'notify_trace': a.notify_trace,
+          'suite': a.suite, 'large_pool': a.large_pool,
           'profiles': a.profiles}
 result['compact_memory'] = a.compact_memory
 result['reclaim_targets'] = a.reclaim_targets
@@ -905,6 +909,10 @@ try:
                 ' client_comm_vmshm.realm_poll_us=1000 client_comm_vmshm.concurrent_rpc=1'
                 ' panthor_client.completed_wait_cache=1 panthor_client.fused_snapshot=1'
                 ' panthor_client.lazy_snapshot_wait=1')
+        if a.notify_trace:
+            config['boot-source']['boot_args'] += ' realm_xshm.notify_trace=1'
+        if a.transfer_capture and vm:
+            config['boot-source']['boot_args'] += ' panthor_client.transfer_capture=1 panthor_client.fused_snapshot=1'
         if a.rpc_stats and vm:
             config['boot-source']['boot_args'] += ' client_comm_vmshm.rpc_stats=1'
         if workload_rootfs and (a.benchmark_only and vm or vm == 1 or (a.clients == 2 and vm == 2)):
@@ -938,6 +946,9 @@ try:
             receive(vm, b'XSHM_READY')
             if a.performance and a.benchmark_only and (a.compact_memory or a.clients > 1):
                 isolate_vmm_io(vm)
+    if a.notify_trace:
+        for vm in range(vm_count):
+            assert call(vm, 'register')[2] & 64, 'RMM notification timing capability missing'
     if a.benchmark_only:
         if a.compact_memory or a.clients > 1:
             test_concurrent_benchmark()
@@ -1005,6 +1016,10 @@ try:
         call(1, f'close {new_channel}')
         for vm in range(3):
             call(vm, 'unregister')
+    if a.notify_trace:
+        for vm in range(vm_count):
+            trace = text_command(vm, 'notify-trace', ['XSHM_NOTIFY_TRACE_END'])
+            (out/f'notify-realm-{vm}.log').write_text(trace)
     if a.gpu_flow:
         result['kernel_health'] = {}
         for vm in range(vm_count):
