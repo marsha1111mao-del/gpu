@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1000" viewBox="0 0 1440 1000">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#667791"/></marker></defs>
+<style>text { font-family: "Noto Sans CJK SC", sans-serif; }</style>
+<rect width="1440" height="1000" fill="white"/>
+<text x="58" y="64" font-size="36" fill="#17243b" font-weight="700" text-anchor="start">E  RPC实测：优先减少整次往返，再拆请求通知</text>
+<text x="60" y="104" font-size="21" fill="#52627a" font-weight="400" text-anchor="start">720p单Client；CPU 1.8GHz / GPU 594MHz；rpc-breakdown-720-20261022-a。单位μs。</text>
+<rect x="60" y="150" width="22" height="22" rx="3" fill="#2767d8" stroke="none"/>
+<text x="94" y="170" font-size="22" fill="#17243b" font-weight="400" text-anchor="start">Client总RTT</text>
+<rect x="455" y="150" width="22" height="22" rx="3" fill="#d58120" stroke="none"/>
+<text x="489" y="170" font-size="22" fill="#17243b" font-weight="400" text-anchor="start">Client请求通知</text>
+<rect x="850" y="150" width="22" height="22" rx="3" fill="#16836a" stroke="none"/>
+<text x="884" y="170" font-size="22" fill="#17243b" font-weight="400" text-anchor="start">Proxy handler</text>
+<path d="M360,203 V716" stroke="#e3e9f2"/>
+<text x="360" y="744" font-size="20" fill="#52627a" font-weight="400" text-anchor="middle">0</text>
+<path d="M560,203 V716" stroke="#e3e9f2"/>
+<text x="560" y="744" font-size="20" fill="#52627a" font-weight="400" text-anchor="middle">20</text>
+<path d="M760,203 V716" stroke="#e3e9f2"/>
+<text x="760" y="744" font-size="20" fill="#52627a" font-weight="400" text-anchor="middle">40</text>
+<path d="M960,203 V716" stroke="#e3e9f2"/>
+<text x="960" y="744" font-size="20" fill="#52627a" font-weight="400" text-anchor="middle">60</text>
+<path d="M1160,203 V716" stroke="#e3e9f2"/>
+<text x="1160" y="744" font-size="20" fill="#52627a" font-weight="400" text-anchor="middle">80</text>
+<text x="60" y="256" font-size="25" fill="#17243b" font-weight="700" text-anchor="start">PLAN_EXEC</text>
+<text x="60" y="292" font-size="21" fill="#52627a" font-weight="400" text-anchor="start">454,568次</text>
+<rect x="360" y="230" width="764.31" height="28" rx="3" fill="#2767d8" stroke="none"/>
+<text x="1136.31" y="253" font-size="22" fill="#17243b" font-weight="400" text-anchor="start">76.431</text>
+<rect x="360" y="268" width="306.34000000000003" height="28" rx="3" fill="#d58120" stroke="none"/>
+<text x="678.34" y="291" font-size="22" fill="#17243b" font-weight="400" text-anchor="start">30.634</text>
+<rect x="360" y="306" width="202.54999999999998" height="28" rx="3" fill="#16836a" stroke="none"/>
+<text x="574.55" y="329" font-size="22" fill="#17243b" font-weight="400" text-anchor="start">20.255</text>
+<text x="60" y="426" font-size="25" fill="#17243b" font-weight="700" text-anchor="start">TRANSFER</text>
+<text x="60" y="462" font-size="21" fill="#52627a" font-weight="400" text-anchor="start">454,357次</text>
+<rect x="360" y="400" width="534.61" height="28" rx="3" fill="#2767d8" stroke="none"/>
+<text x="906.61" y="423" font-size="22" fill="#17243b" font-weight="400" text-anchor="start">53.461</text>
+<rect x="360" y="438" width="231.11" height="28" rx="3" fill="#d58120" stroke="none"/>
+<text x="603.11" y="461" font-size="22" fill="#17243b" font-weight="400" text-anchor="start">23.111</text>
+<rect x="360" y="476" width="27.68" height="28" rx="3" fill="#16836a" stroke="none"/>
+<text x="399.68" y="499" font-size="22" fill="#17243b" font-weight="400" text-anchor="start">2.768</text>
+<text x="60" y="596" font-size="25" fill="#17243b" font-weight="700" text-anchor="start">SNAPSHOT_RETIRE</text>
+<text x="60" y="632" font-size="21" fill="#52627a" font-weight="400" text-anchor="start">380,555次</text>
+<rect x="360" y="570" width="566.49" height="28" rx="3" fill="#2767d8" stroke="none"/>
+<text x="938.49" y="593" font-size="22" fill="#17243b" font-weight="400" text-anchor="start">56.649</text>
+<rect x="360" y="608" width="253.17000000000002" height="28" rx="3" fill="#d58120" stroke="none"/>
+<text x="625.1700000000001" y="631" font-size="22" fill="#17243b" font-weight="400" text-anchor="start">25.317</text>
+<rect x="360" y="646" width="74.89" height="28" rx="3" fill="#16836a" stroke="none"/>
+<text x="446.89" y="669" font-size="22" fill="#17243b" font-weight="400" text-anchor="start">7.489</text>
+<rect x="60" y="785" width="1320" height="94" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="785" width="6" height="94" rx="3" fill="#16836a" stroke="none"/>
+<text x="82" y="823" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">如何理解</text>
+<text x="82" y="861" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">入队仅0.4–0.5μs；回复通知已抑制99.42%。TRANSFER预捕获快照仍是未实现候选。</text>
+<text x="60" y="928" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">三种时间是分别展示的区间，存在重叠，不能相加；通知含RMM、可能的Host退出及调度。</text>
+<text x="60" y="958" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">图中不是逐帧调用链；GPU完成→Client确认的端到端分位数仍待测量。</text>
+</svg>

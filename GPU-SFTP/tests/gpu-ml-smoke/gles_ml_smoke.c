@@ -313,6 +313,28 @@ static float source_value(unsigned index)
 
 static unsigned gemm_size = 512u;
 static unsigned attention_size = 256u;
+static int start_barrier;
+
+static int timing_signal(const char *marker)
+{
+    int descriptor = open("/dev/console", O_WRONLY | O_CLOEXEC);
+    if (descriptor < 0)
+        return -1;
+    int result = dprintf(descriptor, "%s\n", marker);
+    close(descriptor);
+    return result > 0 ? 0 : -1;
+}
+
+static int wait_timing_barrier(void)
+{
+    char release[64];
+    if (timing_signal("ML_TIMING_READY") || !fgets(release, sizeof(release), stdin))
+        return -1;
+    release[strcspn(release, "\r\n")] = '\0';
+    if (strcmp(release, "ML_TIMING_GO"))
+        return -1;
+    return timing_signal("ML_TIMING_START");
+}
 
 static void debug_output(const char *what, const float *values, unsigned count)
 {
@@ -624,6 +646,8 @@ static int run_shader(const struct kernel_desc *kernel, GLuint program, GLuint *
     }
 
     for (unsigned iter = 0; iter < warmup + iterations; ++iter) {
+        if (start_barrier && iter == warmup && wait_timing_barrier())
+            return -1;
         uint64_t start = now_us();
         glDispatchCompute(kernel->groups_x, kernel->groups_y, kernel->groups_z);
         if (check_gl("glDispatchCompute"))
@@ -646,6 +670,8 @@ static int run_shader(const struct kernel_desc *kernel, GLuint program, GLuint *
             stats_add(&timing, now_us() - start);
     }
 
+    if (start_barrier && timing_signal("ML_TIMING_END"))
+        return -1;
     *avg_us_out = (double)timing.total / (double)iterations;
     printf("ML_KERNEL=%s\n", kernel->name);
     printf("ML_CHECK=PASS samples=%u warmup=%u\n", iterations, warmup);
@@ -957,10 +983,12 @@ int main(int argc, char **argv)
             if (parse_uint(argv[++i], &iterations) || !iterations) return 2;
         } else if (!strcmp(argv[i], "--warmup") && i + 1 < argc) {
             if (parse_uint(argv[++i], &warmup)) return 2;
+        } else if (!strcmp(argv[i], "--start-barrier")) {
+            start_barrier = 1;
         } else if (!strcmp(argv[i], "--kernel") && i + 1 < argc) {
             kernel = argv[++i];
         } else if (!strcmp(argv[i], "--help") || !strcmp(argv[i], "-h")) {
-            printf("usage: %s [--iterations N] [--warmup N] [--gemm-size N] [--attention-size N (128..1024, multiple of 64)] [--kernel all|gemm|conv|depthwise|reduction|softmax|attention] [drm-node]\n",
+            printf("usage: %s [--iterations N] [--warmup N] [--gemm-size N] [--attention-size N (128..1024, multiple of 64)] [--kernel all|gemm|conv|depthwise|reduction|softmax|attention] [--start-barrier] [drm-node]\n",
                    argv[0]);
             return 0;
         } else if (!strcmp(argv[i], "--gemm-size") && i + 1 < argc) {
@@ -978,11 +1006,13 @@ int main(int argc, char **argv)
             return 2;
         }
     }
+    if (start_barrier && !strcmp(kernel, "all"))
+        return 2;
     setvbuf(stdout, NULL, _IONBF, 0);
     if (setup_egl(&state, node))
         return 20;
     printf("ML_CONFIG iterations=%u warmup=%u\n", iterations, warmup);
-    printf("ML_HARNESS_VERSION=8\n");
+    printf("ML_HARNESS_VERSION=9\n");
     if (!strcmp(kernel, "all") || !strcmp(kernel, "gemm"))
         failed |= run_gemm(iterations, warmup, &avg);
     if (!strcmp(kernel, "all") || !strcmp(kernel, "conv"))

@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="820" viewBox="0 0 1440 820">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#667791"/></marker></defs>
+<style>text { font-family: "Noto Sans CJK SC", sans-serif; }</style>
+<rect width="1440" height="820" fill="white"/>
+<text x="58" y="64" font-size="36" fill="#17243b" font-weight="700" text-anchor="start">C  分段BO：逻辑连续不要求整块物理连续</text>
+<text x="60" y="104" font-size="21" fill="#52627a" font-weight="400" text-anchor="start">示意使用三个extent；实际按页记录分段，mmap和GPU映射分别按请求范围解析。</text>
+<text x="60" y="177" font-size="25" fill="#17243b" font-weight="700" text-anchor="start">逻辑BO：offset连续，应用只看一个对象</text>
+<rect x="120" y="210" width="340" height="90" rx="14" fill="#2767d8" stroke="none"/>
+<text x="290" y="251" font-size="26" fill="white" font-weight="700" text-anchor="middle">extent 1</text>
+<text x="290" y="282" font-size="21" fill="white" font-weight="400" text-anchor="middle">逻辑页 0–3</text>
+<rect x="520" y="210" width="340" height="90" rx="14" fill="#16836a" stroke="none"/>
+<text x="690" y="251" font-size="26" fill="white" font-weight="700" text-anchor="middle">extent 2</text>
+<text x="690" y="282" font-size="21" fill="white" font-weight="400" text-anchor="middle">逻辑页 4–7</text>
+<rect x="920" y="210" width="340" height="90" rx="14" fill="#7c58bb" stroke="none"/>
+<text x="1090" y="251" font-size="26" fill="white" font-weight="700" text-anchor="middle">extent 3</text>
+<text x="1090" y="282" font-size="21" fill="white" font-weight="400" text-anchor="middle">逻辑页 8–11</text>
+<text x="60" y="541" font-size="25" fill="#17243b" font-weight="700" text-anchor="start">共享池实际位置：extent之间可以存在空洞</text>
+<rect x="100" y="415" width="240" height="86" rx="0" fill="#2767d8" stroke="none"/>
+<text x="220.0" y="468" font-size="23" fill="white" font-weight="700" text-anchor="middle">extent 1</text>
+<rect x="340" y="415" width="120" height="86" rx="0" fill="#dce3ee" stroke="none"/>
+<text x="400.0" y="468" font-size="23" fill="#52627a" font-weight="700" text-anchor="middle">空闲</text>
+<rect x="460" y="415" width="240" height="86" rx="0" fill="#7c58bb" stroke="none"/>
+<text x="580.0" y="468" font-size="23" fill="white" font-weight="700" text-anchor="middle">extent 3</text>
+<rect x="700" y="415" width="220" height="86" rx="0" fill="#dce3ee" stroke="none"/>
+<text x="810.0" y="468" font-size="23" fill="#52627a" font-weight="700" text-anchor="middle">其他BO</text>
+<rect x="920" y="415" width="240" height="86" rx="0" fill="#16836a" stroke="none"/>
+<text x="1040.0" y="468" font-size="23" fill="white" font-weight="700" text-anchor="middle">extent 2</text>
+<polyline points="290,300 220,415" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="690,300 1040,415" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="1090,300 580,415" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="60" y="575" width="620" height="125" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="575" width="6" height="125" rx="3" fill="#2767d8" stroke="none"/>
+<text x="82" y="613" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">CPU局部mmap</text>
+<text x="82" y="651" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">请求offset / length只映射相交的逻辑页</text>
+<text x="82" y="681" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">跨extent时逐段解析，不暴露池内其他对象</text>
+<rect x="720" y="575" width="660" height="125" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="720" y="575" width="6" height="125" rx="3" fill="#16836a" stroke="none"/>
+<text x="742" y="613" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">GPU连续VA绑定</text>
+<text x="742" y="651" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">把授权span的实际HPA装入相邻GPU PTE</text>
+<text x="742" y="681" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">仍检查权限、root归属、pin与生命周期</text>
+<text x="60" y="778" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">减少连续大块分配需求；不自动减少每Client授权池的总容量，也不回收旧guest_memfd目标后备。</text>
+</svg>

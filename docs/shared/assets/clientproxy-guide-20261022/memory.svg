@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="940" viewBox="0 0 1440 940">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#667791"/></marker></defs>
+<style>text { font-family: "Noto Sans CJK SC", sans-serif; }</style>
+<rect width="1440" height="940" fill="white"/>
+<text x="58" y="64" font-size="36" fill="#17243b" font-weight="700" text-anchor="start">D  内存实测：消除旧目标副本，实际GPU数据不变</text>
+<text x="60" y="104" font-size="21" fill="#52627a" font-weight="400" text-anchor="start">单Client ResNet50；单位MiB；同384 MiB共享源池。数据引用既有实验，无新增测量。</text>
+<rect x="60" y="146" width="20" height="20" rx="3" fill="#2767d8" stroke="none"/>
+<text x="89" y="164" font-size="19" fill="#17243b" font-weight="400" text-anchor="start">CPU模型/缓冲</text>
+<rect x="332" y="146" width="20" height="20" rx="3" fill="#16836a" stroke="none"/>
+<text x="361" y="164" font-size="19" fill="#17243b" font-weight="400" text-anchor="start">Native GPU BO</text>
+<rect x="604" y="146" width="20" height="20" rx="3" fill="#7c58bb" stroke="none"/>
+<text x="633" y="164" font-size="19" fill="#17243b" font-weight="400" text-anchor="start">共享源池</text>
+<rect x="876" y="146" width="20" height="20" rx="3" fill="#d58120" stroke="none"/>
+<text x="905" y="164" font-size="19" fill="#17243b" font-weight="400" text-anchor="start">旧目标后备</text>
+<rect x="1148" y="146" width="20" height="20" rx="3" fill="#c24e6a" stroke="none"/>
+<text x="1177" y="164" font-size="19" fill="#17243b" font-weight="400" text-anchor="start">元数据下限</text>
+<path d="M245.0,213 V610" stroke="#e3e9f2"/>
+<text x="245.0" y="642" font-size="20" fill="#52627a" font-weight="400" text-anchor="middle">0</text>
+<path d="M461.0,213 V610" stroke="#e3e9f2"/>
+<text x="461.0" y="642" font-size="20" fill="#52627a" font-weight="400" text-anchor="middle">200</text>
+<path d="M677.0,213 V610" stroke="#e3e9f2"/>
+<text x="677.0" y="642" font-size="20" fill="#52627a" font-weight="400" text-anchor="middle">400</text>
+<path d="M893.0,213 V610" stroke="#e3e9f2"/>
+<text x="893.0" y="642" font-size="20" fill="#52627a" font-weight="400" text-anchor="middle">600</text>
+<path d="M1109.0,213 V610" stroke="#e3e9f2"/>
+<text x="1109.0" y="642" font-size="20" fill="#52627a" font-weight="400" text-anchor="middle">800</text>
+<path d="M1325.0,213 V610" stroke="#e3e9f2"/>
+<text x="1325.0" y="642" font-size="20" fill="#52627a" font-weight="400" text-anchor="middle">1000</text>
+<text x="60" y="287" font-size="26" fill="#17243b" font-weight="700" text-anchor="start">Native</text>
+<rect x="245" y="245" width="136.51200000000003" height="66" rx="0" fill="#2767d8" stroke="none"/>
+<rect x="381.51200000000006" y="245" width="353.9916" height="66" rx="0" fill="#16836a" stroke="none"/>
+<text x="750.5036" y="288" font-size="25" fill="#17243b" font-weight="700" text-anchor="start">454.17</text>
+<text x="245" y="341" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">CPU 126.40 + GPU BO 327.77</text>
+<text x="60" y="417" font-size="26" fill="#17243b" font-weight="700" text-anchor="start">共享旧路径</text>
+<rect x="245" y="375" width="143.66160000000002" height="66" rx="0" fill="#2767d8" stroke="none"/>
+<rect x="388.6616" y="375" width="414.72" height="66" rx="0" fill="#7c58bb" stroke="none"/>
+<rect x="803.3816" y="375" width="414.72" height="66" rx="0" fill="#d58120" stroke="none"/>
+<rect x="1218.1016" y="375" width="2.4192000000000005" height="66" rx="0" fill="#c24e6a" stroke="none"/>
+<text x="1235.5208" y="418" font-size="25" fill="#17243b" font-weight="700" text-anchor="start">903.26</text>
+<text x="245" y="471" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">CPU 133.02 + 源池 384 + 旧目标 384 + 元数据 2.24</text>
+<text x="60" y="547" font-size="26" fill="#17243b" font-weight="700" text-anchor="start">回收后</text>
+<rect x="245" y="505" width="143.7372" height="66" rx="0" fill="#2767d8" stroke="none"/>
+<rect x="388.73720000000003" y="505" width="414.72" height="66" rx="0" fill="#7c58bb" stroke="none"/>
+<rect x="803.4572000000001" y="505" width="2.4192000000000005" height="66" rx="0" fill="#c24e6a" stroke="none"/>
+<text x="820.8764000000001" y="548" font-size="25" fill="#17243b" font-weight="700" text-anchor="start">519.33</text>
+<text x="245" y="601" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">CPU 133.09 + 源池 384 + 元数据 2.24</text>
+<rect x="60" y="695" width="1320" height="122" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="695" width="6" height="122" rx="3" fill="#16836a" stroke="none"/>
+<text x="82" y="733" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">结果与口径</text>
+<text x="82" y="771" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">合计减少383.93 MiB / 42.50%；相对Native额外占比由98.88%降至14.35%。</text>
+<text x="82" y="801" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">源池已含327.77 MiB用户BO，不能重复相加；旧目标实际缓存页98304 → 0。</text>
+<text x="60" y="868" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">这是各分项峰值之和，不是同时总峰值；排除OS/VM固定预算、GPU页表及未计全的协议分配。</text>
+<text x="60" y="898" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">启动时仍需临时目标CMA；回收后稳态占用不等于启动准入预算。</text>
+</svg>

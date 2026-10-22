@@ -1,0 +1,194 @@
+{
+  "date": "2026-10-22",
+  "scope": "Explanatory source snapshot; working trees may contain unpublished changes. Not a deployable runtime manifest.",
+  "repositories": {
+    ".": "93f66214265268b868a0a5f7091be480e3987bb0",
+    "Linux-Guest-GPU": "af4eb42a1244ab221b73c15e15564de428721c97",
+    "Linux-Host-GPU": "64510307c4ae432447d60a0e3735616dbce4e310",
+    "opencca": "2c1dd993b317bbdd881db7d217c874f376ac4f00",
+    "opencca/tf-rmm": "46f6ff99780084066929e14d51e46f29b57ac0a2",
+    "firecracker/Firecracker-CCA-MZH": "250f1493b5050c88b91c346c7af03e1134d8123f"
+  },
+  "sources": [
+    {
+      "path": "Linux-Guest-GPU/drivers/gpu/drm/panthor-client/panthor_client_drv.c",
+      "sha256": "cda7371dfd9e89db46000071fa1f3dde28ab385ce45ca88496842850f3ad671d",
+      "bytes": 135859
+    },
+    {
+      "path": "Linux-Guest-GPU/drivers/gpu/drm/panthor-proxy/panthor_proxy_drv.c",
+      "sha256": "54b6343d9769525468f503ca53cce6909ca59193c8ef0f6acacd98502c7ee288",
+      "bytes": 109840
+    },
+    {
+      "path": "Linux-Guest-GPU/drivers/char/realm_xshm.c",
+      "sha256": "c997c7b6c78e691539aa8895da6665fb8113172d4133fe37930329c9a505ae6e",
+      "bytes": 19236
+    },
+    {
+      "path": "Linux-Guest-GPU/drivers/char/client_vmshm_comm/client_comm_vmshm.c",
+      "sha256": "0af2b528155171189eb4b24669ac6251a2fc19e2a79c685a673dabf9f7b47730",
+      "bytes": 47465
+    },
+    {
+      "path": "Linux-Guest-GPU/drivers/char/proxy_vmshm_comm/proxy_comm_vmshm.c",
+      "sha256": "0ff1f9968a6a54566db980ced01872008de7ef7fdb304ee7314e0a2cb88d5cdf",
+      "bytes": 48299
+    },
+    {
+      "path": "Linux-Guest-GPU/drivers/char/client_vmshm_manager/client_vmshm_manager.c",
+      "sha256": "691bf0a6d583510cf20b32f79149c5e2b1af20679d5111e4edcc49b2ac0bf164",
+      "bytes": 8209
+    },
+    {
+      "path": "Linux-Guest-GPU/drivers/char/proxy_vmshm_manager/proxy_vmshm_manager.c",
+      "sha256": "372b06cdb8d2a4908ecf3e7a06b50502046bd9e1f2b9dd6d8fc8af512bdbaaf4",
+      "bytes": 59681
+    },
+    {
+      "path": "Linux-Guest-GPU/drivers/iommu/io-pgtable-arm.c",
+      "sha256": "3c2e21387daa59b29a247224ad6b69eb7a9c9dcd0bb633ecdb89447368a8d69f",
+      "bytes": 83273
+    },
+    {
+      "path": "Linux-Host-GPU/arch/arm64/kvm/rme.c",
+      "sha256": "f404536f963014bab92c678279d39d8aa3a2dbc31f4add7c506631ed90d32042",
+      "bytes": 37531
+    },
+    {
+      "path": "Linux-Host-GPU/arch/arm64/kvm/rme-exit.c",
+      "sha256": "9f8f5447d6674274e98d48f372649273fefc1c1611462f4e7476ee3dcd12fbba",
+      "bytes": 5627
+    },
+    {
+      "path": "Linux-Host-GPU/drivers/iommu/iommu.c",
+      "sha256": "acd805efd55ef0c3ca7dfbfbec215a808514be376de338d7a1c5c50fbac65008",
+      "bytes": 96371
+    },
+    {
+      "path": "Linux-Host-GPU/drivers/iommu/opencca-dma-guard.h",
+      "sha256": "5ccf8e73b48f048b12932ea1e740ce8af4fbdf5b59d43fd96d1555d394aa3939",
+      "bytes": 4519
+    },
+    {
+      "path": "firecracker/Firecracker-CCA-MZH/src/vmm/src/vstate/memory.rs",
+      "sha256": "b7ba56a24ead25deabdca3b6cefc6a47ee4c614e168cf7d14a24ac3937eebc12",
+      "bytes": 31253
+    },
+    {
+      "path": "firecracker/Firecracker-CCA-MZH/src/vmm/src/vstate/vcpu/mod.rs",
+      "sha256": "3878de2bf1c48d44192343c4a900bfc5c2e854c57f6895c4432875255864c267",
+      "bytes": 51832
+    },
+    {
+      "path": "GPU-SFTP/tests/realm-xshm/run-realms.py",
+      "sha256": "c8309f3d90083a795670ae902a6e873c39f4536a27b1e61b2a4622ccfafd4e55",
+      "bytes": 58012
+    },
+    {
+      "path": "scripts/run/run-realm-xshm.py",
+      "sha256": "979b38d0489781a7f57041b460d0b6bc4e2b402260912ef790c5e5582c1603d4",
+      "bytes": 8874
+    },
+    {
+      "path": "Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_drv.c",
+      "sha256": "7df2ef82ada5da8e8553e4ef454c50559dc9cb2a9244a11b533fecdf04cbfc85",
+      "bytes": 90513
+    },
+    {
+      "path": "Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_mmu.c",
+      "sha256": "4ee828aa083b5ac6ba2191f9305af9eb4055704732f5d9df716b75f380b8c0b0",
+      "bytes": 86444
+    },
+    {
+      "path": "Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_gem.c",
+      "sha256": "1ae1f2ca913a4846aff007f6e6b37afd58572e87f06e9d398cb8dc0994667ca5",
+      "bytes": 13990
+    },
+    {
+      "path": "Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_sched.c",
+      "sha256": "04e6572d7553bba5ba066576f83f4db89bfac069e0bc836de90adcaee17d5ba8",
+      "bytes": 132285
+    },
+    {
+      "path": "Linux-Guest-GPU/include/linux/panthor_vmshm.h",
+      "sha256": "687b4700e875ff6af43dbb943d0d284c5ad9479e710bb8fc1c89adc27ab78336",
+      "bytes": 23106
+    },
+    {
+      "path": "Linux-Guest-GPU/include/linux/vmshm_comm_protocol.h",
+      "sha256": "6ae6cc49c2ce76a37df27d3b0b5e22ca86805c1658955bbefbf050d5c2e8c757",
+      "bytes": 3908
+    },
+    {
+      "path": "Linux-Guest-GPU/include/linux/vmshm_manager.h",
+      "sha256": "8c057b4fc9dc9b464ff9d70ffaa60739336e8ef1ae754c32295d89b2b99cd441",
+      "bytes": 1044
+    },
+    {
+      "path": "opencca/tf-rmm/runtime/core/xshm_endpoint.c",
+      "sha256": "0f1d3a782eef1fb3dcf4474dcc57b033fd69130987bbf2c695d9b46bcbaf4b15",
+      "bytes": 8273
+    },
+    {
+      "path": "opencca/tf-rmm/runtime/core/xshm_memory.c",
+      "sha256": "a83cc36c645e1ae8271b836438aa541a2ed925a13dd68f6eeab54302bf7a06a6",
+      "bytes": 11063
+    },
+    {
+      "path": "opencca/tf-rmm/runtime/core/xshm_rtt.c",
+      "sha256": "0743f78eb1e66a5221f15ec7644fc75aadbd46024cf3ea8d6284eb157aa659f6",
+      "bytes": 3358
+    },
+    {
+      "path": "opencca/tf-rmm/runtime/core/xshm_service.c",
+      "sha256": "6681d766f41fb46c9a19835fc2eea1dd1c94352863e26a38ca08c19c4ae07a54",
+      "bytes": 1478
+    },
+    {
+      "path": "opencca/tf-rmm/runtime/core/xshm_policy.c",
+      "sha256": "67190e26c3a76a4e4995b3179959be09be6b01893fb8ba0eebfa820669813f6d",
+      "bytes": 1707
+    },
+    {
+      "path": "opencca/tf-rmm/runtime/core/xshm_irq.c",
+      "sha256": "1cc51f55c1b8cb952753121877310107d9eea5e32f0919078368d38f5f80e709",
+      "bytes": 786
+    },
+    {
+      "path": "opencca/tf-rmm/runtime/core/opencca_gpu.c",
+      "sha256": "137051a4525647cb65098e82419e8b7bdca543d020cd0dec9627a5e5efe05700",
+      "bytes": 5376
+    },
+    {
+      "path": "opencca/tf-rmm/runtime/core/opencca_gpu_lease.c",
+      "sha256": "fe6195327d0ca11fb0cea34e4d84ab4a08947112195786b83243d67b631f28b2",
+      "bytes": 7764
+    },
+    {
+      "path": "opencca/tf-rmm/runtime/core/opencca_iommu.c",
+      "sha256": "ba9f10de1f5acd6ee513319bf2af5a3d44766bb5f9f3f9ff83350502e074a081",
+      "bytes": 20405
+    },
+    {
+      "path": "opencca/tf-rmm/runtime/rsi/xshm.c",
+      "sha256": "8b50c01aedde90cbd4c5c0abafc12dff410a17208c47d4b3fc1bf613f12f50e4",
+      "bytes": 2344
+    },
+    {
+      "path": "opencca/tf-rmm/runtime/rsi/opencca_gpu.c",
+      "sha256": "5541731ecf9f39bb91529b46a8c0295eee3a6dfc0588c6b1bb594b38c1208ca3",
+      "bytes": 11379
+    },
+    {
+      "path": "opencca/tf-rmm/runtime/rsi/opencca_iommu.c",
+      "sha256": "d4fbf5fcc86132343d5fe1defeb2cf19cc3422cc2014fb6d6c01ac498f8e3c74",
+      "bytes": 4245
+    },
+    {
+      "path": "opencca/tf-rmm/runtime/rmi/run.c",
+      "sha256": "b0ed9df4ca5b405d4b84204bb52cbe14efe776088f3262195348b371df7fe059",
+      "bytes": 8334
+    }
+  ]
+}

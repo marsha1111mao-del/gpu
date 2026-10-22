@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#667791"/></marker></defs>
+<style>text { font-family: "Noto Sans CJK SC", sans-serif; }</style>
+<rect width="1440" height="900" fill="white"/>
+<text x="58" y="64" font-size="36" fill="#17243b" font-weight="700" text-anchor="start">A  总体架构：控制、数据、通知三条路径</text>
+<text x="60" y="104" font-size="21" fill="#52627a" font-weight="400" text-anchor="start">GPU命令由Client生成；可信Proxy操作真实设备；RMM授权共享与保存可信事件。</text>
+<rect x="60" y="150" width="355" height="165" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="150" width="6" height="165" rx="3" fill="#2767d8" stroke="none"/>
+<text x="82" y="188" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">Client Realm</text>
+<text x="82" y="226" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">应用 / Mesa / PanVK</text>
+<text x="82" y="256" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">panthor-client：DRM前端</text>
+<text x="82" y="286" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">本地对象、计划、完成检查</text>
+<rect x="550" y="150" width="355" height="165" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="550" y="150" width="6" height="165" rx="3" fill="#16836a" stroke="none"/>
+<text x="572" y="188" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">可信Proxy Realm</text>
+<text x="572" y="226" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">panthor-proxy：会话与校验</text>
+<text x="572" y="256" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">原生Panthor：GPUVM / 调度</text>
+<text x="572" y="286" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">设备控制与真实fence</text>
+<rect x="1040" y="150" width="340" height="165" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="1040" y="150" width="6" height="165" rx="3" fill="#7c58bb" stroke="none"/>
+<text x="1062" y="188" font-size="25" fill="#7c58bb" font-weight="700" text-anchor="start">Mali-G610</text>
+<text x="1062" y="226" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">GPU内置MMU与页表遍历</text>
+<text x="1062" y="256" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">执行命令流 / 数据访存</text>
+<text x="1062" y="286" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">硬件中断 → 原生驱动</text>
+<polyline points="415,205 550,205" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="452" y="185" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">RPC</text>
+<polyline points="905,205 1040,205" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="945" y="185" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">提交</text>
+<polyline points="1040,270 905,270" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="946" y="298" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">IRQ</text>
+<polyline points="550,270 415,270" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="452" y="298" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">回复</text>
+<rect x="60" y="398" width="1320" height="116" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="398" width="6" height="116" rx="3" fill="#16836a" stroke="none"/>
+<text x="82" y="436" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">数据面：长期共享BO池</text>
+<text x="82" y="474" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">Client CPU写入 / 读取；GPU经授权GPUVM访问同一批物理页。大块内容不随每次RPC复制。</text>
+<polyline points="230,315 230,398" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="247" y="365" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">CPU访问</text>
+<polyline points="1210,315 1210,398" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="1228" y="365" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">GPU访存</text>
+<rect x="60" y="605" width="725" height="137" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="605" width="6" height="137" rx="3" fill="#d58120" stroke="none"/>
+<text x="82" y="643" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">RMM：可信基础能力</text>
+<text x="82" y="681" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">endpoint / channel / grant / RTT / pending / ACK_ARM</text>
+<text x="82" y="711" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">GPU物理页租约；其他托管IOMMU的真实表与root</text>
+<rect x="870" y="605" width="510" height="137" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="870" y="605" width="6" height="137" rx="3" fill="#7c58bb" stroke="none"/>
+<text x="892" y="643" font-size="25" fill="#7c58bb" font-weight="700" text-anchor="start">Host KVM / VMM</text>
+<text x="892" y="681" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">创建和调度Realm；内存后备与供电时钟</text>
+<text x="892" y="711" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">协作唤醒，不代替授权或完成判断</text>
+<polyline points="785,665 870,665" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)" stroke-dasharray="8,7"/>
+<polyline points="420,605 420,560 700,560 700,514" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)" stroke-dasharray="8,7"/>
+<text x="760" y="568" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">共享授权 / 可信事件</text>
+<text x="60" y="828" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">实线：数据或请求路径；虚线：授权、事件与调度协作。</text>
+<text x="60" y="858" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">GPUVM页表由可信Proxy/Panthor维护；不能与RMM托管的其他IOMMU页表混为一谈。</text>
+</svg>

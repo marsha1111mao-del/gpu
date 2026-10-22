@@ -1,0 +1,55 @@
+{
+  "status": "PASS",
+  "page_id": "401659a3-b8cc-817c-a3c0-d4a99e055b92",
+  "url": "https://www.notion.so/401659a3b8cc817ca3c0d4a99e055b92",
+  "parent_id": "2c7659a3-b8cc-802c-9267-d9b8368aaf45",
+  "parent_path": "GPU Virtualization",
+  "sections": 31,
+  "table_lines_verified": 143,
+  "code_blocks_verified": 24,
+  "mermaid_blocks": 18,
+  "image_blocks": 5,
+  "figure_explanations": 23,
+  "existing_parent_children_preserved": true,
+  "new_parent_children": 1,
+  "truncated": false,
+  "unknown_blocks": 0,
+  "images": [
+    {
+      "filename": "clientproxy-architecture.png",
+      "sha256": "6573687ef7d9f69f1fdaf19c9456dd73728ec2eb708519b7b873bd29e21e0f09",
+      "bytes": 220874,
+      "download_verified": true
+    },
+    {
+      "filename": "clientproxy-translation.png",
+      "sha256": "7a81c05ca92f898b9beb6b22fc45ac46eb752fafd1a8264d9baa8c8fef896191",
+      "bytes": 154122,
+      "download_verified": true
+    },
+    {
+      "filename": "clientproxy-segmented-bo.png",
+      "sha256": "0c4a50af26aa3ab850fce2dc04c3df794fce0418ecc5c4c347952c0e3c475a43",
+      "bytes": 171829,
+      "download_verified": true
+    },
+    {
+      "filename": "clientproxy-memory.png",
+      "sha256": "c0e0ee6f238045dafe5a61c9a99d9de326d853dbc9baa96f87b092c4ffe49b8b",
+      "bytes": 167775,
+      "download_verified": true
+    },
+    {
+      "filename": "clientproxy-rpc.png",
+      "sha256": "51405c5f37bc5cdc0a0e5b131b8b9fb00de4c52eb9d43d38922eec5279e37ff4",
+      "bytes": 148060,
+      "download_verified": true
+    }
+  ],
+  "local_document": "docs/shared/GPU_CLIENTPROXY_ARCHITECTURE_GUIDE_20261022.md",
+  "local_document_sha256": "251bbc4826fc5714ae88af4a299abfcfb2dece911b1bf86f6794f52c58446779",
+  "source_snapshot": "docs/shared/evidence/clientproxy-guide-20261022/source-hashes.json",
+  "runtime_code_changed": false,
+  "new_performance_measurements": false,
+  "warnings": []
+}

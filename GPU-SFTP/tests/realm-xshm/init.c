@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <sched.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,6 +15,70 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <unistd.h>
+
+static pid_t telemetry_pid;
+
+static int telemetry_start(void)
+{
+	if (telemetry_pid)
+		return 1;
+	telemetry_pid = fork();
+	if (telemetry_pid < 0) {
+		telemetry_pid = 0;
+		return 1;
+	}
+	if (!telemetry_pid) {
+		FILE *output = fopen("/cpu-samples.log", "w");
+		char buffer[512];
+
+		if (!output)
+			_exit(1);
+		for (;;) {
+			FILE *input = fopen("/proc/uptime", "r");
+			double uptime = 0;
+
+			if (input) {
+				if (fscanf(input, "%lf", &uptime) != 1)
+					uptime = 0;
+				fclose(input);
+			}
+			input = fopen("/proc/stat", "r");
+			if (input) {
+				if (fgets(buffer, sizeof(buffer), input))
+					fprintf(output, "REALM_CPU_SAMPLE uptime=%.2f %s", uptime, buffer);
+				fclose(input);
+			}
+			fflush(output);
+			sleep(2);
+		}
+	}
+	return 0;
+}
+
+static int telemetry_stop(void)
+{
+	FILE *input;
+	char buffer[512];
+	int status;
+
+	if (!telemetry_pid)
+		return 1;
+	if (kill(telemetry_pid, SIGTERM) && errno != ESRCH)
+		return 1;
+	while (waitpid(telemetry_pid, &status, 0) < 0)
+		if (errno != EINTR)
+			return 1;
+	telemetry_pid = 0;
+	input = fopen("/cpu-samples.log", "r");
+	if (!input)
+		return 1;
+	while (fgets(buffer, sizeof(buffer), input))
+		fputs(buffer, stdout);
+	status = ferror(input);
+	fclose(input);
+	puts("XSHM_CPU_SAMPLES_END");
+	return status ? 1 : 0;
+}
 
 static void gpu_workload(int compute, const char *profile)
 {
@@ -44,6 +109,9 @@ static void gpu_workload(int compute, const char *profile)
 		if (mount("/ioctl-perf", "/work/tmp/ioctl-perf", NULL, MS_BIND, NULL))
 			goto error;
 		if (mount("/performance-suite.sh", "/work/tmp/performance-suite.sh", NULL, MS_BIND, NULL))
+			goto error;
+		if ((!strncmp(profile, "ml-", 3) || !strncmp(profile, "attention-", 10)) &&
+		    mount("/gles-ml-smoke", "/work/root/gles-ml-smoke", NULL, MS_BIND, NULL))
 			goto error;
 	}
 	if (chroot("/work") || chdir("/"))
@@ -82,6 +150,23 @@ static void kernel_log(void)
 	_exit(0);
 }
 
+static void memory_info(void)
+{
+	char buffer[4096];
+	FILE *stream = fopen("/proc/meminfo", "r");
+	size_t count;
+
+	if (!stream)
+		_exit(1);
+	while ((count = fread(buffer, 1, sizeof(buffer), stream)))
+		if (fwrite(buffer, 1, count, stdout) != count)
+			_exit(1);
+	if (ferror(stream) || fclose(stream))
+		_exit(1);
+	puts("XSHM_MEMORY_INFO_END");
+	_exit(0);
+}
+
 int main(void)
 {
 	char *line = NULL;
@@ -115,6 +200,11 @@ int main(void)
 			continue;
 		if (!strcmp(word, "halt"))
 			break;
+		if (!strcmp(word, "telemetry-start") || !strcmp(word, "telemetry-stop")) {
+			status = !strcmp(word, "telemetry-start") ? telemetry_start() : telemetry_stop();
+			printf("XSHM_COMMAND_EXIT=%d\n", status);
+			continue;
+		}
 		graphics = !strcmp(word, "glmark");
 		compute = !strcmp(word, "compute");
 		performance = !strcmp(word, "performance");
@@ -140,6 +230,8 @@ int main(void)
 				gpu_workload(compute, performance && count == 3 ? args[2] : NULL);
 			if (klog)
 				kernel_log();
+			if (!strcmp(args[1], "memory-info"))
+				memory_info();
 			if (iommu_device) {
 				int descriptor;
 				ssize_t written;

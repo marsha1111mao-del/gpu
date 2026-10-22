@@ -281,11 +281,19 @@ glmark2_progress_sample() {
 	export_errors=$(grep -ac 'MESA: error: export failed' "${log_path}" 2>/dev/null)
 	vm_bind_errors=$(grep -acE 'VM_BIND.*err|VM_BIND failed' "${log_path}" 2>/dev/null)
 	oom_errors=$(grep -acE 'GL_OUT_OF_MEMORY|PANTHOR_BO_CREATE failed.*err=12' "${log_path}" 2>/dev/null)
-	printf 'GLMARK_PROGRESS phase=%s elapsed_s=%s state=%s wchan=%s log_bytes=%s rss_kib=%s threads=%s fds=%s bo_create_errors_total=%s export_errors_total=%s vm_bind_errors_total=%s oom_errors_total=%s scene=%s\n' \
+	local mem_available=0 cma_free=0
+	while read -r key value rest; do
+		case "${key}" in
+		MemAvailable:) mem_available=${value:-0} ;;
+		CmaFree:) cma_free=${value:-0} ;;
+		esac
+	done </proc/meminfo
+	printf 'GLMARK_PROGRESS phase=%s elapsed_s=%s state=%s wchan=%s log_bytes=%s rss_kib=%s threads=%s fds=%s bo_create_errors_total=%s export_errors_total=%s vm_bind_errors_total=%s oom_errors_total=%s scene=%s mem_available_kib=%s cma_free_kib=%s\n' \
 		"${phase}" "${elapsed}" "${state:-unknown}" "${wchan:-unknown}" \
 		"${log_size:-0}" "${rss:-0}" "${threads:-0}" "${fd_count:-0}" \
 		"${bo_errors:-0}" "${export_errors:-0}" \
-		"${vm_bind_errors:-0}" "${oom_errors:-0}" "${last_scene:-none}"
+		"${vm_bind_errors:-0}" "${oom_errors:-0}" "${last_scene:-none}" \
+		"${mem_available}" "${cma_free}"
 }
 
 glmark2_progress_field() {
@@ -453,7 +461,7 @@ run_glmark2_workload() {
 	local bo_create_errors export_errors vm_bind_errors submission_errors clean_result
 	local run_prefix=""
 	local benchmark_list="${GPU_SMOKE_GLMARK_BENCHMARKS:-}"
-	local benchmark old_ifs
+	local benchmark old_ifs benchmark_release
 
 	case "${flavor}" in
 	gbm)
@@ -669,6 +677,15 @@ run_glmark2_workload() {
 			return 125
 		fi
 		echo "GLMARK_VALIDATE=PASS"
+	fi
+
+	if [ "${GPU_SMOKE_GLMARK_START_BARRIER:-0}" = "1" ]; then
+		echo GLMARK_BENCHMARK_READY
+		IFS= read -r benchmark_release
+		if [ "${benchmark_release}" != GLMARK_BENCHMARK_GO ]; then
+			echo "GLMARK_RESULT=FAIL reason=invalid-benchmark-release"
+			return 2
+		fi
 	fi
 
 	log "+ LD_LIBRARY_PATH=${glmark_libs} ${run_prefix} ${glmark_bin} --off-screen=3 --size ${size} --data-path ${glmark_data} ${glmark_winsys_args} ${glmark_frame_args}"

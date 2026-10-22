@@ -1,0 +1,46 @@
+{
+  "status": "PASS",
+  "scope": "Documentation integrity, source excerpt cross-check and image validation; no new runtime or hardware tests.",
+  "sections": 31,
+  "mermaid_blocks": 18,
+  "png_images": 5,
+  "figure_explanations": 23,
+  "source_files": 36,
+  "source_excerpts_verified": 5,
+  "images": [
+    {
+      "path": "docs/shared/assets/clientproxy-guide-20261022/architecture.png",
+      "sha256": "6573687ef7d9f69f1fdaf19c9456dd73728ec2eb708519b7b873bd29e21e0f09",
+      "bytes": 220874,
+      "uploaded_bytes_verified": true
+    },
+    {
+      "path": "docs/shared/assets/clientproxy-guide-20261022/memory.png",
+      "sha256": "c0e0ee6f238045dafe5a61c9a99d9de326d853dbc9baa96f87b092c4ffe49b8b",
+      "bytes": 167775,
+      "uploaded_bytes_verified": true
+    },
+    {
+      "path": "docs/shared/assets/clientproxy-guide-20261022/rpc.png",
+      "sha256": "51405c5f37bc5cdc0a0e5b131b8b9fb00de4c52eb9d43d38922eec5279e37ff4",
+      "bytes": 148060,
+      "uploaded_bytes_verified": true
+    },
+    {
+      "path": "docs/shared/assets/clientproxy-guide-20261022/segmented-bo.png",
+      "sha256": "0c4a50af26aa3ab850fce2dc04c3df794fce0418ecc5c4c347952c0e3c475a43",
+      "bytes": 171829,
+      "uploaded_bytes_verified": true
+    },
+    {
+      "path": "docs/shared/assets/clientproxy-guide-20261022/translation.png",
+      "sha256": "7a81c05ca92f898b9beb6b22fc45ac46eb752fafd1a8264d9baa8c8fef896191",
+      "bytes": 154122,
+      "uploaded_bytes_verified": true
+    }
+  ],
+  "document_sha256": "251bbc4826fc5714ae88af4a299abfcfb2dece911b1bf86f6794f52c58446779",
+  "document_characters": 41224,
+  "runtime_code_changed": false,
+  "new_performance_measurements": false
+}

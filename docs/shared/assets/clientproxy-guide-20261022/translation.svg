@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#667791"/></marker></defs>
+<style>text { font-family: "Noto Sans CJK SC", sans-serif; }</style>
+<rect width="1440" height="900" fill="white"/>
+<text x="58" y="64" font-size="36" fill="#17243b" font-weight="700" text-anchor="start">B  地址翻译：三条访问路径汇聚到同一HPA</text>
+<text x="60" y="104" font-size="21" fill="#52627a" font-weight="400" text-anchor="start">CPU访问经过各自Realm RTT；GPU使用自己的GPUVM页表。共享的是最终物理页。</text>
+<rect x="60" y="200" width="255" height="105" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="200" width="6" height="105" rx="3" fill="#2767d8" stroke="none"/>
+<text x="82" y="238" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">Client CPU VA</text>
+<text x="82" y="276" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">CPU地址</text>
+<rect x="395" y="200" width="255" height="105" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="395" y="200" width="6" height="105" rx="3" fill="#2767d8" stroke="none"/>
+<text x="417" y="238" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">Client IPA</text>
+<text x="417" y="276" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">各Realm自己的地址</text>
+<rect x="730" y="200" width="255" height="105" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="730" y="200" width="6" height="105" rx="3" fill="#2767d8" stroke="none"/>
+<text x="752" y="238" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">Client RTT</text>
+<text x="752" y="276" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">RMM管理二阶翻译</text>
+<polyline points="315,253 395,253" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="650,253 730,253" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="60" y="400" width="255" height="105" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="400" width="6" height="105" rx="3" fill="#16836a" stroke="none"/>
+<text x="82" y="438" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">Proxy CPU VA</text>
+<text x="82" y="476" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">CPU地址</text>
+<rect x="395" y="400" width="255" height="105" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="395" y="400" width="6" height="105" rx="3" fill="#16836a" stroke="none"/>
+<text x="417" y="438" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">Proxy IPA</text>
+<text x="417" y="476" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">各Realm自己的地址</text>
+<rect x="730" y="400" width="255" height="105" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="730" y="400" width="6" height="105" rx="3" fill="#16836a" stroke="none"/>
+<text x="752" y="438" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">Proxy RTT</text>
+<text x="752" y="476" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">RMM管理二阶翻译</text>
+<polyline points="315,453 395,453" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="650,453 730,453" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="60" y="600" width="255" height="105" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="600" width="6" height="105" rx="3" fill="#7c58bb" stroke="none"/>
+<text x="82" y="638" font-size="25" fill="#7c58bb" font-weight="700" text-anchor="start">GPU VA</text>
+<text x="82" y="676" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">设备虚拟地址</text>
+<rect x="395" y="600" width="255" height="105" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="395" y="600" width="6" height="105" rx="3" fill="#7c58bb" stroke="none"/>
+<text x="417" y="638" font-size="25" fill="#7c58bb" font-weight="700" text-anchor="start">GPUVM页表</text>
+<text x="417" y="676" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">可信Panthor生成</text>
+<rect x="730" y="600" width="255" height="105" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="730" y="600" width="6" height="105" rx="3" fill="#7c58bb" stroke="none"/>
+<text x="752" y="638" font-size="25" fill="#7c58bb" font-weight="700" text-anchor="start">授权PTE → HPA</text>
+<text x="752" y="676" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">不遍历Client RTT</text>
+<polyline points="315,653 395,653" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="650,653 730,653" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="1110" y="337" width="270" height="230" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="1110" y="337" width="6" height="230" rx="3" fill="#d58120" stroke="none"/>
+<text x="1132" y="375" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">同一批HPA页</text>
+<text x="1132" y="413" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">数据只存一份</text>
+<text x="1132" y="443" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">页数与权限受授权限制</text>
+<text x="1132" y="473" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">不得映射控制页</text>
+<text x="1132" y="503" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">仍需正确缓存维护</text>
+<polyline points="985,253 1040,253 1040,380 1110,380" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="985,453 1110,453" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="985,653 1040,653 1040,525 1110,525" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="60" y="828" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">关键检查：session对象 → payload owner / generation / 范围 / 权限 → 真实GPUVM root → RMM翻译及租约。</text>
+<text x="60" y="858" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">Proxy可访问多个Client的授权池，因此“能翻译到HPA”本身不证明页面属于当前请求方。</text>
+</svg>

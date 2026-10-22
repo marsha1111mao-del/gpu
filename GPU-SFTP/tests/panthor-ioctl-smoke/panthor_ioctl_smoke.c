@@ -37,6 +37,7 @@ enum smoke_mode {
 	SMOKE_BO_CREATE,
 	SMOKE_BO_LIFECYCLE,
 	SMOKE_BO_MMAP,
+	SMOKE_BO_SG_MMAP,
 	SMOKE_VM_BIND,
 	SMOKE_VM_BIND_ASYNC_SYNC,
 	SMOKE_VM_STATE_FLUSH,
@@ -54,11 +55,119 @@ enum smoke_mode {
 	SMOKE_GPUVM_FAULT_ISOLATION,
 };
 
+static int bo_sg_mmap_check(int fd)
+{
+	const size_t chunk_size = 512 * 1024;
+	const size_t map_size = 2 * chunk_size;
+	uint32_t handles[2048] = { 0 };
+	struct drm_panthor_bo_create bo = { .size = map_size };
+	struct drm_panthor_bo_mmap_offset offset = { 0 };
+	volatile uint32_t *words = MAP_FAILED;
+	volatile uint32_t *alias = MAP_FAILED;
+	size_t count, index;
+	int ret = -1;
+
+	for (count = 0; count < ARRAY_SIZE(handles); count++) {
+		struct drm_panthor_bo_create chunk = { .size = chunk_size };
+
+		if (ioctl(fd, DRM_IOCTL_PANTHOR_BO_CREATE, &chunk)) {
+			if (errno != ENOMEM) {
+				perror("BO_SG_MMAP fill");
+				goto out;
+			}
+			break;
+		}
+		handles[count] = chunk.handle;
+	}
+	if (count < 4 || count == ARRAY_SIZE(handles)) {
+		fprintf(stderr, "BO_SG_MMAP unsuitable pool: chunks=%zu\n", count);
+		goto out;
+	}
+	for (index = 0; index < count; index += 2) {
+		struct drm_gem_close close_bo = { .handle = handles[index] };
+
+		if (ioctl(fd, DRM_IOCTL_GEM_CLOSE, &close_bo)) {
+			perror("BO_SG_MMAP fragment");
+			goto out;
+		}
+		handles[index] = 0;
+	}
+	if (ioctl(fd, DRM_IOCTL_PANTHOR_BO_CREATE, &bo)) {
+		perror("BO_SG_MMAP fragmented create");
+		goto out;
+	}
+	offset.handle = bo.handle;
+	if (ioctl(fd, DRM_IOCTL_PANTHOR_BO_MMAP_OFFSET, &offset)) {
+		perror("BO_SG_MMAP offset");
+		goto out;
+	}
+	words = mmap(NULL, map_size, PROT_READ | PROT_WRITE, MAP_SHARED,
+		     fd, (off_t)offset.offset);
+	if (words == MAP_FAILED) {
+		perror("BO_SG_MMAP mmap");
+		goto out;
+	}
+	for (index = 0; index < map_size / sizeof(*words); index++) {
+		if (words[index]) {
+			fprintf(stderr, "BO_SG_MMAP nonzero word=%zu\n", index);
+			goto out;
+		}
+		words[index] = 0x13579bdfu ^ (uint32_t)index;
+	}
+	for (index = 0; index < map_size / sizeof(*words); index++) {
+		if (words[index] != (0x13579bdfu ^ (uint32_t)index)) {
+			fprintf(stderr, "BO_SG_MMAP mismatch word=%zu\n", index);
+			goto out;
+		}
+	}
+	alias = mmap(NULL, 8192, PROT_READ | PROT_WRITE, MAP_SHARED, fd,
+		     (off_t)(offset.offset + chunk_size - 4096));
+	if (alias == MAP_FAILED) {
+		perror("BO_SG_MMAP partial mmap");
+		goto out;
+	}
+	for (index = 0; index < 8192 / sizeof(*alias); index++) {
+		size_t original = (chunk_size - 4096) / sizeof(*words) + index;
+
+		if (alias[index] != words[original]) {
+			fprintf(stderr, "BO_SG_MMAP alias mismatch word=%zu\n", index);
+			goto out;
+		}
+		alias[index] = ~words[original];
+		if (words[original] != alias[index]) {
+			fprintf(stderr, "BO_SG_MMAP alias write mismatch word=%zu\n", index);
+			goto out;
+		}
+	}
+	printf("BO_SG_MMAP chunks=%zu size=%zu full_rw=PASS partial_alias_rw=PASS\n",
+	       count, map_size);
+	ret = 0;
+out:
+	if (alias != MAP_FAILED && munmap((void *)alias, 8192))
+		ret = -1;
+	if (words != MAP_FAILED && munmap((void *)words, map_size))
+		ret = -1;
+	if (bo.handle) {
+		struct drm_gem_close close_bo = { .handle = bo.handle };
+
+		if (ioctl(fd, DRM_IOCTL_GEM_CLOSE, &close_bo))
+			ret = -1;
+	}
+	for (index = 0; index < ARRAY_SIZE(handles); index++) {
+		struct drm_gem_close close_bo = { .handle = handles[index] };
+
+		if (handles[index] && ioctl(fd, DRM_IOCTL_GEM_CLOSE, &close_bo))
+			ret = -1;
+	}
+	return ret;
+}
+
 static void usage(const char *prog)
 {
 	fprintf(stderr,
 		"usage: %s [--basic|--vm-create|--bo-create|--bo-lifecycle|--bo-mmap|--bo-hold|--hold-sec N|--bo-size BYTES|--vm-bind|--vm-bind-async-sync|--vm-state-flush|--syncobj-lifecycle|--syncobj-wait|--syncobj-transfer|--syncobj-timeline-wait|--syncobj-signal-query|--sync-file-snapshot|--group-lifecycle|--group-submit-syncpoint|--gpuvm-isolation|--gpuvm-fault-isolation|--tiler-heap-lifecycle] [drm-node]\n",
 		prog);
+	fprintf(stderr, "       --bo-sg-mmap: fragmented small-pool CPU mapping check\n");
 }
 
 static int parse_u64_arg(const char *arg, uint64_t *out, const char *name)
@@ -3019,6 +3128,8 @@ int main(int argc, char **argv)
 			mode = SMOKE_BO_LIFECYCLE;
 		} else if (!strcmp(argv[i], "--bo-mmap")) {
 			mode = SMOKE_BO_MMAP;
+		} else if (!strcmp(argv[i], "--bo-sg-mmap")) {
+			mode = SMOKE_BO_SG_MMAP;
 		} else if (!strcmp(argv[i], "--bo-hold")) {
 			mode = SMOKE_BO_HOLD;
 		} else if (!strcmp(argv[i], "--hold-sec")) {
@@ -3108,6 +3219,7 @@ int main(int argc, char **argv)
 	    (mode == SMOKE_BO_CREATE && bo_create_check(fd)) ||
 	    (mode == SMOKE_BO_LIFECYCLE && bo_lifecycle_check(fd)) ||
 	    (mode == SMOKE_BO_MMAP && bo_mmap_check(fd)) ||
+	    (mode == SMOKE_BO_SG_MMAP && bo_sg_mmap_check(fd)) ||
 	    (mode == SMOKE_BO_HOLD &&
 	     bo_hold_check(fd, hold_sec, bo_size)) ||
 	    (mode == SMOKE_VM_BIND && vm_bind_check(fd)) ||
@@ -3164,6 +3276,8 @@ int main(int argc, char **argv)
 		printf("PANTHOR_IOCTL_SMOKE=VM_BIND_PASS\n");
 	else if (mode == SMOKE_VM_BIND_ASYNC_SYNC)
 		printf("PANTHOR_IOCTL_SMOKE=VM_BIND_ASYNC_SYNC_PASS\n");
+	else if (mode == SMOKE_BO_SG_MMAP)
+		printf("PANTHOR_IOCTL_SMOKE=BO_SG_MMAP_PASS\n");
 	else if (mode == SMOKE_BO_MMAP)
 		printf("PANTHOR_IOCTL_SMOKE=BO_MMAP_PASS\n");
 	else if (mode == SMOKE_BO_LIFECYCLE)
