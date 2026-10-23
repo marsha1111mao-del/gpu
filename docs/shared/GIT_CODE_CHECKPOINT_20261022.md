@@ -40,4 +40,4 @@ Host和Firecracker保持下方上一快照版本。主仓库另保存扩展快�
 - 本次未重新构建镜像、未运行硬件负载，旧runtime manifest与恢复归档保持原版本。获取最新源码不等于旧预编译包自动更新；重建和测试需遵循[当前入口](CURRENT_BASELINE.md)及相应报告。
 - 完整Firecracker单测已有接口编译失败、Group fence历史间歇超时、Native四并发失败等记录保留，不因本次提交转为PASS。
 
-改动目的｜固定当前源码、测试和文档｜既有RPC诊断720p 1152 → 本次未新增测量｜分差不适用｜提交推送未改运行代码内容，不据此宣称提分｜既有run-id `rpc-breakdown-720-20261022-a`、命令/退出码/证据见[RPC报告](GPU_RPC_CRITICAL_PATH_20261022.md)，其他性能与验证条件见[当前基线](CURRENT_BASELINE.md)｜保留源码快照，独立RPC融合仍未实现。
+改动目的｜固定当前源码、测试和文档｜既有RPC诊断720p 1152 → 本次未新增测量｜分差不适用｜提交推送未改运行代码内容，不据此宣称提分｜既有run-id `rpc-breakdown-720-20261022-a`、命令/退出码/证据见[RPC报告](GPU_RPC_CRITICAL_PATH_20261022.md)，其他性能与验证条件见[当前基线](CURRENT_BASELINE.md)｜保留源码快照；独立RPC融合在该检查点时尚未实现，后续实测回退并撤回。

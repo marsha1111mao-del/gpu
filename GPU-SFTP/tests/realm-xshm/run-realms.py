@@ -37,6 +37,7 @@ p.add_argument('--pin-cpus', action='store_true', help='Explicit RK CPU 0 Proxy 
 p.add_argument('--performance', action='store_true', help='600 MHz OPP, separate CPUs, concurrent RPC, wait cache, fused/lazy snapshots and 1000 us Client reply polling')
 p.add_argument('--transfer-capture', action='store_true', help='Capture reusable immutable snapshots in binary TRANSFER replies')
 p.add_argument('--notify-trace', action='store_true', help='Record bounded RMM/notification/receive physical-counter samples')
+p.add_argument('--completion-trace', action='store_true', help='Sample full-fence completion to first Client cookie observation; implies notify trace')
 p.add_argument('--benchmark-only', action='store_true', help='Two Realms and full glmark; defer the broader lifecycle/API suite')
 p.add_argument('--suite', action='store_true', help='Remeasure common IOCTL, compute, ML, NCNN and both full glmark sizes')
 p.add_argument('--rpc-stats', action='store_true', help='Measure Client/Proxy RPC, backend submission and GPU IRQ latency (adds timing overhead)')
@@ -47,6 +48,7 @@ p.add_argument('--gpu-fault-isolation', action='store_true', help='Require an in
 p.add_argument('--bo-sg-mmap', action='store_true', help='Validate fragmented BO CPU mappings in the two-Client compute suite')
 p.add_argument('--root', type=Path, default=Path('/root/GPU-SFTP'))
 a = p.parse_args()
+a.notify_trace = a.notify_trace or a.completion_trace
 if a.profiles and not a.suite:
     p.error('--profiles requires --suite')
 if a.large_pool and (not a.benchmark_only or not a.glmark_rootfs or a.memory_pages != 131072):
@@ -103,6 +105,7 @@ result = {'run_id': a.run_id, 'status': 'RUNNING', 'commands': commands,
           'glmark_rootfs': str(a.glmark_rootfs) if a.glmark_rootfs else None,
           'rpc_stats': a.rpc_stats, 'transfer_capture': a.transfer_capture,
           'notify_trace': a.notify_trace,
+          'completion_trace': a.completion_trace,
           'suite': a.suite, 'large_pool': a.large_pool,
           'profiles': a.profiles}
 result['compact_memory'] = a.compact_memory
@@ -911,6 +914,9 @@ try:
                 ' panthor_client.lazy_snapshot_wait=1')
         if a.notify_trace:
             config['boot-source']['boot_args'] += ' realm_xshm.notify_trace=1'
+        if a.completion_trace:
+            driver = 'panthor_client' if vm else 'panthor_proxy'
+            config['boot-source']['boot_args'] += f' {driver}.completion_trace=1'
         if a.transfer_capture and vm:
             config['boot-source']['boot_args'] += ' panthor_client.transfer_capture=1 panthor_client.fused_snapshot=1'
         if a.rpc_stats and vm:
@@ -970,9 +976,13 @@ try:
         call(2, f'accept {channel}', 1)
         call(0, f'accept {channel}', 1)
         call(0, f'notify {channel}', 2)
+        if a.notify_trace:
+            call(0, f'notify-timed {channel}', 2)
         call(1, f'accept {channel}')
         for operation in ('query', 'notify', 'close', 'ack'):
             call(2, f'{operation} {channel}'+(' 0' if operation == 'ack' else ''), 1)
+        if a.notify_trace:
+            call(2, f'notify-timed {channel}', 1)
         if a.trusted_events:
             assert [call(vm, 'irq-stats')[0] for vm in range(3)] == irq_before, 'unauthorized event injected an IRQ'
         call(1, f'arm {channel} 0')
@@ -993,6 +1003,21 @@ try:
         assert call(1, f'arm {channel} 1')[2] & 2 == 0
         call(1, f'ack {channel} 2')
         assert call(1, f'arm {channel} 2')[2] & 2
+        if a.notify_trace:
+            timed = call(0, f'notify-timed {channel}')
+            assert 0 < timed[0] <= timed[1] <= timed[2]
+            assert timed[3] >> 32 > 0 and timed[3] & 1
+            assert call(1, f'query {channel}')[:2] == [3, 2]
+            coalesced = call(0, f'notify-timed {channel}')
+            assert 0 < coalesced[0] <= coalesced[1] <= coalesced[2]
+            assert coalesced[3] >> 32 == timed[3] >> 32
+            assert coalesced[3] & 1 == 0
+            assert call(1, f'query {channel}')[:2] == [4, 2]
+            call(1, f'ack {channel} 4')
+            assert call(1, f'arm {channel} 4')[2] & 2
+            result['timed_notify_abi'] = {'status': 'PASS', 'armed': timed,
+                                          'coalesced': coalesced,
+                                          'inactive_and_outsider_denied': True}
         if a.memory_pages:
             if a.clients == 2:
                 test_two_clients(channel, [ea[1], eb[1], ec[1]])
@@ -1005,6 +1030,8 @@ try:
                     assert result['event_irq']['after_workloads'][vm] > irq_after[vm], 'workload did not use event IRQ'
         call(0, f'close {channel}')
         call(0, f'notify {channel}', 2)
+        if a.notify_trace:
+            call(0, f'notify-timed {channel}', 2)
         call(1, 'unregister')
         replacement = call(1, 'register')[1]
         assert replacement != eb[1]
@@ -1020,6 +1047,11 @@ try:
         for vm in range(vm_count):
             trace = text_command(vm, 'notify-trace', ['XSHM_NOTIFY_TRACE_END'])
             (out/f'notify-realm-{vm}.log').write_text(trace)
+    if a.completion_trace:
+        for vm in range(vm_count):
+            role = 'client' if vm else 'proxy'
+            stats = text_command(vm, f'completion-stats {role}', ['XSHM_COMPLETION_STATS_END'])
+            (out/f'completion-stats-realm-{vm}.log').write_text(stats)
     if a.gpu_flow:
         result['kernel_health'] = {}
         for vm in range(vm_count):

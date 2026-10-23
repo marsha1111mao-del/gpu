@@ -1,5 +1,7 @@
 # 多 Client ML 未完成项修复与验证
 
+后续已补充[Native四进程 ↔ 四Client对照](GPU_NATIVE_ML4_COMPARISON_20261022.md)，7项Native有效、3项GPU失败；原历史单进程Native表及本页九条共享补测结果保持不变。
+
 四 Client 的七个 ML/Attention 算子，以及三/四 Client ResNet50，共九条已全部补测通过。外层/runner退出0、所有Realm正常退出、内核健康、资源恢复和GPU/DMA租约归零均已核验。独立审计检查100份原始Client输出：[当前结果表](GPU_MULTICLIENT_ML_RESULTS_20261021.md)共40条，保留原31条有效数据并补入九条新数据，并非当前组合重测全部40条。原失败、无效和内存准入拒绝证据继续保存在[原报告](GPU_MULTICLIENT_ML_20261021.md)及各run目录。
 
 | 补测项目 | Client数 | 每Client平均耗时 ms | Native历史单进程 ms | 性能保留比例 |

@@ -17,6 +17,7 @@ def main():
     parser.add_argument('--run-id', required=True)
     parser.add_argument('--capture', action='store_true')
     parser.add_argument('--api', action='store_true')
+    parser.add_argument('--bundle', type=Path, help='Explicit frozen bundle for a later diagnostic candidate')
     args = parser.parse_args()
     experiment = args.experiment.resolve()
     folder = experiment / 'runs' / args.run_id
@@ -27,7 +28,8 @@ def main():
     summary = load(folder / 'summary.json')
     lab = ROOT / 'build/lab-runs' / args.run_id
     assert load(lab / 'result.json')['returncode'] == 0
-    manifest = load(experiment / ('semantic' if args.api else 'candidate') / 'hashes.json')
+    bundle = args.bundle.resolve() if args.bundle else experiment / ('semantic' if args.api else 'candidate')
+    manifest = load(bundle / 'hashes.json')
     for name, suffix in (('runner.py', 'tests/realm-xshm/run-realms.py'),
                          ('client-Image', 'firecracker-bins/kernels/realm-xshm/Image'),
                          ('proxy-Image', 'firecracker-bins/kernels/realm-xshm/proxy/Image'),
@@ -57,7 +59,7 @@ def main():
             assert all(command['returncode'] == 0 and
                        all(command['markers'].values()) for command in modes)
             commands[str(member)] = [command['command'] for command in modes]
-        record = {'status': 'PASS', 'run_id': args.run_id, 'commands': commands,
+        record = {'status': 'PASS', 'run_id': args.run_id, 'bundle': str(bundle), 'commands': commands,
                   'vm_exit_codes': summary['vm_exit_codes'], 'lease': lease,
                   'audit_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
         (experiment / f'{args.run_id}-audit.json').write_text(json.dumps(record, indent=2) + '\n')
@@ -103,6 +105,7 @@ def main():
         assert counters['capture_calls'] == counters['capture_hits'] == 0
     record = {
         'status': 'PASS', 'run_id': args.run_id, 'capture': args.capture,
+        'bundle': str(bundle),
         'rpc_stats': summary['rpc_stats'], 'score': score, 'scenes': len(scenes),
         'counters': counters, 'observer': observation, 'lease': lease,
         'vm_exit_codes': summary['vm_exit_codes'],

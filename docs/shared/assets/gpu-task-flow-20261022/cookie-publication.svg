@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1130" viewBox="0 0 1440 1130">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#667791"/></marker></defs>
+<style>text { font-family: "Noto Sans CJK SC", sans-serif; }</style>
+<rect width="1440" height="1130" fill="white"/>
+<text x="58" y="64" font-size="36" fill="#17243b" font-weight="700" text-anchor="start">03  ClientProxy内部完成证明：cookie不是Mesa ioctl</text>
+<text x="60" y="104" font-size="21" fill="#52627a" font-weight="400" text-anchor="start">slot＝7、cookie＝42仅作示例。Mesa不会读写完成页；读写和校验均由Client / Proxy内核驱动完成。</text>
+<rect x="60" y="125" width="370" height="34" rx="7" fill="#fff3df" stroke="#d58120"/>
+<text x="245.0" y="149" font-size="17" fill="#d58120" font-weight="700" text-anchor="middle">内部：Proxy fence回调与共享完成页</text>
+<rect x="60" y="180" width="350" height="125" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="180" width="6" height="125" rx="3" fill="#7c58bb" stroke="none"/>
+<text x="82" y="218" font-size="25" fill="#7c58bb" font-weight="700" text-anchor="start">GPU执行结束 / 物理IRQ</text>
+<text x="82" y="256" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">Proxy完成必要的结果同步</text>
+<text x="82" y="286" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">确认原生fence / chain完成</text>
+<rect x="545" y="180" width="350" height="125" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="545" y="180" width="6" height="125" rx="3" fill="#16836a" stroke="none"/>
+<text x="567" y="218" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">调用已注册的fence回调</text>
+<text x="567" y="256" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">snapshot_complete → publish</text>
+<text x="567" y="286" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">只发布无错误的成功状态</text>
+<rect x="1030" y="180" width="350" height="125" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="1030" y="180" width="6" height="125" rx="3" fill="#d58120" stroke="none"/>
+<text x="1052" y="218" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">release写入共享完成页</text>
+<text x="1052" y="256" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">page[7].cookie：0 → 42</text>
+<text x="1052" y="286" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">这里不调用RMM NOTIFY</text>
+<polyline points="410,242 545,242" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="895,242 1030,242" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="60" y="375" width="600" height="155" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="375" width="6" height="155" rx="3" fill="#16836a" stroke="none"/>
+<text x="82" y="413" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">Proxy已完成发布，但Client不一定在运行</text>
+<text x="82" y="451" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">没有Client观察者：状态留在共享页，等以后检查</text>
+<text x="82" y="481" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">已经睡眠的线程：不会被这次内存写入直接唤醒</text>
+<text x="82" y="511" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">已发出WAIT RPC的线程：由RPC回复路径结束等待</text>
+<rect x="780" y="375" width="600" height="155" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="780" y="375" width="6" height="155" rx="3" fill="#d58120" stroke="none"/>
+<text x="802" y="413" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">完成页：双方映射到同一批物理页</text>
+<text x="802" y="451" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">不是完成之后再复制cookie给Client</text>
+<text x="802" y="481" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">Client内核持有页映射及私有expected_cookie＝42</text>
+<text x="802" y="511" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">图中箭头表示内存访问，不代表中断投递</text>
+<polyline points="1205,305 1205,375" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="780" y="600" width="600" height="155" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="780" y="600" width="6" height="155" rx="3" fill="#2767d8" stroke="none"/>
+<text x="802" y="638" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">Client驱动等待代码 / sync_file worker读取</text>
+<text x="802" y="676" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">observed = smp_load_acquire(page[7].cookie)</text>
+<text x="802" y="706" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">observed == 42：该观察对应的真实fence已成功完成</text>
+<text x="802" y="736" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">不匹配：不能证明完成，按具体等待路径回退</text>
+<polyline points="1080,530 1080,600" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="1102" y="572" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">内部读取</text>
+<rect x="60" y="600" width="600" height="155" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="600" width="6" height="155" rx="3" fill="#d58120" stroke="none"/>
+<text x="82" y="638" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">为什么不能只判断cookie非零</text>
+<text x="82" y="676" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">slot以后可能复用，必须与私有期望值精确相等</text>
+<text x="82" y="706" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">timeline还须检查对象、point与状态版本</text>
+<text x="82" y="736" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">fence错误不发布成功cookie，通过真实查询取结果</text>
+<rect x="60" y="825" width="1320" height="145" rx="14" fill="#fff3df" stroke="none"/>
+<text x="80" y="863" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">边界：cookie、slot、completion page、snapshot_complete都属于ClientProxy内部。</text>
+<text x="80" y="905" font-size="23" fill="#2767d8" font-weight="700" text-anchor="start">Mesa只能观察公开结果：WAIT ioctl返回，或导出的sync_file变为signaled。</text>
+<text x="80" y="945" font-size="22" fill="#52627a" font-weight="400" text-anchor="start">publish里的complete(watch-&gt;done)只供Proxy回收；它不是Client waiter.done或本地dma_fence。</text>
+<text x="60" y="1058" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">release / acquire保证CPU发布与观察的顺序；不能代替GPU数据所需的缓存维护。</text>
+<text x="60" y="1088" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">若注册回调时fence已经完成，则立即走同一发布逻辑；失败记录不会被当成成功证明。</text>
+</svg>

@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1450" viewBox="0 0 1440 1450">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#667791"/></marker></defs>
+<style>text { font-family: "Noto Sans CJK SC", sans-serif; }</style>
+<rect width="1440" height="1450" fill="white"/>
+<text x="58" y="64" font-size="36" fill="#17243b" font-weight="700" text-anchor="start">05  ClientProxy内部通知：Mesa不调用NOTIFY或ACK_ARM</text>
+<text x="60" y="104" font-size="21" fill="#52627a" font-weight="400" text-anchor="start">公开WAIT ioctl进入Client前端后，才可能触发下列RPC、RMM事件与回复分发。</text>
+<rect x="60" y="125" width="355" height="34" rx="7" fill="#fff3df" stroke="#d58120"/>
+<text x="237.5" y="149" font-size="17" fill="#d58120" font-weight="700" text-anchor="middle">内部：Client / Proxy通信协议</text>
+<rect x="1030" y="125" width="350" height="34" rx="7" fill="#eaf1ff" stroke="#2767d8"/>
+<text x="1205.0" y="149" font-size="17" fill="#2767d8" font-weight="700" text-anchor="middle">对用户态只返回WAIT结果</text>
+<rect x="60" y="180" width="350" height="145" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="180" width="6" height="145" rx="3" fill="#2767d8" stroke="none"/>
+<text x="82" y="218" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">Client前端发送WAIT / 查询RPC</text>
+<text x="82" y="256" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">发布请求 → RMM NOTIFY</text>
+<text x="82" y="286" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">为请求建立waiter.done</text>
+<text x="82" y="316" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">可短时轮询RPC回复队列</text>
+<rect x="545" y="180" width="350" height="145" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="545" y="180" width="6" height="145" rx="3" fill="#16836a" stroke="none"/>
+<text x="567" y="218" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">Proxy调用原生DRM wait</text>
+<text x="567" y="256" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">阻塞请求：等待fence或超时</text>
+<text x="567" y="286" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">零超时查询：立即返回状态</text>
+<text x="567" y="316" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">GPU物理IRQ驱动真实完成</text>
+<rect x="1030" y="180" width="350" height="145" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="1030" y="180" width="6" height="145" rx="3" fill="#16836a" stroke="none"/>
+<text x="1052" y="218" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">Proxy写内部WAIT_RSP回复</text>
+<text x="1052" y="256" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">返回ret及first_signaled等</text>
+<text x="1052" y="286" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">ret可为成功、未完成或错误</text>
+<text x="1052" y="316" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">先发布消息，再判断是否通知</text>
+<polyline points="410,252 545,252" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="895,252 1030,252" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="60" y="425" width="600" height="140" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="425" width="6" height="140" rx="3" fill="#2767d8" stroke="none"/>
+<text x="82" y="463" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">分支1：Client前端还在短时轮询回复</text>
+<text x="82" y="501" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">NO_NOTIFY有效：Proxy可省掉RMM回复通知</text>
+<text x="82" y="531" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">调用线程从共享回复队列读到对应WAIT_RSP</text>
+<text x="82" y="561" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">这里读的是RPC回复，不是完成页cookie</text>
+<rect x="780" y="425" width="600" height="140" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="780" y="425" width="6" height="140" rx="3" fill="#d58120" stroke="none"/>
+<text x="802" y="463" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">分支2：内部通知，Client线程可能已睡眠</text>
+<text x="802" y="501" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">Proxy NOTIFY → RMM可信事件 → Client事件IRQ</text>
+<text x="802" y="531" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">IRQ安排RX worker；worker读取共享回复队列</text>
+<text x="802" y="561" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">这是通信IRQ，不是GPU物理IRQ</text>
+<polyline points="1205,325 1205,375 360,375 360,425" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="1205,325 1205,425" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="360" y="655" width="720" height="140" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="360" y="655" width="6" height="140" rx="3" fill="#2767d8" stroke="none"/>
+<text x="382" y="693" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">Client驱动统一分发：按reply_to / type匹配请求</text>
+<text x="382" y="731" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">拷贝结果 → complete(waiter.done)</text>
+<text x="382" y="761" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">若调用线程在睡眠则唤醒；已完成则等待函数直接返回</text>
+<text x="382" y="791" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">RPC交付完成后，还须检查WAIT_RSP中的实际ret</text>
+<polyline points="360,565 360,605 600,605 600,655" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="1080,565 1080,605 840,605 840,655" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="60" y="870" width="600" height="140" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="870" width="6" height="140" rx="3" fill="#2767d8" stroke="none"/>
+<text x="82" y="908" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">回到公开WAIT ioctl调用线程</text>
+<text x="82" y="946" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">WAIT成功：按接口语义返回给用户态</text>
+<text x="82" y="976" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">未完成 / 超时 / 错误：返回对应状态</text>
+<text x="82" y="1006" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">不会把“收到回复”自动当成“GPU成功完成”</text>
+<rect x="780" y="870" width="600" height="140" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="780" y="870" width="6" height="140" rx="3" fill="#7c58bb" stroke="none"/>
+<text x="802" y="908" font-size="25" fill="#7c58bb" font-weight="700" text-anchor="start">Client内部sync_file worker后续动作</text>
+<text x="802" y="946" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">真实状态查询成功：signal本地fence</text>
+<text x="802" y="976" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">仍未完成：定时睡眠后重新检查cookie / 查询</text>
+<text x="802" y="1006" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">最终由本地fence唤醒poll / epoll等FD等待者</text>
+<polyline points="600,795 600,835 360,835 360,870" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="840,795 840,835 1080,835 1080,870" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="60" y="1075" width="1320" height="185" rx="14" fill="#fff3df" stroke="none"/>
+<text x="80" y="1117" font-size="23" fill="#d58120" font-weight="700" text-anchor="start">全部属于内部实现：RMM NOTIFY、NO_NOTIFY、ACK_ARM、WAIT_RSP、reply_to和waiter.done。</text>
+<text x="80" y="1161" font-size="23" fill="#2767d8" font-weight="700" text-anchor="start">Mesa / 应用只看到公开WAIT ioctl最终返回，或本地sync_file FD变为signaled。</text>
+<text x="80" y="1205" font-size="22" fill="#52627a" font-weight="400" text-anchor="start">cookie成功证明、RPC交付完成、本地fence signal是不同层；cookie写入不会自动发完成IRQ。</text>
+<text x="60" y="1378" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">阻塞WAIT可在Proxy等待真实fence；sync_file worker刻意使用非阻塞状态查询并在Client侧睡眠。</text>
+<text x="60" y="1408" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">Host / VMM协作运行和唤醒Realm；RMM事件及IRQ只提示检查，结果始终以真实状态为准。</text>
+</svg>

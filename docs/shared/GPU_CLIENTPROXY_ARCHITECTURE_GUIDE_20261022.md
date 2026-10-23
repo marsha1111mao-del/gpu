@@ -848,8 +848,10 @@ Client `panthor_client_syncobj_transfer()`物化对象后同步发真实TRANSFER
 | 跨GPUVM与Client请求隔离 | 已实现并有选定负例 | 会话资源、generation、payload范围/权限、真实GPUVM root绑定与页租约；普通同VM多Group不宣称互隔离 |
 | MMIO授权与统一安全IOMMU服务 | 当前模拟范围已实现并验收 | owner/generation、真实表/root、parking、互斥、IOTLB、设备授权/供电顺序；与Mali内置GPUVM区分 |
 | 分段BO、旧目标回收、多Client ML | 已实现并有对应实测 | 不是所有工作负载都用相同池或准入预算；需匹配报告输入 |
-| RPC计时与当前瓶颈定位 | 部分完成 | 已有阶段均值；尚缺逐调用形状、完整完成延迟分布与候选命中率 |
-| TRANSFER预捕获snapshot、复合提交 | 未实现 | 本文只给设计候选，无收益与并发语义验收 |
+| RPC计时与当前瓶颈定位 | 主要分解已完成 | 已有阶段均值、完整fence完成延迟样本及TRANSFER命中率；仍缺与逐帧关键路径的严格配对 |
+| TRANSFER预捕获snapshot | 已实现、默认关闭 | 大幅减少独立snapshot RPC并通过并发语义验收，但720p为1158→1156，未证明提分 |
+| `SUBMIT_CAPTURE`复合提交 | 已撤回 | RPC/提交下降43.27%，但720p均分1167.0→1152.5（−1.24%），不再作为优化待办 |
+| Proxy接收侧8μs轮询 | 已撤回 | 720p由1167降至1125（−3.60%），不保留实现 |
 | 远程证明与可信Proxy软件身份协议 | 未完成 | 当前信任部署的Proxy；endpoint认证不能证明镜像内容 |
 | 多vCPU、长期压力、完整故障组合 | 未完成验收 | 不从单vCPU主流程或旧PASS继承结论 |
 | 缓存/调度侧信道及可用性保证 | 不在当前目标 | Host仍可拒绝调度；独立GPUVM不消除共享微架构的侧信道 |
@@ -886,7 +888,7 @@ Guest核心目录均在`Linux-Guest-GPU/`：前后端分别是`drivers/gpu/drm/p
 
 | 内容 | 入口 |
 | --- | --- |
-| 当前源码、部署组合与范围 | [CURRENT_BASELINE](CURRENT_BASELINE.md)；当前工作树未发布改动不能仅靠HEAD重建 |
+| 当前源码、部署组合与范围 | [CURRENT_BASELINE](CURRENT_BASELINE.md)；源码提交与已测二进制输入须按发布记录和SHA共同识别 |
 | GPUVM root绑定、隔离策略与原生表 | [GPUVM安全强化v1](GPUVM_ISOLATION_V1_20261020.md)及其验收文档 |
 | 平台保护能力假设 | [场景2平台假设](SCENARIO2_PLATFORM_ASSUMPTIONS_20261020.md) |
 | 分段BO | [分段内存设计](GPU_BO_SEGMENTED_MEMORY_20261020.md) |

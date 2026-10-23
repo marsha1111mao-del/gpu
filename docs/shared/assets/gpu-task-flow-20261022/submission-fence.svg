@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1390" viewBox="0 0 1440 1390">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#667791"/></marker></defs>
+<style>text { font-family: "Noto Sans CJK SC", sans-serif; }</style>
+<rect width="1440" height="1390" fill="white"/>
+<text x="58" y="64" font-size="36" fill="#17243b" font-weight="700" text-anchor="start">02  提交与导出：公开ioctl、内部RPC和真实fence</text>
+<text x="60" y="104" font-size="21" fill="#52627a" font-weight="400" text-anchor="start">蓝色标签＝Mesa / libdrm调用；橙色标签＝ClientProxy内部；绿色标签＝Proxy对原生Panthor的调用。</text>
+<rect x="40" y="145" width="300" height="58" rx="14" fill="#f3f6fb" stroke="none"/>
+<text x="190" y="182" font-size="24" fill="#2767d8" font-weight="700" text-anchor="middle">Client应用 / Mesa</text>
+<path d="M190,205 V1220" stroke="#2767d8" stroke-opacity="0.25" stroke-width="2" stroke-dasharray="7,7"/>
+<rect x="400" y="145" width="300" height="58" rx="14" fill="#f3f6fb" stroke="none"/>
+<text x="550" y="182" font-size="24" fill="#2767d8" font-weight="700" text-anchor="middle">Client前端</text>
+<path d="M550,205 V1220" stroke="#2767d8" stroke-opacity="0.25" stroke-width="2" stroke-dasharray="7,7"/>
+<rect x="760" y="145" width="300" height="58" rx="14" fill="#f3f6fb" stroke="none"/>
+<text x="910" y="182" font-size="24" fill="#16836a" font-weight="700" text-anchor="middle">Proxy / 原生Panthor</text>
+<path d="M910,205 V1220" stroke="#16836a" stroke-opacity="0.25" stroke-width="2" stroke-dasharray="7,7"/>
+<rect x="1120" y="145" width="300" height="58" rx="14" fill="#f3f6fb" stroke="none"/>
+<text x="1270" y="182" font-size="24" fill="#7c58bb" font-weight="700" text-anchor="middle">GPU / 固件</text>
+<path d="M1270,205 V1220" stroke="#7c58bb" stroke-opacity="0.25" stroke-width="2" stroke-dasharray="7,7"/>
+<rect x="70" y="220" width="255" height="34" rx="7" fill="#eaf1ff" stroke="#2767d8"/>
+<text x="197.5" y="244" font-size="17" fill="#2767d8" font-weight="700" text-anchor="middle">UMD / DRM ioctl</text>
+<polyline points="190,290 550,290" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="198" y="248" width="344" height="32" rx="0" fill="white" stroke="none"/>
+<text x="370.0" y="273" font-size="20" fill="#2767d8" font-weight="400" text-anchor="middle">GROUP_SUBMIT</text>
+<text x="60" y="333" font-size="21" fill="#52627a" font-weight="400" text-anchor="start">参数：group、命令流GPUVA / 长度、等待与输出同步点</text>
+<rect x="586" y="332" width="255" height="34" rx="7" fill="#fff3df" stroke="#d58120"/>
+<text x="713.5" y="356" font-size="17" fill="#d58120" font-weight="700" text-anchor="middle">ClientProxy内部RPC</text>
+<polyline points="550,400 910,400" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="558" y="358" width="344" height="32" rx="0" fill="white" stroke="none"/>
+<text x="730.0" y="383" font-size="20" fill="#d58120" font-weight="400" text-anchor="middle">首次PLAN_REGISTER；每次PLAN_EXEC</text>
+<rect x="725" y="435" width="375" height="146" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="725" y="435" width="6" height="146" rx="3" fill="#16836a" stroke="none"/>
+<text x="747" y="473" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">Proxy校验 → 原生提交入口</text>
+<text x="747" y="511" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">创建job、绑定依赖和输出fence</text>
+<text x="747" y="541" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">将fence安装进输出syncobj</text>
+<text x="747" y="571" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">完成必要同步并进入调度队列</text>
+<rect x="725" y="605" width="375" height="146" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="725" y="605" width="6" height="146" rx="3" fill="#d58120" stroke="none"/>
+<text x="747" y="643" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">可选：注册提交完成观察</text>
+<text x="747" y="681" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">保留精确的真实fence chain</text>
+<text x="747" y="711" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">共享page[7].cookie先清为0</text>
+<text x="747" y="741" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">保存期望值42，安装完成回调</text>
+<polyline points="910,810 550,810" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="558" y="768" width="344" height="32" rx="0" fill="white" stroke="none"/>
+<text x="730.0" y="793" font-size="20" fill="#16836a" font-weight="400" text-anchor="middle">PLAN_EXEC响应：ret + 可选slot / cookie</text>
+<polyline points="550,860 190,860" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="198" y="818" width="344" height="32" rx="0" fill="white" stroke="none"/>
+<text x="370.0" y="843" font-size="20" fill="#16836a" font-weight="400" text-anchor="middle">GROUP_SUBMIT ioctl返回：仅表示接纳</text>
+<polyline points="910,850 1270,850" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="918" y="808" width="344" height="32" rx="0" fill="white" stroke="none"/>
+<text x="1090.0" y="833" font-size="20" fill="#7c58bb" font-weight="400" text-anchor="middle">固件调度GPU（可与返回重叠）</text>
+<rect x="70" y="875" width="255" height="34" rx="7" fill="#eaf1ff" stroke="#2767d8"/>
+<text x="197.5" y="899" font-size="17" fill="#2767d8" font-weight="700" text-anchor="middle">UMD / 通用DRM ioctl</text>
+<polyline points="190,945 550,945" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="198" y="903" width="344" height="32" rx="0" fill="white" stroke="none"/>
+<text x="370.0" y="928" font-size="20" fill="#2767d8" font-weight="400" text-anchor="middle">SYNCOBJ_TRANSFER(point N → binary)</text>
+<rect x="586" y="902" width="255" height="34" rx="7" fill="#fff3df" stroke="#d58120"/>
+<text x="713.5" y="926" font-size="17" fill="#d58120" font-weight="700" text-anchor="middle">ClientProxy内部RPC</text>
+<polyline points="550,1015 910,1015" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="558" y="973" width="344" height="32" rx="0" fill="white" stroke="none"/>
+<text x="730.0" y="998" font-size="20" fill="#d58120" font-weight="400" text-anchor="middle">TRANSFER_CAPTURE</text>
+<rect x="725" y="1045" width="375" height="112" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="725" y="1045" width="6" height="112" rx="3" fill="#16836a" stroke="none"/>
+<text x="747" y="1083" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">一次查找同一真实fence chain</text>
+<text x="747" y="1121" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">写入binary目标＋私有snapshot</text>
+<text x="747" y="1151" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">返回snapshot句柄、cookie / slot</text>
+<polyline points="910,1195 550,1195" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="558" y="1153" width="344" height="32" rx="0" fill="white" stroke="none"/>
+<text x="730.0" y="1178" font-size="20" fill="#16836a" font-weight="400" text-anchor="middle">TRANSFER结果＋捕获凭据</text>
+<polyline points="550,1250 190,1250" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="198" y="1208" width="344" height="32" rx="0" fill="white" stroke="none"/>
+<text x="370.0" y="1233" font-size="20" fill="#2767d8" font-weight="400" text-anchor="middle">随后EXPORT_SYNC_FILE：命中缓存则不再发snapshot RPC</text>
+<text x="60" y="1318" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">GROUP_SUBMIT、SYNCOBJ_TRANSFER、HANDLE_TO_FD是公开DRM UAPI；PLAN_*与TRANSFER_CAPTURE只存在于ClientProxy内部。</text>
+<text x="60" y="1348" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">cookie / slot是观察凭据，不是完成通知；GROUP_SUBMIT不返回内核fence指针，也不自动返回FD。</text>
+</svg>

@@ -38,6 +38,14 @@ Client vCPU按2/3/2/3固定落核，Proxy仍为CPU1、VMM I/O为CPU0；固定pol
 同期对照方案与实际进度见[公平对照报告](../../../docs/shared/GPU_FAIR_MULTICLIENT_GLMARK_20261021.md)，
 不能将新增绑核/频率配置与旧成绩混合作为单变量对照。
 
+正式性能计分保持诊断关闭：不传`--rpc-stats`、`--notify-trace`和`--completion-trace`，
+三者均默认关闭，`--performance`不会自动启用它们。`--completion-trace`会连带启用通知采样；
+开启诊断的成绩应单独标记，不能直接当作关闭诊断后的运行性能。
+含新提交计时扩展的Proxy内核在`--rpc-stats`下额外输出`PANTHOR_PROXY_SUBMIT_PHASES`；
+单Client结果可用`scripts/analysis/analyze-submit-phases.py --run <回收目录> --output <新JSON>`分析。
+该统计区分PLAN_REGISTER与PLAN_EXEC尝试、原生提交和附加完成观察；完整1080p测量及边界见[提交路径分解](../../../docs/shared/GPU_SUBMIT_PHASES_20261022.md)。
+`--transfer-capture`是独立的实验优化开关，不属于计时诊断，也不由`--performance`自动启用。
+
 紧凑模式默认设置`swiotlb=8192`，保留16MiB共享DMA bounce buffer，替代每Realm默认64MiB固定预留；四Client单独ResNet50且显式启用`--reclaim-targets`时改用`swiotlb=4096`/8MiB。不禁用强制bounce或改变GPU授权池。普通/API模式保持原配置。完整负载及内核日志须检查I/O错误和缓冲区不足，不能只按内存公式判断适用范围。
 
 每轮输出 `glmark-720-client-N.log` 或 `glmark-1080-client-N.log`、逐Client分数/实际分辨率/33场景FPS、validation、Host单调时钟观测的评分窗口重叠、派发时间差、`memory-samples.jsonl`、内核健康和全部Realm退出码。新initrd支持`memory-info`，runner保存绑定前后各Realm的`/proc/meminfo`，评分进度同时记录Client的MemAvailable/CmaFree。实际分辨率必须与所选profile一致。公共评分窗口至少覆盖联合窗口90%，否则不记为有效并行测试。串口观测存在传输误差，不等于硬件执行时间戳；各场景没有逐项跨Realm屏障。分数之和只能称聚合评分指数，不能称GPU总吞吐。
@@ -71,6 +79,10 @@ Client vCPU按2/3/2/3固定落核，Proxy仍为CPU1、VMM I/O为CPU0；固定pol
 `realm-xshm`访问0600权限的`/dev/realm-xshm`，Guest需`CONFIG_REALM_XSHM=y`；调用进入真实RSI，不模拟RMM。管理操作需Guest `CAP_SYS_ADMIN`。关闭fd不注销Realm端点，必须显式unregister或销毁Realm。
 
 REGISTER返回`[ABI, endpoint, capabilities, capacity]`。按实际能力位检查端点、持久事件、映射、身份描述、IRQ和ACK_ARM，不以历史cap31替代当前能力检查。当前成套Guest要求ACK_ARM；不支持的固件不能降级后冒充可信IRQ通过。端点ID不是远程证明。
+
+通知延迟诊断使用`--notify-trace`（默认关闭），要求REGISTER能力位64及匹配的Guest/initrd。采样窗口为物理计数器每100ms中的前2ms，输出`notify-realm-N.log`；配套Host探针、时钟校验及证据边界见[通知延迟拆分](../../../docs/shared/GPU_NOTIFICATION_LATENCY_20261022.md)。`notify-timed CHANNEL`仍执行原NOTIFY授权和事件语义，但成功返回三个RMM时间戳及打包的计数频率/Host提示，不能当作普通NOTIFY的sequence结果解析。
+
+完成回传诊断使用`--completion-trace`（默认关闭，自动启用notify trace），要求匹配的Client/Proxy能力位`1<<9`。在完整原生fence回调发布精确cookie后，记录Client本地检查或RPC成功分支首次采用该cookie的物理计数器时间；输出kind3 trace及`completion-stats-realm-N.log`，当前Guest trace容量65536条。`analyze-gpu-completion-trace.py --run <已校验的单Client回收目录> --output <新JSON> --require-rpc-paths`校验时钟及实际RPC回退样本；注册时已完成、未观察cookie及无对应证明的RPC分别报告。测量边界和已验证输入见[完成回传报告](../../../docs/shared/GPU_COMPLETION_LATENCY_20261022.md)，时间戳不承担完成授权。
 
 | 操作 | 含义 |
 | --- | --- |

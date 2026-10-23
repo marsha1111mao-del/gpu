@@ -27,6 +27,7 @@ p.add_argument('--profiles', nargs='+', help='Explicit subset of --suite, valida
 p.add_argument('--rpc-stats', action='store_true', help='Enable RPC/submission/IRQ timing in the frozen runner when supported')
 p.add_argument('--transfer-capture', action='store_true', help='Enable negotiated binary TRANSFER snapshot reuse')
 p.add_argument('--notify-trace', action='store_true', help='Collect RMM/notification/receive physical-counter samples')
+p.add_argument('--completion-trace', action='store_true', help='Sample full native fence completion to Client proof acceptance')
 p.add_argument('--client-cpu-layout', choices=('shared', 'round-robin'))
 p.add_argument('--cpu-frequency-khz', type=int)
 p.add_argument('--telemetry', action='store_true')
@@ -129,6 +130,8 @@ if a.transfer_capture:
     command += ['--transfer-capture']
 if a.notify_trace:
     command += ['--notify-trace']
+if a.completion_trace:
+    command += ['--completion-trace']
 if a.client_cpu_layout:
     command += ['--client-cpu-layout', a.client_cpu_layout]
 if a.cpu_frequency_khz is not None:

@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1390" viewBox="0 0 1440 1390">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#667791"/></marker></defs>
+<style>text { font-family: "Noto Sans CJK SC", sans-serif; }</style>
+<rect width="1440" height="1390" fill="white"/>
+<text x="58" y="64" font-size="36" fill="#17243b" font-weight="700" text-anchor="start">01  调用边界：Mesa ioctl如何变成ClientProxy内部请求</text>
+<text x="60" y="104" font-size="21" fill="#52627a" font-weight="400" text-anchor="start">左列是Native与ProxyClient共用的DRM UAPI；中、右列是ProxyClient新增实现，不由Mesa直接调用。</text>
+<rect x="60" y="132" width="390" height="34" rx="7" fill="#eaf1ff" stroke="#2767d8"/>
+<text x="255.0" y="156" font-size="17" fill="#2767d8" font-weight="700" text-anchor="middle">Mesa / UMD调用：公开DRM ioctl或syscall</text>
+<rect x="525" y="132" width="390" height="34" rx="7" fill="#fff3df" stroke="#d58120"/>
+<text x="720.0" y="156" font-size="17" fill="#d58120" font-weight="700" text-anchor="middle">panthor-client转换：内部RPC或本地快路径</text>
+<rect x="990" y="132" width="390" height="34" rx="7" fill="#e9f6f0" stroke="#16836a"/>
+<text x="1185.0" y="156" font-size="17" fill="#16836a" font-weight="700" text-anchor="middle">Proxy / 原生Panthor：真实资源操作</text>
+<rect x="60" y="215" width="390" height="130" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="215" width="6" height="130" rx="3" fill="#2767d8" stroke="none"/>
+<text x="82" y="253" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">① VM_CREATE ioctl</text>
+<text x="82" y="291" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">Mesa请求GPU地址空间</text>
+<rect x="525" y="215" width="390" height="130" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="525" y="215" width="6" height="130" rx="3" fill="#d58120" stroke="none"/>
+<text x="547" y="253" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">VM_CREATE RPC</text>
+<text x="547" y="291" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">携带session、flags与VA范围</text>
+<rect x="990" y="215" width="390" height="130" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="990" y="215" width="6" height="130" rx="3" fill="#16836a" stroke="none"/>
+<text x="1012" y="253" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">创建真实GPUVM</text>
+<text x="1012" y="291" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">维护Client句柄 → 原生对象</text>
+<polyline points="450,280 525,280" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="456" y="263" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">进入前端</text>
+<polyline points="915,280 990,280" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="922" y="263" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">内部调用</text>
+<rect x="60" y="415" width="390" height="130" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="415" width="6" height="130" rx="3" fill="#2767d8" stroke="none"/>
+<text x="82" y="453" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">② BO_CREATE / MMAP_OFFSET</text>
+<text x="82" y="491" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">随后通过mmap写入BO</text>
+<rect x="525" y="415" width="390" height="130" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="525" y="415" width="6" height="130" rx="3" fill="#d58120" stroke="none"/>
+<text x="547" y="453" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">BO请求＋共享页映射</text>
+<text x="547" y="491" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">mmap后的普通CPU写入不是RPC</text>
+<rect x="990" y="415" width="390" height="130" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="990" y="415" width="6" height="130" rx="3" fill="#16836a" stroke="none"/>
+<text x="1012" y="453" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">创建真实BO</text>
+<text x="1012" y="491" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">使用已授权的共享物理页</text>
+<polyline points="450,480 525,480" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="456" y="463" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">进入前端</text>
+<polyline points="915,480 990,480" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="922" y="463" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">内部调用</text>
+<rect x="60" y="615" width="390" height="130" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="615" width="6" height="130" rx="3" fill="#2767d8" stroke="none"/>
+<text x="82" y="653" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">③ VM_BIND ioctl</text>
+<text x="82" y="691" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">BO＋offset＋GPUVA＋范围</text>
+<rect x="525" y="615" width="390" height="130" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="525" y="615" width="6" height="130" rx="3" fill="#d58120" stroke="none"/>
+<text x="547" y="653" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">VM_BIND RPC</text>
+<text x="547" y="691" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">发送句柄和范围，不复制BO内容</text>
+<rect x="990" y="615" width="390" height="130" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="990" y="615" width="6" height="130" rx="3" fill="#16836a" stroke="none"/>
+<text x="1012" y="653" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">校验并建立GPU映射</text>
+<text x="1012" y="691" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">GPUVA → 当前Client授权页</text>
+<polyline points="450,680 525,680" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="456" y="663" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">进入前端</text>
+<polyline points="915,680 990,680" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="922" y="663" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">内部调用</text>
+<rect x="60" y="815" width="390" height="130" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="815" width="6" height="130" rx="3" fill="#2767d8" stroke="none"/>
+<text x="82" y="853" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">④ GROUP_CREATE ioctl</text>
+<text x="82" y="891" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">SYNCOBJ_CREATE是通用DRM ioctl</text>
+<rect x="525" y="815" width="390" height="130" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="525" y="815" width="6" height="130" rx="3" fill="#d58120" stroke="none"/>
+<text x="547" y="853" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">GROUP_CREATE RPC</text>
+<text x="547" y="891" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">普通syncobj可先本地创建、按需物化</text>
+<rect x="990" y="815" width="390" height="130" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="990" y="815" width="6" height="130" rx="3" fill="#16836a" stroke="none"/>
+<text x="1012" y="853" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">创建group / queue</text>
+<text x="1012" y="891" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">绑定真实GPUVM和调度对象</text>
+<polyline points="450,880 525,880" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="456" y="863" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">进入前端</text>
+<polyline points="915,880 990,880" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="922" y="863" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">内部调用</text>
+<rect x="60" y="1030" width="390" height="130" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="1030" width="6" height="130" rx="3" fill="#2767d8" stroke="none"/>
+<text x="82" y="1068" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">⑤ CPU写命令与输入</text>
+<text x="82" y="1106" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">普通内存写；不是DRM ioctl</text>
+<text x="82" y="1136" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">也不发送ClientProxy RPC</text>
+<rect x="525" y="1030" width="390" height="130" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="525" y="1030" width="6" height="130" rx="3" fill="#d58120" stroke="none"/>
+<text x="547" y="1068" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">共享BO保持同一批物理页</text>
+<text x="547" y="1106" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">Client与Proxy映射同一份数据</text>
+<text x="547" y="1136" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">控制RPC只传句柄、范围和同步点</text>
+<rect x="990" y="1030" width="390" height="130" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="990" y="1030" width="6" height="130" rx="3" fill="#7c58bb" stroke="none"/>
+<text x="1012" y="1068" font-size="25" fill="#7c58bb" font-weight="700" text-anchor="start">GPU稍后按GPUVA读取BO</text>
+<text x="1012" y="1106" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">命令内容不随提交整块复制</text>
+<text x="1012" y="1136" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">GPU执行由真实Panthor调度</text>
+<polyline points="450,1095 525,1095" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="915,1095 990,1095" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="60" y="1205" width="1320" height="82" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<text x="82" y="1240" font-size="22" fill="#2767d8" font-weight="700" text-anchor="start">识别规则：VM_CREATE / BO_CREATE / VM_BIND / GROUP_CREATE等是Mesa可见UAPI；</text>
+<text x="82" y="1272" font-size="22" fill="#d58120" font-weight="700" text-anchor="start">带RPC、PLAN、CAPTURE、cookie、NOTIFY字样的是ClientProxy内部协议或机制。</text>
+<text x="60" y="1318" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">图示为依赖关系，不强制所有应用采用完全相同调用顺序；VM_BIND也可带同步依赖。</text>
+<text x="60" y="1348" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">Panthor ioctl名称均省略DRM_IOCTL_PANTHOR_前缀；SYNCOBJ_*属于通用DRM UAPI。</text>
+</svg>

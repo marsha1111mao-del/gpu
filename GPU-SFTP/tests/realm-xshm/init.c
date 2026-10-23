@@ -167,7 +167,7 @@ static void memory_info(void)
 	_exit(0);
 }
 
-static void notify_trace_dump(void)
+static void trace_dump(const char *path, const char *begin, const char *end)
 {
 	char buffer[4096];
 	FILE *stream;
@@ -176,16 +176,16 @@ static void notify_trace_dump(void)
 	mkdir("/sys/kernel/debug", 0755);
 	if (mount("debugfs", "/sys/kernel/debug", "debugfs", 0, NULL) && errno != EBUSY)
 		_exit(1);
-	stream = fopen("/sys/kernel/debug/realm_xshm/notify_trace", "r");
+	stream = fopen(path, "r");
 	if (!stream)
 		_exit(1);
-	puts("XSHM_NOTIFY_TRACE_BEGIN");
+	puts(begin);
 	while ((count = fread(buffer, 1, sizeof(buffer), stream)))
 		if (fwrite(buffer, 1, count, stdout) != count)
 			_exit(1);
 	if (ferror(stream) || fclose(stream))
 		_exit(1);
-	puts("XSHM_NOTIFY_TRACE_END");
+	puts(end);
 	_exit(0);
 }
 
@@ -255,7 +255,19 @@ int main(void)
 			if (!strcmp(args[1], "memory-info"))
 				memory_info();
 			if (!strcmp(args[1], "notify-trace"))
-				notify_trace_dump();
+				trace_dump("/sys/kernel/debug/realm_xshm/notify_trace",
+					   "XSHM_NOTIFY_TRACE_BEGIN", "XSHM_NOTIFY_TRACE_END");
+			if (!strcmp(args[1], "completion-stats") && count == 3) {
+				const char *path;
+
+				if (!strcmp(args[2], "proxy"))
+					path = "/sys/module/panthor_proxy/parameters/completion_trace_stats";
+				else if (!strcmp(args[2], "client"))
+					path = "/sys/module/panthor_client/parameters/sync_file_wait_stats";
+				else
+					_exit(2);
+				trace_dump(path, "XSHM_COMPLETION_STATS_BEGIN", "XSHM_COMPLETION_STATS_END");
+			}
 			if (iommu_device) {
 				int descriptor;
 				ssize_t written;

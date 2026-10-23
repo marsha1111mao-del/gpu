@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1360" viewBox="0 0 1440 1360">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#667791"/></marker></defs>
+<style>text { font-family: "Noto Sans CJK SC", sans-serif; }</style>
+<rect width="1440" height="1360" fill="white"/>
+<text x="58" y="64" font-size="36" fill="#17243b" font-weight="700" text-anchor="start">04  公开等待ioctl进入后：Client内部怎样判断完成</text>
+<text x="60" y="104" font-size="21" fill="#52627a" font-weight="400" text-anchor="start">每列顶部是用户态可见入口；cookie检查、WAIT RPC和worker循环都属于ClientProxy内部实现。</text>
+<rect x="60" y="120" width="360" height="34" rx="7" fill="#eaf1ff" stroke="#2767d8"/>
+<text x="240.0" y="144" font-size="17" fill="#2767d8" font-weight="700" text-anchor="middle">蓝色标题：公开DRM UAPI / FD行为</text>
+<rect x="510" y="120" width="420" height="34" rx="7" fill="#fff3df" stroke="#d58120"/>
+<text x="720.0" y="144" font-size="17" fill="#d58120" font-weight="700" text-anchor="middle">框内流程：ClientProxy内部快路径或RPC</text>
+<rect x="60" y="150" width="420" height="148" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="150" width="6" height="148" rx="3" fill="#2767d8" stroke="none"/>
+<text x="82" y="188" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">A  UAPI：TIMELINE_WAIT查询</text>
+<text x="82" y="226" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">单句柄、正point、WAIT_ALL</text>
+<text x="82" y="256" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">非阻塞且状态版本匹配才走快路径</text>
+<rect x="60" y="355" width="420" height="150" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="355" width="6" height="150" rx="3" fill="#2767d8" stroke="none"/>
+<text x="82" y="393" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">内部：检查timeline完成证明</text>
+<text x="82" y="431" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">读取slot并精确比较cookie</text>
+<text x="82" y="461" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">完整chain证明可覆盖更早有效点</text>
+<rect x="60" y="565" width="420" height="150" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="565" width="6" height="150" rx="3" fill="#2767d8" stroke="none"/>
+<text x="82" y="603" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">命中：当前ioctl直接返回成功</text>
+<text x="82" y="641" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">没有额外唤醒动作</text>
+<text x="82" y="671" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">调用线程本来就在执行</text>
+<rect x="60" y="775" width="420" height="150" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="775" width="6" height="150" rx="3" fill="#2767d8" stroke="none"/>
+<text x="82" y="813" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">内部回退：TIMELINE_WAIT RPC</text>
+<text x="82" y="851" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">由原生同步对象判断结果</text>
+<text x="82" y="881" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">阻塞等待不使用这个本地查询快路径</text>
+<polyline points="270,298 270,355" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="270,505 270,565" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="285" y="542" font-size="18" fill="#2767d8" font-weight="400" text-anchor="start">匹配</text>
+<polyline points="60,430 46,430 46,850 60,850" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="80" y="750" font-size="18" fill="#52627a" font-weight="400" text-anchor="start">未匹配 → 直接回退（不经过成功返回）</text>
+<rect x="510" y="150" width="420" height="148" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="510" y="150" width="6" height="148" rx="3" fill="#2767d8" stroke="none"/>
+<text x="532" y="188" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">B  UAPI：SYNCOBJ_WAIT</text>
+<text x="532" y="226" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">对象已持有不可变snapshot</text>
+<text x="532" y="256" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">并且有完成页 / cookie观察凭据</text>
+<rect x="510" y="355" width="420" height="150" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="510" y="355" width="6" height="150" rx="3" fill="#2767d8" stroke="none"/>
+<text x="532" y="393" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">内部：短时检查共享完成页</text>
+<text x="532" y="431" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">最长约1000μs，受原期限限制</text>
+<text x="532" y="461" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">调度需求 / 信号可提前结束</text>
+<rect x="510" y="565" width="420" height="150" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="510" y="565" width="6" height="150" rx="3" fill="#2767d8" stroke="none"/>
+<text x="532" y="603" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">命中：当前WAIT ioctl返回成功</text>
+<text x="532" y="641" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">按WAIT_ALL / WAIT_ANY判定</text>
+<text x="532" y="671" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">不是收到一个完成中断</text>
+<rect x="510" y="775" width="420" height="150" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="510" y="775" width="6" height="150" rx="3" fill="#2767d8" stroke="none"/>
+<text x="532" y="813" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">内部回退：发送真实WAIT RPC</text>
+<text x="532" y="851" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">按剩余期限等待 / 查询</text>
+<text x="532" y="881" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">成功、未完成或错误均看回复结果</text>
+<polyline points="720,298 720,355" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="720,505 720,565" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="735" y="542" font-size="18" fill="#2767d8" font-weight="400" text-anchor="start">匹配</text>
+<polyline points="510,430 496,430 496,850 510,850" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="530" y="750" font-size="18" fill="#52627a" font-weight="400" text-anchor="start">未匹配 → 直接回退（不经过成功返回）</text>
+<rect x="960" y="150" width="420" height="148" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="960" y="150" width="6" height="148" rx="3" fill="#2767d8" stroke="none"/>
+<text x="982" y="188" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">C  UAPI：HANDLE_TO_FD / poll</text>
+<text x="982" y="226" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">poll / epoll等需要本地fence信号</text>
+<text x="982" y="256" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">启用signaling后安排Client worker</text>
+<rect x="960" y="355" width="420" height="150" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="960" y="355" width="6" height="150" rx="3" fill="#2767d8" stroke="none"/>
+<text x="982" y="393" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">内部worker先检查snapshot cookie</text>
+<text x="982" y="431" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">命中则完成；否则发非阻塞WAIT RPC</text>
+<text x="982" y="461" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">RPC携带真实fence状态查询标志</text>
+<rect x="960" y="565" width="420" height="150" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="960" y="565" width="6" height="150" rx="3" fill="#2767d8" stroke="none"/>
+<text x="982" y="603" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">仍未完成：worker定时休眠再检查</text>
+<text x="982" y="641" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">usleep_range默认约1–2ms</text>
+<text x="982" y="671" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">定时唤醒，不是cookie把它唤醒</text>
+<rect x="960" y="775" width="420" height="150" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="960" y="775" width="6" height="150" rx="3" fill="#2767d8" stroke="none"/>
+<text x="982" y="813" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">成功：signal本地dma_fence</text>
+<text x="982" y="851" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">再由sync_file唤醒FD等待者</text>
+<text x="982" y="881" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">错误先set_error再signal，等待有界</text>
+<polyline points="1170,298 1170,355" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="1170,505 1170,565" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="1185" y="542" font-size="18" fill="#2767d8" font-weight="400" text-anchor="start">仍未完成</text>
+<polyline points="960,640 946,640 946,430 960,430" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="1380,430 1394,430 1394,850 1380,850" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="980" y="750" font-size="18" fill="#52627a" font-weight="400" text-anchor="start">命中 / 查询成功 → 直接完成本地fence</text>
+<rect x="60" y="1000" width="1320" height="185" rx="14" fill="#fff3df" stroke="none"/>
+<text x="80" y="1040" font-size="24" fill="#d58120" font-weight="700" text-anchor="start">用户态只调用WAIT / HANDLE_TO_FD并观察返回值或FD；不会直接调用cookie检查和WAIT RPC。</text>
+<text x="80" y="1082" font-size="23" fill="#2767d8" font-weight="700" text-anchor="start">A / B：命中时Client前端直接返回ioctl。C：worker signal本地fence，再唤醒FD等待者。</text>
+<text x="80" y="1124" font-size="22" fill="#52627a" font-weight="400" text-anchor="start">C的内部循环是“查cookie → 查真实状态 → 未完成则定时睡眠 → 重试”，不是长时间阻塞Proxy。</text>
+<text x="80" y="1162" font-size="22" fill="#52627a" font-weight="400" text-anchor="start">A / B左线表示未命中回退；C左线表示重试、右线表示成功。无凭据时仍有真实查询。</text>
+<text x="60" y="1288" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">sync_file启用惰性等待时由enable_signaling启动worker；关闭惰性等待则导出后即安排worker。</text>
+<text x="60" y="1318" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">完成页短轮询、RPC回复短轮询和sync_file worker定时重查是三件不同的事。</text>
+</svg>
