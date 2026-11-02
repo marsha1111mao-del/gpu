@@ -1,0 +1,77 @@
+{
+  "status": "PASS_SELECTED_BASELINE_CHECKS",
+  "new_runtime_restore": {
+    "exit": 0,
+    "files": 17
+  },
+  "old_runtime_restore": {
+    "exit": 0,
+    "files": 11
+  },
+  "new_checkout": {
+    "command": [
+      "python3",
+      "scripts/check/check-checkout.py",
+      "--no-rootfs",
+      "--runtime-manifest",
+      "baselines/rmm-private-fu-ft-20261102/manifest.json",
+      "--runtime-dir",
+      "build/publish-baselines-20261102/restored-new"
+    ],
+    "exit": 0,
+    "scripts_checked": 94
+  },
+  "patch_manifest_check": {
+    "command": [
+      "python3",
+      "opencca/scripts/setup/apply-local-patches.py",
+      "--check"
+    ],
+    "exit": 0
+  },
+  "credential_pattern_check": {
+    "exit": 0,
+    "changed_text_files": 329,
+    "issues": 0
+  },
+  "failures_preserved": [
+    {
+      "step": "initial FX fixture",
+      "exit": 1,
+      "reason": "Used cold hold API instead of retained live API; fixture corrected and42 differential cases passed"
+    },
+    {
+      "step": "initial firmware rollback",
+      "exit": 1,
+      "reason": "Candidate-source check after source restoration; rejected before flash. Corrected baseline/archive checks; rollback retry and final actual SD2/Guests passed"
+    },
+    {
+      "step": "Host commit author",
+      "exit": 128,
+      "reason": "Missing repository-local author; reused existing workspace identity; commit and remote verified"
+    },
+    {
+      "step": "nested patch/diff whitespace check",
+      "exit": 2,
+      "reason": "Context prefix in archived diff; exact patch hash/application checked; runtime source whitespace check passed"
+    },
+    {
+      "step": "initial root commit whitespace",
+      "exit": 2,
+      "reason": "Extra EOF blank line in research document; removed and root commit passed"
+    },
+    {
+      "step": "old manifest from new workspace",
+      "exit": 1,
+      "reason": "Archive resolution uses script workspace; reran old worktree script and verified11 files"
+    },
+    {
+      "step": "default legacy checkout manifest",
+      "exit": 1,
+      "reason": "Local runtime cache differs from old public payload. Preserved cache, added manifest/destination options and verified new baseline independently"
+    }
+  ],
+  "hardware_after_archive": "NOT_RUN",
+  "full_rootfs_checksum_check": "NOT_RUN",
+  "new_performance_measurement": false
+}

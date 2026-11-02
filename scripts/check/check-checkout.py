@@ -26,6 +26,9 @@ def digest(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--no-rootfs", action="store_true")
+    parser.add_argument("--runtime-manifest", type=Path,
+                        default=ROOT / "GPU-SFTP/runtime-manifest.json")
+    parser.add_argument("--runtime-dir", type=Path, default=ROOT / "GPU-SFTP")
     args = parser.parse_args()
     status = subprocess.check_output(
         ["git", "submodule", "status"], cwd=ROOT, text=True)
@@ -44,8 +47,10 @@ def main():
             elif path.suffix == ".py":
                 ast.parse(path.read_text(), filename=str(path))
                 count += 1
-    run(sys.executable, str(ROOT / "scripts/artifacts/restore-runtime.py"), "--check")
-    runtime = json.loads((ROOT / "GPU-SFTP/runtime-manifest.json").read_text())
+    run(sys.executable, str(ROOT / "scripts/artifacts/restore-runtime.py"),
+        "--manifest", str(args.runtime_manifest.resolve()),
+        "--dest", str(args.runtime_dir.resolve()), "--check")
+    runtime = json.loads(args.runtime_manifest.read_text())
     for artifact in runtime.get("source_archives", []):
         path = ROOT / artifact["archive"]
         if (not path.is_file() or path.stat().st_size != artifact["size"]

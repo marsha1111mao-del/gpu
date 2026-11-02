@@ -22,3 +22,11 @@ CPU自动schedutil、GPU实际594MHz、默认池、单Client、完整33场景。
 现存默认GPU-SFTP/runtime-manifest.json仍用于旧公共运行树；新baseline应使用这里的独立manifest，避免恢复为旧镜像。已有构建缓存可能是已撤回FV，复现以本清单镜像为准。源码重建RMM的固定参数在rmm-build-commands.json，用当前仓库路径及独立构建目录替换@WORKSPACE@／@BUILD@；不要更新上游latest。
 
 归档仅整理源码、镜像、哈希和文档，未新增性能测量。与旧设计1158分的差异涉及安全架构、CPU频率及内存条件，不能据此计算单一优化或安全机制的开销。
+
+对恢复后的新包做源码／脚本／子模块／载荷一致性检查：
+
+```bash
+python3 scripts/check/check-checkout.py --no-rootfs --runtime-manifest baselines/rmm-private-fu-ft-20261102/manifest.json --runtime-dir build/baselines/fu-ft
+```
+
+本轮此检查通过，94个脚本语法检查；rootfs完整校验未重跑。默认旧manifest检查与本地已改变的旧缓存不符，失败单列在checks.json，未覆盖本地缓存；新manifest的独立目录恢复与校验均通过。OpenCCA中TF-A显示的预期dirty由已发布补丁manifest管理，不代表丢失了源码改动。

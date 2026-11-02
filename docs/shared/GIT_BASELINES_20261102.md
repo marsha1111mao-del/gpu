@@ -21,3 +21,5 @@
 新恢复入口：[baselines/rmm-private-fu-ft-20261102/README.md](../../baselines/rmm-private-fu-ft-20261102/README.md)。旧恢复入口位于旧分支的baselines/legacy-proxy-allocated-1158-20261102/README.md。各自独立manifest恢复：新17份文件、旧11份文件逐项SHA验证；不把旧公共runtime-manifest误当成新FU包。实际部署仍遵循环境手册与lab-run独占、仅SD2、匹配Host release等要求。
 
 版本归档未改运行代码，无新增性能测量。当前33场景validation26/1/6，健康／恢复通过，1000未达到；ML／完整API／多Client未扩展。原始日志、凭据和编译缓存不提交，仅提交冻结运行载荷、源码、哈希与脱敏结论。
+
+归档检查见新baseline的checks.json：选定manifest的checkout检查rc0（94个脚本）、新17／旧11份载荷恢复及SHA校验、固定补丁检查通过。默认旧manifest与控制机历史缓存不一致的失败保留，使用明确manifest／目标目录验证新基线；不覆盖已有缓存，也不将未重跑的rootfs全量校验写成PASS。TF-A工作树的预期差异由新manifest补丁覆盖。
