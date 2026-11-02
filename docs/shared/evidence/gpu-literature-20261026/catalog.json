@@ -1,0 +1,2163 @@
+{
+  "retrieval_date": "2026-10-26",
+  "scope": "GPU confidential computing, GPU TEEs, GPU memory safety/security; separate CPU-TEE interrupt background",
+  "runtime_changes": false,
+  "hardware_tests_run": false,
+  "records": [
+    {
+      "id": "S01",
+      "group": "综述与索引",
+      "title": "Confidential Computing on Heterogeneous CPU-GPU Systems: Survey and Future Directions",
+      "year": 2026,
+      "venue": "ACM Computing Surveys",
+      "original_refs": [
+        "综述1",
+        "论文41"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1145/3793532"
+        }
+      ],
+      "verification": "出版方元数据",
+      "note": "在线2026-02-25；卷期2026-07。已有本地Crossref原始记录。",
+      "source_ids": [
+        "prior:survey-metadata-retry.json"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "S02",
+      "group": "综述与索引",
+      "title": "SoK: Analysis of Accelerator TEE Designs",
+      "year": 2026,
+      "venue": "NDSS",
+      "original_refs": [
+        "综述2"
+      ],
+      "links": [
+        {
+          "label": "会议",
+          "url": "https://www.ndss-symposium.org/ndss-paper/sok-analysis-of-accelerator-tee-designs/"
+        },
+        {
+          "label": "原文",
+          "url": "https://www.ndss-symposium.org/wp-content/uploads/2026-f1424-paper.pdf"
+        },
+        {
+          "label": "项目",
+          "url": "https://compass.sustech.edu.cn/sok-xputee/"
+        }
+      ],
+      "verification": "会议/作者页面",
+      "note": "覆盖加速器TEE；不将其中全部非GPU工作纳入GPU主库。",
+      "source_ids": [
+        "sok-ndss",
+        "sok-project"
+      ],
+      "relation": "直接",
+      "code": ""
+    },
+    {
+      "id": "S03",
+      "group": "综述与索引",
+      "title": "GPU-TEE-Papers",
+      "year": "持续更新",
+      "venue": "第三方GitHub合集",
+      "original_refs": [
+        "综述3"
+      ],
+      "links": [
+        {
+          "label": "仓库",
+          "url": "https://github.com/ConfidentialComputing/GPU-TEE-Papers"
+        }
+      ],
+      "verification": "仓库README/目录",
+      "note": "含重复项；目录中的“GPU A100 TEE”不是Graviton的论文平台或年代证明。",
+      "source_ids": [
+        "gpu-tee-api",
+        "gpu-tee-tree"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "S04",
+      "group": "综述与索引",
+      "title": "GPU Security Papers",
+      "year": "持续更新",
+      "venue": "第三方GitHub合集",
+      "original_refs": [
+        "综述4"
+      ],
+      "links": [
+        {
+          "label": "仓库",
+          "url": "https://github.com/trilateral-gpu-sec/gpu-security-papers"
+        }
+      ],
+      "verification": "仓库README",
+      "note": "可用于发现文献，会议/年份仍需逐项核对；例如其AvaGPU条目的会议标签与正式出版记录不一致。",
+      "source_ids": [
+        "gpu-security-api"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "S05",
+      "group": "综述与索引",
+      "title": "Survey of Research on Confidential Computing",
+      "year": 2024,
+      "venue": "IET Communications",
+      "original_refs": [
+        "综述5"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1049/cmu2.12759"
+        }
+      ],
+      "verification": "出版方元数据",
+      "note": "广义机密计算综述。",
+      "source_ids": [
+        "doi-survey-iet"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "A01",
+      "group": "Arm GPU与CCA",
+      "title": "StrongBox: A GPU TEE on Arm Endpoints",
+      "year": 2022,
+      "venue": "ACM CCS",
+      "original_refs": [
+        "论文1"
+      ],
+      "links": [
+        {
+          "label": "原文",
+          "url": "https://fengweiz.github.io/paper/strongbox-ccs22.pdf"
+        },
+        {
+          "label": "项目",
+          "url": "https://compass.sustech.edu.cn/strongbox/"
+        },
+        {
+          "label": "代码",
+          "url": "https://github.com/Compass-All/CCS22-StrongBox"
+        }
+      ],
+      "verification": "既有原文/代码核验",
+      "note": "TrustZone、GPU可信控制；与A02按同一工作族追踪。",
+      "source_ids": [
+        "prior:strongbox.txt",
+        "prior:research-inputs.json"
+      ],
+      "relation": "直接",
+      "code": "作者原型；已有关键路径抽查，未在本轮构建"
+    },
+    {
+      "id": "A02",
+      "group": "Arm GPU与CCA",
+      "title": "Building a Lightweight Trusted Execution Environment for Arm GPUs",
+      "year": 2024,
+      "venue": "IEEE TDSC",
+      "original_refs": [
+        "论文2"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1109/TDSC.2023.3334277"
+        }
+      ],
+      "verification": "出版方元数据",
+      "note": "正式卷期2024；DOI中的2023不能单独作为卷期年份。第三方索引摘要将系统称为StrongBox。",
+      "source_ids": [
+        "doi-lightweight",
+        "gpu-security-api"
+      ],
+      "relation": "直接",
+      "code": ""
+    },
+    {
+      "id": "A03",
+      "group": "Arm GPU与CCA",
+      "title": "CAGE: Complementing Arm CCA with GPU Extensions",
+      "year": 2024,
+      "venue": "NDSS",
+      "original_refs": [
+        "论文3"
+      ],
+      "links": [
+        {
+          "label": "会议",
+          "url": "https://www.ndss-symposium.org/ndss-paper/cage-complementing-arm-cca-with-gpu-extensions/"
+        },
+        {
+          "label": "原文",
+          "url": "https://www.ndss-symposium.org/wp-content/uploads/2024-763-paper.pdf"
+        },
+        {
+          "label": "代码",
+          "url": "https://github.com/Compass-All/NDSS24-CAGE"
+        }
+      ],
+      "verification": "既有原文/代码核验",
+      "note": "功能原型、性能原型分别记录；A07为相关期刊条目，扩展关系待正文确认。",
+      "source_ids": [
+        "prior:cage.txt",
+        "prior:research-inputs.json"
+      ],
+      "relation": "直接",
+      "code": "作者原型；区分functionality-prototype与performance-prototype"
+    },
+    {
+      "id": "A04",
+      "group": "Arm GPU与CCA",
+      "title": "ACAI: Protecting Accelerator Execution with Arm Confidential Computing Architecture",
+      "year": 2024,
+      "venue": "USENIX Security",
+      "original_refs": [
+        "论文4"
+      ],
+      "links": [
+        {
+          "label": "会议",
+          "url": "https://www.usenix.org/conference/usenixsecurity24/presentation/sridhara"
+        },
+        {
+          "label": "原文",
+          "url": "https://www.usenix.org/system/files/usenixsecurity24-sridhara.pdf"
+        },
+        {
+          "label": "代码",
+          "url": "https://github.com/sectrs-acai/acai"
+        }
+      ],
+      "verification": "既有原文/代码核验",
+      "note": "身份、设备绑定、映射归属一致性。",
+      "source_ids": [
+        "prior:acai.txt",
+        "prior:research-inputs.json"
+      ],
+      "relation": "直接",
+      "code": "作者原型/子模块；本轮未构建"
+    },
+    {
+      "id": "A05",
+      "group": "Arm GPU与CCA",
+      "title": "PORTAL: Fast and Secure Device Access with Arm CCA for Modern Arm Mobile System-on-Chips (SoCs)",
+      "year": 2025,
+      "venue": "IEEE S&P",
+      "original_refs": [
+        "论文5"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1109/SP61157.2025.00013"
+        },
+        {
+          "label": "作者原文",
+          "url": "https://mainarke.github.io/assets/papers/sp25_sang.pdf"
+        }
+      ],
+      "verification": "出版方元数据/既有原文",
+      "note": "可信服务Realm、设备管理；本轮未确认独立完整公开实现。",
+      "source_ids": [
+        "doi-portal",
+        "prior:portal.txt"
+      ],
+      "relation": "直接",
+      "code": "未确认作者完整公开仓库"
+    },
+    {
+      "id": "A06",
+      "group": "Arm GPU与CCA",
+      "title": "MOLE: Breaking GPU TEE with GPU-Embedded MCU",
+      "year": 2025,
+      "venue": "ACM CCS",
+      "original_refs": [
+        "论文6",
+        "论文28"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1145/3719027.3744823"
+        }
+      ],
+      "verification": "出版方元数据",
+      "note": "合并重复项；GPU内部MCU/固件攻击面。",
+      "source_ids": [
+        "cr-mole"
+      ],
+      "relation": "直接",
+      "code": ""
+    },
+    {
+      "id": "A07",
+      "group": "Arm GPU与CCA",
+      "title": "Building Confidential Accelerator Computing Environment for Arm CCA",
+      "year": 2026,
+      "venue": "IEEE TDSC",
+      "original_refs": [
+        "论文7"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1109/TDSC.2025.3615787"
+        }
+      ],
+      "verification": "出版方元数据",
+      "note": "正式卷期2026-01；DOI标识含2025。与CAGE的扩展关系需进一步由正文确认，不直接计作全新架构。",
+      "source_ids": [
+        "doi-cca-environment"
+      ],
+      "relation": "直接",
+      "code": ""
+    },
+    {
+      "id": "B01",
+      "group": "GPU TEE系统与运行时",
+      "title": "Graviton: Trusted Execution Environments on GPUs",
+      "year": 2018,
+      "venue": "OSDI",
+      "original_refs": [
+        "论文8"
+      ],
+      "links": [
+        {
+          "label": "会议",
+          "url": "https://www.usenix.org/conference/osdi18/presentation/volos"
+        }
+      ],
+      "verification": "既有原文",
+      "note": "用正式会议入口替换Connected Papers；本轮页面重取超时不推翻既有原文记录。",
+      "source_ids": [
+        "prior:graviton.txt"
+      ],
+      "relation": "直接",
+      "code": ""
+    },
+    {
+      "id": "B02",
+      "group": "GPU TEE系统与运行时",
+      "title": "Heterogeneous Isolated Execution for Commodity GPUs",
+      "year": 2019,
+      "venue": "ASPLOS",
+      "original_refs": [
+        "论文9",
+        "论文38"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1145/3297858.3304021"
+        }
+      ],
+      "verification": "出版方元数据",
+      "note": "系统简称HIX；合并重复项。",
+      "source_ids": [
+        "doi-hix"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "B03",
+      "group": "GPU TEE系统与运行时",
+      "title": "Telekine: Secure Computing with Cloud GPUs",
+      "year": 2020,
+      "venue": "NSDI",
+      "original_refs": [
+        "论文10",
+        "论文29"
+      ],
+      "links": [
+        {
+          "label": "会议",
+          "url": "https://www.usenix.org/conference/nsdi20/presentation/hunt"
+        },
+        {
+          "label": "原文",
+          "url": "https://www.usenix.org/system/files/nsdi20-paper-hunt.pdf"
+        }
+      ],
+      "verification": "正式入口/已有引用链",
+      "note": "同时具有系统与时序泄漏研究属性；本轮会议页重取超时，不标成已读全文。",
+      "source_ids": [
+        "telekine-usenix"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "B04",
+      "group": "GPU TEE系统与运行时",
+      "title": "Enabling Rack-scale Confidential Computing using Heterogeneous Trusted Execution Environment",
+      "year": 2020,
+      "venue": "IEEE S&P",
+      "original_refs": [
+        "论文11",
+        "论文39"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1109/SP40000.2020.00054"
+        }
+      ],
+      "verification": "出版方元数据",
+      "note": "系统简称HETEE；合并重复项。",
+      "source_ids": [
+        "doi-hetee"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "B05",
+      "group": "GPU TEE系统与运行时",
+      "title": "LITE: A Low-cost Practical Inter-operable GPU TEE",
+      "year": 2022,
+      "venue": "ICS",
+      "original_refs": [
+        "论文12"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1145/3524059.3532361"
+        }
+      ],
+      "verification": "出版方元数据",
+      "note": "补齐会议ICS；Crossref短题名LITE，副题名另字段保存。",
+      "source_ids": [
+        "doi-lite"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "B06",
+      "group": "GPU TEE系统与运行时",
+      "title": "Building GPU TEEs using CPU Secure Enclaves with GEVisor",
+      "year": 2023,
+      "venue": "ACM SoCC",
+      "original_refs": [
+        "论文13"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1145/3620678.3624659"
+        },
+        {
+          "label": "作者页面",
+          "url": "https://www.s3lab.io/paper/gevisor-socc23"
+        },
+        {
+          "label": "代码",
+          "url": "https://github.com/purseclab/GEVisor"
+        }
+      ],
+      "verification": "作者页面/出版方元数据/README",
+      "note": "修正原清单的题名顺序；作者页面直接链接代码。",
+      "source_ids": [
+        "cr-gevisor",
+        "gevisor-author",
+        "gevisor-readme"
+      ],
+      "relation": "直接",
+      "code": "已读取作者仓库README；未运行artifact"
+    },
+    {
+      "id": "B07",
+      "group": "GPU TEE系统与运行时",
+      "title": "SAGE: Software-based Attestation for GPU Execution",
+      "year": 2023,
+      "venue": "USENIX ATC",
+      "original_refs": [
+        "论文14"
+      ],
+      "links": [
+        {
+          "label": "会议",
+          "url": "https://www.usenix.org/conference/atc23/presentation/ivanov"
+        }
+      ],
+      "verification": "索引/正式入口",
+      "note": "用具体论文入口替换整个会议日程；本轮原文未取得。",
+      "source_ids": [
+        "sage-usenix",
+        "gpu-security-api"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "B08",
+      "group": "GPU TEE系统与运行时",
+      "title": "Honeycomb: Secure and Efficient GPU Executions via Static Validation",
+      "year": 2023,
+      "venue": "OSDI",
+      "original_refs": [
+        "论文15"
+      ],
+      "links": [
+        {
+          "label": "会议",
+          "url": "https://www.usenix.org/conference/osdi23/presentation/mai"
+        },
+        {
+          "label": "代码",
+          "url": "https://github.com/Jiacheng/honeycomb-osdi23-ae"
+        }
+      ],
+      "verification": "既有原文/代码核验",
+      "note": "题名按正式PDF封面；SoK参考文献中的不同题名不是另一篇论文。",
+      "source_ids": [
+        "prior:honeycomb.txt",
+        "prior:research-inputs.json"
+      ],
+      "relation": "直接",
+      "code": "公开artifact包括RDNA2验证器；不把验证器单测等同完整TEE复现"
+    },
+    {
+      "id": "B09",
+      "group": "GPU TEE系统与运行时",
+      "title": "CRONUS: Fault-isolated, Secure and High-performance Heterogeneous Computing for Trusted Execution Environment",
+      "year": 2022,
+      "venue": "MICRO",
+      "original_refs": [
+        "论文16"
+      ],
+      "links": [
+        {
+          "label": "作者原文",
+          "url": "https://i.cs.hku.hk/~heming/papers/micro22-cronus.pdf"
+        },
+        {
+          "label": "代码",
+          "url": "https://github.com/hku-systems/cronus"
+        }
+      ],
+      "verification": "既有原文/README",
+      "note": "异步协作、服务分域与故障隔离。",
+      "source_ids": [
+        "prior:cronus.txt",
+        "prior:research-inputs.json"
+      ],
+      "relation": "直接",
+      "code": "已有README核验；未在本轮运行"
+    },
+    {
+      "id": "B10",
+      "group": "GPU TEE系统与运行时",
+      "title": "XpuTEE: A High-Performance and Practical Heterogeneous Trusted Execution Environment for GPUs",
+      "year": 2025,
+      "venue": "ACM TOCS",
+      "original_refs": [
+        "论文17"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1145/3719653"
+        }
+      ],
+      "verification": "出版方元数据",
+      "note": "在线2025-04；卷期2025-05。替换Connected Papers入口。",
+      "source_ids": [
+        "cr-xputee"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "B11",
+      "group": "GPU TEE系统与运行时",
+      "title": "ccAI: A Compatible and Confidential System for AI Computing",
+      "year": 2025,
+      "venue": "MICRO",
+      "original_refs": [
+        "论文18"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1145/3725843.3756104"
+        },
+        {
+          "label": "作者原文",
+          "url": "https://compass.sustech.edu.cn/paper/ccai-micro25.pdf"
+        },
+        {
+          "label": "项目",
+          "url": "https://compass.sustech.edu.cn/ccai/"
+        }
+      ],
+      "verification": "作者原文/索引",
+      "note": "项目页Download Link指向另一DOI且查询404；本记录使用论文首页与ACM引用格式给出的正式DOI。",
+      "source_ids": [
+        "ccai-pdf",
+        "oa-ccai",
+        "ccai-project"
+      ],
+      "relation": "直接",
+      "code": "项目只链接组织首页；未确认独立完整仓库"
+    },
+    {
+      "id": "B12",
+      "group": "GPU TEE系统与运行时",
+      "title": "GPUReplay: A 50-KB GPU Stack for Client ML",
+      "year": 2022,
+      "venue": "ASPLOS",
+      "original_refs": [
+        "论文44"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1145/3503222.3507754"
+        },
+        {
+          "label": "预印本",
+          "url": "https://arxiv.org/abs/2105.05085"
+        },
+        {
+          "label": "代码",
+          "url": "https://github.com/bakhi/GPUReplay"
+        }
+      ],
+      "verification": "出版方元数据/作者列表/README",
+      "note": "原条目的“Secure GPU Execution / Replay-Based Protection”不是正式副题名；该文是重放基础系统。",
+      "source_ids": [
+        "doi-gpureplay",
+        "gpureplay-arxiv",
+        "grt-repo",
+        "fxlin-pubs"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "B13",
+      "group": "GPU TEE系统与运行时",
+      "title": "Safe and Practical GPU Computation in TrustZone",
+      "year": 2023,
+      "venue": "EuroSys",
+      "original_refs": [
+        "论文45"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1145/3552326.3567483"
+        },
+        {
+          "label": "预印本",
+          "url": "https://arxiv.org/abs/2111.03065"
+        },
+        {
+          "label": "相关代码",
+          "url": "https://github.com/bakhi/GPUReplay"
+        }
+      ],
+      "verification": "作者列表/预印本",
+      "note": "系统简称GR-T；与B12为不同论文。仓库README主要描述GPUReplay，未确认其覆盖GR-T全部安全组件。",
+      "source_ids": [
+        "grt-arxiv",
+        "fxlin-pubs",
+        "grt-repo"
+      ],
+      "relation": "直接",
+      "code": "相关仓库存在；GR-T完整artifact覆盖范围未确认"
+    },
+    {
+      "id": "B14",
+      "group": "GPU TEE系统与运行时",
+      "title": "Enclaves as accelerators: learning lessons from GPU computing for designing efficient runtimes for enclaves",
+      "year": "待核",
+      "venue": "草稿/发表信息待核",
+      "original_refs": [
+        "论文42"
+      ],
+      "links": [
+        {
+          "label": "固定版本PDF副本",
+          "url": "https://github.com/ConfidentialComputing/GPU-TEE-Papers/blob/8e367018ffbf209f62184423de9874c544d856c4/Enclaves%20as%20accelerators-%20learning%20lessons%20from%20GPU%20computing%20for%20designing%20efficient%20runtimes%20for%20enclaves.pdf"
+        }
+      ],
+      "verification": "取得PDF，正式书目待核",
+      "note": "作者Meni Orenbach、Mark Silberstein；PDF保留模板DOI 10.1145/1235，不能录为正式DOI。其文内SGXIO原型名也不能与E01视为同一系统。",
+      "source_ids": [
+        "archive-enclaves"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "C01",
+      "group": "GPU安全内存架构",
+      "title": "Plutus: Bandwidth-Efficient Memory Security for GPUs",
+      "year": 2023,
+      "venue": "HPCA",
+      "original_refs": [
+        "论文19"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1109/HPCA56546.2023.10071100"
+        }
+      ],
+      "verification": "索引/SoK交叉核对",
+      "note": "内存认证元数据与带宽；本轮未读取全文。",
+      "source_ids": [
+        "oa-plutus",
+        "prior:sok-paper.txt"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "C02",
+      "group": "GPU安全内存架构",
+      "title": "Analyzing Secure Memory Architecture for GPUs",
+      "year": 2021,
+      "venue": "ISPASS",
+      "original_refs": [
+        "论文20"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1109/ISPASS51385.2021.00017"
+        }
+      ],
+      "verification": "出版方元数据",
+      "note": "补齐年份与会议。",
+      "source_ids": [
+        "doi-analyzing"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "C03",
+      "group": "GPU安全内存架构",
+      "title": "Confidential Computing within an AI Accelerator",
+      "year": 2023,
+      "venue": "USENIX ATC",
+      "original_refs": [
+        "论文22"
+      ],
+      "links": [
+        {
+          "label": "会议",
+          "url": "https://www.usenix.org/conference/atc23/presentation/vaswani"
+        },
+        {
+          "label": "作者机构",
+          "url": "https://www.microsoft.com/en-us/research/publication/confidential-computing-within-an-ai-accelerator/"
+        }
+      ],
+      "verification": "会议页面",
+      "note": "AI加速器背景；不将其直接标为Arm GPU或CUDA GPU系统。",
+      "source_ids": [
+        "ai-accelerator-usenix"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "C04",
+      "group": "GPU安全内存架构",
+      "title": "Adaptive Security Support for Heterogeneous Memory on GPUs",
+      "year": 2022,
+      "venue": "HPCA",
+      "original_refs": [
+        "论文25"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1109/HPCA53966.2022.00024"
+        }
+      ],
+      "verification": "索引/SoK交叉核对",
+      "note": "按内存类型与模式优化保护；本轮未读取全文。",
+      "source_ids": [
+        "oa-adaptive",
+        "prior:sok-paper.txt"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "C05",
+      "group": "GPU安全内存架构",
+      "title": "Common Counters: Compressed Encryption Counters for Secure GPU Memory",
+      "year": 2021,
+      "venue": "HPCA",
+      "original_refs": [
+        "论文26"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1109/HPCA51647.2021.00011"
+        }
+      ],
+      "verification": "索引/SoK交叉核对",
+      "note": "补齐年份与会议。",
+      "source_ids": [
+        "oa-counters",
+        "prior:sok-paper.txt"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "C06",
+      "group": "GPU安全内存架构",
+      "title": "PSSM: Achieving Secure Memory for GPUs with Partitioned and Sectored Security Metadata",
+      "year": 2021,
+      "venue": "ICS",
+      "original_refs": [
+        "论文27"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1145/3447818.3460374"
+        }
+      ],
+      "verification": "出版方元数据",
+      "note": "Crossref主标题PSSM，完整副题名见记录与论文索引。",
+      "source_ids": [
+        "lookup-pssm"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "C07",
+      "group": "GPU安全内存架构",
+      "title": "Salus: Efficient Security Support for CXL-Expanded GPU Memory",
+      "year": 2024,
+      "venue": "HPCA",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1109/HPCA57654.2024.00027"
+        }
+      ],
+      "verification": "出版方元数据",
+      "note": "补充；与ASPLOS 2024同名CPU-FPGA TEE不是同一工作。",
+      "source_ids": [
+        "doi-salus"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "C08",
+      "group": "GPU安全内存架构",
+      "title": "Supporting Secure Multi-GPU Computing with Dynamic and Batched Metadata Management",
+      "year": 2024,
+      "venue": "HPCA",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1109/HPCA57654.2024.00025"
+        }
+      ],
+      "verification": "出版方元数据",
+      "note": "补充多GPU安全内存管理。",
+      "source_ids": [
+        "cr-multi-gpu"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "D01",
+      "group": "GPU隔离、内存安全与攻击",
+      "title": "Understanding the Security of Discrete GPUs",
+      "year": 2017,
+      "venue": "GPGPU-10",
+      "original_refs": [
+        "论文21"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1145/3038228.3038233"
+        }
+      ],
+      "verification": "出版方元数据/PDF",
+      "note": "正式会议2017；本地副本引用格式中的2016不作为会议年份。",
+      "source_ids": [
+        "doi-discrete",
+        "archive-discrete"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "D02",
+      "group": "GPU隔离、内存安全与攻击",
+      "title": "Vulnerable GPU Memory Management: Towards Recovering Raw Data from GPU",
+      "year": 2017,
+      "venue": "PoPETs",
+      "original_refs": [
+        "论文30"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1515/popets-2017-0016"
+        },
+        {
+          "label": "预印本",
+          "url": "https://arxiv.org/abs/1605.06610"
+        }
+      ],
+      "verification": "出版方元数据",
+      "note": "预印本2016，正式期刊2017。",
+      "source_ids": [
+        "doi-vulnerable"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "D03",
+      "group": "GPU隔离、内存安全与攻击",
+      "title": "Confidentiality Issues on a GPU in a Virtualized Environment",
+      "year": 2014,
+      "venue": "Financial Cryptography and Data Security / LNCS",
+      "original_refs": [
+        "论文31"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1007/978-3-662-45472-5_9"
+        }
+      ],
+      "verification": "出版方元数据",
+      "note": "补齐会议系列与年份。",
+      "source_ids": [
+        "doi-virtualized"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "D04",
+      "group": "GPU隔离、内存安全与攻击",
+      "title": "Lightning: Striking the Secure Isolation on GPU Clouds with Transient Hardware Faults",
+      "year": 2021,
+      "venue": "arXiv预印本",
+      "original_refs": [
+        "论文32"
+      ],
+      "links": [
+        {
+          "label": "预印本",
+          "url": "https://arxiv.org/abs/2112.03662"
+        }
+      ],
+      "verification": "作者预印本页面",
+      "note": "暂不强配正式会议；与TODAES论文Lightning: Leveraging DVFS-induced Transient Fault Injection to Attack Deep Learning Accelerator of GPUs分开记录版本/题名。",
+      "source_ids": [
+        "lightning-arxiv"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "D05",
+      "group": "GPU隔离、内存安全与攻击",
+      "title": "Whispering Pixels: Exploiting Uninitialized Register Accesses in Modern GPUs",
+      "year": 2024,
+      "venue": "EuroS&P",
+      "original_refs": [
+        "论文33"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1109/EuroSP60621.2024.00026"
+        },
+        {
+          "label": "预印本",
+          "url": "https://arxiv.org/abs/2401.08881"
+        }
+      ],
+      "verification": "出版方元数据/预印本",
+      "note": "寄存器残留研究。",
+      "source_ids": [
+        "doi-whispering",
+        "whispering-arxiv"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "D06",
+      "group": "GPU隔离、内存安全与攻击",
+      "title": "LAK: A Low-Overhead Lock-and-Key Based Schema for GPU Memory Safety",
+      "year": 2022,
+      "venue": "ICCD",
+      "original_refs": [
+        "论文34"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1109/ICCD56317.2022.00108"
+        }
+      ],
+      "verification": "出版方元数据",
+      "note": "GPU程序内存安全机制，非完整GPU TEE。",
+      "source_ids": [
+        "doi-lak"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "D07",
+      "group": "GPU隔离、内存安全与攻击",
+      "title": "Guardian: Safe GPU Sharing in Multi-Tenant Environments",
+      "year": 2024,
+      "venue": "Middleware",
+      "original_refs": [
+        "论文35"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1145/3652892.3700768"
+        },
+        {
+          "label": "预印本",
+          "url": "https://arxiv.org/abs/2401.09290"
+        }
+      ],
+      "verification": "索引/既有原文",
+      "note": "与独立GPUVM隔离对照；本轮未确认完整作者仓库。",
+      "source_ids": [
+        "oa-guardian",
+        "prior:guardian.txt"
+      ],
+      "relation": "直接",
+      "code": ""
+    },
+    {
+      "id": "D08",
+      "group": "GPU隔离、内存安全与攻击",
+      "title": "Behind Bars: A Side-Channel Attack on NVIDIA MIG Cache Partitioning Using Memory Barriers",
+      "year": 2026,
+      "venue": "USENIX Security",
+      "original_refs": [
+        "论文36"
+      ],
+      "links": [
+        {
+          "label": "会议",
+          "url": "https://www.usenix.org/conference/usenixsecurity26/presentation/gu-cheng"
+        }
+      ],
+      "verification": "既有官方摘要核验",
+      "note": "本轮两次重取超时；沿用此前摘要核验，未取得全文或artifact。",
+      "source_ids": [
+        "prior:GPU_ISOLATION_RESEARCH_AND_CODE_MAP_20261018.md",
+        "behind-bars",
+        "behind-bars-retry"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "D09",
+      "group": "GPU隔离、内存安全与攻击",
+      "title": "GPUArmor: A Hardware-Software Co-Design for Efficient and Scalable Memory Safety on GPUs",
+      "year": 2026,
+      "venue": "ACM TACO",
+      "original_refs": [
+        "论文37"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1145/3815783"
+        },
+        {
+          "label": "预印本",
+          "url": "https://arxiv.org/abs/2502.17780"
+        }
+      ],
+      "verification": "出版方元数据/预印本",
+      "note": "预印本2025；正式卷期2026。索引与Crossref在线日期不同，此处采用Crossref且仅按年引用。",
+      "source_ids": [
+        "doi-gpuarmor",
+        "gpuarmor-arxiv"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "D10",
+      "group": "GPU隔离、内存安全与攻击",
+      "title": "PhantomMap: GPU-Assisted Kernel Exploitation",
+      "year": 2026,
+      "venue": "NDSS",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "会议",
+          "url": "https://www.ndss-symposium.org/ndss-paper/phantommap-gpu-assisted-kernel-exploitation/"
+        },
+        {
+          "label": "原文",
+          "url": "https://www.ndss-symposium.org/wp-content/uploads/2026-f201-paper.pdf"
+        },
+        {
+          "label": "代码",
+          "url": "https://github.com/Lotuhu/PhantomMap"
+        }
+      ],
+      "verification": "会议页面/既有原文与代码",
+      "note": "补充：与实际物理页、映射与回收检查直接相关。",
+      "source_ids": [
+        "ndss-phantom",
+        "prior:phantommap.txt",
+        "prior:research-inputs.json"
+      ],
+      "relation": "直接",
+      "code": "分析器及驱动防护patch；不能把kbase漏洞直接套用于Panthor"
+    },
+    {
+      "id": "D11",
+      "group": "GPU隔离、内存安全与攻击",
+      "title": "LeftoverLocals",
+      "year": 2024,
+      "venue": "漏洞研究与公开PoC",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "作者说明",
+          "url": "https://leftoverlocals.com/"
+        },
+        {
+          "label": "代码",
+          "url": "https://github.com/trailofbits/LeftoverLocalsRelease"
+        }
+      ],
+      "verification": "作者README/既有代码核验",
+      "note": "片上local memory残留；是研究与测试资料，不强配学术会议。",
+      "source_ids": [
+        "leftover-readme",
+        "prior:research-inputs.json"
+      ],
+      "relation": "直接",
+      "code": "OpenCL/Vulkan/Metal检测样例；本轮未运行"
+    },
+    {
+      "id": "D12",
+      "group": "GPU隔离、内存安全与攻击",
+      "title": "Securing GPU via Region-based Bounds Checking (GPUShield)",
+      "year": 2022,
+      "venue": "ISCA",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1145/3470496.3527420"
+        },
+        {
+          "label": "作者原文",
+          "url": "https://hparch.gatech.edu/papers/jaewon_2022_isca.pdf"
+        }
+      ],
+      "verification": "既有作者原文",
+      "note": "补充GPU程序内存安全；GPUShield为机制名。",
+      "source_ids": [
+        "prior:gpushield.txt"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "D13",
+      "group": "GPU隔离、内存安全与攻击",
+      "title": "cuCatch: A Debugging Tool for Efficiently Catching Memory Safety Violations in CUDA Applications",
+      "year": 2023,
+      "venue": "PLDI / PACMPL",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1145/3591225"
+        },
+        {
+          "label": "作者机构",
+          "url": "https://research.nvidia.com/publication/2023-06_cucatch-debugging-tool-efficiently-catching-memory-safety-violations-cuda"
+        }
+      ],
+      "verification": "既有作者原文",
+      "note": "调试工具研究；论文存在不等于已确认公开完整实现。",
+      "source_ids": [
+        "prior:cucatch.txt"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "E01",
+      "group": "可信I/O、调度与相邻研究",
+      "title": "SGXIO: Generic Trusted I/O Path for Intel SGX",
+      "year": 2017,
+      "venue": "CODASPY",
+      "original_refs": [
+        "论文40"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1145/3029806.3029822"
+        },
+        {
+          "label": "预印本",
+          "url": "https://arxiv.org/abs/1701.01061"
+        }
+      ],
+      "verification": "出版方元数据/索引",
+      "note": "可信I/O背景；与B14草稿中的同名原型分开。",
+      "source_ids": [
+        "doi-sgxio"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "E02",
+      "group": "可信I/O、调度与相邻研究",
+      "title": "Secure and Timely GPU Execution in Cyber-physical Systems",
+      "year": 2023,
+      "venue": "ACM CCS",
+      "original_refs": [
+        "论文43"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1145/3576915.3623197"
+        }
+      ],
+      "verification": "出版方元数据",
+      "note": "系统简称AvaGPU；第三方索引标为ASPLOS有误，正式出版为CCS。",
+      "source_ids": [
+        "doi-secure-timely"
+      ],
+      "relation": "直接",
+      "code": ""
+    },
+    {
+      "id": "I01",
+      "group": "机密计算中断补充",
+      "title": "Heckler: Breaking Confidential VMs with Malicious Interrupts",
+      "year": 2024,
+      "venue": "USENIX Security",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "作者原文",
+          "url": "https://ahoi-attacks.github.io/heckler/heckler_usenix24.pdf"
+        }
+      ],
+      "verification": "前轮作者资料/原文核验",
+      "note": "恶意中断的执行语义；CPU TEE背景。",
+      "source_ids": [
+        "interrupt:heckler-author.txt"
+      ],
+      "relation": "中断方向",
+      "code": ""
+    },
+    {
+      "id": "I02",
+      "group": "机密计算中断补充",
+      "title": "WeSee: Using Malicious #VC Interrupts to Break AMD SEV-SNP",
+      "year": 2024,
+      "venue": "IEEE S&P",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1109/SP54263.2024.00262"
+        },
+        {
+          "label": "预印本",
+          "url": "https://arxiv.org/abs/2404.03526"
+        }
+      ],
+      "verification": "前轮作者资料/原文核验",
+      "note": "异常原因与上下文绑定；非Arm漏洞证据。",
+      "source_ids": [
+        "interrupt:wesee-candidate.txt"
+      ],
+      "relation": "中断方向",
+      "code": ""
+    },
+    {
+      "id": "I03",
+      "group": "机密计算中断补充",
+      "title": "Sigy: Breaking Intel SGX Enclaves with Malicious Exceptions & Signals",
+      "year": 2025,
+      "venue": "AsiaCCS",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1145/3708821.3710838"
+        },
+        {
+          "label": "作者原文",
+          "url": "https://ahoi-attacks.github.io/sigy/sigy_asiaccs25.pdf"
+        }
+      ],
+      "verification": "前轮作者资料/原文核验",
+      "note": "可信信号/事件依据；跨可信域通知直接背景。",
+      "source_ids": [
+        "interrupt:sigy-author.txt"
+      ],
+      "relation": "中断方向",
+      "code": ""
+    },
+    {
+      "id": "I04",
+      "group": "机密计算中断补充",
+      "title": "SmashEx: Smashing SGX Enclaves Using Exceptions",
+      "year": 2021,
+      "venue": "CCS",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1145/3460120.3484821"
+        },
+        {
+          "label": "作者项目",
+          "url": "https://jasonyu1996.github.io/SmashEx/"
+        }
+      ],
+      "verification": "前轮作者资料/原文核验",
+      "note": "异常重入；此前核对项目说明，未取得全文。",
+      "source_ids": [
+        "interrupt:smashex-page.html"
+      ],
+      "relation": "中断方向",
+      "code": ""
+    },
+    {
+      "id": "I05",
+      "group": "机密计算中断补充",
+      "title": "SGX-Step: A Practical Attack Framework for Precise Enclave Execution Control",
+      "year": 2017,
+      "venue": "SysTEX",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "作者原文",
+          "url": "https://jovanbulck.github.io/files/systex17-sgxstep.pdf"
+        }
+      ],
+      "verification": "前轮作者资料/原文核验",
+      "note": "精确执行控制与侧信道。",
+      "source_ids": [
+        "interrupt:sgx-step.txt"
+      ],
+      "relation": "中断方向",
+      "code": ""
+    },
+    {
+      "id": "I06",
+      "group": "机密计算中断补充",
+      "title": "SEV-Step: A Single-Stepping Framework for AMD-SEV",
+      "year": 2024,
+      "venue": "TCHES 2024(1)",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.46586/tches.v2024.i1.180-206"
+        }
+      ],
+      "verification": "前轮作者资料/原文核验",
+      "note": "卷期2024，在线2023；精确执行控制。",
+      "source_ids": [
+        "interrupt:sev-step.txt"
+      ],
+      "relation": "中断方向",
+      "code": ""
+    },
+    {
+      "id": "I07",
+      "group": "机密计算中断补充",
+      "title": "AEX-Notify: Thwarting Precise Single-Stepping Attacks through Interrupt Awareness for Intel SGX Enclaves",
+      "year": 2023,
+      "venue": "USENIX Security",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "会议",
+          "url": "https://www.usenix.org/conference/usenixsecurity23/presentation/constable"
+        },
+        {
+          "label": "作者原文",
+          "url": "https://jovanbulck.github.io/files/usenix23-aexnotify.pdf"
+        }
+      ],
+      "verification": "前轮作者资料/原文核验",
+      "note": "中断感知与可信恢复；不宣称消除全部侧信道。",
+      "source_ids": [
+        "interrupt:aex-author.txt"
+      ],
+      "relation": "中断方向",
+      "code": ""
+    },
+    {
+      "id": "V01",
+      "group": "厂商历史演讲",
+      "title": "The Developer’s View to Secure an Application and Data on NVIDIA H100 with Confidential Computing",
+      "year": "待核",
+      "venue": "NVIDIA GTC演讲",
+      "original_refs": [
+        "论文23"
+      ],
+      "links": [
+        {
+          "label": "固定版本PDF副本",
+          "url": "https://github.com/ConfidentialComputing/GPU-TEE-Papers/tree/8e367018ffbf209f62184423de9874c544d856c4"
+        },
+        {
+          "label": "现行官方概览",
+          "url": "https://docs.nvidia.com/confidential-computing/"
+        }
+      ],
+      "verification": "目录已确认，PDF重取超时",
+      "note": "目录可确认文件存在；正文未取得，题名/作者/日期未完成封面核验。“Creating the First Confidential GPUs”暂不作为已核实题名组成部分；演讲非同行评审论文。",
+      "source_ids": [
+        "archive-nvidia-developer"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "V02",
+      "group": "厂商历史演讲",
+      "title": "Hopper Confidential Computing: How it Works Under the Hood",
+      "year": 2023,
+      "venue": "NVIDIA/Microsoft，GTC March 2023",
+      "original_refs": [
+        "论文24"
+      ],
+      "links": [
+        {
+          "label": "固定版本PDF副本",
+          "url": "https://github.com/ConfidentialComputing/GPU-TEE-Papers/tree/8e367018ffbf209f62184423de9874c544d856c4"
+        },
+        {
+          "label": "官方技术博客",
+          "url": "https://developer.nvidia.com/blog/confidential-computing-on-h100-gpus-for-secure-and-trustworthy-ai/"
+        }
+      ],
+      "verification": "演讲PDF封面",
+      "note": "Phil Rogers、Antoine Delignat-Lavaud；原猜测的同名博客路径404，演讲题名不应据此伪造成博客。",
+      "source_ids": [
+        "archive-hopper"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "V03",
+      "group": "厂商与可信I/O标准",
+      "title": "NVIDIA Confidential Computing Documentation",
+      "year": "检索于2026-10-26",
+      "venue": "官方文档/代码/标准入口",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "官方",
+          "url": "https://docs.nvidia.com/confidential-computing/"
+        }
+      ],
+      "verification": "官方页面/README",
+      "note": "现行文档入口；各部署模式有独立支持范围。",
+      "source_ids": [
+        "nvidia-cc"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "V04",
+      "group": "厂商与可信I/O标准",
+      "title": "NVIDIA Confidential Computing Overview",
+      "year": "检索于2026-10-26",
+      "venue": "官方文档/代码/标准入口",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "官方",
+          "url": "https://docs.nvidia.com/confidential-computing/overview"
+        }
+      ],
+      "verification": "官方页面/README",
+      "note": "部署边界、证明、密钥释放；按检索日保存快照。",
+      "source_ids": [
+        "nvidia-overview"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "V05",
+      "group": "厂商与可信I/O标准",
+      "title": "NVIDIA Confidential Virtual Machines",
+      "year": "检索于2026-10-26",
+      "venue": "官方文档/代码/标准入口",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "官方",
+          "url": "https://docs.nvidia.com/confidential-computing/virtual-machines"
+        }
+      ],
+      "verification": "官方页面/README",
+      "note": "明确区分Hopper、Blackwell、单GPU、多GPU、PPCIe；不从旧H100演讲推导现行支持矩阵。",
+      "source_ids": [
+        "nvidia-vm"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "V06",
+      "group": "厂商与可信I/O标准",
+      "title": "NVIDIA CVM Trust and Threat Model",
+      "year": "检索于2026-10-26",
+      "venue": "官方文档/代码/标准入口",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "官方",
+          "url": "https://docs.nvidia.com/confidential-computing/virtual-machines/dev/threat-model"
+        }
+      ],
+      "verification": "官方页面/README",
+      "note": "威胁模型正文：可信组件、外部软件与物理/侧信道边界。",
+      "source_ids": [
+        "nvidia-threat"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "V07",
+      "group": "厂商与可信I/O标准",
+      "title": "NVIDIA CVM Supported Platforms",
+      "year": "检索于2026-10-26",
+      "venue": "官方文档/代码/标准入口",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "官方",
+          "url": "https://docs.nvidia.com/confidential-computing/virtual-machines/dev/supported-platforms"
+        }
+      ],
+      "verification": "官方页面/README",
+      "note": "核对CPU/GPU/驱动/固件与运行模式组合；不以产品名替代支持矩阵。",
+      "source_ids": [
+        "nvidia-platforms"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "V08",
+      "group": "厂商与可信I/O标准",
+      "title": "NVIDIA Attestation Documentation",
+      "year": "检索于2026-10-26",
+      "venue": "官方文档/代码/标准入口",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "官方",
+          "url": "https://docs.nvidia.com/attestation/"
+        }
+      ],
+      "verification": "官方页面/README",
+      "note": "证明格式、NRAS、RIM、SDK与声明验证入口。",
+      "source_ids": [
+        "nvidia-attest"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "V09",
+      "group": "厂商与可信I/O标准",
+      "title": "NVIDIA Attestation SDK / NVAT",
+      "year": "检索于2026-10-26",
+      "venue": "官方文档/代码/标准入口",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "官方",
+          "url": "https://github.com/NVIDIA/attestation-sdk"
+        },
+        {
+          "label": "固定README",
+          "url": "https://github.com/NVIDIA/attestation-sdk/blob/11b2bfeb42a1158aa08744603ecb239ccb3d2265/README.md"
+        }
+      ],
+      "verification": "官方页面/README",
+      "note": "已读README：C++实现，C API、CLI与Rust绑定；部分新验证流程标为experimental。",
+      "source_ids": [
+        "nvidia-sdk-readme",
+        "nvidia-sdk-commit",
+        "nvidia-sdk-pinned-readme"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "V10",
+      "group": "厂商与可信I/O标准",
+      "title": "NVIDIA nvTrust",
+      "year": "检索于2026-10-26",
+      "venue": "官方文档/代码/标准入口",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "官方",
+          "url": "https://github.com/NVIDIA/nvtrust"
+        },
+        {
+          "label": "固定README",
+          "url": "https://github.com/NVIDIA/nvtrust/blob/a8090b65872a15bf0fd1f69f3d9b754b1be431b5/README.md"
+        }
+      ],
+      "verification": "官方页面/README",
+      "note": "已读README：Python SDK与Local GPU Verifier标为deprecated，指向新C++ SDK/CLI；按检索日状态记录。",
+      "source_ids": [
+        "nvidia-nvtrust-raw",
+        "nvidia-nvtrust-commit",
+        "nvidia-nvtrust-pinned-readme"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "V11",
+      "group": "厂商与可信I/O标准",
+      "title": "NVIDIA MIG User Guide",
+      "year": "检索于2026-10-26",
+      "venue": "官方文档/代码/标准入口",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "官方",
+          "url": "https://docs.nvidia.com/datacenter/tesla/mig-user-guide/latest/"
+        }
+      ],
+      "verification": "官方页面/README",
+      "note": "资源分区背景；MIG不自动等于机密计算或无侧信道。",
+      "source_ids": [
+        "nvidia-mig"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "V12",
+      "group": "厂商与可信I/O标准",
+      "title": "NVML Confidential Computing Definitions / API入口",
+      "year": "检索于2026-10-26",
+      "venue": "官方文档/代码/标准入口",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "官方",
+          "url": "https://docs.nvidia.com/deploy/nvml-api/latest/api/group__nvmlConfidentialComputingDefs.html"
+        }
+      ],
+      "verification": "官方页面/README",
+      "note": "从现行NVML索引取得的机密计算定义入口；旧猜测路径404，不保留为正文链接。",
+      "source_ids": [
+        "nvidia-nvml-definitions"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "V13",
+      "group": "厂商与可信I/O标准",
+      "title": "NVIDIA Open GPU Kernel Modules",
+      "year": "检索于2026-10-26",
+      "venue": "官方文档/代码/标准入口",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "官方",
+          "url": "https://github.com/NVIDIA/open-gpu-kernel-modules"
+        }
+      ],
+      "verification": "入口重取失败",
+      "note": "公开驱动源码；不将其视为全部GPU固件开源。 本轮README重取超时。",
+      "source_ids": [
+        "nvidia-open-modules"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "V14",
+      "group": "厂商与可信I/O标准",
+      "title": "DMTF SPDM",
+      "year": "检索于2026-10-26",
+      "venue": "官方文档/代码/标准入口",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "官方",
+          "url": "https://www.dmtf.org/standards/spdm"
+        }
+      ],
+      "verification": "官方页面/README",
+      "note": "设备身份、测量与会话协议标准入口。",
+      "source_ids": [
+        "dmtf-spdm"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "V15",
+      "group": "厂商与可信I/O标准",
+      "title": "PCI-SIG TDISP",
+      "year": "检索于2026-10-26",
+      "venue": "官方文档/代码/标准入口",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "官方",
+          "url": "https://pcisig.com/tee-device-interface-security-protocol-tdisp"
+        }
+      ],
+      "verification": "入口重取失败",
+      "note": "设备接口可信分配协议；页面本轮超时，未取得规范全文。",
+      "source_ids": [
+        "tdisp"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "V16",
+      "group": "厂商与可信I/O标准",
+      "title": "AMD SEV-TIO Whitepaper",
+      "year": "检索于2026-10-26",
+      "venue": "官方文档/代码/标准入口",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "官方",
+          "url": "https://www.amd.com/content/dam/amd/en/documents/developer/sev-tio-whitepaper.pdf"
+        }
+      ],
+      "verification": "官方页面/README",
+      "note": "可信I/O架构背景；与GPU厂商实现分开。",
+      "source_ids": [
+        "sev-tio"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "V17",
+      "group": "厂商与可信I/O标准",
+      "title": "Intel TDX Connect Architecture Specification",
+      "year": "检索于2026-10-26",
+      "venue": "官方文档/代码/标准入口",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "官方",
+          "url": "https://www.intel.com/content/www/us/en/content-details/773614/intel-tdx-connect-architecture-specification.html"
+        }
+      ],
+      "verification": "官方页面/README",
+      "note": "可信设备分配背景；入口页面不等于规范全文已读。",
+      "source_ids": [
+        "intel-connect"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "K01",
+      "group": "Arm与内核规范",
+      "title": "Arm RME System Architecture (DEN0129)",
+      "year": "检索于2026-10-26",
+      "venue": "规范/官方实现文档",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "官方",
+          "url": "https://developer.arm.com/documentation/den0129/latest/"
+        }
+      ],
+      "verification": "入口重取失败",
+      "note": "本轮超时；保留规范编号与官方入口，未取得最新正文。",
+      "source_ids": [
+        "arm-rme"
+      ],
+      "relation": "直接",
+      "code": ""
+    },
+    {
+      "id": "K02",
+      "group": "Arm与内核规范",
+      "title": "Arm RMM Specification (DEN0137)",
+      "year": "检索于2026-10-26",
+      "venue": "规范/官方实现文档",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "官方",
+          "url": "https://developer.arm.com/documentation/den0137/latest/"
+        }
+      ],
+      "verification": "官方入口，未取得规范正文",
+      "note": "重定向到Arm文档壳页，不能记为规范正文已读。",
+      "source_ids": [
+        "arm-rmm"
+      ],
+      "relation": "直接",
+      "code": ""
+    },
+    {
+      "id": "K03",
+      "group": "Arm与内核规范",
+      "title": "Arm SMMU Architecture Specification (IHI0070)",
+      "year": "检索于2026-10-26",
+      "venue": "规范/官方实现文档",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "官方",
+          "url": "https://developer.arm.com/documentation/ihi0070/latest/"
+        }
+      ],
+      "verification": "入口重取失败",
+      "note": "本轮超时；可信映射/SMMU管理的规范入口。",
+      "source_ids": [
+        "arm-smmu"
+      ],
+      "relation": "直接",
+      "code": ""
+    },
+    {
+      "id": "K04",
+      "group": "Arm与内核规范",
+      "title": "Arm GIC Architecture Specification (IHI0069)",
+      "year": "检索于2026-10-26",
+      "venue": "规范/官方实现文档",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "官方",
+          "url": "https://developer.arm.com/documentation/ihi0069/latest/"
+        }
+      ],
+      "verification": "入口重取失败",
+      "note": "本轮超时；LR、虚拟中断及状态保存恢复的规范入口。",
+      "source_ids": [
+        "arm-gic"
+      ],
+      "relation": "直接",
+      "code": ""
+    },
+    {
+      "id": "K05",
+      "group": "Arm与内核规范",
+      "title": "TF-RMM Documentation",
+      "year": "检索于2026-10-26",
+      "venue": "规范/官方实现文档",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "官方",
+          "url": "https://tf-rmm.readthedocs.io/en/latest/"
+        }
+      ],
+      "verification": "官方页面/README",
+      "note": "公开实现文档；本项目固定补丁版本另见CURRENT_BASELINE，不更新本地子模块。",
+      "source_ids": [
+        "arm-rmm-docs"
+      ],
+      "relation": "直接",
+      "code": ""
+    },
+    {
+      "id": "K06",
+      "group": "Arm与内核规范",
+      "title": "TF-A Realm Management Extension",
+      "year": "检索于2026-10-26",
+      "venue": "规范/官方实现文档",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "官方",
+          "url": "https://trustedfirmware-a.readthedocs.io/en/latest/components/realm-management-extension.html"
+        }
+      ],
+      "verification": "官方页面/README",
+      "note": "Root/RMM集成与启动链背景。",
+      "source_ids": [
+        "arm-tfa-rmm"
+      ],
+      "relation": "直接",
+      "code": ""
+    },
+    {
+      "id": "K07",
+      "group": "Arm与内核规范",
+      "title": "Linux DRM Memory Management",
+      "year": "检索于2026-10-26",
+      "venue": "规范/官方实现文档",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "官方",
+          "url": "https://docs.kernel.org/gpu/drm-mm.html"
+        }
+      ],
+      "verification": "官方页面/README",
+      "note": "GPUVM、对象与映射管理；在线主线文档不替代本地源码版本。",
+      "source_ids": [
+        "kernel-drm-mm"
+      ],
+      "relation": "直接",
+      "code": ""
+    },
+    {
+      "id": "K08",
+      "group": "Arm与内核规范",
+      "title": "Linux Asynchronous VM_BIND",
+      "year": "检索于2026-10-26",
+      "venue": "规范/官方实现文档",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "官方",
+          "url": "https://docs.kernel.org/gpu/drm-vm-bind-async.html"
+        }
+      ],
+      "verification": "官方页面/README",
+      "note": "异步映射与同步规则。",
+      "source_ids": [
+        "kernel-gpuvm"
+      ],
+      "relation": "直接",
+      "code": ""
+    },
+    {
+      "id": "K09",
+      "group": "Arm与内核规范",
+      "title": "Linux DMA-BUF and DMA Fence",
+      "year": "检索于2026-10-26",
+      "venue": "规范/官方实现文档",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "官方",
+          "url": "https://docs.kernel.org/driver-api/dma-buf.html"
+        }
+      ],
+      "verification": "官方页面/README",
+      "note": "共享、同步和完成语义；IRQ到达不等于fence成功。",
+      "source_ids": [
+        "kernel-dmabuf"
+      ],
+      "relation": "直接",
+      "code": ""
+    },
+    {
+      "id": "K10",
+      "group": "Arm与内核规范",
+      "title": "Linux IOMMUFD",
+      "year": "检索于2026-10-26",
+      "venue": "规范/官方实现文档",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "官方",
+          "url": "https://docs.kernel.org/userspace-api/iommufd.html"
+        }
+      ],
+      "verification": "官方页面/README",
+      "note": "IO地址空间、设备绑定与映射生命周期。",
+      "source_ids": [
+        "kernel-iommufd"
+      ],
+      "relation": "直接",
+      "code": ""
+    },
+    {
+      "id": "K11",
+      "group": "Arm与内核规范",
+      "title": "AMDGPU Process Isolation",
+      "year": "检索于2026-10-26",
+      "venue": "规范/官方实现文档",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "官方",
+          "url": "https://docs.kernel.org/gpu/amdgpu/process-isolation.html"
+        }
+      ],
+      "verification": "官方页面/README",
+      "note": "进程隔离与状态清理参考；非Mali已实现能力。",
+      "source_ids": [
+        "kernel-amd-isolation"
+      ],
+      "relation": "直接",
+      "code": ""
+    },
+    {
+      "id": "T01",
+      "group": "测试工具",
+      "title": "NVIDIA Compute Sanitizer",
+      "year": "检索于2026-10-26",
+      "venue": "官方测试资料",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "项目",
+          "url": "https://docs.nvidia.com/compute-sanitizer/ComputeSanitizer/index.html"
+        }
+      ],
+      "verification": "官方页面/README",
+      "note": "CUDA程序访存、初始化、同步等检测；工具通过不是跨租户TEE证明。",
+      "source_ids": [
+        "nvidia-sanitizer"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "T02",
+      "group": "测试工具",
+      "title": "Khronos VK-GL-CTS",
+      "year": "检索于2026-10-26",
+      "venue": "官方测试资料",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "项目",
+          "url": "https://github.com/KhronosGroup/VK-GL-CTS"
+        }
+      ],
+      "verification": "官方页面/README",
+      "note": "Vulkan/OpenGL/OpenGL ES一致性测试；功能证据。",
+      "source_ids": [
+        "cts-readme"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "T03",
+      "group": "测试工具",
+      "title": "Khronos OpenCL-CTS",
+      "year": "检索于2026-10-26",
+      "venue": "官方测试资料",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "项目",
+          "url": "https://github.com/KhronosGroup/OpenCL-CTS"
+        }
+      ],
+      "verification": "官方页面/README",
+      "note": "OpenCL一致性测试；与恶意任务隔离测试分开。",
+      "source_ids": [
+        "clcts-readme"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "T04",
+      "group": "测试工具",
+      "title": "IGT GPU Tools",
+      "year": "检索于2026-10-26",
+      "venue": "官方测试资料",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "项目",
+          "url": "https://gitlab.freedesktop.org/drm/igt-gpu-tools"
+        }
+      ],
+      "verification": "入口存在，返回反爬页面",
+      "note": "DRM驱动测试；平台/驱动支持需按具体子测试确认。 本轮HTTP 200实际为Anubis挑战页，未取得README。",
+      "source_ids": [
+        "igt-readme"
+      ],
+      "relation": "背景",
+      "code": ""
+    },
+    {
+      "id": "T05",
+      "group": "测试工具",
+      "title": "Piglit",
+      "year": "检索于2026-10-26",
+      "venue": "官方测试资料",
+      "original_refs": [],
+      "links": [
+        {
+          "label": "项目",
+          "url": "https://gitlab.freedesktop.org/mesa/piglit"
+        }
+      ],
+      "verification": "入口存在，返回反爬页面",
+      "note": "图形栈回归；不等于安全审计。 本轮HTTP 200实际为Anubis挑战页，未取得README。",
+      "source_ids": [
+        "piglit-readme"
+      ],
+      "relation": "背景",
+      "code": ""
+    }
+  ]
+}

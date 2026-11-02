@@ -1,0 +1,231 @@
+{
+  "date": "2026-10-28",
+  "scope": "Documentation links, six-direction structure and selected code anchors only. No build, hardware run, fuzzing or new security/performance validation.",
+  "document": "docs/shared/GPU_VIRTUALIZATION_SHARING_SECURITY_DESIGN_20261028.md",
+  "document_sha256": "ae59e49117e27028649d81bf80a668f04e036a20ba9711736fc78fd773ef075a",
+  "status": "PASS",
+  "local_link_count": 33,
+  "broken_links": [],
+  "required_sections": [
+    "### 2.1 直通和共享的功能实现",
+    "### 2.2 共享开销上的性能优化",
+    "### 2.3 共享的合理调度策略",
+    "### 3.2 访存隔离",
+    "### 3.3 事件通信安全",
+    "### 3.4 驱动安全与权限隔离"
+  ],
+  "selected_sources": [
+    {
+      "path": "Linux-Guest-GPU/drivers/gpu/drm/panthor-proxy/panthor_proxy_drv.c",
+      "sha256": "abed04d3fb699e88593326ac78d02a40690c25ddaef5eef44b9365f30521ff60",
+      "anchors": {
+        "panthor_proxy_submit_sched_pick_locked": 974,
+        "panthor_proxy_submit_sched_run": 1040,
+        "panthor_proxy_snapshot_publish": 554,
+        "panthor_proxy_plan_execute": 259
+      }
+    },
+    {
+      "path": "Linux-Guest-GPU/drivers/gpu/drm/panthor-client/panthor_client_drv.c",
+      "sha256": "969cddba215a1bde8dec243eff6be0bd282aca613c1f449d01bd4de96f466a1c",
+      "anchors": {
+        "panthor_client_cookie_completed": 650,
+        "sync_epoch": 121,
+        "proof_epoch": 119
+      }
+    },
+    {
+      "path": "opencca/tf-rmm/runtime/core/xshm_endpoint.c",
+      "sha256": "e1d2d0b276074b03e2888d25d99d90f1c70021495007e2e57b85715e66916139",
+      "anchors": {
+        "XSHM_ACK_ARM": 289,
+        "event->pending": 268,
+        "event->armed": 271
+      }
+    },
+    {
+      "path": "opencca/tf-rmm/runtime/rsi/opencca_gpu.c",
+      "sha256": "5541731ecf9f39bb91529b46a8c0295eee3a6dfc0588c6b1bb594b38c1208ca3",
+      "anchors": {
+        "opencca_gpu_authorize_mapping": 150,
+        "opencca_gpu_lease_acquire": 338
+      }
+    },
+    {
+      "path": "Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_sched.c",
+      "sha256": "1456fbae27532450a45a683f6de85e02073265e9e7b34b2fe475e1a10e7aa29e",
+      "anchors": {
+        "panthor_max_inflight_jobs": 101
+      }
+    }
+  ],
+  "links": [
+    {
+      "label": "当前基线",
+      "target": "CURRENT_BASELINE.md",
+      "exists": true
+    },
+    {
+      "label": "Host pmthor",
+      "target": "../../Linux-Host-GPU/drivers/pmthor/",
+      "exists": true
+    },
+    {
+      "label": "KVM hypercall",
+      "target": "../../Linux-Host-GPU/arch/arm64/kvm/hypercalls.c",
+      "exists": true
+    },
+    {
+      "label": "Firecracker GPU 集成",
+      "target": "../../firecracker/Firecracker-CCA-MZH/src/vmm/src/gpu_passthrough.rs",
+      "exists": true
+    },
+    {
+      "label": "Guest 页表实现",
+      "target": "../../Linux-Guest-GPU/drivers/iommu/io-pgtable-arm.c",
+      "exists": true
+    },
+    {
+      "label": "RMM GPU 接口",
+      "target": "../../opencca/tf-rmm/runtime/rsi/opencca_gpu.c",
+      "exists": true
+    },
+    {
+      "label": "直通实现分析",
+      "target": "../passthrough/GPU_PASSTHROUGH_IMPLEMENTATION_ANALYSIS.md",
+      "exists": true
+    },
+    {
+      "label": "Client 前端",
+      "target": "../../Linux-Guest-GPU/drivers/gpu/drm/panthor-client/panthor_client_drv.c",
+      "exists": true
+    },
+    {
+      "label": "Proxy 后端",
+      "target": "../../Linux-Guest-GPU/drivers/gpu/drm/panthor-proxy/panthor_proxy_drv.c",
+      "exists": true
+    },
+    {
+      "label": "通信协议",
+      "target": "../../Linux-Guest-GPU/include/linux/vmshm_comm_protocol.h",
+      "exists": true
+    },
+    {
+      "label": "优化总览",
+      "target": "GPU_PROXYCLIENT_OPTIMIZATION_DESIGN_GUIDE_20261025.md",
+      "exists": true
+    },
+    {
+      "label": "真实 fence 优化报告",
+      "target": "GPU_RAW_FENCE_COMPLETION_OPTIMIZATION_20261024.md",
+      "exists": true
+    },
+    {
+      "label": "固定频率报告",
+      "target": "GPU_FIXED_FREQUENCY_GLMARK_20261025.md",
+      "exists": true
+    },
+    {
+      "label": "Panthor 调度器",
+      "target": "../../Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_sched.c",
+      "exists": true
+    },
+    {
+      "label": "Panthor MMU",
+      "target": "../../Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_mmu.c",
+      "exists": true
+    },
+    {
+      "label": "GEM",
+      "target": "../../Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_gem.c",
+      "exists": true
+    },
+    {
+      "label": "安全设计审查",
+      "target": "GPU_SECURITY_DESIGN_REVIEW_20261026.md",
+      "exists": true
+    },
+    {
+      "label": "xshm 端点事件",
+      "target": "../../opencca/tf-rmm/runtime/core/xshm_endpoint.c",
+      "exists": true
+    },
+    {
+      "label": "PORTAL",
+      "target": "gpu-security-papers/PORTAL_SP2025.md",
+      "exists": true
+    },
+    {
+      "label": "ACAI",
+      "target": "gpu-security-papers/ACAI_USENIX2024.md",
+      "exists": true
+    },
+    {
+      "label": "CAGE",
+      "target": "gpu-security-papers/CAGE_NDSS2024.md",
+      "exists": true
+    },
+    {
+      "label": "PhantomMap",
+      "target": "gpu-security-papers/PHANTOMMAP_NDSS2026.md",
+      "exists": true
+    },
+    {
+      "label": "MOLE",
+      "target": "gpu-security-papers/MOLE_CCS2025.md",
+      "exists": true
+    },
+    {
+      "label": "Devlore",
+      "target": "GPU_DEVLORE_DEEP_REVIEW_20261027.md",
+      "exists": true
+    },
+    {
+      "label": "GEVisor",
+      "target": "gpu-security-papers/GEVISOR_SOCC2023.md",
+      "exists": true
+    },
+    {
+      "label": "AvaGPU",
+      "target": "gpu-security-papers/AVAGPU_CCS2023.md",
+      "exists": true
+    },
+    {
+      "label": "StepStone",
+      "target": "gpu-security-papers/STEPSTONE_SP2026.md",
+      "exists": true
+    },
+    {
+      "label": "Realm xshm runner",
+      "target": "../../scripts/run/run-realm-xshm.py",
+      "exists": true
+    },
+    {
+      "label": "GPU 测试资料",
+      "target": "../../GPU-SFTP/tests/realm-xshm/README.md",
+      "exists": true
+    },
+    {
+      "label": "原生/直通对照脚本",
+      "target": "../../scripts/run/run-host-vs-passthrough-gles-perf.sh",
+      "exists": true
+    },
+    {
+      "label": "环境与测试手册",
+      "target": "../start/AGENT_ENVIRONMENT_AND_TEST_RUNBOOK.md",
+      "exists": true
+    },
+    {
+      "label": "产物管理",
+      "target": "../start/DEVELOPMENT_AND_ARTIFACT_HYGIENE.md",
+      "exists": true
+    },
+    {
+      "label": "静态核验记录",
+      "target": "evidence/design-plan-20261028/static-audit.json",
+      "exists": true
+    }
+  ],
+  "runtime_code_changed_by_this_task": false,
+  "performance_measurements_added": false
+}

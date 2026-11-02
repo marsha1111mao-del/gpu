@@ -1,0 +1,1073 @@
+{
+  "status": "VERIFIED",
+  "production_code_changed": false,
+  "source_files_verified_unchanged": 51,
+  "source_manifest": "docs/shared/evidence/optimization-review-20261025/source-hashes.json",
+  "source_manifest_sha256": "d11cdbb00356036bb62f877914d7d1806b0ffcebb137088461dd963a3aaaa245",
+  "runs": [
+    {
+      "run_id": "current-multi-720-4c-20261025-a",
+      "status": "VERIFIED",
+      "clients": 4,
+      "command": [
+        "python3",
+        "scripts/maintenance/lab-run.py",
+        "--run-id",
+        "current-multi-720-4c-20261025-a",
+        "--",
+        "python3",
+        "scripts/run/run-realm-wake-sgi.py",
+        "--module",
+        "build/fast-target-irq-20261024/host-sgi/xshm_wake_sgi.ko",
+        "--",
+        "python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/raw-fence-observation-20261024/candidate",
+        "--workload",
+        "glmark",
+        "--performance",
+        "--benchmark-only",
+        "--suite",
+        "--compact-memory",
+        "--pool-mib",
+        "128",
+        "--transfer-capture",
+        "--profiles",
+        "glmark-720",
+        "--clients",
+        "4",
+        "--client-cpu-layout",
+        "round-robin",
+        "--cpu-frequency-khz",
+        "1800000",
+        "--telemetry"
+      ],
+      "returncode": 0,
+      "collect_returncode": 0,
+      "remote_files": 23,
+      "input_sha256": {
+        "/root/GPU-SFTP/tests/realm-xshm/run-realms.py": "19fcc60567a232ed8050a710e33baad8eb90225db7fb1ba4bea2123dd9247565",
+        "/root/GPU-SFTP/firecracker-bins/bin/firecracker": "fb2c3816d776a288d34b8c7f5b74b1e1722bb64d79079cac9c303319361310ec",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/Image": "bc495269491b44879d1f84556f537903650afad34a06fb94d6676e9ae799349f",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/initrd.cpio": "903465ce6f7ca4290aed6f979c7501606ff6729c03656b9e48de4de1f343f0f3",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/proxy/Image": "d0debf770a9a83c332c8fad540d69fdb27f44e30397a76942fdef71d30165304",
+        "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4": "5d0c2ec8e5c1830f6a93c39d34bd8ae02a99702792e9e16a9d9034388f606d60"
+      },
+      "vm_exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "resources_restored": true,
+      "memory_plan": {
+        "realm_mib": [
+          848,
+          336,
+          336,
+          336,
+          336
+        ],
+        "cma_mib": [
+          528,
+          144,
+          144,
+          144,
+          144
+        ],
+        "swiotlb_mib": 16,
+        "host_headroom_mib": 256,
+        "available_mib": 3084.91015625
+      },
+      "memory_sample_count": 845,
+      "host_initial_available_mib": 3084.91015625,
+      "host_min_available_mib": 1247.38671875,
+      "host_available_drop_mib": 1837.5234375,
+      "raw_completed_jobs": 582637,
+      "fast_irq_counters": [
+        [
+          "1207139",
+          "1"
+        ],
+        [
+          "1207139",
+          "1"
+        ],
+        [
+          "1207139",
+          "1"
+        ],
+        [
+          "1207139",
+          "1"
+        ],
+        [
+          "1207139",
+          "1"
+        ],
+        [
+          "1207139",
+          "1"
+        ],
+        [
+          "1207139",
+          "1"
+        ],
+        [
+          "1207139",
+          "1"
+        ]
+      ],
+      "log": "build/multiclient-current-20261025/runs/current-multi-720-4c-20261025-a",
+      "realm_memory": {
+        "0": {
+          "before_pool": {
+            "MemTotal": 756.16015625,
+            "MemAvailable": 689.66015625,
+            "Slab": 6.05859375,
+            "PageTables": 0.0703125,
+            "CmaTotal": 528.0,
+            "CmaFree": 520.734375
+          },
+          "bound_pool": {
+            "MemTotal": 756.16015625,
+            "MemAvailable": 185.52734375,
+            "Slab": 10.15234375,
+            "PageTables": 0.0703125,
+            "CmaTotal": 528.0,
+            "CmaFree": 11.55859375
+          }
+        },
+        "1": {
+          "before_pool": {
+            "MemTotal": 254.09765625,
+            "MemAvailable": 234.41796875,
+            "Slab": 5.18359375,
+            "PageTables": 0.0546875,
+            "CmaTotal": 144.0,
+            "CmaFree": 139.5078125
+          },
+          "bound_pool": {
+            "MemTotal": 254.09765625,
+            "MemAvailable": 108.86328125,
+            "Slab": 5.21484375,
+            "PageTables": 0.0546875,
+            "CmaTotal": 144.0,
+            "CmaFree": 13.16796875
+          }
+        },
+        "2": {
+          "before_pool": {
+            "MemTotal": 254.09765625,
+            "MemAvailable": 232.37109375,
+            "Slab": 5.19140625,
+            "PageTables": 0.0546875,
+            "CmaTotal": 144.0,
+            "CmaFree": 139.09765625
+          },
+          "bound_pool": {
+            "MemTotal": 254.09765625,
+            "MemAvailable": 108.84765625,
+            "Slab": 5.21875,
+            "PageTables": 0.0546875,
+            "CmaTotal": 144.0,
+            "CmaFree": 13.16796875
+          }
+        },
+        "3": {
+          "before_pool": {
+            "MemTotal": 254.09765625,
+            "MemAvailable": 234.41796875,
+            "Slab": 5.18359375,
+            "PageTables": 0.0546875,
+            "CmaTotal": 144.0,
+            "CmaFree": 139.5078125
+          },
+          "bound_pool": {
+            "MemTotal": 254.09765625,
+            "MemAvailable": 108.80078125,
+            "Slab": 5.24609375,
+            "PageTables": 0.0546875,
+            "CmaTotal": 144.0,
+            "CmaFree": 13.16796875
+          }
+        },
+        "4": {
+          "before_pool": {
+            "MemTotal": 254.09765625,
+            "MemAvailable": 232.4296875,
+            "Slab": 5.19140625,
+            "PageTables": 0.0546875,
+            "CmaTotal": 144.0,
+            "CmaFree": 139.09765625
+          },
+          "bound_pool": {
+            "MemTotal": 254.09765625,
+            "MemAvailable": 108.85546875,
+            "Slab": 5.22265625,
+            "PageTables": 0.0546875,
+            "CmaTotal": 144.0,
+            "CmaFree": 13.16796875
+          }
+        }
+      },
+      "guest_glmark_memory": {
+        "1": {
+          "process_rss_peak_mib": 102.83984375,
+          "guest_min_available_mib": 26.09765625,
+          "guest_min_cma_free_mib": 0.0,
+          "sample_count": 138
+        },
+        "2": {
+          "process_rss_peak_mib": 100.37890625,
+          "guest_min_available_mib": 25.01953125,
+          "guest_min_cma_free_mib": 0.0,
+          "sample_count": 138
+        },
+        "3": {
+          "process_rss_peak_mib": 101.76171875,
+          "guest_min_available_mib": 25.59375,
+          "guest_min_cma_free_mib": 0.0390625,
+          "sample_count": 138
+        },
+        "4": {
+          "process_rss_peak_mib": 100.37890625,
+          "guest_min_available_mib": 26.01171875,
+          "guest_min_cma_free_mib": 0.9140625,
+          "sample_count": 138
+        }
+      },
+      "glmark_scores": [
+        379,
+        381,
+        382,
+        382
+      ],
+      "mean_score": 381.0,
+      "glmark_benchmark": {
+        "observation_clock": "Host CLOCK_MONOTONIC serial receive",
+        "common_seconds": 351.800096529,
+        "union_seconds": 352.293057776,
+        "fraction": 0.9986007068941067,
+        "dispatch_spread_ms": 0.06446
+      },
+      "evidence_sha256": {
+        "commands.jsonl": "5d4a6ef792e0a311e168182bc0e042f2c54b10400e8e448ae2561e6504912bf3",
+        "cpu-realm-0.log": "01aa9c68573563b2643c84fc73b5b523a418d05ed1d2179ba66c20c3ab34b7c7",
+        "cpu-realm-1.log": "3ed75a542c90cc12bfa560618498380fa0e3a7de94b31381d1a5284964fdda0f",
+        "cpu-realm-2.log": "504675b74c2067dc325ff63e20d868d10d66e999d04917fcc15094d4f0f2a7c3",
+        "cpu-realm-3.log": "ba60734ead9e4a340756f04131a190d95c091a16d4089957d5f98bd86a1e4dab",
+        "cpu-realm-4.log": "38904c9eef1362c70588021017e33904ad1aa4682c1e30da84175eccbb12ab2f",
+        "glmark-720-client-1.log": "3a4fddc9ef9b0e57791a74d06dc1841871fd869be83448bb3c74caa1dd83965f",
+        "glmark-720-client-2.log": "b8857be4afb79ffd9e248b58a3cc733d276e8a26e2c70de0cef2dcf7f219f42f",
+        "glmark-720-client-3.log": "58f61ca7e5a09fccc308956a5fa8655f73db0cd7ab03cb12abfc8d99618c9a6c",
+        "glmark-720-client-4.log": "a1f582f169b51d0eb6bc65a1ba5bae201f6540a81bc140256d826b5b9b1fee8e",
+        "memory-samples.jsonl": "b23fc4e63f7779cd7436cce892faeaa29f0fb6d11bde82cf1d1474d480822784",
+        "realm-0.json": "c108d6b8272e264adbfc0b15a71c13b3dcee43ee3728cb88ee5e8d268833a449",
+        "realm-0.log": "0f0a53787ecb2becfe8c350a830233ee1a305870b18d239bb2b0550d1e24e899",
+        "realm-1.json": "ba43acbeb868e86654670487327e99690f580578e67285071c4179ab0dbe9a03",
+        "realm-1.log": "a6a3be0a81841e469da8b7f269f2730125519261e6835cc80f09e9847cb6f275",
+        "realm-2.json": "4e6ddbe185d752b15fb59bc45faffedd36dd235f115709b3cffa5daead64d9ac",
+        "realm-2.log": "11fb7042f7a696bf9fb3319000dbc8355572ced606078670f9ea5a22a9ea4e6b",
+        "realm-3.json": "d626dfd5f878ef8aad22dc2944f53bae8f3563557d33acb26931936097c79ead",
+        "realm-3.log": "7219786db5e48f1710190b6d42bef9aae32838d80e50d19bd1d1bda7801ec194",
+        "realm-4.json": "25093a67fe0a718e10a57c916ad410f8ba149137808e0f62ab035951e0f07ff0",
+        "realm-4.log": "501276f394b35424c0171a62d80bcad947c063d6d5fcea31d2c10127a3423158",
+        "runner.py": "19fcc60567a232ed8050a710e33baad8eb90225db7fb1ba4bea2123dd9247565",
+        "summary.json": "5d56964382b5eb3be5f82a92a74235bb437a0f388d1fdf07aba9a196b1745b29"
+      }
+    },
+    {
+      "run_id": "current-multi-ml-3c-20261025-a",
+      "status": "VERIFIED",
+      "clients": 3,
+      "command": [
+        "python3",
+        "scripts/maintenance/lab-run.py",
+        "--run-id",
+        "current-multi-ml-3c-20261025-a",
+        "--",
+        "python3",
+        "scripts/run/run-realm-wake-sgi.py",
+        "--module",
+        "build/fast-target-irq-20261024/host-sgi/xshm_wake_sgi.ko",
+        "--",
+        "python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/raw-fence-observation-20261024/candidate",
+        "--workload",
+        "glmark",
+        "--performance",
+        "--benchmark-only",
+        "--suite",
+        "--compact-memory",
+        "--pool-mib",
+        "128",
+        "--transfer-capture",
+        "--profiles",
+        "ml-gemm",
+        "ml-conv",
+        "--clients",
+        "3"
+      ],
+      "returncode": 0,
+      "collect_returncode": 0,
+      "remote_files": 18,
+      "input_sha256": {
+        "/root/GPU-SFTP/tests/realm-xshm/run-realms.py": "19fcc60567a232ed8050a710e33baad8eb90225db7fb1ba4bea2123dd9247565",
+        "/root/GPU-SFTP/firecracker-bins/bin/firecracker": "fb2c3816d776a288d34b8c7f5b74b1e1722bb64d79079cac9c303319361310ec",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/Image": "bc495269491b44879d1f84556f537903650afad34a06fb94d6676e9ae799349f",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/initrd.cpio": "903465ce6f7ca4290aed6f979c7501606ff6729c03656b9e48de4de1f343f0f3",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/proxy/Image": "d0debf770a9a83c332c8fad540d69fdb27f44e30397a76942fdef71d30165304",
+        "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4": "5d0c2ec8e5c1830f6a93c39d34bd8ae02a99702792e9e16a9d9034388f606d60"
+      },
+      "vm_exit_codes": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "resources_restored": true,
+      "memory_plan": {
+        "realm_mib": [
+          688,
+          336,
+          336,
+          336
+        ],
+        "cma_mib": [
+          400,
+          144,
+          144,
+          144
+        ],
+        "swiotlb_mib": 16,
+        "host_headroom_mib": 256,
+        "available_mib": 3081.13671875
+      },
+      "memory_sample_count": 330,
+      "host_initial_available_mib": 3081.13671875,
+      "host_min_available_mib": 1692.15625,
+      "host_available_drop_mib": 1388.98046875,
+      "raw_completed_jobs": 631,
+      "fast_irq_counters": [
+        [
+          "3153",
+          "1"
+        ],
+        [
+          "3153",
+          "1"
+        ],
+        [
+          "3153",
+          "1"
+        ],
+        [
+          "3153",
+          "1"
+        ],
+        [
+          "3153",
+          "1"
+        ],
+        [
+          "3153",
+          "1"
+        ]
+      ],
+      "log": "build/multiclient-current-20261025/runs/current-multi-ml-3c-20261025-a",
+      "realm_memory": {
+        "0": {
+          "before_pool": {
+            "MemTotal": 598.47265625,
+            "MemAvailable": 535.92578125,
+            "Slab": 6.04296875,
+            "PageTables": 0.0703125,
+            "CmaTotal": 400.0,
+            "CmaFree": 392.359375
+          },
+          "bound_pool": {
+            "MemTotal": 598.47265625,
+            "MemAvailable": 161.61328125,
+            "Slab": 9.12109375,
+            "PageTables": 0.0703125,
+            "CmaTotal": 400.0,
+            "CmaFree": 11.625
+          }
+        },
+        "1": {
+          "before_pool": {
+            "MemTotal": 254.09765625,
+            "MemAvailable": 234.41796875,
+            "Slab": 5.18359375,
+            "PageTables": 0.0546875,
+            "CmaTotal": 144.0,
+            "CmaFree": 139.5078125
+          },
+          "bound_pool": {
+            "MemTotal": 254.09765625,
+            "MemAvailable": 108.84765625,
+            "Slab": 5.2109375,
+            "PageTables": 0.0546875,
+            "CmaTotal": 144.0,
+            "CmaFree": 13.16796875
+          }
+        },
+        "2": {
+          "before_pool": {
+            "MemTotal": 254.09765625,
+            "MemAvailable": 234.41796875,
+            "Slab": 5.18359375,
+            "PageTables": 0.0546875,
+            "CmaTotal": 144.0,
+            "CmaFree": 139.5078125
+          },
+          "bound_pool": {
+            "MemTotal": 254.09765625,
+            "MemAvailable": 108.859375,
+            "Slab": 5.21484375,
+            "PageTables": 0.0546875,
+            "CmaTotal": 144.0,
+            "CmaFree": 13.16796875
+          }
+        },
+        "3": {
+          "before_pool": {
+            "MemTotal": 254.09765625,
+            "MemAvailable": 234.41796875,
+            "Slab": 5.18359375,
+            "PageTables": 0.0546875,
+            "CmaTotal": 144.0,
+            "CmaFree": 139.5078125
+          },
+          "bound_pool": {
+            "MemTotal": 254.09765625,
+            "MemAvailable": 108.859375,
+            "Slab": 5.21484375,
+            "PageTables": 0.0546875,
+            "CmaTotal": 144.0,
+            "CmaFree": 13.16796875
+          }
+        }
+      },
+      "guest_glmark_memory": {},
+      "ml": [
+        {
+          "profile": "ml-gemm",
+          "clients": [
+            {
+              "client": 1,
+              "returncode": 0,
+              "pass_marker": true,
+              "errors": [],
+              "metrics_ms": {
+                "gemm_512_fp32": 88.02214
+              }
+            },
+            {
+              "client": 2,
+              "returncode": 0,
+              "pass_marker": true,
+              "errors": [],
+              "metrics_ms": {
+                "gemm_512_fp32": 57.61216
+              }
+            },
+            {
+              "client": 3,
+              "returncode": 0,
+              "pass_marker": true,
+              "errors": [],
+              "metrics_ms": {
+                "gemm_512_fp32": 84.62764
+              }
+            }
+          ],
+          "barrier": true,
+          "events": {
+            "1": {
+              "dispatch": 82184459461491,
+              "ready": 82184654821771,
+              "release": 82185047021702,
+              "start": 82185276814139,
+              "timing_ready": 82199343401478,
+              "timing_release": 82199343494522,
+              "timing_start": 82199363346461,
+              "timing_end": 82208150451922,
+              "end": 82208612442468
+            },
+            "2": {
+              "dispatch": 82184459490659,
+              "ready": 82184600246290,
+              "release": 82185047058453,
+              "start": 82185061600462,
+              "timing_ready": 82191684537487,
+              "timing_release": 82199343531273,
+              "timing_start": 82199348536696,
+              "timing_end": 82205126582795,
+              "end": 82205307145539
+            },
+            "3": {
+              "dispatch": 82184459511659,
+              "ready": 82185046972701,
+              "release": 82185047080912,
+              "start": 82185066978353,
+              "timing_ready": 82196704634801,
+              "timing_release": 82199343554023,
+              "timing_start": 82199538430108,
+              "timing_end": 82207988656382,
+              "end": 82208370046520
+            }
+          },
+          "overlap": {
+            "observation_clock": "Host CLOCK_MONOTONIC serial receive; measured iterations after warmup",
+            "common_seconds": 5.588152687,
+            "union_seconds": 8.801915226,
+            "fraction": 0.634879176124435
+          },
+          "status": "PASS"
+        },
+        {
+          "profile": "ml-conv",
+          "clients": [
+            {
+              "client": 1,
+              "returncode": 0,
+              "pass_marker": true,
+              "errors": [],
+              "metrics_ms": {
+                "conv2d_64x64x32_3x3_fp32": 104.15263
+              }
+            },
+            {
+              "client": 2,
+              "returncode": 0,
+              "pass_marker": true,
+              "errors": [],
+              "metrics_ms": {
+                "conv2d_64x64x32_3x3_fp32": 66.33572
+              }
+            },
+            {
+              "client": 3,
+              "returncode": 0,
+              "pass_marker": true,
+              "errors": [],
+              "metrics_ms": {
+                "conv2d_64x64x32_3x3_fp32": 93.86760000000001
+              }
+            }
+          ],
+          "barrier": true,
+          "events": {
+            "1": {
+              "dispatch": 82209659705542,
+              "ready": 82209708763413,
+              "release": 82210210880466,
+              "start": 82210410838672,
+              "timing_ready": 82213309069584,
+              "timing_release": 82213309249255,
+              "timing_start": 82213328968773,
+              "timing_end": 82223742920537,
+              "end": 82224164219854
+            },
+            "2": {
+              "dispatch": 82209659755127,
+              "ready": 82209709010170,
+              "release": 82210210904092,
+              "start": 82210230726862,
+              "timing_ready": 82211615924378,
+              "timing_release": 82213309279590,
+              "timing_start": 82213322019924,
+              "timing_end": 82219962423137,
+              "end": 82220143306124
+            },
+            "3": {
+              "dispatch": 82209659773211,
+              "ready": 82210210835257,
+              "release": 82210210921301,
+              "start": 82210230886991,
+              "timing_ready": 82212644742826,
+              "timing_release": 82213309297965,
+              "timing_start": 82213650036860,
+              "timing_end": 82223040628613,
+              "end": 82223401803067
+            }
+          },
+          "overlap": {
+            "observation_clock": "Host CLOCK_MONOTONIC serial receive; measured iterations after warmup",
+            "common_seconds": 6.312386277,
+            "union_seconds": 10.420900613,
+            "fraction": 0.6057428730416393
+          },
+          "status": "PASS"
+        }
+      ],
+      "evidence_sha256": {
+        "commands.jsonl": "9f636ac98bd602df92f07644929ee5c44ff9db2ff8147f5c7125f84dc1634325",
+        "memory-samples.jsonl": "739e175689188fc9f62fe677c17a00295f7694f364283ddd41db95a9b75035e2",
+        "ml-conv-client-1.log": "db82bba2a469f7fc19d232acbbbd8e681fc2b423b6178b1770f2119fe3ffcc39",
+        "ml-conv-client-2.log": "5223e62904bcdd4686624c42753d0d51bbf56491cb9461d18d46f26dd84dd605",
+        "ml-conv-client-3.log": "817e3235b487f5764b4517fd1a55c1d20198cee0d8c58c497584787bba41ef91",
+        "ml-gemm-client-1.log": "af6600daea154ddc286bf3300266e76c8354476c4959baed8e862eabf210c1bb",
+        "ml-gemm-client-2.log": "59c86a48b098b4e68d6f68f862bccaca3e71489085a45507dc6a4b2d1694824d",
+        "ml-gemm-client-3.log": "a456eb6520ef003667c31d1ad8a912064183156cbf9377d929e366ba2efb6640",
+        "realm-0.json": "12c6c8d9cf783f40caa37a24209a5335a7e5ab9b33e414033cb1c0ec6c43a528",
+        "realm-0.log": "37f04b24b8b731d92d2422b493e515c99ba718fb4a4c67923128d14d622211a7",
+        "realm-1.json": "ba43acbeb868e86654670487327e99690f580578e67285071c4179ab0dbe9a03",
+        "realm-1.log": "a8f888629afc1be18350ed5d4f1bb58dacaf8b01b86d216b4756c01025ae4eb8",
+        "realm-2.json": "4e6ddbe185d752b15fb59bc45faffedd36dd235f115709b3cffa5daead64d9ac",
+        "realm-2.log": "436763718821836ca3c7007c197c50f0be2c86f4a078623e2e7278472f51619c",
+        "realm-3.json": "d626dfd5f878ef8aad22dc2944f53bae8f3563557d33acb26931936097c79ead",
+        "realm-3.log": "d13e319129dd8a754d86e7237142d7a93aaf02e145945810ab5711c40cef62cc",
+        "runner.py": "19fcc60567a232ed8050a710e33baad8eb90225db7fb1ba4bea2123dd9247565",
+        "summary.json": "f7f63551844a08bc683593cffb305a18f9dcf02a13769741c45f73d982ad0b07"
+      }
+    },
+    {
+      "run_id": "current-multi-ml-4c-20261025-a",
+      "status": "VERIFIED",
+      "clients": 4,
+      "command": [
+        "python3",
+        "scripts/maintenance/lab-run.py",
+        "--run-id",
+        "current-multi-ml-4c-20261025-a",
+        "--",
+        "python3",
+        "scripts/run/run-realm-wake-sgi.py",
+        "--module",
+        "build/fast-target-irq-20261024/host-sgi/xshm_wake_sgi.ko",
+        "--",
+        "python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/raw-fence-observation-20261024/candidate",
+        "--workload",
+        "glmark",
+        "--performance",
+        "--benchmark-only",
+        "--suite",
+        "--compact-memory",
+        "--pool-mib",
+        "128",
+        "--transfer-capture",
+        "--profiles",
+        "ml-gemm",
+        "ml-conv",
+        "--clients",
+        "4"
+      ],
+      "returncode": 0,
+      "collect_returncode": 0,
+      "remote_files": 22,
+      "input_sha256": {
+        "/root/GPU-SFTP/tests/realm-xshm/run-realms.py": "19fcc60567a232ed8050a710e33baad8eb90225db7fb1ba4bea2123dd9247565",
+        "/root/GPU-SFTP/firecracker-bins/bin/firecracker": "fb2c3816d776a288d34b8c7f5b74b1e1722bb64d79079cac9c303319361310ec",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/Image": "bc495269491b44879d1f84556f537903650afad34a06fb94d6676e9ae799349f",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/initrd.cpio": "903465ce6f7ca4290aed6f979c7501606ff6729c03656b9e48de4de1f343f0f3",
+        "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/proxy/Image": "d0debf770a9a83c332c8fad540d69fdb27f44e30397a76942fdef71d30165304",
+        "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4": "5d0c2ec8e5c1830f6a93c39d34bd8ae02a99702792e9e16a9d9034388f606d60"
+      },
+      "vm_exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "resources_restored": true,
+      "memory_plan": {
+        "realm_mib": [
+          848,
+          336,
+          336,
+          336,
+          336
+        ],
+        "cma_mib": [
+          528,
+          144,
+          144,
+          144,
+          144
+        ],
+        "swiotlb_mib": 16,
+        "host_headroom_mib": 256,
+        "available_mib": 3095.390625
+      },
+      "memory_sample_count": 482,
+      "host_initial_available_mib": 3095.390625,
+      "host_min_available_mib": 1291.85546875,
+      "host_available_drop_mib": 1803.53515625,
+      "raw_completed_jobs": 843,
+      "fast_irq_counters": [
+        [
+          "4191",
+          "1"
+        ],
+        [
+          "4191",
+          "1"
+        ],
+        [
+          "4191",
+          "1"
+        ],
+        [
+          "4191",
+          "1"
+        ],
+        [
+          "4191",
+          "1"
+        ],
+        [
+          "4191",
+          "1"
+        ],
+        [
+          "4191",
+          "1"
+        ],
+        [
+          "4191",
+          "1"
+        ]
+      ],
+      "log": "build/multiclient-current-20261025/runs/current-multi-ml-4c-20261025-a",
+      "realm_memory": {
+        "0": {
+          "before_pool": {
+            "MemTotal": 756.16015625,
+            "MemAvailable": 689.66015625,
+            "Slab": 6.05859375,
+            "PageTables": 0.0703125,
+            "CmaTotal": 528.0,
+            "CmaFree": 520.734375
+          },
+          "bound_pool": {
+            "MemTotal": 756.16015625,
+            "MemAvailable": 185.3359375,
+            "Slab": 10.15234375,
+            "PageTables": 0.0703125,
+            "CmaTotal": 528.0,
+            "CmaFree": 11.5546875
+          }
+        },
+        "1": {
+          "before_pool": {
+            "MemTotal": 254.09765625,
+            "MemAvailable": 232.42578125,
+            "Slab": 5.18359375,
+            "PageTables": 0.0546875,
+            "CmaTotal": 144.0,
+            "CmaFree": 139.09765625
+          },
+          "bound_pool": {
+            "MemTotal": 254.09765625,
+            "MemAvailable": 108.86328125,
+            "Slab": 5.21484375,
+            "PageTables": 0.0546875,
+            "CmaTotal": 144.0,
+            "CmaFree": 13.16796875
+          }
+        },
+        "2": {
+          "before_pool": {
+            "MemTotal": 254.09765625,
+            "MemAvailable": 234.41796875,
+            "Slab": 5.18359375,
+            "PageTables": 0.0546875,
+            "CmaTotal": 144.0,
+            "CmaFree": 139.5078125
+          },
+          "bound_pool": {
+            "MemTotal": 254.09765625,
+            "MemAvailable": 108.86328125,
+            "Slab": 5.2109375,
+            "PageTables": 0.0546875,
+            "CmaTotal": 144.0,
+            "CmaFree": 13.16796875
+          }
+        },
+        "3": {
+          "before_pool": {
+            "MemTotal": 254.09765625,
+            "MemAvailable": 234.41796875,
+            "Slab": 5.18359375,
+            "PageTables": 0.0546875,
+            "CmaTotal": 144.0,
+            "CmaFree": 139.5078125
+          },
+          "bound_pool": {
+            "MemTotal": 254.09765625,
+            "MemAvailable": 108.84375,
+            "Slab": 5.21484375,
+            "PageTables": 0.0546875,
+            "CmaTotal": 144.0,
+            "CmaFree": 13.16796875
+          }
+        },
+        "4": {
+          "before_pool": {
+            "MemTotal": 254.09765625,
+            "MemAvailable": 232.42578125,
+            "Slab": 5.18359375,
+            "PageTables": 0.0546875,
+            "CmaTotal": 144.0,
+            "CmaFree": 139.09765625
+          },
+          "bound_pool": {
+            "MemTotal": 254.09765625,
+            "MemAvailable": 108.84375,
+            "Slab": 5.21484375,
+            "PageTables": 0.0546875,
+            "CmaTotal": 144.0,
+            "CmaFree": 13.16796875
+          }
+        }
+      },
+      "guest_glmark_memory": {},
+      "ml": [
+        {
+          "profile": "ml-gemm",
+          "clients": [
+            {
+              "client": 1,
+              "returncode": 0,
+              "pass_marker": true,
+              "errors": [],
+              "metrics_ms": {
+                "gemm_512_fp32": 105.96421000000001
+              }
+            },
+            {
+              "client": 2,
+              "returncode": 0,
+              "pass_marker": true,
+              "errors": [],
+              "metrics_ms": {
+                "gemm_512_fp32": 107.35064
+              }
+            },
+            {
+              "client": 3,
+              "returncode": 0,
+              "pass_marker": true,
+              "errors": [],
+              "metrics_ms": {
+                "gemm_512_fp32": 120.23617
+              }
+            },
+            {
+              "client": 4,
+              "returncode": 0,
+              "pass_marker": true,
+              "errors": [],
+              "metrics_ms": {
+                "gemm_512_fp32": 112.69609
+              }
+            }
+          ],
+          "barrier": true,
+          "events": {
+            "1": {
+              "dispatch": 82659288107381,
+              "ready": 82659849749886,
+              "release": 82659892064179,
+              "start": 82659910011746,
+              "timing_ready": 82671696736915,
+              "timing_release": 82676079819522,
+              "timing_start": 82676420755035,
+              "timing_end": 82687000677829,
+              "end": 82687422287108
+            },
+            "2": {
+              "dispatch": 82659288140923,
+              "ready": 82659891973760,
+              "release": 82659892099763,
+              "start": 82659911967419,
+              "timing_ready": 82671622901722,
+              "timing_release": 82676079862981,
+              "timing_start": 82676236582254,
+              "timing_end": 82686971714617,
+              "end": 82687453582836
+            },
+            "3": {
+              "dispatch": 82659288163674,
+              "ready": 82659550811604,
+              "release": 82659892118138,
+              "start": 82660152764893,
+              "timing_ready": 82676079747187,
+              "timing_release": 82676079886607,
+              "timing_start": 82676099636426,
+              "timing_end": 82688124733665,
+              "end": 82688566269516
+            },
+            "4": {
+              "dispatch": 82659288180299,
+              "ready": 82659510642864,
+              "release": 82659892133597,
+              "start": 82660132838611,
+              "timing_ready": 82675835300298,
+              "timing_release": 82676079902066,
+              "timing_start": 82676096223550,
+              "timing_end": 82687372978772,
+              "end": 82688137955531
+            }
+          },
+          "overlap": {
+            "observation_clock": "Host CLOCK_MONOTONIC serial receive; measured iterations after warmup",
+            "common_seconds": 10.550959582,
+            "union_seconds": 12.028510115,
+            "fraction": 0.8771626312092102
+          },
+          "status": "PASS"
+        },
+        {
+          "profile": "ml-conv",
+          "clients": [
+            {
+              "client": 1,
+              "returncode": 0,
+              "pass_marker": true,
+              "errors": [],
+              "metrics_ms": {
+                "conv2d_64x64x32_3x3_fp32": 131.54169
+              }
+            },
+            {
+              "client": 2,
+              "returncode": 0,
+              "pass_marker": true,
+              "errors": [],
+              "metrics_ms": {
+                "conv2d_64x64x32_3x3_fp32": 137.39525
+              }
+            },
+            {
+              "client": 3,
+              "returncode": 0,
+              "pass_marker": true,
+              "errors": [],
+              "metrics_ms": {
+                "conv2d_64x64x32_3x3_fp32": 123.89714
+              }
+            },
+            {
+              "client": 4,
+              "returncode": 0,
+              "pass_marker": true,
+              "errors": [],
+              "metrics_ms": {
+                "conv2d_64x64x32_3x3_fp32": 123.88683999999999
+              }
+            }
+          ],
+          "barrier": true,
+          "events": {
+            "1": {
+              "dispatch": 82689262041115,
+              "ready": 82689871022247,
+              "release": 82689871096624,
+              "start": 82689891027281,
+              "timing_ready": 82692882682620,
+              "timing_release": 82693384271192,
+              "timing_start": 82693404159847,
+              "timing_end": 82706544691439,
+              "end": 82706986107396
+            },
+            "2": {
+              "dispatch": 82689262091283,
+              "ready": 82689704203773,
+              "release": 82689871119666,
+              "start": 82689985273805,
+              "timing_ready": 82693179235572,
+              "timing_release": 82693384299485,
+              "timing_start": 82693399574735,
+              "timing_end": 82707357556635,
+              "end": 82707845059097
+            },
+            "3": {
+              "dispatch": 82689262109659,
+              "ready": 82689389363161,
+              "release": 82689871137167,
+              "start": 82689911114566,
+              "timing_ready": 82692743541660,
+              "timing_release": 82693384315527,
+              "timing_start": 82693505789219,
+              "timing_end": 82705883992184,
+              "end": 82706245119963
+            },
+            "4": {
+              "dispatch": 82689262127742,
+              "ready": 82689403095165,
+              "release": 82689871152334,
+              "start": 82689884781669,
+              "timing_ready": 82692537057004,
+              "timing_release": 82693384331569,
+              "timing_start": 82693459758422,
+              "timing_end": 82705858514767,
+              "end": 82706280070362
+            }
+          },
+          "overlap": {
+            "observation_clock": "Host CLOCK_MONOTONIC serial receive; measured iterations after warmup",
+            "common_seconds": 12.352725548,
+            "union_seconds": 13.9579819,
+            "fraction": 0.8849936643061559
+          },
+          "status": "PASS"
+        }
+      ],
+      "evidence_sha256": {
+        "commands.jsonl": "29cd6b91c17a7caeee6eaaafa006d713eed0203178532dead5f9a118c24288d4",
+        "memory-samples.jsonl": "2840139811aaadab86b34ea7e7da1e01730716e131ee0552838049fe329d3b2d",
+        "ml-conv-client-1.log": "f0b80d505ddd612e8f40102e46c3eaef14071ab407ccc7df2dfa28a1a7324d31",
+        "ml-conv-client-2.log": "ea8708eba8aca238f2275651c9543d55e6f623b6efd02d44017690fd26e13b13",
+        "ml-conv-client-3.log": "ba8ca0efd59085701d40fa37212e2b1e97a3302bab682da15ae1a9a92887f535",
+        "ml-conv-client-4.log": "8c2558e06f17156e4be6d67d20ec8406f4c4dea7aab3c23947fe923fd3349602",
+        "ml-gemm-client-1.log": "128f151f91c5392159af3b73d9717dda3e610b8d08e621be85baa0e1935ab668",
+        "ml-gemm-client-2.log": "1bdf998f4787eafa9ae62db60dd28581ec255826cc6c0da835a2a85d98c9b66d",
+        "ml-gemm-client-3.log": "b8cf4ad7e8faf6937730f775823378743303a6a601338e9f1c823397e0a5c23c",
+        "ml-gemm-client-4.log": "557481200f869f852ce9d2de7d430abcb704521849efe13d4edcb11e0044816c",
+        "realm-0.json": "c108d6b8272e264adbfc0b15a71c13b3dcee43ee3728cb88ee5e8d268833a449",
+        "realm-0.log": "b9f4654cd362952b8e344a4cf125f6002b8f7e5c42e91119a86c506bdb06dff4",
+        "realm-1.json": "ba43acbeb868e86654670487327e99690f580578e67285071c4179ab0dbe9a03",
+        "realm-1.log": "747da8a380cf1513c62cd47f95d997eae0ee2930713d298b1d9bf6dcb766fa77",
+        "realm-2.json": "4e6ddbe185d752b15fb59bc45faffedd36dd235f115709b3cffa5daead64d9ac",
+        "realm-2.log": "e748e31aed7e16bb72483f41b562b52d662d7c21e7c6911b6b59941da6cc7730",
+        "realm-3.json": "d626dfd5f878ef8aad22dc2944f53bae8f3563557d33acb26931936097c79ead",
+        "realm-3.log": "c144abc2231a24a2fea0775e3708467f56e462173b7520dba3e3b7cb6553030d",
+        "realm-4.json": "25093a67fe0a718e10a57c916ad410f8ba149137808e0f62ab035951e0f07ff0",
+        "realm-4.log": "25bbaea814235203174a224443a36bfeef69d4f6d10bbadb27119c73488a7d8a",
+        "runner.py": "19fcc60567a232ed8050a710e33baad8eb90225db7fb1ba4bea2123dd9247565",
+        "summary.json": "9605853f5791c49f37e2f7f2bd065e213edb7e92c18dec471e74c645bdb97471"
+      }
+    }
+  ],
+  "final_state": {
+    "run_id": "current-multi-finalize-20261025-a",
+    "restored": [],
+    "inputs": {
+      "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/Image": "bc495269491b44879d1f84556f537903650afad34a06fb94d6676e9ae799349f",
+      "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/proxy/Image": "d0debf770a9a83c332c8fad540d69fdb27f44e30397a76942fdef71d30165304",
+      "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/initrd.cpio": "903465ce6f7ca4290aed6f979c7501606ff6729c03656b9e48de4de1f343f0f3",
+      "/root/GPU-SFTP/tests/realm-xshm/run-realms.py": "19fcc60567a232ed8050a710e33baad8eb90225db7fb1ba4bea2123dd9247565",
+      "/root/GPU-SFTP/firecracker-bins/bin/firecracker": "fb2c3816d776a288d34b8c7f5b74b1e1722bb64d79079cac9c303319361310ec",
+      "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4": "5d0c2ec8e5c1830f6a93c39d34bd8ae02a99702792e9e16a9d9034388f606d60"
+    },
+    "actual_sd_firmware_sha256": {
+      "idbloader.img": "aafd53464c97c69e3498e299eccb78de4d92d777f271be02f8cc66682ad67dc7",
+      "u-boot.itb": "5cd766a1e1c38cff67d04319c2e07ebad39171e6c42a914190e4836043be3289"
+    },
+    "status": "VERIFIED"
+  },
+  "final_resources_restored": true,
+  "limitations": "Single new run per case; no strict old/new runtime memory A/B; Host MemAvailable includes VM/OS/cache; no per-allocation physical memory ledger."
+}

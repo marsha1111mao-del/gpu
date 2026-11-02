@@ -97,17 +97,26 @@ static void gpu_workload(int compute, const char *profile)
 	    mount("/glmark.env", "/work/root/gpu-smoke.env", NULL, MS_BIND, NULL) ||
 	    mount("/gpu-smoke.sh", "/work/root/gpu-smoke.sh", NULL, MS_BIND, NULL))
 		goto error;
+	/* Use the frozen initrd probe rather than a stale workload-root copy. */
+	if (!access("/panthor_ioctl_smoke", X_OK) &&
+	    mount("/panthor_ioctl_smoke", "/work/root/panthor_ioctl_smoke", NULL, MS_BIND, NULL))
+		goto error;
+	if (!access("/gles-compute-smoke", X_OK) &&
+	    mount("/gles-compute-smoke", "/work/root/gles-compute-smoke", NULL, MS_BIND, NULL))
+		goto error;
 	if (profile) {
 		int fd = open("/work/tmp/performance-suite.sh", O_WRONLY | O_CREAT, 0700);
 		if (fd < 0)
 			goto error;
 		close(fd);
-		fd = open("/work/tmp/ioctl-perf", O_WRONLY | O_CREAT, 0700);
-		if (fd < 0)
-			goto error;
-		close(fd);
-		if (mount("/ioctl-perf", "/work/tmp/ioctl-perf", NULL, MS_BIND, NULL))
-			goto error;
+		if (!strcmp(profile, "ioctl")) {
+			fd = open("/work/tmp/ioctl-perf", O_WRONLY | O_CREAT, 0700);
+			if (fd < 0)
+				goto error;
+			close(fd);
+			if (mount("/ioctl-perf", "/work/tmp/ioctl-perf", NULL, MS_BIND, NULL))
+				goto error;
+		}
 		if (mount("/performance-suite.sh", "/work/tmp/performance-suite.sh", NULL, MS_BIND, NULL))
 			goto error;
 		if ((!strncmp(profile, "ml-", 3) || !strncmp(profile, "attention-", 10)) &&
@@ -120,7 +129,11 @@ static void gpu_workload(int compute, const char *profile)
 		execl("/bin/sh", "sh", "/tmp/performance-suite.sh", profile, NULL);
 		goto error;
 	}
-	if (compute)
+	if (compute == 2)
+		execl("/root/gles-compute-smoke", "gles-compute-smoke", "--gpu-eventfd",
+		      "--count", "65536", "--iterations", "4", "--alu-iters", "64",
+		      "/dev/dri/renderD128", NULL);
+	else if (compute)
 		execl("/root/gles-compute-smoke", "gles-compute-smoke",
 		      "--count", "65536", "--iterations", "4", "--alu-iters", "64",
 		      "/dev/dri/renderD128", NULL);
@@ -229,6 +242,8 @@ int main(void)
 		}
 		graphics = !strcmp(word, "glmark");
 		compute = !strcmp(word, "compute");
+		if (!strcmp(word, "compute-eventfd"))
+			compute = 2;
 		performance = !strcmp(word, "performance");
 		klog = !strcmp(word, "kernel-log");
 		module_load = !strcmp(word, "insmod");
@@ -236,6 +251,9 @@ int main(void)
 		iommu_device = !strcmp(word, "iommu-device");
 		if (!strcmp(word, "gpu-smoke")) {
 			args[0] = "/panthor_ioctl_smoke";
+			word = strtok_r(NULL, " \t\r\n", &save);
+		} else if (!strcmp(word, "gpu-private")) {
+			args[0] = "/realm-gpu-private";
 			word = strtok_r(NULL, " \t\r\n", &save);
 		}
 		while (word && count < 7) {

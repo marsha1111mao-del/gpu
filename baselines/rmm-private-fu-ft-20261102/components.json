@@ -1,0 +1,26 @@
+{
+  "Linux-Guest-GPU": {
+    "commit": "8460fb93cdfc5f3d51723fa48cf6db45c165d2e5",
+    "branch": "baseline/rmm-private-fu-ft-20261102",
+    "files": 0,
+    "remote_verified": true
+  },
+  "Linux-Host-GPU": {
+    "commit": "e3861585c7a2e2d72599905c24f817275761390f",
+    "branch": "baseline/rmm-private-fu-ft-20261102",
+    "files": 0,
+    "remote_verified": true
+  },
+  "opencca/tf-rmm": {
+    "commit": "581fb1dc2505849e3eb1a3d148264e4acbc9bdb9",
+    "branch": "baseline/rmm-private-fu-ft-20261102",
+    "files": 0,
+    "remote_verified": true
+  },
+  "opencca": {
+    "commit": "cdbc09c7e7b91cef8f3be675f1b4d2cb3ba6fff1",
+    "branch": "baseline/rmm-private-fu-ft-20261102",
+    "files": 3,
+    "remote_verified": true
+  }
+}

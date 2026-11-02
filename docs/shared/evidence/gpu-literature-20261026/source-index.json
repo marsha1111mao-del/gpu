@@ -1,0 +1,3164 @@
+{
+  "retrieval_date": "2026-10-26",
+  "raw_artifact_directory": "build/gpu-security-literature-20261026",
+  "note": "Candidates are search results, not automatically accepted bibliographic records. Failed requests and unrelated matches are retained as retrieval evidence only. Arm shell pages are not specification text.",
+  "sources": [
+    {
+      "id": "cr-hix",
+      "url": "https://api.crossref.org/works?query.title=Heterogeneous+Isolated+Execution+for+Commodity+GPUs&rows=2",
+      "query": "Heterogeneous Isolated Execution for Commodity GPUs",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-hetee",
+      "url": "https://api.crossref.org/works?query.title=Enabling+Rack-scale+Confidential+Computing+using+Heterogeneous+Trusted+Execution+Environment&rows=2",
+      "query": "Enabling Rack-scale Confidential Computing using Heterogeneous Trusted Execution Environment",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-cca-environment",
+      "url": "https://api.crossref.org/works?query.title=Building+Confidential+Accelerator+Computing+Environment+for+Arm+CCA&rows=2",
+      "query": "Building Confidential Accelerator Computing Environment for Arm CCA",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-lightweight",
+      "url": "https://api.crossref.org/works?query.title=Building+a+Lightweight+Trusted+Execution+Environment+for+Arm+GPUs&rows=2",
+      "query": "Building a Lightweight Trusted Execution Environment for Arm GPUs",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-sage",
+      "url": "https://api.crossref.org/works?query.title=SAGE%3A+Software-based+Attestation+for+GPU+Execution&rows=2",
+      "query": "SAGE: Software-based Attestation for GPU Execution",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-ccai",
+      "url": "https://api.crossref.org/works?query.title=ccAI%3A+A+Compatible+and+Confidential+System+for+AI+Computing&rows=2",
+      "query": "ccAI: A Compatible and Confidential System for AI Computing",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-discrete",
+      "url": "https://api.crossref.org/works?query.title=Understanding+the+Security+of+Discrete+GPUs&rows=2",
+      "query": "Understanding the Security of Discrete GPUs",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-analyzing",
+      "url": "https://api.crossref.org/works?query.title=Analyzing+Secure+Memory+Architecture+for+GPUs&rows=2",
+      "query": "Analyzing Secure Memory Architecture for GPUs",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-plutus",
+      "url": "https://api.crossref.org/works?query.title=Plutus%3A+Bandwidth-Efficient+Memory+Security+for+GPUs&rows=2",
+      "query": "Plutus: Bandwidth-Efficient Memory Security for GPUs",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-honeycomb",
+      "url": "https://api.crossref.org/works?query.title=Honeycomb%3A+Secure+and+Efficient+GPU+Executions+via+Static+Validation&rows=2",
+      "final_url": "https://api.crossref.org/works?query.title=Honeycomb%3A+Secure+and+Efficient+GPU+Executions+via+Static+Validation&rows=2",
+      "query": "Honeycomb: Secure and Efficient GPU Executions via Static Validation",
+      "file": "cr-honeycomb.json",
+      "bytes": 11095,
+      "sha256": "4f5e5540e26942cf2c75f97346059e67fcd243dc8692463ae5671139c13144db",
+      "content_type": "application/json",
+      "candidates": [
+        {
+          "title": [
+            "Secure States versus Secure Executions"
+          ],
+          "DOI": "10.1007/978-3-642-45204-8_11",
+          "published": {
+            "date-parts": [
+              [
+                2013
+              ]
+            ]
+          },
+          "container-title": [
+            "Lecture Notes in Computer Science",
+            "Information Systems Security"
+          ],
+          "URL": "https://doi.org/10.1007/978-3-642-45204-8_11",
+          "type": "book-chapter"
+        },
+        {
+          "title": [
+            "GPU-enabled efficient executions of radiation calculations in climate modeling"
+          ],
+          "DOI": "10.1109/hipc.2013.6799141",
+          "published": {
+            "date-parts": [
+              [
+                2013,
+                12
+              ]
+            ]
+          },
+          "container-title": [
+            "20th Annual International Conference on High Performance Computing"
+          ],
+          "URL": "https://doi.org/10.1109/hipc.2013.6799141",
+          "type": "proceedings-article"
+        }
+      ]
+    },
+    {
+      "id": "cr-gevisor",
+      "url": "https://api.crossref.org/works?query.title=GEVisor%3A+Building+GPU+TEEs+using+CPU+Secure+Enclaves&rows=2",
+      "final_url": "https://api.crossref.org/works?query.title=GEVisor%3A+Building+GPU+TEEs+using+CPU+Secure+Enclaves&rows=2",
+      "query": "GEVisor: Building GPU TEEs using CPU Secure Enclaves",
+      "file": "cr-gevisor.json",
+      "bytes": 26107,
+      "sha256": "ca5b7688d5cc8c63ade10a3da0962317ade777a23b3c01a5d35d96fa66706ee7",
+      "content_type": "application/json",
+      "candidates": [
+        {
+          "title": [
+            "Building GPU TEEs using CPU Secure Enclaves with GEVisor"
+          ],
+          "DOI": "10.1145/3620678.3624659",
+          "published": {
+            "date-parts": [
+              [
+                2023,
+                10,
+                30
+              ]
+            ]
+          },
+          "container-title": [
+            "Proceedings of the 2023 ACM Symposium on Cloud Computing"
+          ],
+          "URL": "https://doi.org/10.1145/3620678.3624659",
+          "type": "proceedings-article"
+        },
+        {
+          "title": [
+            "Confidential LLM Inference: Performance and Cost Across CPU and GPU TEEs"
+          ],
+          "DOI": "10.1109/iiswc66894.2025.00017",
+          "published": {
+            "date-parts": [
+              [
+                2025,
+                10,
+                12
+              ]
+            ]
+          },
+          "container-title": [
+            "2025 IEEE International Symposium on Workload Characterization (IISWC)"
+          ],
+          "URL": "https://doi.org/10.1109/iiswc66894.2025.00017",
+          "type": "proceedings-article"
+        }
+      ]
+    },
+    {
+      "id": "cr-adaptive",
+      "url": "https://api.crossref.org/works?query.title=Adaptive+Security+Support+for+Heterogeneous+Memory+on+GPUs&rows=2",
+      "query": "Adaptive Security Support for Heterogeneous Memory on GPUs",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-pssm",
+      "url": "https://api.crossref.org/works?query.title=PSSM%3A+Achieving+Secure+Memory+for+GPUs+with+Partitioned+and+Sectored+Security+Metadata&rows=2",
+      "query": "PSSM: Achieving Secure Memory for GPUs with Partitioned and Sectored Security Metadata",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-vulnerable",
+      "url": "https://api.crossref.org/works?query.title=Vulnerable+GPU+Memory+Management%3A+Towards+Recovering+Raw+Data+from+GPU&rows=2",
+      "query": "Vulnerable GPU Memory Management: Towards Recovering Raw Data from GPU",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-counters",
+      "url": "https://api.crossref.org/works?query.title=Common+Counters%3A+Compressed+Encryption+Counters+for+Secure+GPU+Memory&rows=2",
+      "query": "Common Counters: Compressed Encryption Counters for Secure GPU Memory",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-virtualized",
+      "url": "https://api.crossref.org/works?query.title=Confidentiality+Issues+on+a+GPU+in+a+Virtualized+Environment&rows=2",
+      "query": "Confidentiality Issues on a GPU in a Virtualized Environment",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-lightning",
+      "url": "https://api.crossref.org/works?query.title=Lightning%3A+Striking+the+Secure+Isolation+on+GPU+Clouds+with+Transient+Hardware+Faults&rows=2",
+      "query": "Lightning: Striking the Secure Isolation on GPU Clouds with Transient Hardware Faults",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-xputee",
+      "url": "https://api.crossref.org/works?query.title=XpuTEE%3A+A+High-Performance+and+Practical+Heterogeneous+Trusted+Execution+Environment+for+GPUs&rows=2",
+      "final_url": "https://api.crossref.org/works?query.title=XpuTEE%3A+A+High-Performance+and+Practical+Heterogeneous+Trusted+Execution+Environment+for+GPUs&rows=2",
+      "query": "XpuTEE: A High-Performance and Practical Heterogeneous Trusted Execution Environment for GPUs",
+      "file": "cr-xputee.json",
+      "bytes": 47129,
+      "sha256": "3cb2c8905b038fec714f84454bc569b8789285d25c3d7ce18d68c531f9009b3d",
+      "content_type": "application/json",
+      "candidates": [
+        {
+          "title": [
+            "XpuTEE: A High-Performance and Practical Heterogeneous Trusted Execution Environment for GPUs"
+          ],
+          "DOI": "10.1145/3719653",
+          "published": {
+            "date-parts": [
+              [
+                2025,
+                4,
+                12
+              ]
+            ]
+          },
+          "container-title": [
+            "ACM Transactions on Computer Systems"
+          ],
+          "URL": "https://doi.org/10.1145/3719653",
+          "type": "journal-article"
+        },
+        {
+          "title": [
+            "HIGH PERFORMANCE TRUSTED EXECUTION ENVIRONMENT"
+          ],
+          "DOI": "10.4271/2024-01-3766",
+          "published": {
+            "date-parts": [
+              [
+                2019,
+                8,
+                13
+              ]
+            ]
+          },
+          "container-title": [
+            "SAE Technical Paper Series"
+          ],
+          "URL": "https://doi.org/10.4271/2024-01-3766",
+          "type": "proceedings-article"
+        }
+      ]
+    },
+    {
+      "id": "cr-lak",
+      "url": "https://api.crossref.org/works?query.title=LAK%3A+A+Low-Overhead+Lock-and-Key+Based+Schema+for+GPU+Memory+Safety&rows=2",
+      "query": "LAK: A Low-Overhead Lock-and-Key Based Schema for GPU Memory Safety",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-whispering",
+      "url": "https://api.crossref.org/works?query.title=Whispering+Pixels%3A+Exploiting+Uninitialized+Register+Accesses+in+Modern+GPUs&rows=2",
+      "query": "Whispering Pixels: Exploiting Uninitialized Register Accesses in Modern GPUs",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-enclaves-accelerators",
+      "url": "https://api.crossref.org/works?query.title=Enclaves+as+Accelerators%3A+Learning+Lessons+from+GPU+Computing+for+Designing+Efficient+Runtimes+for+Enclaves&rows=2",
+      "query": "Enclaves as Accelerators: Learning Lessons from GPU Computing for Designing Efficient Runtimes for Enclaves",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-gpuarmor",
+      "url": "https://api.crossref.org/works?query.title=GPUArmor%3A+A+Hardware-Software+Co-design+for+Efficient+and+Scalable+Memory+Safety+on+GPUs&rows=2",
+      "query": "GPUArmor: A Hardware-Software Co-design for Efficient and Scalable Memory Safety on GPUs",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-guardian",
+      "url": "https://api.crossref.org/works?query.title=Guardian%3A+Safe+GPU+Sharing+in+Multi-Tenant+Environments&rows=2",
+      "query": "Guardian: Safe GPU Sharing in Multi-Tenant Environments",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-secure-timely",
+      "url": "https://api.crossref.org/works?query.title=Secure+and+Timely+GPU+Execution+in+Cyber-physical+Systems&rows=2",
+      "query": "Secure and Timely GPU Execution in Cyber-physical Systems",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-gpureplay",
+      "url": "https://api.crossref.org/works?query.title=GPUReplay&rows=2",
+      "query": "GPUReplay",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-grt",
+      "url": "https://api.crossref.org/works?query.title=Safe+and+Practical+GPU+Computation+in+TrustZone&rows=2",
+      "query": "Safe and Practical GPU Computation in TrustZone",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-sgxio",
+      "url": "https://api.crossref.org/works?query.title=SGXIO%3A+Generic+Trusted+I%2FO+Path+for+Intel+SGX&rows=2",
+      "query": "SGXIO: Generic Trusted I/O Path for Intel SGX",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-gpureplay-secure",
+      "url": "https://api.crossref.org/works?query.title=Secure+GPU+Execution+Replay&rows=2",
+      "query": "Secure GPU Execution Replay",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-cucatch",
+      "url": "https://api.crossref.org/works?query.title=cuCatch%3A+A+Debugging+Tool+for+Efficiently+Catching+Memory+Safety+Violations+in+CUDA+Applications&rows=2",
+      "query": "cuCatch: A Debugging Tool for Efficiently Catching Memory Safety Violations in CUDA Applications",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-salus-gpu",
+      "url": "https://api.crossref.org/works?query.title=Salus%3A+Efficient+Security+Support+for+CXL-Expanded+GPU+Memory&rows=2",
+      "query": "Salus: Efficient Security Support for CXL-Expanded GPU Memory",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-gpushield",
+      "url": "https://api.crossref.org/works?query.title=GPUShield+GPU+memory+safety&rows=2",
+      "query": "GPUShield GPU memory safety",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-gpuhammer",
+      "url": "https://api.crossref.org/works?query.title=GPUHammer%3A+Rowhammer+Attacks+on+GPU+Memories+are+Practical&rows=2",
+      "query": "GPUHammer: Rowhammer Attacks on GPU Memories are Practical",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-gpuleak",
+      "url": "https://api.crossref.org/works?query.title=Rendered+Insecure%3A+GPU+Side+Channel+Attacks+are+Practical&rows=2",
+      "query": "Rendered Insecure: GPU Side Channel Attacks are Practical",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-gpuaf",
+      "url": "https://api.crossref.org/works?query.title=GPUAF+Use-After-Free&rows=2",
+      "query": "GPUAF Use-After-Free",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-mole",
+      "url": "https://api.crossref.org/works?query.title=MOLE%3A+Breaking+GPU+TEE+with+GPU-Embedded+MCU&rows=2",
+      "final_url": "https://api.crossref.org/works?query.title=MOLE%3A+Breaking+GPU+TEE+with+GPU-Embedded+MCU&rows=2",
+      "query": "MOLE: Breaking GPU TEE with GPU-Embedded MCU",
+      "file": "cr-mole.json",
+      "bytes": 25246,
+      "sha256": "1f0f1395cb7233bb3970b4b4a462bc16f344869cf5dd8077c94331d3d86bad7c",
+      "content_type": "application/json",
+      "candidates": [
+        {
+          "title": [
+            "<scp>MOLE</scp>\n                    : Breaking GPU TEE with GPU-Embedded MCU"
+          ],
+          "DOI": "10.1145/3719027.3744823",
+          "published": {
+            "date-parts": [
+              [
+                2025,
+                11,
+                19
+              ]
+            ]
+          },
+          "container-title": [
+            "Proceedings of the 2025 ACM SIGSAC Conference on Computer and Communications Security"
+          ],
+          "URL": "https://doi.org/10.1145/3719027.3744823",
+          "type": "proceedings-article"
+        },
+        {
+          "title": [
+            "Embedded GPU Design"
+          ],
+          "DOI": "10.1002/9781118468654.ch3",
+          "published": {
+            "date-parts": [
+              [
+                2012,
+                11,
+                6
+              ]
+            ]
+          },
+          "container-title": [
+            "Embedded Systems"
+          ],
+          "URL": "https://doi.org/10.1002/9781118468654.ch3",
+          "type": "other"
+        }
+      ]
+    },
+    {
+      "id": "cr-gpu-sec-survey",
+      "url": "https://api.crossref.org/works?query.title=Survey+of+Research+on+Confidential+Computing&rows=2",
+      "query": "Survey of Research on Confidential Computing",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "cr-multi-gpu",
+      "url": "https://api.crossref.org/works?query.title=Supporting+Secure+Multi-GPU+Computing+with+Dynamic+and+Batched+Metadata+Management&rows=2",
+      "final_url": "https://api.crossref.org/works?query.title=Supporting+Secure+Multi-GPU+Computing+with+Dynamic+and+Batched+Metadata+Management&rows=2",
+      "query": "Supporting Secure Multi-GPU Computing with Dynamic and Batched Metadata Management",
+      "file": "cr-multi-gpu.json",
+      "bytes": 13740,
+      "sha256": "8cc8e28f378482fc09a59728872f43e910268a49305ffab428cfa3e268e39c1c",
+      "content_type": "application/json",
+      "candidates": [
+        {
+          "title": [
+            "Supporting Secure Multi-GPU Computing with Dynamic and Batched Metadata Management"
+          ],
+          "DOI": "10.1109/hpca57654.2024.00025",
+          "published": {
+            "date-parts": [
+              [
+                2024,
+                3,
+                2
+              ]
+            ]
+          },
+          "container-title": [
+            "2024 IEEE International Symposium on High-Performance Computer Architecture (HPCA)"
+          ],
+          "URL": "https://doi.org/10.1109/hpca57654.2024.00025",
+          "type": "proceedings-article"
+        },
+        {
+          "title": [
+            "Optimizing Secure Data Transmission in GPU-Accelerated Collaborative Computing via Metadata Reconstruction"
+          ],
+          "DOI": "10.1109/cscwd64889.2025.11033317",
+          "published": {
+            "date-parts": [
+              [
+                2025,
+                5,
+                5
+              ]
+            ]
+          },
+          "container-title": [
+            "2025 28th International Conference on Computer Supported Cooperative Work in Design (CSCWD)"
+          ],
+          "URL": "https://doi.org/10.1109/cscwd64889.2025.11033317",
+          "type": "proceedings-article"
+        }
+      ]
+    },
+    {
+      "id": "sok-project",
+      "url": "https://compass.sustech.edu.cn/sok-xputee/",
+      "final_url": "https://compass.sustech.edu.cn/sok-xputee/",
+      "file": "sok-project.html",
+      "bytes": 8557,
+      "sha256": "f8ab583d425613b01b16e5190990e83cff14f18abeac53b0780975bd55dec2c3",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "id": "compass-pubs",
+      "url": "https://compass.sustech.edu.cn/publications_en.html",
+      "final_url": "https://compass.sustech.edu.cn/publications_en.html",
+      "file": "compass-pubs.html",
+      "bytes": 163546,
+      "sha256": "d6ac4aa86b973a2f96ca1fbdf17f61a9586fbf30ee9b1dcc91f892a00e6ca78a",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "id": "sang-home",
+      "url": "https://mainarke.github.io/",
+      "final_url": "https://mainarke.github.io/",
+      "file": "sang-home.html",
+      "bytes": 64263,
+      "sha256": "23956bf492573b95562882ab5835d5a2a614f8c602bca72b661c8ae5f6d8c772",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "yunjie-home",
+      "url": "https://www.yunjiedeng.com/",
+      "final_url": "https://www.yunjiedeng.com/",
+      "file": "yunjie-home.html",
+      "bytes": 13258,
+      "sha256": "151f13e2c83a33b5b63b3d1d54db3c2d039259d70cb19cacebe4ee1f20ca93d8",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "nvidia-cc-guide",
+      "url": "https://docs.nvidia.com/confidential-computing/deployment-guide.html",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "id": "nvidia-cc",
+      "url": "https://docs.nvidia.com/confidential-computing/index.html",
+      "final_url": "https://docs.nvidia.com/confidential-computing/index.html",
+      "file": "nvidia-cc.html",
+      "bytes": 93133,
+      "sha256": "0e5db9e0b60eed8b5d8d0bcab776b8a29e476308de0bc886af8272c777934d4d",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "nvidia-underhood",
+      "url": "https://developer.nvidia.com/blog/hopper-confidential-computing-how-it-works-under-the-hood/",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "id": "nvidia-attest",
+      "url": "https://docs.nvidia.com/attestation/index.html",
+      "final_url": "https://docs.nvidia.com/attestation/index.html",
+      "file": "nvidia-attest.html",
+      "bytes": 127973,
+      "sha256": "53b530a3d3aa79f7c29e8bbd25275276a0c995e5f66c60508709b215faa558ec",
+      "content_type": "text/html;charset=UTF-8"
+    },
+    {
+      "id": "grt-author",
+      "url": "https://fxlin.github.io/",
+      "final_url": "https://fxlin.github.io/",
+      "file": "grt-author.html",
+      "bytes": 10549,
+      "sha256": "afcd6dc29db77b468e17f41e92f662682ae80844c2dc4861a6c07af1d84d66d5",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "nvidia-cc-blog",
+      "url": "https://developer.nvidia.com/blog/confidential-computing-on-h100-gpus-for-secure-and-trustworthy-ai/",
+      "final_url": "https://developer.nvidia.com/blog/confidential-computing-on-h100-gpus-for-secure-and-trustworthy-ai/",
+      "file": "nvidia-cc-blog.html",
+      "bytes": 271416,
+      "sha256": "5d6473bccff3ff2251d05f970e6e2f378dc8e4f0241223ff19e07307d7d5ff6b",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "id": "nvidia-verifier",
+      "url": "https://github.com/NVIDIA/nvtrust",
+      "error": "The read operation timed out"
+    },
+    {
+      "id": "gpu-tee-list",
+      "url": "https://raw.githubusercontent.com/ConfidentialComputing/GPU-TEE-Papers/main/README.md",
+      "error": "The read operation timed out"
+    },
+    {
+      "id": "gpu-security-list",
+      "url": "https://raw.githubusercontent.com/trilateral-gpu-sec/gpu-security-papers/main/README.md",
+      "error": "The read operation timed out"
+    },
+    {
+      "id": "behind-bars",
+      "url": "https://www.usenix.org/conference/usenixsecurity26/presentation/gu-cheng",
+      "error": "The read operation timed out"
+    },
+    {
+      "id": "gpu-tee-master",
+      "url": "https://raw.githubusercontent.com/ConfidentialComputing/GPU-TEE-Papers/master/README.md",
+      "final_url": "https://raw.githubusercontent.com/ConfidentialComputing/GPU-TEE-Papers/master/README.md",
+      "file": "gpu-tee-master.html",
+      "bytes": 1086,
+      "sha256": "f6c6f77884a0cefb2bc848cbf301739d2198066d07eda1360f4c08a5189432ec",
+      "content_type": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "grt-repo",
+      "url": "https://raw.githubusercontent.com/bakhi/GPUReplay/master/README.md",
+      "final_url": "https://raw.githubusercontent.com/bakhi/GPUReplay/master/README.md",
+      "file": "grt-repo.html",
+      "bytes": 4965,
+      "sha256": "ff40e81841bbab960e776231d19623adf208ce1a9661ff85ef867bd46d357a63",
+      "content_type": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "grt-notes",
+      "url": "https://bakhi.github.io/mobileGPU/",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "id": "fxlin-pubs",
+      "url": "https://thexsel.github.io/papers.html",
+      "final_url": "https://thexsel.github.io/papers.html",
+      "file": "fxlin-pubs.html",
+      "bytes": 34039,
+      "sha256": "c45d8ebff98bac7edd472ba92bd90be6ccd3c95167ebbd1a46e707e028f96525",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "gpu-tee-api",
+      "url": "https://api.github.com/repos/ConfidentialComputing/GPU-TEE-Papers/readme",
+      "final_url": "https://api.github.com/repos/ConfidentialComputing/GPU-TEE-Papers/readme",
+      "file": "gpu-tee-api.json",
+      "bytes": 2392,
+      "sha256": "68e476bfc08ae96b81e082de29deac6a25c6cde4ff644496e3575ceea2c9a3dd",
+      "content_type": "application/json; charset=utf-8",
+      "metadata": {
+        "title": null,
+        "DOI": null,
+        "container-title": null,
+        "published": null,
+        "published-online": null,
+        "published-print": null,
+        "URL": null,
+        "type": "file"
+      }
+    },
+    {
+      "id": "gpu-security-api",
+      "url": "https://api.github.com/repos/trilateral-gpu-sec/gpu-security-papers/readme",
+      "final_url": "https://api.github.com/repos/trilateral-gpu-sec/gpu-security-papers/readme",
+      "file": "gpu-security-api.json",
+      "bytes": 155506,
+      "sha256": "cb8d07314b9f6e7d35d55b030ba234bcb6d8d3cf9f2f8caf2312d765810aa5b9",
+      "content_type": "application/json; charset=utf-8",
+      "metadata": {
+        "title": null,
+        "DOI": null,
+        "container-title": null,
+        "published": null,
+        "published-online": null,
+        "published-print": null,
+        "URL": null,
+        "type": "file"
+      }
+    },
+    {
+      "id": "doi-lightweight",
+      "url": "https://api.crossref.org/works/10.1109/TDSC.2023.3334277",
+      "final_url": "https://api.crossref.org/works/10.1109/TDSC.2023.3334277",
+      "file": "doi-lightweight.json",
+      "bytes": 11575,
+      "sha256": "86062b3b1f0256c0d72a149680ac36d56ac63f32684c865873501d6962186ca4",
+      "content_type": "application/json",
+      "metadata": {
+        "title": [
+          "Building a Lightweight Trusted Execution Environment for Arm GPUs"
+        ],
+        "DOI": "10.1109/tdsc.2023.3334277",
+        "container-title": [
+          "IEEE Transactions on Dependable and Secure Computing"
+        ],
+        "published": {
+          "date-parts": [
+            [
+              2024
+            ]
+          ]
+        },
+        "published-online": null,
+        "published-print": {
+          "date-parts": [
+            [
+              2024
+            ]
+          ]
+        },
+        "URL": "https://doi.org/10.1109/tdsc.2023.3334277",
+        "type": "journal-article"
+      }
+    },
+    {
+      "id": "doi-cca-environment",
+      "url": "https://api.crossref.org/works/10.1109/TDSC.2025.3615787",
+      "final_url": "https://api.crossref.org/works/10.1109/TDSC.2025.3615787",
+      "file": "doi-cca-environment.json",
+      "bytes": 14617,
+      "sha256": "a9fb5972602636b8b24e56406d6841c4132195bcceb3127e9ee29ff20d1217cf",
+      "content_type": "application/json",
+      "metadata": {
+        "title": [
+          "Building Confidential Accelerator Computing Environment for Arm CCA"
+        ],
+        "DOI": "10.1109/tdsc.2025.3615787",
+        "container-title": [
+          "IEEE Transactions on Dependable and Secure Computing"
+        ],
+        "published": {
+          "date-parts": [
+            [
+              2026,
+              1
+            ]
+          ]
+        },
+        "published-online": null,
+        "published-print": {
+          "date-parts": [
+            [
+              2026,
+              1
+            ]
+          ]
+        },
+        "URL": "https://doi.org/10.1109/tdsc.2025.3615787",
+        "type": "journal-article"
+      }
+    },
+    {
+      "id": "doi-survey-iet",
+      "url": "https://api.crossref.org/works/10.1049/cmu2.12759",
+      "final_url": "https://api.crossref.org/works/10.1049/cmu2.12759",
+      "file": "doi-survey-iet.json",
+      "bytes": 33759,
+      "sha256": "ddcc51c568f4139051353a51f2a5298fb1a9193a4ec899b9031140ca16b1dce7",
+      "content_type": "application/json",
+      "metadata": {
+        "title": [
+          "Survey of research on confidential computing"
+        ],
+        "DOI": "10.1049/cmu2.12759",
+        "container-title": [
+          "IET Communications"
+        ],
+        "published": {
+          "date-parts": [
+            [
+              2024,
+              4,
+              23
+            ]
+          ]
+        },
+        "published-online": {
+          "date-parts": [
+            [
+              2024,
+              4,
+              23
+            ]
+          ]
+        },
+        "published-print": {
+          "date-parts": [
+            [
+              2024,
+              6
+            ]
+          ]
+        },
+        "URL": "https://doi.org/10.1049/cmu2.12759",
+        "type": "journal-article"
+      }
+    },
+    {
+      "id": "dblp-lightning",
+      "url": "https://dblp.org/search/publ/api?q=Lightning%20GPU&format=json&h=5",
+      "final_url": "https://dblp.org/search/publ/api?q=Lightning%20GPU&format=json&h=5",
+      "file": "dblp-lightning.html",
+      "bytes": 7464,
+      "sha256": "680f72680e3ec42a8bae504ee871e5b77e8f37e670cc403ffde5a8a66588c780",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "doi-lite",
+      "url": "https://api.crossref.org/works/10.1145/3524059.3532361",
+      "final_url": "https://api.crossref.org/works/10.1145/3524059.3532361",
+      "file": "doi-lite.json",
+      "bytes": 11063,
+      "sha256": "f437c5dfc43889dd2bd885e3d1408a040a5e211bb1f6f29fa9af4d1b6cb88450",
+      "content_type": "application/json",
+      "metadata": {
+        "title": [
+          "LITE"
+        ],
+        "DOI": "10.1145/3524059.3532361",
+        "container-title": [
+          "Proceedings of the 36th ACM International Conference on Supercomputing"
+        ],
+        "published": {
+          "date-parts": [
+            [
+              2022,
+              6,
+              28
+            ]
+          ]
+        },
+        "published-online": {
+          "date-parts": [
+            [
+              2022,
+              6,
+              28
+            ]
+          ]
+        },
+        "published-print": {
+          "date-parts": [
+            [
+              2022,
+              6,
+              28
+            ]
+          ]
+        },
+        "URL": "https://doi.org/10.1145/3524059.3532361",
+        "type": "proceedings-article"
+      }
+    },
+    {
+      "id": "dblp-lak",
+      "url": "https://dblp.org/search/publ/api?q=LAK%20GPU&format=json&h=5",
+      "final_url": "https://dblp.org/search/publ/api?q=LAK%20GPU&format=json&h=5",
+      "file": "dblp-lak.html",
+      "bytes": 7464,
+      "sha256": "ee6a2f9cc1c23fc7fef96c0859e51df552da5f751ff1d0f331ad691e19957879",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "s3lab-pubs",
+      "url": "https://www.s3lab.io/publications",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "id": "gevisor-author",
+      "url": "https://www.s3lab.io/paper/gevisor-socc23",
+      "final_url": "https://www.s3lab.io/paper/gevisor-socc23",
+      "file": "gevisor-author.html",
+      "bytes": 6993,
+      "sha256": "da407082e587c69f012766295c2754afda54270f320e75f9e71d375ffbdefb75",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "id": "gpu-security-master",
+      "url": "https://raw.githubusercontent.com/trilateral-gpu-sec/gpu-security-papers/master/README.md",
+      "error": "The read operation timed out"
+    },
+    {
+      "id": "dblp-gpuarmor",
+      "url": "https://dblp.org/search/publ/api?q=GPUArmor&format=json&h=5",
+      "error": "<urlopen error timed out>"
+    },
+    {
+      "id": "nvidia-nvtrust-raw",
+      "url": "https://raw.githubusercontent.com/NVIDIA/nvtrust/main/README.md",
+      "final_url": "https://raw.githubusercontent.com/NVIDIA/nvtrust/main/README.md",
+      "file": "nvidia-nvtrust-raw.html",
+      "bytes": 4391,
+      "sha256": "841e03deb88372902fcc84eb07feb3536d136d16aa34202142923d92ebad0d95",
+      "content_type": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "nvidia-sdk-raw",
+      "url": "https://raw.githubusercontent.com/NVIDIA/attestation-sdk/main/README.md",
+      "error": "<urlopen error [Errno 101] Network is unreachable>"
+    },
+    {
+      "id": "search-lightning",
+      "url": "https://www.google.com/search?q=%22Lightning%22+%22Striking%22+%22GPU%22",
+      "error": "<urlopen error [Errno 101] Network is unreachable>"
+    },
+    {
+      "id": "search-gpuarmor",
+      "url": "https://www.google.com/search?q=%22GPUArmor%22+paper",
+      "error": "<urlopen error [Errno 101] Network is unreachable>"
+    },
+    {
+      "id": "search-whispering",
+      "url": "https://www.google.com/search?q=%22Whispering+Pixels%22+GPU",
+      "error": "<urlopen error [Errno 101] Network is unreachable>"
+    },
+    {
+      "id": "search-lak",
+      "url": "https://www.google.com/search?q=%22LAK%22+%22GPU%22+%22memory%22+paper",
+      "error": "<urlopen error [Errno 101] Network is unreachable>"
+    },
+    {
+      "id": "search-mole",
+      "url": "https://www.google.com/search?q=%22MOLE%22+%22GPU%22+github",
+      "error": "<urlopen error [Errno 101] Network is unreachable>"
+    },
+    {
+      "id": "search-gpureplay",
+      "url": "https://www.google.com/search?q=%22GPUReplay%22+%22GR-T%22",
+      "error": "<urlopen error [Errno 101] Network is unreachable>"
+    },
+    {
+      "id": "lookup-counters",
+      "url": "https://api.crossref.org/works?query.bibliographic=Common+Counters+Compressed+Encryption&rows=3",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "lookup-lak",
+      "url": "https://api.crossref.org/works?query.bibliographic=LAK+GPU+Memory+Safety&rows=3",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "lookup-whispering",
+      "url": "https://api.crossref.org/works?query.bibliographic=Whispering+Pixels&rows=3",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "lookup-lightning",
+      "url": "https://api.crossref.org/works?query.bibliographic=Lightning+GPU+Clouds&rows=3",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "lookup-analyzing",
+      "url": "https://api.crossref.org/works?query.bibliographic=Analyzing+Secure+Memory+Architecture+GPUs&rows=3",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "lookup-salus",
+      "url": "https://api.crossref.org/works?query.bibliographic=Salus+CXL+GPU&rows=3",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "lookup-guardian",
+      "url": "https://api.crossref.org/works?query.bibliographic=Guardian+Safe+GPU+Sharing&rows=3",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "lookup-gpuarmor",
+      "url": "https://api.crossref.org/works?query.bibliographic=GPUArmor&rows=3",
+      "final_url": "https://api.crossref.org/works?query.bibliographic=GPUArmor&rows=3",
+      "file": "lookup-gpuarmor.json",
+      "bytes": 14275,
+      "sha256": "80ce790a517a544fe42a4c61b1223e3b5af3bddd563f14b883825d92304dee27",
+      "content_type": "application/json",
+      "candidates": [
+        {
+          "title": [
+            "GPUArmor: A Hardware-Software Co-Design for Efficient and Scalable Memory Safety on GPUs"
+          ],
+          "DOI": "10.1145/3815783",
+          "published": {
+            "date-parts": [
+              [
+                2026,
+                7,
+                23
+              ]
+            ]
+          },
+          "container-title": [
+            "ACM Transactions on Architecture and Code Optimization"
+          ],
+          "URL": "https://doi.org/10.1145/3815783",
+          "type": "journal-article"
+        }
+      ]
+    },
+    {
+      "id": "lookup-plutus",
+      "url": "https://api.crossref.org/works?query.bibliographic=Plutus+Bandwidth+Efficient+Memory&rows=3",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "lookup-grt",
+      "url": "https://api.crossref.org/works?query.bibliographic=Safe+Practical+GPU+Computation+TrustZone&rows=3",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "lookup-sgxio",
+      "url": "https://api.crossref.org/works?query.bibliographic=SGXIO+Generic+Trusted+IO&rows=3",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "lookup-ccai",
+      "url": "https://api.crossref.org/works?query.bibliographic=ccAI+Compatible+Confidential&rows=3",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "sok-ndss",
+      "url": "https://www.ndss-symposium.org/ndss-paper/sok-analysis-of-accelerator-tee-designs/",
+      "final_url": "https://www.ndss-symposium.org/ndss-paper/sok-analysis-of-accelerator-tee-designs/",
+      "file": "sok-ndss.html",
+      "bytes": 69272,
+      "sha256": "3f5df23b72fca34ecd0672f8d57d714e9c3fa124f637217d0278870936fe46dc",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "id": "lookup-pssm",
+      "url": "https://api.crossref.org/works?query.bibliographic=PSSM+GPUs&rows=3",
+      "final_url": "https://api.crossref.org/works?query.bibliographic=PSSM+GPUs&rows=3",
+      "file": "lookup-pssm.json",
+      "bytes": 15349,
+      "sha256": "d82aaa31cbe66731840c799a0fa3e9a8f3303b984469eda0e0ed19246965dedf",
+      "content_type": "application/json",
+      "candidates": [
+        {
+          "title": [
+            "PSSM"
+          ],
+          "DOI": "10.1145/3447818.3460374",
+          "published": {
+            "date-parts": [
+              [
+                2021,
+                6,
+                3
+              ]
+            ]
+          },
+          "container-title": [
+            "Proceedings of the ACM International Conference on Supercomputing"
+          ],
+          "URL": "https://doi.org/10.1145/3447818.3460374",
+          "type": "proceedings-article"
+        },
+        {
+          "title": [
+            "Algorithm 2: Pseudocode for extracting PSSM features."
+          ],
+          "DOI": "10.7717/peerj-cs.2748/table-8",
+          "published": null,
+          "container-title": null,
+          "URL": "https://doi.org/10.7717/peerj-cs.2748/table-8",
+          "type": "component"
+        },
+        {
+          "title": [
+            "Figure 2: Protein sequence to PSSM mapping."
+          ],
+          "DOI": "10.7717/peerj-cs.2149/fig-2",
+          "published": null,
+          "container-title": null,
+          "URL": "https://doi.org/10.7717/peerj-cs.2149/fig-2",
+          "type": "component"
+        }
+      ]
+    },
+    {
+      "id": "ndss-phantom",
+      "url": "https://www.ndss-symposium.org/ndss-paper/phantommap-gpu-assisted-kernel-exploitation/",
+      "final_url": "https://www.ndss-symposium.org/ndss-paper/phantommap-gpu-assisted-kernel-exploitation/",
+      "file": "ndss-phantom.html",
+      "bytes": 68095,
+      "sha256": "1e55836f973bf3fdba0960c44a26e3d74c4bb80bc4c9d55d40aa88d6ffeaa95f",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "id": "ccai-project",
+      "url": "https://compass.sustech.edu.cn/ccai/",
+      "final_url": "https://compass.sustech.edu.cn/ccai/",
+      "file": "ccai-project.html",
+      "bytes": 7435,
+      "sha256": "25fb90c4e12de217d2474ea94097a1b6317b0363d587b25e40d3a42d10c0065b",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "id": "gevisor-code",
+      "url": "https://api.github.com/repos/s3team/GEVisor",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "id": "yunjie-pubs",
+      "url": "https://www.yunjiedeng.com/publications/",
+      "final_url": "https://www.yunjiedeng.com/publications/",
+      "file": "yunjie-pubs.html",
+      "bytes": 16126,
+      "sha256": "e649a33a59c7a8b84901ff2d57e1aca2a6116e2af503cb15027b56a469bd63ac",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "lookup-enclaves",
+      "url": "https://api.crossref.org/works?query.bibliographic=Enclaves+as+Accelerators&rows=3",
+      "final_url": "https://api.crossref.org/works?query.bibliographic=Enclaves+as+Accelerators&rows=3",
+      "file": "lookup-enclaves.json",
+      "bytes": 4611,
+      "sha256": "b6f701db9d39cf5f527332be306486f95f991a466257c6e8d99d8b1fa25fe55d",
+      "content_type": "application/json",
+      "candidates": [
+        {
+          "title": [
+            "Enclaves. Revista de Literatura, Música y Artes Escénicas"
+          ],
+          "DOI": "10.12795/enclaves",
+          "published": null,
+          "container-title": null,
+          "URL": "https://doi.org/10.12795/enclaves",
+          "type": "journal"
+        },
+        {
+          "title": [
+            "Data Enclaves"
+          ],
+          "DOI": "10.1007/978-3-031-46402-7_5",
+          "published": {
+            "date-parts": [
+              [
+                2023
+              ]
+            ]
+          },
+          "container-title": [
+            "Data Enclaves"
+          ],
+          "URL": "https://doi.org/10.1007/978-3-031-46402-7_5",
+          "type": "book-chapter"
+        },
+        {
+          "title": null,
+          "DOI": "10.12795/enclaves.2023.i03",
+          "published": {
+            "date-parts": [
+              [
+                2023
+              ]
+            ]
+          },
+          "container-title": [
+            "Enclaves. Revista de Literatura, Música y Artes Escénicas"
+          ],
+          "URL": "https://doi.org/10.12795/enclaves.2023.i03",
+          "type": "journal-issue"
+        }
+      ]
+    },
+    {
+      "id": "ai-accelerator-usenix",
+      "url": "https://www.usenix.org/conference/atc23/presentation/vaswani",
+      "final_url": "https://www.usenix.org/conference/atc23/presentation/vaswani",
+      "file": "ai-accelerator-usenix.html",
+      "bytes": 39171,
+      "sha256": "6fa2afe9b6f689470deae18eea7558e37e1719564ba5b7ce72cebab2f78acf31",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "telekine-usenix",
+      "url": "https://www.usenix.org/conference/nsdi20/presentation/hunt",
+      "error": "<urlopen error _ssl.c:1063: The handshake operation timed out>"
+    },
+    {
+      "id": "graviton-usenix",
+      "url": "https://www.usenix.org/conference/osdi18/presentation/volos",
+      "error": "The read operation timed out"
+    },
+    {
+      "id": "sage-usenix",
+      "url": "https://www.usenix.org/conference/atc23/presentation/ivanov",
+      "error": "The read operation timed out"
+    },
+    {
+      "id": "honeycomb-usenix",
+      "url": "https://www.usenix.org/conference/osdi23/presentation/mai",
+      "error": "The read operation timed out"
+    },
+    {
+      "id": "bing-lightning",
+      "url": "https://www.bing.com/search?q=%22Lightning%22+%22GPU+Clouds%22",
+      "final_url": "https://cn.bing.com/search?q=%22Lightning%22+%22GPU+Clouds%22",
+      "file": "bing-lightning.html",
+      "bytes": 101492,
+      "sha256": "5d7654ce77b407a51d4c3e433eea900a074acaab80395af95c8fe7757627bfe4",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "bing-lak",
+      "url": "https://www.bing.com/search?q=%22LAK%22+%22GPU%22+%22Safety%22",
+      "final_url": "https://cn.bing.com/search?q=%22LAK%22+%22GPU%22+%22Safety%22",
+      "file": "bing-lak.html",
+      "bytes": 102216,
+      "sha256": "37f1195abfa01eb9a4b1478ad0c5e0f157066bca4a526033c8e0b668c25e9511",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "bing-whispering",
+      "url": "https://www.bing.com/search?q=%22Whispering+Pixels%22",
+      "final_url": "https://cn.bing.com/search?q=%22Whispering+Pixels%22",
+      "file": "bing-whispering.html",
+      "bytes": 94349,
+      "sha256": "d59c4881ea6f553f48a336dd29d254c84f697a81f48eedf5dcb1e8dddf16e678",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "bing-gpuarmor",
+      "url": "https://www.bing.com/search?q=GPUArmor",
+      "final_url": "https://cn.bing.com/search?q=GPUArmor",
+      "file": "bing-gpuarmor.html",
+      "bytes": 99963,
+      "sha256": "2b1c36eac1eb152e1dd1dd3c168ed27a14197e2be1d0883abea0eea759af1a05",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "nvidia-nvtrust",
+      "url": "https://api.github.com/repos/NVIDIA/nvtrust",
+      "final_url": "https://api.github.com/repos/NVIDIA/nvtrust",
+      "file": "nvidia-nvtrust.json",
+      "bytes": 6037,
+      "sha256": "8be779c7a2c2e6f3f0959ac662486ec643d7e7db73c06c35cfd0fe3554909774",
+      "content_type": "application/json; charset=utf-8"
+    },
+    {
+      "id": "nvidia-sdk",
+      "url": "https://api.github.com/repos/NVIDIA/attestation-sdk",
+      "final_url": "https://api.github.com/repos/NVIDIA/attestation-sdk",
+      "file": "nvidia-sdk.json",
+      "bytes": 6414,
+      "sha256": "d5bebbc5c84e12c296eaf474dbcfc52ed1e714cbfdce9b2ace28e46ca730c48f",
+      "content_type": "application/json; charset=utf-8"
+    },
+    {
+      "id": "oa-whispering",
+      "url": "https://api.openalex.org/works?search=Whispering+Pixels&per-page=3",
+      "final_url": "https://api.openalex.org/works?search=Whispering+Pixels&per-page=3",
+      "file": "oa-whispering.json",
+      "bytes": 41597,
+      "sha256": "16d972cdcd588102f37d05193d103c0c1b93c08914d4c7efe9ee9010da5e8b66",
+      "content_type": "application/json"
+    },
+    {
+      "id": "oa-lak",
+      "url": "https://api.openalex.org/works?search=LAK+GPU+memory+safety&per-page=3",
+      "final_url": "https://api.openalex.org/works?search=LAK+GPU+memory+safety&per-page=3",
+      "file": "oa-lak.json",
+      "bytes": 52698,
+      "sha256": "6d74e5b3e2db53d5506c818aa38c8e52b74511582d3447e04bff4a6c43471b2d",
+      "content_type": "application/json"
+    },
+    {
+      "id": "oa-gpuarmor",
+      "url": "https://api.openalex.org/works?search=GPUArmor&per-page=3",
+      "final_url": "https://api.openalex.org/works?search=GPUArmor&per-page=3",
+      "file": "oa-gpuarmor.json",
+      "bytes": 60652,
+      "sha256": "cf0e726c2e6f67e3a8090320724f343ae719dfde67a389c75cc5d69c11dfcf2c",
+      "content_type": "application/json"
+    },
+    {
+      "id": "oa-lightning",
+      "url": "https://api.openalex.org/works?search=Lightning+Striking+Secure+Isolation+GPU+Clouds&per-page=3",
+      "final_url": "https://api.openalex.org/works?search=Lightning+Striking+Secure+Isolation+GPU+Clouds&per-page=3",
+      "file": "oa-lightning.json",
+      "bytes": 55594,
+      "sha256": "0fc03ec89d000478bc1aa843bb137cd1a785d1b3fe1c60428e4115b7d912fd31",
+      "content_type": "application/json"
+    },
+    {
+      "id": "kernel-iommufd",
+      "url": "https://docs.kernel.org/userspace-api/iommufd.html",
+      "final_url": "https://docs.kernel.org/userspace-api/iommufd.html",
+      "file": "kernel-iommufd.html",
+      "bytes": 180059,
+      "sha256": "57c1a93c74b4acb415ae66b53f3cbf9619bb3d50d6341b351f996e9eef5aa8db",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "nvidia-overview",
+      "url": "https://docs.nvidia.com/confidential-computing/overview",
+      "final_url": "https://docs.nvidia.com/confidential-computing/overview",
+      "file": "nvidia-overview.html",
+      "bytes": 154449,
+      "sha256": "2a2f98591e074f8bcd3e2f4a862fb8d51a8260c8e8035eeb501f9e8f02a11b9e",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "kernel-gpuvm",
+      "url": "https://docs.kernel.org/gpu/drm-vm-bind-async.html",
+      "final_url": "https://docs.kernel.org/gpu/drm-vm-bind-async.html",
+      "file": "kernel-gpuvm.html",
+      "bytes": 29832,
+      "sha256": "3f7f9c04bb7cea18de84a6a633d7f243230b678566be9e4cb6da17b28bc1e37e",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "nvidia-vm",
+      "url": "https://docs.nvidia.com/confidential-computing/virtual-machines",
+      "final_url": "https://docs.nvidia.com/confidential-computing/virtual-machines/dev",
+      "file": "nvidia-vm.html",
+      "bytes": 101326,
+      "sha256": "814b6fe8985046e9e744778d0b4af3a1f1e995735df11fbcf7cefa26b3866a41",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "kernel-amd-isolation",
+      "url": "https://docs.kernel.org/gpu/amdgpu/process-isolation.html",
+      "final_url": "https://docs.kernel.org/gpu/amdgpu/process-isolation.html",
+      "file": "kernel-amd-isolation.html",
+      "bytes": 14730,
+      "sha256": "9aa4f797315811f164c8bcffc7c05b6f2f755bc707b4ac4dd236db9536dbf07b",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "kernel-dmabuf",
+      "url": "https://docs.kernel.org/driver-api/dma-buf.html",
+      "final_url": "https://docs.kernel.org/driver-api/dma-buf.html",
+      "file": "kernel-dmabuf.html",
+      "bytes": 403367,
+      "sha256": "799f74bb2e43b694a0161f5740b73ddfd486f972e16913237166a176f6db8607",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "kernel-drm-mm",
+      "url": "https://docs.kernel.org/gpu/drm-mm.html",
+      "final_url": "https://docs.kernel.org/gpu/drm-mm.html",
+      "file": "kernel-drm-mm.html",
+      "bytes": 1123046,
+      "sha256": "4a90482779055324213e1349407be768207f62b804ed893a38b7c328adb8ea6f",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "nvidia-mig",
+      "url": "https://docs.nvidia.com/datacenter/tesla/mig-user-guide/latest/",
+      "final_url": "https://docs.nvidia.com/datacenter/tesla/mig-user-guide/latest/",
+      "file": "nvidia-mig.html",
+      "bytes": 19707,
+      "sha256": "51b05b98b8b33d16157388ac36d9fa9e52196787841d8dfc78657c7266e365bd",
+      "content_type": "text/html"
+    },
+    {
+      "id": "arm-tfa-rmm",
+      "url": "https://trustedfirmware-a.readthedocs.io/en/latest/components/realm-management-extension.html",
+      "final_url": "https://trustedfirmware-a.readthedocs.io/en/latest/components/realm-management-extension.html",
+      "file": "arm-tfa-rmm.html",
+      "bytes": 283397,
+      "sha256": "3579a3e7d7f93da8e8dfb81e96daa321945c14888266397dffb9c4aededfc88d",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "nvidia-sanitizer",
+      "url": "https://docs.nvidia.com/compute-sanitizer/ComputeSanitizer/index.html",
+      "final_url": "https://docs.nvidia.com/compute-sanitizer/ComputeSanitizer/index.html",
+      "file": "nvidia-sanitizer.html",
+      "bytes": 209075,
+      "sha256": "4473ade331787eb9d49548e8cb6c3c783a8f211099444d92e6573f673e3b7b2d",
+      "content_type": "text/html"
+    },
+    {
+      "id": "arm-rmm",
+      "url": "https://developer.arm.com/documentation/den0137/latest/",
+      "final_url": "https://support.arm.com/documentation/den0137/latest/",
+      "file": "arm-rmm.html",
+      "bytes": 10268,
+      "sha256": "8cee92dffdb3a5499ca8a3a56b2399d5bb54866a09aad813342b3b73eee1e06d",
+      "content_type": "text/html"
+    },
+    {
+      "id": "arm-gic",
+      "url": "https://developer.arm.com/documentation/ihi0069/latest/",
+      "error": "<urlopen error _ssl.c:1063: The handshake operation timed out>"
+    },
+    {
+      "id": "arm-smmu",
+      "url": "https://developer.arm.com/documentation/ihi0070/latest/",
+      "error": "<urlopen error _ssl.c:1063: The handshake operation timed out>"
+    },
+    {
+      "id": "arm-rme",
+      "url": "https://developer.arm.com/documentation/den0129/latest/",
+      "error": "The read operation timed out"
+    },
+    {
+      "id": "oa-plutus",
+      "url": "https://api.openalex.org/works?search=Plutus+Bandwidth-Efficient+Memory+Security+GPUs&per-page=2",
+      "final_url": "https://api.openalex.org/works?search=Plutus+Bandwidth-Efficient+Memory+Security+GPUs&per-page=2",
+      "query": "Plutus Bandwidth-Efficient Memory Security GPUs",
+      "file": "oa-plutus.json",
+      "bytes": 42624,
+      "sha256": "0cfb8c82c22ddff9c54793f3721796558db52d5e91e1d38c088c8ae8e72f9e78",
+      "content_type": "application/json",
+      "candidates": [
+        {
+          "title": "Plutus: Bandwidth-Efficient Memory Security for GPUs",
+          "doi": "https://doi.org/10.1109/hpca56546.2023.10071100",
+          "publication_year": 2023,
+          "publication_date": "2023-02-01",
+          "type": "conference-paper"
+        },
+        {
+          "title": "XeroZerox: Analysis and Optimization of GPU Memory Management for High-Integrity Autonomous Systems",
+          "doi": "https://doi.org/10.1109/access.2024.3406893",
+          "publication_year": 2024,
+          "publication_date": "2024-01-01",
+          "type": "article"
+        }
+      ]
+    },
+    {
+      "id": "oa-analyzing",
+      "url": "https://api.openalex.org/works?search=Analyzing+Secure+Memory+Architecture+for+GPUs&per-page=2",
+      "final_url": "https://api.openalex.org/works?search=Analyzing+Secure+Memory+Architecture+for+GPUs&per-page=2",
+      "query": "Analyzing Secure Memory Architecture for GPUs",
+      "file": "oa-analyzing.json",
+      "bytes": 40800,
+      "sha256": "9c65961f8d05067c57c9149ce28a27ec097225a54a6425cf211cf051b32b25fc",
+      "content_type": "application/json",
+      "candidates": [
+        {
+          "title": "Analyzing Secure Memory Architecture for GPUs",
+          "doi": "https://doi.org/10.1109/ispass51385.2021.00017",
+          "publication_year": 2021,
+          "publication_date": "2021-03-01",
+          "type": "conference-paper"
+        },
+        {
+          "title": "GhostLeg: Selective Memory Coalescing for Secure GPU Architecture",
+          "doi": "https://doi.org/10.1109/access.2022.3216325",
+          "publication_year": 2022,
+          "publication_date": "2022-01-01",
+          "type": "article"
+        }
+      ]
+    },
+    {
+      "id": "oa-adaptive",
+      "url": "https://api.openalex.org/works?search=Adaptive+Security+Support+Heterogeneous+Memory+GPUs&per-page=2",
+      "final_url": "https://api.openalex.org/works?search=Adaptive+Security+Support+Heterogeneous+Memory+GPUs&per-page=2",
+      "query": "Adaptive Security Support Heterogeneous Memory GPUs",
+      "file": "oa-adaptive.json",
+      "bytes": 38215,
+      "sha256": "e7cd547d9f6e88eced3b403d31ab16b19ee903a6040790f7a95174bbb610be74",
+      "content_type": "application/json",
+      "candidates": [
+        {
+          "title": "Adaptive Security Support for Heterogeneous Memory on GPUs",
+          "doi": "https://doi.org/10.1109/hpca53966.2022.00024",
+          "publication_year": 2022,
+          "publication_date": "2022-04-01",
+          "type": "conference-paper"
+        },
+        {
+          "title": "Security of Graphics Processing Units (GPUs) in Heterogeneous Systems",
+          "doi": null,
+          "publication_year": 2020,
+          "publication_date": "2020-01-01",
+          "type": "dissertation"
+        }
+      ]
+    },
+    {
+      "id": "oa-secure-timely",
+      "url": "https://api.openalex.org/works?search=Secure+and+Timely+GPU+Execution+in+Cyber-physical+Systems&per-page=2",
+      "final_url": "https://api.openalex.org/works?search=Secure+and+Timely+GPU+Execution+in+Cyber-physical+Systems&per-page=2",
+      "query": "Secure and Timely GPU Execution in Cyber-physical Systems",
+      "file": "oa-secure-timely.json",
+      "bytes": 34050,
+      "sha256": "337b178cf40a45f8edd2578f9f4da748dda4b45cd805bfd5a8444102820d9493",
+      "content_type": "application/json",
+      "candidates": [
+        {
+          "title": "Secure and Timely GPU Execution in Cyber-physical Systems",
+          "doi": "https://doi.org/10.1145/3576915.3623197",
+          "publication_year": 2023,
+          "publication_date": "2023-11-15",
+          "type": "conference-paper"
+        },
+        {
+          "title": "Cross-Layer Design of Reliable and Secure Cyber-Physical Systems",
+          "doi": null,
+          "publication_year": 2018,
+          "publication_date": "2018-01-01",
+          "type": "dissertation"
+        }
+      ]
+    },
+    {
+      "id": "oa-vulnerable",
+      "url": "https://api.openalex.org/works?search=Vulnerable+GPU+Memory+Management+Towards+Recovering+Raw+Data+from+GPU&per-page=2",
+      "final_url": "https://api.openalex.org/works?search=Vulnerable+GPU+Memory+Management+Towards+Recovering+Raw+Data+from+GPU&per-page=2",
+      "query": "Vulnerable GPU Memory Management Towards Recovering Raw Data from GPU",
+      "file": "oa-vulnerable.json",
+      "bytes": 38926,
+      "sha256": "9a8cd2dfec001969eda2ae0237fdaa90bdc2c34b04e1c96047cfe4c454d81878",
+      "content_type": "application/json",
+      "candidates": [
+        {
+          "title": "Vulnerable GPU Memory Management: Towards Recovering Raw Data from GPU",
+          "doi": "https://doi.org/10.1515/popets-2017-0016",
+          "publication_year": 2017,
+          "publication_date": "2017-04-01",
+          "type": "article"
+        },
+        {
+          "title": "A Survey of Techniques for Improving Security of GPUs",
+          "doi": "https://doi.org/10.1007/s41635-018-0039-0",
+          "publication_year": 2018,
+          "publication_date": "2018-06-19",
+          "type": "article"
+        }
+      ]
+    },
+    {
+      "id": "oa-enclaves-accelerators",
+      "url": "https://api.openalex.org/works?search=Enclaves+as+Accelerators+Learning+Lessons+GPU+Computing+Designing+Efficient+Runtimes+Enclaves&per-page=2",
+      "final_url": "https://api.openalex.org/works?search=Enclaves+as+Accelerators+Learning+Lessons+GPU+Computing+Designing+Efficient+Runtimes+Enclaves&per-page=2",
+      "query": "Enclaves as Accelerators Learning Lessons GPU Computing Designing Efficient Runtimes Enclaves",
+      "file": "oa-enclaves-accelerators.json",
+      "bytes": 38659,
+      "sha256": "b6f65def85b340f32d4bc8b3cfcb21957e55b5f42e5cb84625656aff4646ea78",
+      "content_type": "application/json",
+      "candidates": [
+        {
+          "title": "AroMa : Evaluating Deep Learning Systems for Stealthy Integrity Attacks on Multi-tenant Accelerators",
+          "doi": "https://doi.org/10.1145/3579033",
+          "publication_year": 2023,
+          "publication_date": "2023-01-06",
+          "type": "article"
+        },
+        {
+          "title": "Guardian: Safe GPU Sharing in Multi-Tenant Environments",
+          "doi": "https://doi.org/10.1145/3652892.3700768",
+          "publication_year": 2024,
+          "publication_date": "2024-11-27",
+          "type": "conference-paper"
+        }
+      ]
+    },
+    {
+      "id": "oa-counters",
+      "url": "https://api.openalex.org/works?search=Common+Counters+Compressed+Encryption+Counters+for+Secure+GPU+Memory&per-page=2",
+      "final_url": "https://api.openalex.org/works?search=Common+Counters+Compressed+Encryption+Counters+for+Secure+GPU+Memory&per-page=2",
+      "query": "Common Counters Compressed Encryption Counters for Secure GPU Memory",
+      "file": "oa-counters.json",
+      "bytes": 43675,
+      "sha256": "eecb7293ceaa9e67f5eb810af8221f2852ffe68d942aeab2298f891384082c01",
+      "content_type": "application/json",
+      "candidates": [
+        {
+          "title": "Common Counters: Compressed Encryption Counters for Secure GPU Memory",
+          "doi": "https://doi.org/10.1109/hpca51647.2021.00011",
+          "publication_year": 2021,
+          "publication_date": "2021-02-01",
+          "type": "conference-paper"
+        },
+        {
+          "title": "Efficient Integrity-Tree Structure for Convolutional Neural Networks through Frequent Counter Overflow Prevention in Secure Memories",
+          "doi": "https://doi.org/10.3390/s22228762",
+          "publication_year": 2022,
+          "publication_date": "2022-11-13",
+          "type": "article"
+        }
+      ]
+    },
+    {
+      "id": "oa-hix",
+      "url": "https://api.openalex.org/works?search=Heterogeneous+Isolated+Execution+Commodity+GPUs&per-page=2",
+      "final_url": "https://api.openalex.org/works?search=Heterogeneous+Isolated+Execution+Commodity+GPUs&per-page=2",
+      "query": "Heterogeneous Isolated Execution Commodity GPUs",
+      "file": "oa-hix.json",
+      "bytes": 36553,
+      "sha256": "6c4747da94446bbfa6a236dffa4057aeef7d91e5b3e5cb3f56eef1928328f981",
+      "content_type": "application/json",
+      "candidates": [
+        {
+          "title": "Heterogeneous Isolated Execution for Commodity GPUs",
+          "doi": "https://doi.org/10.1145/3297858.3304021",
+          "publication_year": 2019,
+          "publication_date": "2019-04-04",
+          "type": "conference-paper"
+        },
+        {
+          "title": "WarpGuard: Towards Control-Flow Attestation for Heterogeneous CPU-GPU Execution",
+          "doi": null,
+          "publication_year": 2026,
+          "publication_date": "2026-07-15",
+          "type": "preprint"
+        }
+      ]
+    },
+    {
+      "id": "oa-guardian",
+      "url": "https://api.openalex.org/works?search=Guardian+Safe+GPU+Sharing+Multi-Tenant+Environments&per-page=2",
+      "final_url": "https://api.openalex.org/works?search=Guardian+Safe+GPU+Sharing+Multi-Tenant+Environments&per-page=2",
+      "query": "Guardian Safe GPU Sharing Multi-Tenant Environments",
+      "file": "oa-guardian.json",
+      "bytes": 48856,
+      "sha256": "de21b1c11e1072f9c9dfe0b9f706b767f4dedbe13131f3b11e798bdeb5d2b75a",
+      "content_type": "application/json",
+      "candidates": [
+        {
+          "title": "Guardian: Safe GPU Sharing in Multi-Tenant Environments",
+          "doi": "https://doi.org/10.1145/3652892.3700768",
+          "publication_year": 2024,
+          "publication_date": "2024-11-27",
+          "type": "conference-paper"
+        },
+        {
+          "title": "Gleam: Adaptive Network-Efficient CUDA API Remoting for Cross-Device GPU Sharing over LANs",
+          "doi": "https://doi.org/10.48550/arxiv.2607.23115",
+          "publication_year": 2026,
+          "publication_date": "2026-07-25",
+          "type": "preprint"
+        }
+      ]
+    },
+    {
+      "id": "oa-lightning-exact",
+      "url": "https://api.openalex.org/works?search=Lightning%3A+Striking+the+Secure+Isolation+on+GPU+Clouds+with+Transient+Hardware+Faults&per-page=2",
+      "final_url": "https://api.openalex.org/works?search=Lightning%3A+Striking+the+Secure+Isolation+on+GPU+Clouds+with+Transient+Hardware+Faults&per-page=2",
+      "query": "Lightning: Striking the Secure Isolation on GPU Clouds with Transient Hardware Faults",
+      "file": "oa-lightning-exact.json",
+      "bytes": 34830,
+      "sha256": "68f15aac04b873b28f9ec722a1a60fab1a2bdc0a34af4180a0ade30d5f70162d",
+      "content_type": "application/json",
+      "candidates": [
+        {
+          "title": "Lightning: Striking the Secure Isolation on GPU Clouds with Transient Hardware Faults",
+          "doi": "https://doi.org/10.48550/arxiv.2112.03662",
+          "publication_year": 2021,
+          "publication_date": "2021-12-07",
+          "type": "preprint"
+        },
+        {
+          "title": "Whispering Pixels: Exploiting Uninitialized Register Accesses in Modern GPUs",
+          "doi": "https://doi.org/10.1109/eurosp60621.2024.00026",
+          "publication_year": 2024,
+          "publication_date": "2024-07-08",
+          "type": "conference-paper"
+        }
+      ]
+    },
+    {
+      "id": "doi-lak",
+      "url": "https://api.crossref.org/works/10.1109/ICCD56317.2022.00108",
+      "final_url": "https://api.crossref.org/works/10.1109/ICCD56317.2022.00108",
+      "file": "doi-lak.json",
+      "bytes": 5970,
+      "sha256": "b42f54591ef6c895c41abb05aeb8bb7c6bfb5d2953f4309066ce3f7e72c06a8f",
+      "content_type": "application/json",
+      "metadata": {
+        "title": [
+          "LAK: A Low-Overhead Lock-and-Key Based Schema for GPU Memory Safety"
+        ],
+        "DOI": "10.1109/iccd56317.2022.00108",
+        "container-title": [
+          "2022 IEEE 40th International Conference on Computer Design (ICCD)"
+        ],
+        "published": {
+          "date-parts": [
+            [
+              2022,
+              10
+            ]
+          ]
+        },
+        "published-online": null,
+        "published-print": {
+          "date-parts": [
+            [
+              2022,
+              10
+            ]
+          ]
+        },
+        "URL": "https://doi.org/10.1109/iccd56317.2022.00108",
+        "type": "proceedings-article"
+      }
+    },
+    {
+      "id": "oa-gpureplay",
+      "url": "https://api.openalex.org/works?search=GPUReplay+A+50-KB+GPU+Stack+Client+ML&per-page=2",
+      "final_url": "https://api.openalex.org/works?search=GPUReplay+A+50-KB+GPU+Stack+Client+ML&per-page=2",
+      "query": "GPUReplay A 50-KB GPU Stack Client ML",
+      "file": "oa-gpureplay.json",
+      "bytes": 33830,
+      "sha256": "1fa7c4ead8535f9ffaae6f832725c2894b02da4024316feed4b7a776c7c62dca",
+      "content_type": "application/json",
+      "candidates": [
+        {
+          "title": "GPUReplay: a 50-KB GPU stack for client ML",
+          "doi": "https://doi.org/10.1145/3503222.3507754",
+          "publication_year": 2022,
+          "publication_date": "2022-02-22",
+          "type": "conference-paper"
+        },
+        {
+          "title": "Safe and Practical GPU Computation in TrustZone",
+          "doi": "https://doi.org/10.1145/3552326.3567483",
+          "publication_year": 2023,
+          "publication_date": "2023-05-05",
+          "type": "conference-paper"
+        }
+      ]
+    },
+    {
+      "id": "oa-sgxio",
+      "url": "https://api.openalex.org/works?search=SGXIO+Generic+Trusted+I%2FO+Path+Intel+SGX&per-page=2",
+      "final_url": "https://api.openalex.org/works?search=SGXIO+Generic+Trusted+I%2FO+Path+Intel+SGX&per-page=2",
+      "query": "SGXIO Generic Trusted I/O Path Intel SGX",
+      "file": "oa-sgxio.json",
+      "bytes": 39240,
+      "sha256": "dd4f40cec8eadd4ab595ba728170534ab60016c8480767d4d6dc5102516e9e21",
+      "content_type": "application/json",
+      "candidates": [
+        {
+          "title": "SGXIO",
+          "doi": "https://doi.org/10.1145/3029806.3029822",
+          "publication_year": 2017,
+          "publication_date": "2017-03-20",
+          "type": "conference-paper"
+        },
+        {
+          "title": "SgxPectre: Stealing Intel Secrets from SGX Enclaves Via Speculative Execution",
+          "doi": "https://doi.org/10.1109/eurosp.2019.00020",
+          "publication_year": 2019,
+          "publication_date": "2019-06-01",
+          "type": "conference-paper"
+        }
+      ]
+    },
+    {
+      "id": "doi-ccai",
+      "url": "https://api.crossref.org/works/10.1145/3701418.3726902",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "id": "oa-gpuhammer",
+      "url": "https://api.openalex.org/works?search=GPUHammer+Rowhammer+Attacks+GPU+Memories+Practical&per-page=2",
+      "final_url": "https://api.openalex.org/works?search=GPUHammer+Rowhammer+Attacks+GPU+Memories+Practical&per-page=2",
+      "query": "GPUHammer Rowhammer Attacks GPU Memories Practical",
+      "file": "oa-gpuhammer.json",
+      "bytes": 36554,
+      "sha256": "4047ac8b7750314044346bc2c64dceaf9f77e29d4fb8e53fe14c42646a571be6",
+      "content_type": "application/json",
+      "candidates": [
+        {
+          "title": "GPUBreach: Privilege Escalation Attacks on GPUs using Rowhammer",
+          "doi": "https://doi.org/10.1109/sp63933.2026.00177",
+          "publication_year": 2026,
+          "publication_date": "2026-05-05",
+          "type": "preprint"
+        },
+        {
+          "title": "GPUThor: Amplifying Rowhammer Attacks via Non-Uniform Patterns to Exploit ECC-Protected GPUs",
+          "doi": null,
+          "publication_year": 2026,
+          "publication_date": "2026-09-15",
+          "type": "preprint"
+        }
+      ]
+    },
+    {
+      "id": "oa-hetee",
+      "url": "https://api.openalex.org/works?search=Enabling+Rack-scale+Confidential+Computing+Heterogeneous+Trusted+Execution+Environment&per-page=2",
+      "final_url": "https://api.openalex.org/works?search=Enabling+Rack-scale+Confidential+Computing+Heterogeneous+Trusted+Execution+Environment&per-page=2",
+      "query": "Enabling Rack-scale Confidential Computing Heterogeneous Trusted Execution Environment",
+      "file": "oa-hetee.json",
+      "bytes": 61711,
+      "sha256": "5c65e7d1544ae8d82a624e63954825324feb31f1744d4ed8b4ef23a55808b2fb",
+      "content_type": "application/json",
+      "candidates": [
+        {
+          "title": "Enabling Rack-scale Confidential Computing using Heterogeneous Trusted Execution Environment",
+          "doi": "https://doi.org/10.1109/sp40000.2020.00054",
+          "publication_year": 2020,
+          "publication_date": "2020-05-01",
+          "type": "conference-paper"
+        },
+        {
+          "title": "Enabling Privacy-Preserving, Compute- and Data-Intensive Computing using Heterogeneous Trusted Execution Environment",
+          "doi": "https://doi.org/10.48550/arxiv.1904.04782",
+          "publication_year": 2019,
+          "publication_date": "2019-04-09",
+          "type": "preprint"
+        }
+      ]
+    },
+    {
+      "id": "oa-salus",
+      "url": "https://api.openalex.org/works?search=Salus+Efficient+Security+Support+CXL-Expanded+GPU+Memory&per-page=2",
+      "final_url": "https://api.openalex.org/works?search=Salus+Efficient+Security+Support+CXL-Expanded+GPU+Memory&per-page=2",
+      "query": "Salus Efficient Security Support CXL-Expanded GPU Memory",
+      "file": "oa-salus.json",
+      "bytes": 34220,
+      "sha256": "3eb02de05ab62664858a61c53071e561357f917b67adc7980b65fce88875ebe9",
+      "content_type": "application/json",
+      "candidates": [
+        {
+          "title": "Salus: Efficient Security Support for CXL-Expanded GPU Memory",
+          "doi": "https://doi.org/10.1109/hpca57654.2024.00027",
+          "publication_year": 2024,
+          "publication_date": "2024-03-02",
+          "type": "conference-paper"
+        },
+        {
+          "title": "Efficient Security Support for CXL Memory through Adaptive Incremental Offloaded (Re-)Encryption",
+          "doi": "https://doi.org/10.1145/3725843.3756119",
+          "publication_year": 2025,
+          "publication_date": "2025-10-17",
+          "type": "conference-paper"
+        }
+      ]
+    },
+    {
+      "id": "doi-gpuarmor",
+      "url": "https://api.crossref.org/works/10.1145/3815783",
+      "final_url": "https://api.crossref.org/works/10.1145/3815783",
+      "file": "doi-gpuarmor.json",
+      "bytes": 14233,
+      "sha256": "710b8c3a478cf4079eacf823af6786450cd983cc6201c71197a0c6df58d61e2d",
+      "content_type": "application/json",
+      "metadata": {
+        "title": [
+          "GPUArmor: A Hardware-Software Co-Design for Efficient and Scalable Memory Safety on GPUs"
+        ],
+        "DOI": "10.1145/3815783",
+        "container-title": [
+          "ACM Transactions on Architecture and Code Optimization"
+        ],
+        "published": {
+          "date-parts": [
+            [
+              2026,
+              7,
+              23
+            ]
+          ]
+        },
+        "published-online": {
+          "date-parts": [
+            [
+              2026,
+              7,
+              23
+            ]
+          ]
+        },
+        "published-print": {
+          "date-parts": [
+            [
+              2026,
+              9,
+              30
+            ]
+          ]
+        },
+        "URL": "https://doi.org/10.1145/3815783",
+        "type": "journal-article"
+      }
+    },
+    {
+      "id": "doi-lightning-other",
+      "url": "https://api.crossref.org/works/10.1145/3617893",
+      "final_url": "https://api.crossref.org/works/10.1145/3617893",
+      "file": "doi-lightning-other.json",
+      "bytes": 20064,
+      "sha256": "8fea02fd25b5508aacc4e104680985b780354b342b0ebd126d6fe8b5905029db",
+      "content_type": "application/json",
+      "metadata": {
+        "title": [
+          "Lightning: Leveraging DVFS-induced Transient Fault Injection to Attack Deep Learning Accelerator of GPUs"
+        ],
+        "DOI": "10.1145/3617893",
+        "container-title": [
+          "ACM Transactions on Design Automation of Electronic Systems"
+        ],
+        "published": {
+          "date-parts": [
+            [
+              2023,
+              11,
+              15
+            ]
+          ]
+        },
+        "published-online": {
+          "date-parts": [
+            [
+              2023,
+              11,
+              15
+            ]
+          ]
+        },
+        "published-print": {
+          "date-parts": [
+            [
+              2024,
+              1,
+              31
+            ]
+          ]
+        },
+        "URL": "https://doi.org/10.1145/3617893",
+        "type": "journal-article"
+      }
+    },
+    {
+      "id": "doi-whispering",
+      "url": "https://api.crossref.org/works/10.1109/EuroSP60621.2024.00026",
+      "final_url": "https://api.crossref.org/works/10.1109/EuroSP60621.2024.00026",
+      "file": "doi-whispering.json",
+      "bytes": 8538,
+      "sha256": "29c377bfcf916382598d4ee45334ed78fa478501621c75fcf58fb10a8f8f7abe",
+      "content_type": "application/json",
+      "metadata": {
+        "title": [
+          "Whispering Pixels: Exploiting Uninitialized Register Accesses in Modern GPUs"
+        ],
+        "DOI": "10.1109/eurosp60621.2024.00026",
+        "container-title": [
+          "2024 IEEE 9th European Symposium on Security and Privacy (EuroS&amp;amp;P)"
+        ],
+        "published": {
+          "date-parts": [
+            [
+              2024,
+              7,
+              8
+            ]
+          ]
+        },
+        "published-online": null,
+        "published-print": {
+          "date-parts": [
+            [
+              2024,
+              7,
+              8
+            ]
+          ]
+        },
+        "URL": "https://doi.org/10.1109/eurosp60621.2024.00026",
+        "type": "proceedings-article"
+      }
+    },
+    {
+      "id": "gevisor-repo",
+      "url": "https://api.github.com/repos/purseclab/GEVisor",
+      "final_url": "https://api.github.com/repos/purseclab/GEVisor",
+      "file": "gevisor-repo.json",
+      "bytes": 6007,
+      "sha256": "8ddf8e8e7f7b427fbb104e3b1ceb0cafe2eeebbd5f4a595fa77f181672ffb29d",
+      "content_type": "application/json; charset=utf-8"
+    },
+    {
+      "id": "whispering-arxiv",
+      "url": "https://arxiv.org/abs/2401.08881",
+      "final_url": "https://arxiv.org/abs/2401.08881",
+      "file": "whispering-arxiv.html",
+      "bytes": 43046,
+      "sha256": "bea5697d3cab46150ef1be304edbfde8c83d5f531f3d08010558a51642f50231",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "gpureplay-arxiv",
+      "url": "https://arxiv.org/abs/2105.05085",
+      "final_url": "https://arxiv.org/abs/2105.05085",
+      "file": "gpureplay-arxiv.html",
+      "bytes": 41782,
+      "sha256": "a08dbbb0de9607cc6cd0e1a734e2b3a382b1cdb4df26c18e693f3d32caf8d923",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "grt-arxiv",
+      "url": "https://arxiv.org/abs/2111.03065",
+      "final_url": "https://arxiv.org/abs/2111.03065",
+      "file": "grt-arxiv.html",
+      "bytes": 40513,
+      "sha256": "b6f037ba5eab4726ce362f8d12e67d37b412435d680ed7b8e60a0fa403e2f2c6",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "oa-virtualized",
+      "url": "https://api.openalex.org/works?search=Confidentiality+Issues+on+a+GPU+in+a+Virtualized+Environment&per-page=2",
+      "query": "Confidentiality Issues on a GPU in a Virtualized Environment",
+      "error": "<urlopen error _ssl.c:1063: The handshake operation timed out>"
+    },
+    {
+      "id": "gpuarmor-arxiv",
+      "url": "https://arxiv.org/abs/2502.17780",
+      "final_url": "https://arxiv.org/abs/2502.17780",
+      "file": "gpuarmor-arxiv.html",
+      "bytes": 43644,
+      "sha256": "e149f9d84889b80105ca6ad6db521ca7168cc1f4cd11d71f34792aec156db84a",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "gevisor-readme",
+      "url": "https://raw.githubusercontent.com/purseclab/GEVisor/main/README.md",
+      "final_url": "https://raw.githubusercontent.com/purseclab/GEVisor/main/README.md",
+      "file": "gevisor-readme.html",
+      "bytes": 678,
+      "sha256": "cdb04f3a83afbae30bd28159035e4348933a1c7692cb6f63f1865d0d10c85f25",
+      "content_type": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "gpu-tee-tree",
+      "url": "https://api.github.com/repos/ConfidentialComputing/GPU-TEE-Papers/git/trees/HEAD?recursive=1",
+      "final_url": "https://api.github.com/repos/ConfidentialComputing/GPU-TEE-Papers/git/trees/HEAD?recursive=1",
+      "file": "gpu-tee-tree.json",
+      "bytes": 3973,
+      "sha256": "4487cd24f7b882db1c3e501d0474479fc1910dcba35050c3785eed4df08a29a3",
+      "content_type": "application/json; charset=utf-8"
+    },
+    {
+      "id": "leftover-readme",
+      "url": "https://raw.githubusercontent.com/trailofbits/LeftoverLocalsRelease/main/README.md",
+      "final_url": "https://raw.githubusercontent.com/trailofbits/LeftoverLocalsRelease/main/README.md",
+      "file": "leftover-readme.html",
+      "bytes": 7764,
+      "sha256": "b885c440c870cb52cb88930d5896df865c63f7af1d48aeb28ca32633e704a45d",
+      "content_type": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "lightning-arxiv",
+      "url": "https://arxiv.org/abs/2112.03662",
+      "final_url": "https://arxiv.org/abs/2112.03662",
+      "file": "lightning-arxiv.html",
+      "bytes": 44195,
+      "sha256": "625991c5a9f8acf4ccc459339ba94393ed46d965e8017240c6e76ba52307e660",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "ccai-pdf",
+      "url": "https://compass.sustech.edu.cn/paper/ccai-micro25.pdf",
+      "final_url": "https://compass.sustech.edu.cn/paper/ccai-micro25.pdf",
+      "file": "ccai-pdf.pdf",
+      "bytes": 4148737,
+      "sha256": "6b2952a4c04e499371cf27074178238a5bffb4a702ecb56e983fe42f2b6b622f",
+      "content_type": "application/pdf"
+    },
+    {
+      "id": "clcts-readme",
+      "url": "https://raw.githubusercontent.com/KhronosGroup/OpenCL-CTS/main/README.md",
+      "final_url": "https://raw.githubusercontent.com/KhronosGroup/OpenCL-CTS/main/README.md",
+      "file": "clcts-readme.html",
+      "bytes": 6523,
+      "sha256": "f863c7b9facf352a0d669bf82159daed8d3652426e5959354757c1a90c103837",
+      "content_type": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "piglit-readme",
+      "url": "https://gitlab.freedesktop.org/mesa/piglit/-/raw/main/README",
+      "final_url": "https://gitlab.freedesktop.org/mesa/piglit/-/raw/main/README",
+      "file": "piglit-readme.html",
+      "bytes": 7459,
+      "sha256": "45339317bf50e657347f28446b92b6c42fada42ce8d414be446cf106ce30a6a1",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "sev-tio",
+      "url": "https://www.amd.com/content/dam/amd/en/documents/developer/sev-tio-whitepaper.pdf",
+      "final_url": "https://www.amd.com/content/dam/amd/en/documents/developer/sev-tio-whitepaper.pdf",
+      "file": "sev-tio.pdf",
+      "bytes": 295043,
+      "sha256": "b76c60be0fb7ef4a268034d5082cf6da22c0afe28ca83607599acb3278c9fe74",
+      "content_type": "application/pdf"
+    },
+    {
+      "id": "intel-connect",
+      "url": "https://www.intel.com/content/www/us/en/content-details/773614/intel-tdx-connect-architecture-specification.html",
+      "final_url": "https://www.intel.com/content/www/us/en/content-details/773614/intel-tdx-connect-architecture-specification.html",
+      "file": "intel-connect.html",
+      "bytes": 158955,
+      "sha256": "1e7c521342699247a8653f0a86e7361f89b1be2d24267b7595d2058f9da9bd44",
+      "content_type": "text/html;charset=utf-8"
+    },
+    {
+      "id": "arm-rmm-docs",
+      "url": "https://tf-rmm.readthedocs.io/en/latest/",
+      "final_url": "https://tf-rmm.readthedocs.io/en/latest/",
+      "file": "arm-rmm-docs.html",
+      "bytes": 43623,
+      "sha256": "678177ced6496b5db5e1d070745a17e2502be0b5a7e6246b222316046a5737f3",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "oa-enclave-short",
+      "url": "https://api.openalex.org/works?search=Enclaves+as+Accelerators&per-page=3",
+      "final_url": "https://api.openalex.org/works?search=Enclaves+as+Accelerators&per-page=3",
+      "query": "Enclaves as Accelerators",
+      "file": "oa-enclave-short.json",
+      "bytes": 42962,
+      "sha256": "a3ba18d8b4292cd4167d0c46116497f2f884f9bb10060313b10a94489ebbcd46",
+      "content_type": "application/json",
+      "candidates": [
+        {
+          "title": "SESAME: Software defined Enclaves to Secure Inference Accelerators with Multi-tenant Execution",
+          "doi": "https://doi.org/10.48550/arxiv.2007.06751",
+          "publication_year": 2020,
+          "publication_date": "2020-07-14",
+          "type": "preprint"
+        },
+        {
+          "title": "HCC: 100 Gbps AES-GCM Encrypted Inline DMA Transfers Between SGX Enclave and FPGA Accelerator",
+          "doi": "https://doi.org/10.1007/978-3-030-61078-4_16",
+          "publication_year": 2020,
+          "publication_date": "2020-01-01",
+          "type": "conference-paper"
+        },
+        {
+          "title": "A >100 Gbps Inline AES-GCM Hardware Engine and Protected DMA Transfers between SGX Enclave and FPGA Accelerator Device.",
+          "doi": null,
+          "publication_year": 2020,
+          "publication_date": "2020-01-01",
+          "type": "preprint"
+        }
+      ]
+    },
+    {
+      "id": "dmtf-spdm",
+      "url": "https://www.dmtf.org/standards/spdm",
+      "final_url": "https://www.dmtf.org/standards/spdm",
+      "file": "dmtf-spdm.html",
+      "bytes": 149245,
+      "sha256": "7f570f1c78af26810c593f5f9ae3a1fe1ebfef1f2441f40c7e04227653896032",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "id": "oa-enclave-title",
+      "url": "https://api.openalex.org/works?search=Learning+Lessons+from+GPU+Computing+Designing+Efficient+Runtimes+Enclaves&per-page=3",
+      "final_url": "https://api.openalex.org/works?search=Learning+Lessons+from+GPU+Computing+Designing+Efficient+Runtimes+Enclaves&per-page=3",
+      "query": "Learning Lessons from GPU Computing Designing Efficient Runtimes Enclaves",
+      "file": "oa-enclave-title.json",
+      "bytes": 61854,
+      "sha256": "a9fa916798318b867821f30d7a4577f663e4b6300228f3861721684573ecb0d9",
+      "content_type": "application/json",
+      "candidates": [
+        {
+          "title": "Guardian: Safe GPU Sharing in Multi-Tenant Environments",
+          "doi": "https://doi.org/10.1145/3652892.3700768",
+          "publication_year": 2024,
+          "publication_date": "2024-11-27",
+          "type": "conference-paper"
+        },
+        {
+          "title": "The perils of shared computing",
+          "doi": "https://doi.org/10.17760/d20413929",
+          "publication_year": 2021,
+          "publication_date": "2021-01-01",
+          "type": "dissertation"
+        },
+        {
+          "title": "3rd High-Performance Computing Security Workshop :",
+          "doi": "https://doi.org/10.6028/nist.ir.8476",
+          "publication_year": 2023,
+          "publication_date": "2023-07-11",
+          "type": "report"
+        }
+      ]
+    },
+    {
+      "id": "oa-ccai",
+      "url": "https://api.openalex.org/works?search=ccAI+Compatible+Confidential+System+AI+Computing&per-page=3",
+      "final_url": "https://api.openalex.org/works?search=ccAI+Compatible+Confidential+System+AI+Computing&per-page=3",
+      "query": "ccAI Compatible Confidential System AI Computing",
+      "file": "oa-ccai.json",
+      "bytes": 77966,
+      "sha256": "1849993f9caf01ebabf4eed7d9a3923265296ae865f4b114cd1ee8319102ce16",
+      "content_type": "application/json",
+      "candidates": [
+        {
+          "title": "ccAI: A Compatible and Confidential System for AI Computing",
+          "doi": "https://doi.org/10.1145/3725843.3756104",
+          "publication_year": 2025,
+          "publication_date": "2025-10-17",
+          "type": "conference-paper"
+        },
+        {
+          "title": "A Study on Explainable AI-Driven Confidential Computing for Secure AI Workloads in Untrusted Cloud Infrastructures",
+          "doi": "https://doi.org/10.62643/ijerst.v22i2(2).3062",
+          "publication_year": 2026,
+          "publication_date": "2026-05-08",
+          "type": "article"
+        },
+        {
+          "title": "AI-Driven Wearable Bioelectronics in Digital Healthcare",
+          "doi": "https://doi.org/10.3390/bios15070410",
+          "publication_year": 2025,
+          "publication_date": "2025-06-26",
+          "type": "article"
+        }
+      ]
+    },
+    {
+      "id": "oa-virtualized-retry",
+      "url": "https://api.openalex.org/works?search=Confidentiality+Issues+GPU+Virtualized+Environment&per-page=3",
+      "final_url": "https://api.openalex.org/works?search=Confidentiality+Issues+GPU+Virtualized+Environment&per-page=3",
+      "query": "Confidentiality Issues GPU Virtualized Environment",
+      "file": "oa-virtualized-retry.json",
+      "bytes": 51639,
+      "sha256": "dcdf4d093275794ec1ff975a9d97e0022e296fca6bbb6eda7139d70a65ea512c",
+      "content_type": "application/json",
+      "candidates": [
+        {
+          "title": "Confidentiality Issues on a GPU in a Virtualized Environment",
+          "doi": "https://doi.org/10.1007/978-3-662-45472-5_9",
+          "publication_year": 2014,
+          "publication_date": "2014-01-01",
+          "type": "conference-paper"
+        },
+        {
+          "title": "Utilizing GPU Virtualization to Protect the Private Keys of GPU Cryptographic Computation",
+          "doi": "https://doi.org/10.1007/978-3-030-01950-1_9",
+          "publication_year": 2018,
+          "publication_date": "2018-01-01",
+          "type": "conference-paper"
+        },
+        {
+          "title": "Enhancing Virtual Desktop Infrastructure with Hybrid Cloud Environments and GPU Acceleration",
+          "doi": "https://doi.org/10.47363/jaicc/2023(2)211",
+          "publication_year": 2023,
+          "publication_date": "2023-06-22",
+          "type": "article"
+        }
+      ]
+    },
+    {
+      "id": "oa-gpuhammer-only",
+      "url": "https://api.openalex.org/works?search=GPUHammer&per-page=3",
+      "final_url": "https://api.openalex.org/works?search=GPUHammer&per-page=3",
+      "query": "GPUHammer",
+      "file": "oa-gpuhammer-only.json",
+      "bytes": 52453,
+      "sha256": "0ef5c89ff2e47787f04fc0ef55670d257d2c26bf6e89846ca48e66d03958cacc",
+      "content_type": "application/json",
+      "candidates": [
+        {
+          "title": "ROWHAMMER ATTACKS ON MODERN MEMORY SYSTEMS: EVOLUTION, EXPLOITATION, AND DEFENCE MECHANISMS",
+          "doi": "https://doi.org/10.58532/nbennur3409c7",
+          "publication_year": 2026,
+          "publication_date": "2026-09-01",
+          "type": "book-chapter"
+        },
+        {
+          "title": "GPUThor: Amplifying Rowhammer Attacks via Non-Uniform Patterns to Exploit ECC-Protected GPUs",
+          "doi": null,
+          "publication_year": 2026,
+          "publication_date": "2026-09-15",
+          "type": "preprint"
+        },
+        {
+          "title": "CacheTrap: Unveiling a Stealthier Gray-Box Trojan against LLMs",
+          "doi": "https://doi.org/10.48550/arxiv.2511.22681",
+          "publication_year": 2025,
+          "publication_date": "2025-11-27",
+          "type": "preprint"
+        }
+      ]
+    },
+    {
+      "id": "igt-docs",
+      "url": "https://drm.pages.freedesktop.org/igt-gpu-tools/",
+      "error": "<urlopen error _ssl.c:1063: The handshake operation timed out>"
+    },
+    {
+      "id": "cts-readme",
+      "url": "https://raw.githubusercontent.com/KhronosGroup/VK-GL-CTS/main/README.md",
+      "final_url": "https://raw.githubusercontent.com/KhronosGroup/VK-GL-CTS/main/README.md",
+      "file": "cts-readme.html",
+      "bytes": 4745,
+      "sha256": "5a64cfa599b2bee109b67320c2310085b96acef0c11debf786a7f270d095a2aa",
+      "content_type": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "nvidia-sdk-readme",
+      "url": "https://raw.githubusercontent.com/NVIDIA/attestation-sdk/main/README.md",
+      "final_url": "https://raw.githubusercontent.com/NVIDIA/attestation-sdk/main/README.md",
+      "file": "nvidia-sdk-readme.html",
+      "bytes": 5228,
+      "sha256": "e3308f022ca39b18a38d11c5f8816a495df756d6f105368972722c71e0ee8748",
+      "content_type": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "tdisp",
+      "url": "https://pcisig.com/tee-device-interface-security-protocol-tdisp",
+      "error": "<urlopen error _ssl.c:1063: The handshake operation timed out>"
+    },
+    {
+      "id": "behind-bars-retry",
+      "url": "https://www.usenix.org/conference/usenixsecurity26/presentation/gu-cheng",
+      "error": "The read operation timed out"
+    },
+    {
+      "id": "doi-counters",
+      "url": "https://api.crossref.org/works/10.1109/HPCA51647.2021.00011",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "doi-plutus",
+      "url": "https://api.crossref.org/works/10.1109/HPCA56546.2023.10071100",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "doi-adaptive",
+      "url": "https://api.crossref.org/works/10.1109/HPCA53966.2022.00024",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "doi-analyzing",
+      "url": "https://api.crossref.org/works/10.1109/ISPASS51385.2021.00017",
+      "final_url": "https://api.crossref.org/works/10.1109/ISPASS51385.2021.00017",
+      "file": "doi-analyzing.json",
+      "bytes": 6619,
+      "sha256": "1f736053bb8c7d11067647e618c10e25f581a6400b30573f6a4008d53fd4aa21",
+      "content_type": "application/json",
+      "metadata": {
+        "title": [
+          "Analyzing Secure Memory Architecture for GPUs"
+        ],
+        "DOI": "10.1109/ispass51385.2021.00017",
+        "container-title": [
+          "2021 IEEE International Symposium on Performance Analysis of Systems and Software (ISPASS)"
+        ],
+        "published": {
+          "date-parts": [
+            [
+              2021,
+              3
+            ]
+          ]
+        },
+        "published-online": null,
+        "published-print": {
+          "date-parts": [
+            [
+              2021,
+              3
+            ]
+          ]
+        },
+        "URL": "https://doi.org/10.1109/ispass51385.2021.00017",
+        "type": "proceedings-article"
+      }
+    },
+    {
+      "id": "archive-enclaves",
+      "url": "https://raw.githubusercontent.com/ConfidentialComputing/GPU-TEE-Papers/8e367018ffbf209f62184423de9874c544d856c4/Enclaves%20as%20accelerators-%20learning%20lessons%20from%20GPU%20computing%20for%20designing%20efficient%20runtimes%20for%20enclaves.pdf",
+      "final_url": "https://raw.githubusercontent.com/ConfidentialComputing/GPU-TEE-Papers/8e367018ffbf209f62184423de9874c544d856c4/Enclaves%20as%20accelerators-%20learning%20lessons%20from%20GPU%20computing%20for%20designing%20efficient%20runtimes%20for%20enclaves.pdf",
+      "file": "archive-enclaves.pdf",
+      "bytes": 128197,
+      "sha256": "a9776e3e89dc02644b80b795495170c54ba0a2114e306cb3a80439414342cf4b",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "id": "doi-hix",
+      "url": "https://api.crossref.org/works/10.1145/3297858.3304021",
+      "final_url": "https://api.crossref.org/works/10.1145/3297858.3304021",
+      "file": "doi-hix.json",
+      "bytes": 12008,
+      "sha256": "a20f401593eb08392af9c2df4bd2a98c74b2c3d3abfecae79d4a0de4ac6b731e",
+      "content_type": "application/json",
+      "metadata": {
+        "title": [
+          "Heterogeneous Isolated Execution for Commodity GPUs"
+        ],
+        "DOI": "10.1145/3297858.3304021",
+        "container-title": [
+          "Proceedings of the Twenty-Fourth International Conference on Architectural Support for Programming Languages and Operating Systems"
+        ],
+        "published": {
+          "date-parts": [
+            [
+              2019,
+              4,
+              4
+            ]
+          ]
+        },
+        "published-online": {
+          "date-parts": [
+            [
+              2019,
+              4,
+              4
+            ]
+          ]
+        },
+        "published-print": {
+          "date-parts": [
+            [
+              2019,
+              4,
+              4
+            ]
+          ]
+        },
+        "URL": "https://doi.org/10.1145/3297858.3304021",
+        "type": "proceedings-article"
+      }
+    },
+    {
+      "id": "archive-discrete",
+      "url": "https://raw.githubusercontent.com/ConfidentialComputing/GPU-TEE-Papers/8e367018ffbf209f62184423de9874c544d856c4/Understanding%20The%20Security%20of%20Discrete%20GPUs.pdf",
+      "final_url": "https://raw.githubusercontent.com/ConfidentialComputing/GPU-TEE-Papers/8e367018ffbf209f62184423de9874c544d856c4/Understanding%20The%20Security%20of%20Discrete%20GPUs.pdf",
+      "file": "archive-discrete.pdf",
+      "bytes": 251442,
+      "sha256": "569874eeeb69cca65a7ea84f3263e2d59f28141831d7ae945841bea78b13e767",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "id": "doi-sgxio",
+      "url": "https://api.crossref.org/works/10.1145/3029806.3029822",
+      "final_url": "https://api.crossref.org/works/10.1145/3029806.3029822",
+      "file": "doi-sgxio.json",
+      "bytes": 9999,
+      "sha256": "9e51acc749b7f0a3224b93ff9aafdad71f93d017008383fefc5bc801e222d540",
+      "content_type": "application/json",
+      "metadata": {
+        "title": [
+          "SGXIO"
+        ],
+        "DOI": "10.1145/3029806.3029822",
+        "container-title": [
+          "Proceedings of the Seventh ACM on Conference on Data and Application Security and Privacy"
+        ],
+        "published": {
+          "date-parts": [
+            [
+              2017,
+              3,
+              22
+            ]
+          ]
+        },
+        "published-online": {
+          "date-parts": [
+            [
+              2017,
+              3,
+              22
+            ]
+          ]
+        },
+        "published-print": {
+          "date-parts": [
+            [
+              2017,
+              3,
+              22
+            ]
+          ]
+        },
+        "URL": "https://doi.org/10.1145/3029806.3029822",
+        "type": "proceedings-article"
+      }
+    },
+    {
+      "id": "doi-hetee",
+      "url": "https://api.crossref.org/works/10.1109/SP40000.2020.00054",
+      "final_url": "https://api.crossref.org/works/10.1109/SP40000.2020.00054",
+      "file": "doi-hetee.json",
+      "bytes": 17256,
+      "sha256": "e5405b8d679dc2b1be3d4caa456ef1633a83868532472781ef2254e928a793d8",
+      "content_type": "application/json",
+      "metadata": {
+        "title": [
+          "Enabling Rack-scale Confidential Computing using Heterogeneous Trusted Execution Environment"
+        ],
+        "DOI": "10.1109/sp40000.2020.00054",
+        "container-title": [
+          "2020 IEEE Symposium on Security and Privacy (SP)"
+        ],
+        "published": {
+          "date-parts": [
+            [
+              2020,
+              5
+            ]
+          ]
+        },
+        "published-online": null,
+        "published-print": {
+          "date-parts": [
+            [
+              2020,
+              5
+            ]
+          ]
+        },
+        "URL": "https://doi.org/10.1109/sp40000.2020.00054",
+        "type": "proceedings-article"
+      }
+    },
+    {
+      "id": "doi-vulnerable",
+      "url": "https://api.crossref.org/works/10.1515/popets-2017-0016",
+      "final_url": "https://api.crossref.org/works/10.1515/popets-2017-0016",
+      "file": "doi-vulnerable.json",
+      "bytes": 12246,
+      "sha256": "471452f370f5dcd997d2c2e6daec4b4308ee0305d3fce2b8eb5e4648869b8f90",
+      "content_type": "application/json",
+      "metadata": {
+        "title": [
+          "Vulnerable GPU Memory Management: Towards Recovering Raw Data from GPU"
+        ],
+        "DOI": "10.1515/popets-2017-0016",
+        "container-title": [
+          "Proceedings on Privacy Enhancing Technologies"
+        ],
+        "published": {
+          "date-parts": [
+            [
+              2017,
+              4,
+              1
+            ]
+          ]
+        },
+        "published-online": {
+          "date-parts": [
+            [
+              2017,
+              4,
+              4
+            ]
+          ]
+        },
+        "published-print": {
+          "date-parts": [
+            [
+              2017,
+              4,
+              1
+            ]
+          ]
+        },
+        "URL": "https://doi.org/10.1515/popets-2017-0016",
+        "type": "journal-article"
+      }
+    },
+    {
+      "id": "doi-guardian",
+      "url": "https://api.crossref.org/works/10.1145/3652892.3700768",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "doi-grt",
+      "url": "https://api.crossref.org/works/10.1145/3552326.3567483",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "id": "doi-gpureplay",
+      "url": "https://api.crossref.org/works/10.1145/3503222.3507754",
+      "final_url": "https://api.crossref.org/works/10.1145/3503222.3507754",
+      "file": "doi-gpureplay.json",
+      "bytes": 28861,
+      "sha256": "9052fd3801dd0f3c72c95335eba008e640a4eaac8f8094aa93b72fd79f7d3d28",
+      "content_type": "application/json",
+      "metadata": {
+        "title": [
+          "GPUReplay: a 50-KB GPU stack for client ML"
+        ],
+        "DOI": "10.1145/3503222.3507754",
+        "container-title": [
+          "Proceedings of the 27th ACM International Conference on Architectural Support for Programming Languages and Operating Systems"
+        ],
+        "published": {
+          "date-parts": [
+            [
+              2022,
+              2,
+              22
+            ]
+          ]
+        },
+        "published-online": {
+          "date-parts": [
+            [
+              2022,
+              2,
+              22
+            ]
+          ]
+        },
+        "published-print": {
+          "date-parts": [
+            [
+              2022,
+              2,
+              28
+            ]
+          ]
+        },
+        "URL": "https://doi.org/10.1145/3503222.3507754",
+        "type": "proceedings-article"
+      }
+    },
+    {
+      "id": "doi-salus",
+      "url": "https://api.crossref.org/works/10.1109/HPCA57654.2024.00027",
+      "final_url": "https://api.crossref.org/works/10.1109/HPCA57654.2024.00027",
+      "file": "doi-salus.json",
+      "bytes": 9610,
+      "sha256": "12700870a1c5584f3a844b5722b5ab5cc4d9d36e28bb5d508ea69fef54daa2e0",
+      "content_type": "application/json",
+      "metadata": {
+        "title": [
+          "Salus: Efficient Security Support for CXL-Expanded GPU Memory"
+        ],
+        "DOI": "10.1109/hpca57654.2024.00027",
+        "container-title": [
+          "2024 IEEE International Symposium on High-Performance Computer Architecture (HPCA)"
+        ],
+        "published": {
+          "date-parts": [
+            [
+              2024,
+              3,
+              2
+            ]
+          ]
+        },
+        "published-online": null,
+        "published-print": {
+          "date-parts": [
+            [
+              2024,
+              3,
+              2
+            ]
+          ]
+        },
+        "URL": "https://doi.org/10.1109/hpca57654.2024.00027",
+        "type": "proceedings-article"
+      }
+    },
+    {
+      "id": "doi-secure-timely",
+      "url": "https://api.crossref.org/works/10.1145/3576915.3623197",
+      "final_url": "https://api.crossref.org/works/10.1145/3576915.3623197",
+      "file": "doi-secure-timely.json",
+      "bytes": 15167,
+      "sha256": "9570f2a1c7eef447f7e70ef5f128c2e6cb4bcccc9c24b7bd1c065185bf19aae0",
+      "content_type": "application/json",
+      "metadata": {
+        "title": [
+          "Secure and Timely GPU Execution in Cyber-physical Systems"
+        ],
+        "DOI": "10.1145/3576915.3623197",
+        "container-title": [
+          "Proceedings of the 2023 ACM SIGSAC Conference on Computer and Communications Security"
+        ],
+        "published": {
+          "date-parts": [
+            [
+              2023,
+              11,
+              15
+            ]
+          ]
+        },
+        "published-online": {
+          "date-parts": [
+            [
+              2023,
+              11,
+              21
+            ]
+          ]
+        },
+        "published-print": {
+          "date-parts": [
+            [
+              2023,
+              11,
+              15
+            ]
+          ]
+        },
+        "URL": "https://doi.org/10.1145/3576915.3623197",
+        "type": "proceedings-article"
+      }
+    },
+    {
+      "id": "doi-portal",
+      "url": "https://api.crossref.org/works/10.1109/SP61157.2025.00013",
+      "final_url": "https://api.crossref.org/works/10.1109/SP61157.2025.00013",
+      "file": "doi-portal.json",
+      "bytes": 10646,
+      "sha256": "dc49af763dd68316dd33b4d5696d4569f80ab1df3e5614023bafa4cd0cfd3942",
+      "content_type": "application/json",
+      "metadata": {
+        "title": [
+          "Portal: Fast and Secure Device Access with Arm CCA for Modern Arm Mobile System-on-Chips (SoCs)"
+        ],
+        "DOI": "10.1109/sp61157.2025.00013",
+        "container-title": [
+          "2025 IEEE Symposium on Security and Privacy (SP)"
+        ],
+        "published": {
+          "date-parts": [
+            [
+              2025,
+              5,
+              12
+            ]
+          ]
+        },
+        "published-online": null,
+        "published-print": {
+          "date-parts": [
+            [
+              2025,
+              5,
+              12
+            ]
+          ]
+        },
+        "URL": "https://doi.org/10.1109/sp61157.2025.00013",
+        "type": "proceedings-article"
+      }
+    },
+    {
+      "id": "doi-discrete",
+      "url": "https://api.crossref.org/works/10.1145/3038228.3038233",
+      "final_url": "https://api.crossref.org/works/10.1145/3038228.3038233",
+      "file": "doi-discrete.json",
+      "bytes": 14248,
+      "sha256": "89e0f8ee9debb41179a419926445b57fb06830b449a320e31cc54336756770f2",
+      "content_type": "application/json",
+      "metadata": {
+        "title": [
+          "Understanding The Security of Discrete GPUs"
+        ],
+        "DOI": "10.1145/3038228.3038233",
+        "container-title": [
+          "Proceedings of the General Purpose GPUs"
+        ],
+        "published": {
+          "date-parts": [
+            [
+              2017,
+              2,
+              4
+            ]
+          ]
+        },
+        "published-online": {
+          "date-parts": [
+            [
+              2017,
+              2,
+              4
+            ]
+          ]
+        },
+        "published-print": {
+          "date-parts": [
+            [
+              2017,
+              2,
+              4
+            ]
+          ]
+        },
+        "URL": "https://doi.org/10.1145/3038228.3038233",
+        "type": "proceedings-article"
+      }
+    },
+    {
+      "id": "doi-virtualized",
+      "url": "https://api.crossref.org/works/10.1007/978-3-662-45472-5_9",
+      "final_url": "https://api.crossref.org/works/10.1007/978-3-662-45472-5_9",
+      "file": "doi-virtualized.json",
+      "bytes": 12698,
+      "sha256": "03303adbe8845ac022b264baa293c158ef2c3f9422809574791b01b80d9e751b",
+      "content_type": "application/json",
+      "metadata": {
+        "title": [
+          "Confidentiality Issues on a GPU in a Virtualized Environment"
+        ],
+        "DOI": "10.1007/978-3-662-45472-5_9",
+        "container-title": [
+          "Lecture Notes in Computer Science",
+          "Financial Cryptography and Data Security"
+        ],
+        "published": {
+          "date-parts": [
+            [
+              2014
+            ]
+          ]
+        },
+        "published-online": {
+          "date-parts": [
+            [
+              2014,
+              11,
+              9
+            ]
+          ]
+        },
+        "published-print": {
+          "date-parts": [
+            [
+              2014
+            ]
+          ]
+        },
+        "URL": "https://doi.org/10.1007/978-3-662-45472-5_9",
+        "type": "book-chapter"
+      }
+    },
+    {
+      "id": "nvidia-platforms",
+      "url": "https://docs.nvidia.com/confidential-computing/virtual-machines/dev/supported-platforms",
+      "final_url": "https://docs.nvidia.com/confidential-computing/virtual-machines/dev/supported-platforms",
+      "file": "nvidia-platforms.html",
+      "bytes": 96442,
+      "sha256": "9b529aeb60b76a6ca2e1a4b9be90d3ec5b2906700b14fb29c836bcda8f986f1d",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "nvidia-threat",
+      "url": "https://docs.nvidia.com/confidential-computing/virtual-machines/dev/threat-model",
+      "final_url": "https://docs.nvidia.com/confidential-computing/virtual-machines/dev/threat-model",
+      "file": "nvidia-threat.html",
+      "bytes": 122641,
+      "sha256": "3b4c6041ce093574403e674f5631daba047224f037f4bb58a766758a312fae71",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "nvidia-attesting",
+      "url": "https://docs.nvidia.com/confidential-computing/virtual-machines/dev/deployment-guide/attest",
+      "final_url": "https://docs.nvidia.com/confidential-computing/virtual-machines/dev/deployment-guide/attest",
+      "file": "nvidia-attesting.html",
+      "bytes": 113903,
+      "sha256": "1c1c2a0ff4a638f634ae4c952419348f8ebd30eda7638b34009f8bcedcbba4f7",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "archive-hopper",
+      "url": "https://raw.githubusercontent.com/ConfidentialComputing/GPU-TEE-Papers/8e367018ffbf209f62184423de9874c544d856c4/Hopper%20Confidential%20Computing-%20How%20it%20Works%20Under%20the%20Hood.pdf",
+      "final_url": "https://raw.githubusercontent.com/ConfidentialComputing/GPU-TEE-Papers/8e367018ffbf209f62184423de9874c544d856c4/Hopper%20Confidential%20Computing-%20How%20it%20Works%20Under%20the%20Hood.pdf",
+      "file": "archive-hopper.pdf",
+      "bytes": 2616417,
+      "sha256": "4d7e3adc0664c1ea19771f6c0424209c412b37ad3a05b6e39823480f6a048d67",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "id": "doi-ccai-correct",
+      "url": "https://api.crossref.org/works/10.1145/3725843.3756104",
+      "final_url": "https://api.crossref.org/works/10.1145/3725843.3756104",
+      "file": "doi-ccai-correct.json",
+      "bytes": 24257,
+      "sha256": "26622e0696b3558a581af9483e1313585dbdfd2d56ef5ce16478048efa1d6996",
+      "content_type": "application/json",
+      "metadata": {
+        "title": [
+          "ccAI: A Compatible and Confidential System for AI Computing"
+        ],
+        "DOI": "10.1145/3725843.3756104",
+        "container-title": [
+          "Proceedings of the 58th IEEE/ACM International Symposium on Microarchitecture"
+        ],
+        "published": {
+          "date-parts": [
+            [
+              2025,
+              10,
+              17
+            ]
+          ]
+        },
+        "published-online": {
+          "date-parts": [
+            [
+              2025,
+              10,
+              17
+            ]
+          ]
+        },
+        "published-print": {
+          "date-parts": [
+            [
+              2025,
+              10,
+              18
+            ]
+          ]
+        },
+        "URL": "https://doi.org/10.1145/3725843.3756104",
+        "type": "proceedings-article"
+      }
+    },
+    {
+      "id": "nvidia-nvml",
+      "url": "https://docs.nvidia.com/deploy/nvml-api/group__nvmlConfidentialComputing.html",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "id": "nvidia-open-modules",
+      "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/main/README.md",
+      "error": "The read operation timed out"
+    },
+    {
+      "id": "cage-readme",
+      "url": "https://raw.githubusercontent.com/Compass-All/NDSS24-CAGE/main/Readme.md",
+      "error": "The read operation timed out"
+    },
+    {
+      "id": "honeycomb-readme",
+      "url": "https://raw.githubusercontent.com/Jiacheng/honeycomb-osdi23-ae/main/README.md",
+      "error": "The read operation timed out"
+    },
+    {
+      "id": "archive-nvidia-developer",
+      "url": "https://raw.githubusercontent.com/ConfidentialComputing/GPU-TEE-Papers/8e367018ffbf209f62184423de9874c544d856c4/The%20Developer%E2%80%99s%20View%20to%20Secure%20an%20Application%20and%20Data%20on%20NVIDIA%20H100%20with%20Confidential%20Computing.pdf",
+      "error": "The read operation timed out"
+    },
+    {
+      "id": "strongbox-readme",
+      "url": "https://raw.githubusercontent.com/Compass-All/CCS22-StrongBox/main/README.md",
+      "error": "The read operation timed out"
+    },
+    {
+      "id": "acai-readme",
+      "url": "https://raw.githubusercontent.com/sectrs-acai/acai/main/README.md",
+      "error": "The read operation timed out"
+    },
+    {
+      "id": "cronus-readme",
+      "url": "https://raw.githubusercontent.com/hku-systems/cronus/main/README.md",
+      "error": "The read operation timed out"
+    },
+    {
+      "id": "phantom-readme",
+      "url": "https://raw.githubusercontent.com/Lotuhu/PhantomMap/main/README.md",
+      "error": "The read operation timed out"
+    },
+    {
+      "id": "igt-readme",
+      "url": "https://gitlab.freedesktop.org/drm/igt-gpu-tools/-/raw/master/README.md",
+      "final_url": "https://gitlab.freedesktop.org/drm/igt-gpu-tools/-/raw/master/README.md",
+      "file": "igt-readme.html",
+      "bytes": 7458,
+      "sha256": "d868d4858ceb1d2eb8acee042af618332bcb4d394b4c44d451624cff9f48e6d2",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "id": "gevisor-tree",
+      "url": "https://api.github.com/repos/purseclab/GEVisor/git/trees/HEAD?recursive=1",
+      "final_url": "https://api.github.com/repos/purseclab/GEVisor/git/trees/HEAD?recursive=1",
+      "file": "gevisor-tree.json",
+      "bytes": 173668,
+      "sha256": "3db3c55db9d8d175de3cbbfc98519de06a0066d8f80afa1974515933f45f02af",
+      "content_type": "application/json; charset=utf-8"
+    },
+    {
+      "id": "nvidia-nvtrust-commit",
+      "url": "https://api.github.com/repos/NVIDIA/nvtrust/commits/main",
+      "final_url": "https://api.github.com/repos/NVIDIA/nvtrust/commits/main",
+      "file": "nvidia-nvtrust-commit.json",
+      "bytes": 189858,
+      "sha256": "4c5f36e10c2bdb536cc5c20c0a85096fbcd6a5fa495d4f148870c02d153d8820",
+      "content_type": "application/json; charset=utf-8"
+    },
+    {
+      "id": "nvidia-sdk-commit",
+      "url": "https://api.github.com/repos/NVIDIA/attestation-sdk/commits/main",
+      "final_url": "https://api.github.com/repos/NVIDIA/attestation-sdk/commits/main",
+      "file": "nvidia-sdk-commit.json",
+      "bytes": 1067906,
+      "sha256": "9efe45dddd04e9f268b501cefe4ebdc80b97d443eec7aeb45d8c8b9b4acfb31c",
+      "content_type": "application/json; charset=utf-8"
+    },
+    {
+      "id": "ccai-official-doi",
+      "url": "https://api.crossref.org/works/10.1145/3725843.3756104",
+      "final_url": "https://api.crossref.org/works/10.1145/3725843.3756104",
+      "file": "ccai-official-doi.json",
+      "bytes": 24257,
+      "sha256": "26622e0696b3558a581af9483e1313585dbdfd2d56ef5ce16478048efa1d6996",
+      "content_type": "application/json",
+      "metadata": {
+        "title": [
+          "ccAI: A Compatible and Confidential System for AI Computing"
+        ],
+        "DOI": "10.1145/3725843.3756104",
+        "container-title": [
+          "Proceedings of the 58th IEEE/ACM International Symposium on Microarchitecture"
+        ],
+        "published": {
+          "date-parts": [
+            [
+              2025,
+              10,
+              17
+            ]
+          ]
+        },
+        "published-online": {
+          "date-parts": [
+            [
+              2025,
+              10,
+              17
+            ]
+          ]
+        },
+        "published-print": {
+          "date-parts": [
+            [
+              2025,
+              10,
+              18
+            ]
+          ]
+        },
+        "URL": "https://doi.org/10.1145/3725843.3756104",
+        "type": "proceedings-article"
+      }
+    },
+    {
+      "id": "nvidia-nvml-commands",
+      "url": "https://docs.nvidia.com/deploy/nvml-api/group__nvmlConfidentialComputingCommands.html",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "id": "nvidia-nvml-index",
+      "url": "https://docs.nvidia.com/deploy/nvml-api/index.html",
+      "final_url": "https://docs.nvidia.com/deploy/nvml-api/latest/index.html",
+      "file": "nvidia-nvml-index.html",
+      "bytes": 52424,
+      "sha256": "5f7882b7bff998a9ebd964bad458f22650628e9c35f63b3f6c86455a3908293a",
+      "content_type": "text/html"
+    },
+    {
+      "id": "nvidia-sdk-pinned-readme",
+      "url": "https://raw.githubusercontent.com/NVIDIA/attestation-sdk/11b2bfeb42a1158aa08744603ecb239ccb3d2265/README.md",
+      "final_url": "https://raw.githubusercontent.com/NVIDIA/attestation-sdk/11b2bfeb42a1158aa08744603ecb239ccb3d2265/README.md",
+      "file": "nvidia-sdk-pinned-readme.html",
+      "bytes": 5228,
+      "sha256": "e3308f022ca39b18a38d11c5f8816a495df756d6f105368972722c71e0ee8748",
+      "content_type": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "nvidia-nvtrust-pinned-readme",
+      "url": "https://raw.githubusercontent.com/NVIDIA/nvtrust/a8090b65872a15bf0fd1f69f3d9b754b1be431b5/README.md",
+      "final_url": "https://raw.githubusercontent.com/NVIDIA/nvtrust/a8090b65872a15bf0fd1f69f3d9b754b1be431b5/README.md",
+      "file": "nvidia-nvtrust-pinned-readme.html",
+      "bytes": 4391,
+      "sha256": "841e03deb88372902fcc84eb07feb3536d136d16aa34202142923d92ebad0d95",
+      "content_type": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "nvidia-nvml-definitions",
+      "url": "https://docs.nvidia.com/deploy/nvml-api/latest/api/group__nvmlConfidentialComputingDefs.html",
+      "final_url": "https://docs.nvidia.com/deploy/nvml-api/latest/api/group__nvmlConfidentialComputingDefs.html",
+      "file": "nvidia-nvml-definitions.html",
+      "bytes": 92093,
+      "sha256": "414758838a1b5f95dafd4d2ae891e484abff9f1f9d1e050155b71581d4825bfd",
+      "content_type": "text/html"
+    },
+    {
+      "id": "prior:survey-metadata-retry.json",
+      "local_file": "build/security-design-review-20261026/survey-metadata-retry.json",
+      "sha256": "6ce1fcf88b0c2dd8f4377e6d7a89aa9391fd63d0a21cc357269135ee8eb0147a",
+      "bytes": 37961
+    },
+    {
+      "id": "prior:strongbox.txt",
+      "local_file": "build/gpu-isolation-research-20261018/strongbox.txt",
+      "sha256": "d4fb870c95c0f924cda26d5003cb44f3f8b8fcd5c608b83130b5ebc922d7d37b",
+      "bytes": 99877
+    },
+    {
+      "id": "prior:research-inputs.json",
+      "local_file": "build/gpu-isolation-research-20261018/research-inputs.json",
+      "sha256": "17b4318c83935c5619b7b5ae805e62390c61f1fcc23b03fa7fa94f7aac2abadf",
+      "bytes": 11446
+    },
+    {
+      "id": "prior:cage.txt",
+      "local_file": "build/gpu-isolation-research-20261018/cage.txt",
+      "sha256": "93806cbb9625ba33889682bc2f0f8c2006cf80718ae1ab881c8ab16eccfc8b7e",
+      "bytes": 101040
+    },
+    {
+      "id": "prior:acai.txt",
+      "local_file": "build/gpu-isolation-research-20261018/acai.txt",
+      "sha256": "37e919069456713b80d3f198a29a1b40849583ca434469f89779a21c204f0c95",
+      "bytes": 97173
+    },
+    {
+      "id": "prior:portal.txt",
+      "local_file": "build/gpu-isolation-research-20261018/portal.txt",
+      "sha256": "6aa6c7b77dcf5afeee1ceacb8fc7d013106ace5a156931f5b63790d2a3bd359a",
+      "bytes": 101221
+    },
+    {
+      "id": "prior:graviton.txt",
+      "local_file": "build/gpu-isolation-research-20261018/graviton.txt",
+      "sha256": "6a9cb8aef1ee7cb5f2cc633aefb04ac2db72a58b10c0b7765e35ae09e6d1103e",
+      "bytes": 81364
+    },
+    {
+      "id": "prior:honeycomb.txt",
+      "local_file": "build/gpu-isolation-research-20261018/honeycomb.txt",
+      "sha256": "dac96667c4f5ddd5573ed2284d38915e402e4f3da27af685b8c83b654e779a2b",
+      "bytes": 92527
+    },
+    {
+      "id": "prior:cronus.txt",
+      "local_file": "build/gpu-isolation-research-20261018/cronus.txt",
+      "sha256": "f05b31f75d9acbbaec3266976ca92afaedef68d54a0ed40d67ce9370b03bd9b7",
+      "bytes": 107461
+    },
+    {
+      "id": "prior:sok-paper.txt",
+      "local_file": "build/security-design-review-20261026/sok-paper.txt",
+      "sha256": "40595b711ee9aceae22012fc48465f6b1705b64061747dfcb37bb00a7f8d854e",
+      "bytes": 120015
+    },
+    {
+      "id": "prior:guardian.txt",
+      "local_file": "build/gpu-isolation-research-20261018/guardian.txt",
+      "sha256": "bae9126d752da1ebd5fe91b51811ef73a438a9e1555e6034ecc12b86f3540554",
+      "bytes": 81720
+    },
+    {
+      "id": "prior:GPU_ISOLATION_RESEARCH_AND_CODE_MAP_20261018.md",
+      "local_file": "docs/shared/GPU_ISOLATION_RESEARCH_AND_CODE_MAP_20261018.md",
+      "sha256": "c3ceb98900e56008f2051a5366069c4e359a04e310c3fd259debfb0f49e9db99",
+      "bytes": 44781
+    },
+    {
+      "id": "prior:phantommap.txt",
+      "local_file": "build/gpu-isolation-research-20261018/phantommap.txt",
+      "sha256": "f78e2b0ceb242cfd903fd8204c62f64aba4c91c0468765e6e62a0d96c5b71ccf",
+      "bytes": 81391
+    },
+    {
+      "id": "prior:gpushield.txt",
+      "local_file": "build/paper-close-reading-20261020/gpushield.txt",
+      "sha256": "516d95387f34c6b9f35a0c0b4d5e62bc8cc60ae8a2590b955dec6662985adfbf",
+      "bytes": 91084
+    },
+    {
+      "id": "prior:cucatch.txt",
+      "local_file": "build/paper-close-reading-20261020/cucatch.txt",
+      "sha256": "41431ea18848e610a4d66af0b0e1a4cd08da20ee4f24eec02e58141451118544",
+      "bytes": 104801
+    },
+    {
+      "id": "interrupt:heckler-author.txt",
+      "local_file": "build/confidential-interrupt-research-20261026/heckler-author.txt",
+      "sha256": "e4d45a04f2cf59fdf63f3ab31861ceddb5324cfc4aa0a52d203cf19c12a6a300",
+      "bytes": 108957
+    },
+    {
+      "id": "interrupt:wesee-candidate.txt",
+      "local_file": "build/confidential-interrupt-research-20261026/wesee-candidate.txt",
+      "sha256": "d0af7499fc95d8486c3e6551395b566b325f37ae5ecfc177836fb88113a71209",
+      "bytes": 103970
+    },
+    {
+      "id": "interrupt:sigy-author.txt",
+      "local_file": "build/confidential-interrupt-research-20261026/sigy-author.txt",
+      "sha256": "f46e992873a2ec9002c4acf2b1cfc7999fc80d59b0b37118542ca11d76908758",
+      "bytes": 105525
+    },
+    {
+      "id": "interrupt:smashex-page.html",
+      "local_file": "build/confidential-interrupt-research-20261026/smashex-page.html",
+      "sha256": "a9cbafb2f70d009e04c618250187a25400b1e5da421f0a149015367a98d1daa3",
+      "bytes": 14736
+    },
+    {
+      "id": "interrupt:sgx-step.txt",
+      "local_file": "build/confidential-interrupt-research-20261026/sgx-step.txt",
+      "sha256": "bf84dcf91f5b1bae834ace3a7a2891ee67146fb354ed340d26bed65e94fc8410",
+      "bytes": 35769
+    },
+    {
+      "id": "interrupt:sev-step.txt",
+      "local_file": "build/confidential-interrupt-research-20261026/sev-step.txt",
+      "sha256": "244d00ddef434a494df2bd7a64744f3182cf05e7c8c436e30bd5adcb6d264bcd",
+      "bytes": 90450
+    },
+    {
+      "id": "interrupt:aex-author.txt",
+      "local_file": "build/confidential-interrupt-research-20261026/aex-author.txt",
+      "sha256": "49e61f70d7e32db380964f6e88cc97b0703e912ec9a8c330ec5c64d2fae85d7e",
+      "bytes": 103787
+    }
+  ]
+}

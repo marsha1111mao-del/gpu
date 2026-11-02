@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "baseline": "rmm-private-fu-ft-20261102",
+  "artifacts": [
+    {
+      "archive": "GPU-SFTP/runtime/rmm-private-fu-ft-20261102-runtime.tar.gz",
+      "sha256": "1fc2af28d065ed51f5c84c8bb7dc35067c0c9b666cb5606b5a111e72200c0323",
+      "size": 47003535,
+      "files": {
+        "runtime/client-Image": {
+          "size": 39176704,
+          "sha256": "86929f97a0fe5a18070849bb8e260cee385c7d58cdd05e6134fa93a95321d5d3"
+        },
+        "runtime/host-Image": {
+          "size": 43653632,
+          "sha256": "f79105ad2809859801a39a1dd3f9db9768c41e6b8e8f4d129e78e60f8d90fbb1"
+        },
+        "runtime/host.config": {
+          "size": 303965,
+          "sha256": "87f30afabaad65d94a331e8e07f8624a600c1e090888986e548aa50935a693f8"
+        },
+        "runtime/initrd.cpio": {
+          "size": 3522560,
+          "sha256": "7734ceed20e4d394ff45d2e7ff15ea1b752f4d2d40772b2628596f2431a0e990"
+        },
+        "runtime/proxy-Image": {
+          "size": 39375360,
+          "sha256": "44d99845cf4262b5d0f7f82468daac682cae91d281fdbab1042046353a65fa73"
+        },
+        "runtime/rmm.elf": {
+          "size": 3634296,
+          "sha256": "0a7004d1d8a7072300dd84cf0fffaa3f01b57da5368cb28ceebd26b4f2d68ff3"
+        },
+        "runtime/rmm.img": {
+          "size": 2108200,
+          "sha256": "43f987c143873554f6b91227955cdfcf7088b326ff12f06355d9837bb0f75362"
+        },
+        "runtime/runner.py": {
+          "size": 68827,
+          "sha256": "882bf11fc2fa0c1821e0be6f5c65f478b6d0108a27f44f59acc4e393e1afcb70"
+        },
+        "runtime/hashes.json": {
+          "size": 673,
+          "sha256": "9a57c86c3b7ffda6e069e6454b20f502f9977dda9a357f954cef6d4f570728bb"
+        }
+      }
+    },
+    {
+      "archive": "GPU-SFTP/runtime/rmm-private-fu-ft-20261102-firmware.tar.gz",
+      "sha256": "6514fc70da14fb5a0dc3321c21ffbe6e69065293132eb3bc6c38bbf939a5de93",
+      "size": 5158342,
+      "files": {
+        "firmware/tf-rmm.elf": {
+          "size": 3634296,
+          "sha256": "0a7004d1d8a7072300dd84cf0fffaa3f01b57da5368cb28ceebd26b4f2d68ff3"
+        },
+        "firmware/u-boot": {
+          "size": 8781288,
+          "sha256": "cb2954e7dbfe8f4d9489c4bcfe1cb5874f1d897ee1d0b08f75d5520504ed356c"
+        },
+        "firmware/idbloader.img": {
+          "size": 266240,
+          "sha256": "7d18ade7a4453d2f6baa8448fede71a9bf0ef121b207c32c3d0a9eff2a631c52"
+        },
+        "firmware/u-boot.itb": {
+          "size": 1824256,
+          "sha256": "f8ad6d8eb2f5830b428dfc453480dc1f3c748fd3b248c51b1100fd72f5894cf0"
+        },
+        "firmware/bl31.elf": {
+          "size": 1223736,
+          "sha256": "3b6095b3fc3c62358ae2c718fe95803bd3d3afe7985f0822355d035675378dd8"
+        },
+        "firmware/rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.16.bin": {
+          "size": 75480,
+          "sha256": "5aa6271195e422a2c30a8e801baa64e4a10cbc6a5f1963f9a29e6dc85096c7bf"
+        },
+        "firmware/uboot.config": {
+          "size": 59600,
+          "sha256": "8a48e20026b278af99ad062e4296e6412b78e1ce92cf19a608d8b4c95348641e"
+        },
+        "firmware/inputs.json": {
+          "size": 786,
+          "sha256": "df5f31ad1d2f06c3fbb1743bc5caa8a45dbc4c2cd1ea7b6a7e6b76d75f9000fc"
+        }
+      }
+    }
+  ]
+}

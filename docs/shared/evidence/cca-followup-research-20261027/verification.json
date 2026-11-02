@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-27",
+  "status": "passed",
+  "checks": [
+    "Markdown relative link targets exist",
+    "Evidence JSON parses",
+    "Five cached original PDF SHA256 values match",
+    "Notion nonpublication status explicit"
+  ],
+  "local_link_count": 9,
+  "files": [
+    {
+      "path": "docs/shared/GPU_CCA_TEE_FOLLOWUP_RESEARCH_20261027.md",
+      "sha256": "7385915ab82ff217a4e425eebc92397aa6f0e494d222ecf4976a8e6a057ee295"
+    },
+    {
+      "path": "docs/shared/GPU_CCA_TEE_FOCUSED_RESEARCH_20261027.md",
+      "sha256": "f81d2f6aa56c957cbe1201b737d3ecfac8299fa99325c7edfc7eda5a4e7e7680"
+    },
+    {
+      "path": "docs/shared/evidence/cca-followup-research-20261027/sources.json",
+      "sha256": "7dca4c5852b0e672016c4ca6610c80bfe40ef7e291ba814b661b8856d2f79811"
+    }
+  ],
+  "runtime_tests": "not run; documentation only",
+  "hardware_run_id": null,
+  "new_performance_measurements": false
+}

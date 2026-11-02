@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1060" viewBox="0 0 1440 1060">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#667791"/></marker></defs>
+<style>text { font-family: "Noto Sans CJK SC", sans-serif; }</style>
+<rect width="1440" height="1060" fill="white"/>
+<text x="58" y="64" font-size="36" fill="#17243b" font-weight="700" text-anchor="start">完成快速路径：GPU已完成，尽快让应用知道</text>
+<text x="60" y="104" font-size="21" fill="#52627a" font-weight="400" text-anchor="start">只提前观察真实完成；不省略GPU依赖，不把接纳回复当成完成。示意不按时间比例。</text>
+<rect x="60" y="155" width="1320" height="130" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="155" width="6" height="130" rx="3" fill="#d58120" stroke="none"/>
+<text x="82" y="193" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">原路径：真实完成之后仍有多层交接</text>
+<text x="82" y="231" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">GPU更新记录 → 硬IRQ → IRQ线程 / worker → 原生fence → chain处理 → Proxy → Client</text>
+<text x="82" y="261" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">短任务或同步finish容易把这些串行交接暴露为应用等待。</text>
+<rect x="60" y="370" width="390" height="190" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="370" width="6" height="190" rx="3" fill="#16836a" stroke="none"/>
+<text x="82" y="408" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">① 有界观察真实完成</text>
+<text x="82" y="446" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">managed + active + 无fault/reset</text>
+<text x="82" y="476" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">trylock；维护真实sync record</text>
+<text x="82" y="506" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">status=0且seqno覆盖目标</text>
+<text x="82" y="536" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">每次硬IRQ全局最多8个job</text>
+<rect x="525" y="370" width="390" height="190" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="525" y="370" width="6" height="190" rx="3" fill="#7c58bb" stroke="none"/>
+<text x="547" y="408" font-size="25" fill="#7c58bb" font-weight="700" text-anchor="start">② 化简完成依赖</text>
+<text x="547" y="446" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">旧前缀全部完成？</text>
+<text x="547" y="476" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">是：观察当前真实fence</text>
+<text x="547" y="506" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">否：仍观察完整chain</text>
+<text x="547" y="536" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">完整chain身份 / 引用仍保留</text>
+<rect x="990" y="370" width="390" height="190" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="990" y="370" width="6" height="190" rx="3" fill="#2767d8" stroke="none"/>
+<text x="1012" y="408" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">③ 发布精确完成证明</text>
+<text x="1012" y="446" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">真实成功 → release写cookie</text>
+<text x="1012" y="476" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">Client acquire读取并精确匹配</text>
+<text x="1012" y="506" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">slot复用前结束旧回调</text>
+<text x="1012" y="536" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">错误或不匹配 → 原等待路径</text>
+<polyline points="450,465 525,465" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="915,465 990,465" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="60" y="655" width="620" height="155" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="655" width="6" height="155" rx="3" fill="#d58120" stroke="none"/>
+<text x="82" y="693" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">失败与竞争：保留慢路径</text>
+<text x="82" y="731" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">锁忙 / 超预算 / 状态不符：跳过快路径</text>
+<text x="82" y="761" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">原IRQ mask、ACK、drain、unmask保留</text>
+<text x="82" y="791" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">job引用释放留在进程上下文</text>
+<rect x="760" y="655" width="620" height="155" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="760" y="655" width="6" height="155" rx="3" fill="#7c58bb" stroke="none"/>
+<text x="782" y="693" font-size="25" fill="#7c58bb" font-weight="700" text-anchor="start">依赖语义：完成当前不一定完成全部</text>
+<text x="782" y="731" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">完整完成 = 旧前缀完成 AND 当前完成</text>
+<text x="782" y="761" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">不能仅按最大timeline值或cookie大小判断</text>
+<text x="782" y="791" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">源对象reset不改变已导出的真实fence快照</text>
+<text x="60" y="988" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">历史独立增量：有界观察+7.17%；前缀化简+3.47%。各自基线不同，百分比不能相加。</text>
+<text x="60" y="1018" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">精确cookie已有实现；完整主动完成订阅尚未实现，未命中仍可能走WAIT RPC。</text>
+</svg>

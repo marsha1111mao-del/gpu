@@ -29,6 +29,7 @@ mkdir -p "$OUT_DIR"
  "$RMM_DIR/runtime/tests/opencca_gpu_lease_test.c" \
  -o "$OUT_DIR/opencca-gpu-lease-test"
 "$OUT_DIR/opencca-gpu-lease-test"
+"$OUT_DIR/opencca-gpu-lease-test" --service-isolation
 "${HOST_CC:-cc}" -std=c11 -Wall -Wextra -Werror -g \
  -fsanitize=address,undefined -fno-omit-frame-pointer \
  -I"$RMM_DIR/runtime/include" \

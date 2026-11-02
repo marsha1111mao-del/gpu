@@ -1,0 +1,198 @@
+{
+  "scope": "third optimization design; repeated full720p and selected correctness",
+  "runs": {
+    "fast-target-irq-final-720-20261024-a": {
+      "status": "VERIFIED",
+      "returncode": 0,
+      "files": 11,
+      "fast_returns": 1018871
+    },
+    "fast-target-irq-final-720-20261024-b": {
+      "status": "VERIFIED",
+      "returncode": 0,
+      "files": 11,
+      "fast_returns": 1024179
+    },
+    "fast-target-irq-final-compute-20261024-a": {
+      "status": "VERIFIED",
+      "returncode": 0,
+      "files": 10,
+      "fast_returns": 5951
+    },
+    "fast-target-irq-final-ml-20261024-a": {
+      "status": "VERIFIED",
+      "returncode": 0,
+      "files": 10,
+      "fast_returns": 1071
+    }
+  },
+  "api_per_client": 18,
+  "ml_correctness": {
+    "ml-gemm": {
+      "gemm_512_fp32": 29.292630000000003
+    },
+    "ml-conv": {
+      "conv2d_64x64x32_3x3_fp32": 33.663470000000004
+    }
+  },
+  "scores": [
+    1234,
+    1240
+  ],
+  "mean_score": 1237.0,
+  "previous_baseline": 1208.0,
+  "increase_percent": 2.4006622516556275,
+  "cumulative_increase_percent": 6.822107081174433,
+  "actual_sd_firmware_sha256": {
+    "idbloader.img": "aafd53464c97c69e3498e299eccb78de4d92d777f271be02f8cc66682ad67dc7",
+    "u-boot.itb": "5cd766a1e1c38cff67d04319c2e07ebad39171e6c42a914190e4836043be3289"
+  },
+  "not_run": [
+    "1080p",
+    "multiClient performance",
+    "long-duration stress",
+    "full hardware attack matrix"
+  ],
+  "status": "VERIFIED",
+  "commands": {
+    "fast-target-irq-final-720-20261024-a": {
+      "argv": [
+        "python3",
+        "scripts/run/run-realm-wake-sgi.py",
+        "--module",
+        "build/fast-target-irq-20261024/host-sgi/xshm_wake_sgi.ko",
+        "--",
+        "python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/fast-target-irq-20261024/candidate-final",
+        "--workload",
+        "glmark",
+        "--performance",
+        "--benchmark-only",
+        "--suite",
+        "--profiles",
+        "glmark-720",
+        "--clients",
+        "1",
+        "--compact-memory",
+        "--pool-mib",
+        "128",
+        "--client-cpu-layout",
+        "round-robin",
+        "--cpu-frequency-khz",
+        "1800000",
+        "--telemetry",
+        "--transfer-capture"
+      ],
+      "returncode": 0,
+      "evidence": "build/fast-target-irq-20261024/runs/fast-target-irq-final-720-20261024-a",
+      "lab_evidence": "build/lab-runs/fast-target-irq-final-720-20261024-a"
+    },
+    "fast-target-irq-final-720-20261024-b": {
+      "argv": [
+        "python3",
+        "scripts/run/run-realm-wake-sgi.py",
+        "--module",
+        "/home/mzh/gpu/build/fast-target-irq-20261024/host-sgi/xshm_wake_sgi.ko",
+        "--",
+        "python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "/home/mzh/gpu/build/fast-target-irq-20261024/candidate-final",
+        "--workload",
+        "glmark",
+        "--performance",
+        "--benchmark-only",
+        "--suite",
+        "--profiles",
+        "glmark-720",
+        "--clients",
+        "1",
+        "--compact-memory",
+        "--pool-mib",
+        "128",
+        "--client-cpu-layout",
+        "round-robin",
+        "--cpu-frequency-khz",
+        "1800000",
+        "--telemetry",
+        "--transfer-capture"
+      ],
+      "returncode": 0,
+      "evidence": "build/fast-target-irq-20261024/runs/fast-target-irq-final-720-20261024-b",
+      "lab_evidence": "build/lab-runs/fast-target-irq-final-720-20261024-b"
+    },
+    "fast-target-irq-final-compute-20261024-a": {
+      "argv": [
+        "python3",
+        "scripts/run/run-realm-wake-sgi.py",
+        "--module",
+        "/home/mzh/gpu/build/fast-target-irq-20261024/host-sgi/xshm_wake_sgi.ko",
+        "--",
+        "python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "/home/mzh/gpu/build/fast-target-irq-20261024/candidate-final",
+        "--workload",
+        "compute",
+        "--transfer-capture"
+      ],
+      "returncode": 0,
+      "evidence": "build/fast-target-irq-20261024/runs/fast-target-irq-final-compute-20261024-a",
+      "lab_evidence": "build/lab-runs/fast-target-irq-final-compute-20261024-a"
+    },
+    "fast-target-irq-final-ml-20261024-a": {
+      "argv": [
+        "python3",
+        "scripts/run/run-realm-wake-sgi.py",
+        "--module",
+        "/home/mzh/gpu/build/fast-target-irq-20261024/host-sgi/xshm_wake_sgi.ko",
+        "--",
+        "python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "/home/mzh/gpu/build/fast-target-irq-20261024/candidate-final",
+        "--workload",
+        "glmark",
+        "--performance",
+        "--benchmark-only",
+        "--suite",
+        "--profiles",
+        "ml-gemm",
+        "ml-conv",
+        "--clients",
+        "1",
+        "--compact-memory",
+        "--pool-mib",
+        "128",
+        "--transfer-capture"
+      ],
+      "returncode": 0,
+      "evidence": "build/fast-target-irq-20261024/runs/fast-target-irq-final-ml-20261024-a",
+      "lab_evidence": "build/lab-runs/fast-target-irq-final-ml-20261024-a"
+    }
+  },
+  "previous_designs": [
+    {
+      "design": "resident request wake",
+      "scores": [
+        1183,
+        1181
+      ],
+      "mean": 1182.0,
+      "previous_baseline": 1158,
+      "increase_percent": 2.0725388601036343
+    },
+    {
+      "design": "pipeline ownership reuse combination",
+      "scores": [
+        1210,
+        1206
+      ],
+      "mean": 1208.0,
+      "previous_baseline": 1182.0,
+      "increase_percent": 2.1996615905245376
+    }
+  ]
+}

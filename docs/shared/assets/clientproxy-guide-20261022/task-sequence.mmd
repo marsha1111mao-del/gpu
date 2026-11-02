@@ -1,0 +1,24 @@
+sequenceDiagram
+    participant A as Client应用
+    participant M as Client Mesa
+    participant F as Client前端
+    participant P as Proxy后端
+    participant N as 原生Panthor
+    participant G as GPU
+    A->>M: 绘制或计算API
+    M->>F: BO创建和mmap及VM_BIND
+    F->>P: 会话内对象请求
+    P->>N: 创建实际对象并建立映射
+    M->>M: 写共享BO中的命令和输入
+    M->>F: GROUP_SUBMIT ioctl
+    F->>P: PLAN_EXEC及本次动态参数
+    P->>N: 原生group submit
+    N-->>P: 已接纳提交
+    P-->>F: RPC提交结果
+    F-->>M: ioctl返回
+    N->>G: 调度并启动命令流
+    G-->>N: 完成中断
+    N->>N: 原生fence完成
+    N-->>F: 真实fence回调发布完成cookie
+    M->>F: 等待完成或导出同步
+    F-->>M: 本地可信命中或真实等待结果

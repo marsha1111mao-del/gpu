@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1030" viewBox="0 0 1440 1030">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#667791"/></marker></defs>
+<style>text { font-family: "Noto Sans CJK SC", sans-serif; }</style>
+<rect width="1440" height="1030" fill="white"/>
+<text x="58" y="64" font-size="36" fill="#17243b" font-weight="700" text-anchor="start">缓存所有权：让同步跟随真实交接</text>
+<text x="60" y="104" font-size="21" fill="#52627a" font-weight="400" text-anchor="start">GPU-only chunk、共享payload和控制对象采用不同策略；下面不是所有BO通用的状态机。</text>
+<rect x="60" y="155" width="1320" height="130" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="155" width="6" height="130" rx="3" fill="#d58120" stroke="none"/>
+<text x="82" y="193" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">原路径：GPU长期使用，CPU却反复参与同步</text>
+<text x="82" y="231" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">CPU初始化 → 提交时扫描 / 同步 → GPU执行 → 完成时扫描 / 同步 → 下一次提交重复</text>
+<text x="82" y="261" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">瓶颈：对没有CPU消费者的tiler chunk，维护量随提交次数反复增长。</text>
+<rect x="60" y="365" width="410" height="145" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="365" width="6" height="145" rx="3" fill="#16836a" stroke="none"/>
+<text x="82" y="403" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">CPU初始化</text>
+<text x="82" y="441" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">写chunk头部</text>
+<text x="82" y="471" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">CPU暂时持有映射</text>
+<polyline points="470,438 515,438" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="515" y="365" width="410" height="145" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="515" y="365" width="6" height="145" rx="3" fill="#16836a" stroke="none"/>
+<text x="537" y="403" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">一次真实交接</text>
+<text x="537" y="441" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">clean / invalidate到PoC</text>
+<text x="537" y="471" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">撤销vmap，标记gpu_owned</text>
+<polyline points="925,438 970,438" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="970" y="365" width="410" height="145" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="970" y="365" width="6" height="145" rx="3" fill="#16836a" stroke="none"/>
+<text x="992" y="403" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">GPU长期使用</text>
+<text x="992" y="441" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">通用同步排除GPU_ONLY</text>
+<text x="992" y="471" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">不允许CPU任意重新访问</text>
+<rect x="60" y="600" width="620" height="175" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="600" width="6" height="175" rx="3" fill="#2767d8" stroke="none"/>
+<text x="82" y="638" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">共享payload：限定内存模型</text>
+<text x="82" y="676" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">授权且pinned；CPU使用WC映射</text>
+<text x="82" y="706" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">managed VM保留root reservation</text>
+<text x="82" y="736" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">省去全BO准备；WC并非CPU访问零成本</text>
+<rect x="760" y="600" width="620" height="175" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="760" y="600" width="6" height="175" rx="3" fill="#7c58bb" stroke="none"/>
+<text x="782" y="638" font-size="25" fill="#7c58bb" font-weight="700" text-anchor="start">控制对象：仍需精确同步</text>
+<text x="782" y="676" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">ring / 固件输入：写入后发布</text>
+<text x="782" y="706" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">完成记录 / 固件输出：读取前维护</text>
+<text x="782" y="736" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">CPU屏障不能替代DMA缓存维护</text>
+<rect x="60" y="825" width="1320" height="90" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="825" width="6" height="90" rx="3" fill="#d58120" stroke="none"/>
+<text x="82" y="863" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">正确性边界</text>
+<text x="82" y="901" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">GPU_ONLY不是用户可选的免同步权限；普通BO与普通GPUVM不能套用该例外。</text>
+<text x="60" y="958" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">历史tiler实验：309 → 632（+104.53%）；单轮历史对照，不代表当前版本剩余收益。</text>
+<text x="60" y="988" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">统一所有权状态机是可进一步完善的设计表达；当前实现是上述多处具体约束。</text>
+</svg>

@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-26",
+  "status": "PASS",
+  "scope": "Bibliographic coverage, structured data, source integrity and local documentation links only; no hardware or runtime tests",
+  "command": "python3 build/gpu-security-literature-20261026/validate_catalog.py",
+  "exit_code": 0,
+  "run_id": null,
+  "run_id_note": "No hardware run; document validation only",
+  "evidence": "docs/shared/evidence/gpu-literature-20261026/validation.json",
+  "records": 89,
+  "original_mentions": 50,
+  "original_unique_records": 45,
+  "source_records": 234,
+  "source_artifacts_hash_checked": 146,
+  "local_links_checked": 17,
+  "source_errors_retained": 88,
+  "groups": {
+    "综述与索引": 5,
+    "Arm GPU与CCA": 7,
+    "GPU TEE系统与运行时": 14,
+    "GPU安全内存架构": 8,
+    "GPU隔离、内存安全与攻击": 13,
+    "可信I/O、调度与相邻研究": 2,
+    "机密计算中断补充": 7,
+    "厂商历史演讲": 2,
+    "厂商与可信I/O标准": 15,
+    "Arm与内核规范": 11,
+    "测试工具": 5
+  },
+  "runtime_code_changed": false,
+  "new_performance_measurements": false
+}

@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1280" viewBox="0 0 1440 1280">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#667791"/></marker></defs>
+<style>text { font-family: "Noto Sans CJK SC", sans-serif; }</style>
+<rect width="1440" height="1280" fill="white"/>
+<text x="58" y="64" font-size="36" fill="#17243b" font-weight="700" text-anchor="start">GPU完成：更早看到真实结果，减少通知交接</text>
+<text x="60" y="104" font-size="21" fill="#52627a" font-weight="400" text-anchor="start">原生接纳 → GPU执行 → 真实fence → cookie → Client本地fence，语义始终分层。</text>
+<rect x="60" y="150" width="620" height="150" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="150" width="6" height="150" rx="3" fill="#16836a" stroke="none"/>
+<text x="82" y="188" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">提交端：复用原DRM调度器</text>
+<text x="82" y="226" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">原生创建job / 依赖 / 输出fence</text>
+<text x="82" y="256" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">释放drm_exec后trylock执行一次原调度</text>
+<text x="82" y="286" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">锁忙或依赖未就绪仍走原worker</text>
+<rect x="760" y="150" width="620" height="150" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="760" y="150" width="6" height="150" rx="3" fill="#7c58bb" stroke="none"/>
+<text x="782" y="188" font-size="25" fill="#7c58bb" font-weight="700" text-anchor="start">GPU执行与真实计数</text>
+<text x="782" y="226" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">ring / INSERT / doorbell → GPU执行</text>
+<text x="782" y="256" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">WAIT(all)完成后更新sync record</text>
+<text x="782" y="286" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">产生原物理IRQ与Guest JOB IRQ</text>
+<polyline points="680,225 760,225" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="60" y="415" width="620" height="175" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="415" width="6" height="175" rx="3" fill="#2767d8" stroke="none"/>
+<text x="82" y="453" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">普通路径仍保留</text>
+<text x="82" y="491" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">原JOB mask → IRQ线程ACK / drain / unmask</text>
+<text x="82" y="521" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">线程尾部trylock处理真实固件完成</text>
+<text x="82" y="551" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">锁忙 / reset → 原worker；进程上下文回收</text>
+<rect x="760" y="415" width="620" height="175" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="760" y="415" width="6" height="175" rx="3" fill="#16836a" stroke="none"/>
+<text x="782" y="453" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">硬IRQ有界提前观察</text>
+<text x="782" y="491" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">仅managed VM，短锁trylock、强引用</text>
+<text x="782" y="521" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">invalidate / dma_rmb，检查seqno与status</text>
+<text x="782" y="551" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">最多8个真实job fence；不提前unmask</text>
+<polyline points="1060,300 1060,415" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="1060,350 370,350 370,415" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="60" y="700" width="620" height="165" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="700" width="6" height="165" rx="3" fill="#d58120" stroke="none"/>
+<text x="82" y="738" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">注册阶段：预先选择回调目标</text>
+<text x="82" y="776" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">chain_walk：旧前缀仍pending → 观察整链</text>
+<text x="82" y="806" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">旧前缀确已完成 → 观察当前真实fence</text>
+<text x="82" y="836" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">两种引用分别持有，销毁等待回调结束</text>
+<rect x="760" y="700" width="620" height="165" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="760" y="700" width="6" height="165" rx="3" fill="#2767d8" stroke="none"/>
+<text x="782" y="738" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">成功cookie发布与确认</text>
+<text x="782" y="776" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">成功真实回调 → release写cookie</text>
+<text x="782" y="806" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">Client acquire检查slot中精确cookie</text>
+<text x="782" y="836" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">匹配对象/point/epoch后完成本地fence</text>
+<polyline points="370,590 370,640 1060,640 1060,700" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="1060,590 1060,700" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="680,780 760,780" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)" stroke-dasharray="8,7"/>
+<rect x="60" y="965" width="1320" height="130" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="965" width="6" height="130" rx="3" fill="#16836a" stroke="none"/>
+<text x="82" y="1003" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">三个不同优化层次</text>
+<text x="82" y="1041" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">提交＋IRQ线程尾部：1237 → 1267，+2.43%；前缀完成时观察leaf：1267 → 1311，+3.47%。</text>
+<text x="82" y="1071" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">硬IRQ有界提前观察：1311 → 1405，+7.17%；GPU仍实际执行，IRQ数量没有因此下降。</text>
+<text x="60" y="1208" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">cookie本身不会唤醒睡眠线程：worker未命中仍查WAIT并睡眠重试，完整完成订阅尚未实现。</text>
+<text x="60" y="1238" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">错误不发布成功cookie；chain历史child错误的传播不能等同leaf错误检查。</text>
+</svg>

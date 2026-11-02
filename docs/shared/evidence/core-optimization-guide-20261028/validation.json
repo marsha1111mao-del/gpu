@@ -1,0 +1,13 @@
+{
+  "document": "docs/shared/GPU_CORE_OPTIMIZATIONS_EXPLAINED_20261028.md",
+  "notion_page": "https://www.notion.so/407659a3b8cc8162b959f93d93325ba9",
+  "publication": "success",
+  "warnings": [],
+  "local_links_checked": 23,
+  "figures": 4,
+  "visual_review": "Chinese fonts and all four diagrams reviewed after rerender",
+  "runtime_sources_unchanged": true,
+  "new_performance_measurements": false,
+  "render_command": "python3 scripts/analysis/render-gpu-core-optimizations.py --fontconfig build/clientproxy-guide-20261022/fonts.conf",
+  "render_exit_code": 0
+}

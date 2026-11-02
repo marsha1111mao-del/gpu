@@ -15,6 +15,7 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include "gpu_completion_eventfd.h"
 
 #ifndef EGL_OPENGL_ES3_BIT
 #define EGL_OPENGL_ES3_BIT 0x00000040
@@ -322,6 +323,67 @@ static GLuint link_program(GLuint shader)
     return prog;
 }
 
+static int egl_has_extension(const char *extensions, const char *name)
+{
+    size_t length = strlen(name);
+    const char *match = extensions;
+    if (!match)
+        return 0;
+    while ((match = strstr(match, name))) {
+        if ((match == extensions || match[-1] == ' ') &&
+            (match[length] == ' ' || match[length] == '\0'))
+            return 1;
+        match += length;
+    }
+    return 0;
+}
+
+static int gpu_dispatch_eventfd(EGLDisplay display, int drm_fd)
+{
+    const char *extensions = eglQueryString(display, EGL_EXTENSIONS);
+    PFNEGLCREATESYNCKHRPROC create_sync =
+        (PFNEGLCREATESYNCKHRPROC)eglGetProcAddress("eglCreateSyncKHR");
+    PFNEGLDESTROYSYNCKHRPROC destroy_sync =
+        (PFNEGLDESTROYSYNCKHRPROC)eglGetProcAddress("eglDestroySyncKHR");
+    PFNEGLDUPNATIVEFENCEFDANDROIDPROC duplicate_fd =
+        (PFNEGLDUPNATIVEFENCEFDANDROIDPROC)eglGetProcAddress("eglDupNativeFenceFDANDROID");
+    PFNEGLCLIENTWAITSYNCKHRPROC client_wait =
+        (PFNEGLCLIENTWAITSYNCKHRPROC)eglGetProcAddress("eglClientWaitSyncKHR");
+    const EGLint attributes[] = {
+        EGL_SYNC_NATIVE_FENCE_FD_ANDROID, EGL_NO_NATIVE_FENCE_FD_ANDROID, EGL_NONE,
+    };
+    int sync_fd = -1, result = -1;
+    EGLSyncKHR sync = EGL_NO_SYNC_KHR;
+
+    if (!egl_has_extension(extensions, "EGL_ANDROID_native_fence_sync") ||
+        !egl_has_extension(extensions, "EGL_KHR_fence_sync") ||
+        !create_sync || !destroy_sync || !duplicate_fd || !client_wait) {
+        fprintf(stderr, "GPU_COMPLETION_EVENTFD: EGL native fence support required\n");
+        return -1;
+    }
+    sync = create_sync(display, EGL_SYNC_NATIVE_FENCE_ANDROID, attributes);
+    if (sync == EGL_NO_SYNC_KHR)
+        goto out;
+    /* Submit the nonempty dispatch and the fence that follows it. No CPU
+     * SIGNAL, glFinish, or blocking result map precedes this check. */
+    glFlush();
+    if (check_gl("GPU eventfd glFlush"))
+        goto out;
+    sync_fd = duplicate_fd(display, sync);
+    if (sync_fd < 0 || gpu_completion_eventfd_check(drm_fd, sync_fd) ||
+        client_wait(display, sync, 0, 0) != EGL_CONDITION_SATISFIED_KHR)
+        goto out;
+    result = 0;
+out:
+    if (sync_fd >= 0 && close(sync_fd))
+        result = -1;
+    if (sync != EGL_NO_SYNC_KHR && !destroy_sync(display, sync))
+        result = -1;
+    if (result)
+        fprintf(stderr, "GPU_COMPLETION_EVENTFD: GPU fence notification failed errno=%d\n", errno);
+    return result;
+}
+
 int main(int argc, char **argv)
 {
     char path[64];
@@ -338,6 +400,7 @@ int main(int argc, char **argv)
     GLint alu_iters_loc = -1;
     int rc = 1;
     int perf = 0;
+    int gpu_eventfd = 0;
     int exclude_cpu_prepare = 0;
     int iterations_set = 0;
     int warmup_set = 0;
@@ -384,6 +447,8 @@ int main(int argc, char **argv)
     for (int i = 1; i < argc; i++) {
         if (!strcmp(argv[i], "--perf")) {
             perf = 1;
+        } else if (!strcmp(argv[i], "--gpu-eventfd")) {
+            gpu_eventfd = 1;
         } else if (!strcmp(argv[i], "--exclude-cpu-prepare")) {
             exclude_cpu_prepare = 1;
         } else if (!strcmp(argv[i], "--iterations")) {
@@ -406,19 +471,23 @@ int main(int argc, char **argv)
                 return 2;
         } else if (!strcmp(argv[i], "-h") || !strcmp(argv[i], "--help")) {
             fprintf(stderr,
-                    "usage: %s [--perf] [--exclude-cpu-prepare] [--alu-iters N] [--iterations N] [--warmup N] [--hold-after-check-sec N] [--count N] [drm-node]\n",
+                    "usage: %s [--perf] [--gpu-eventfd] [--exclude-cpu-prepare] [--alu-iters N] [--iterations N] [--warmup N] [--hold-after-check-sec N] [--count N] [drm-node]\n",
                     argv[0]);
             return 0;
         } else if (!requested_path) {
             requested_path = argv[i];
         } else {
             fprintf(stderr,
-                    "usage: %s [--perf] [--exclude-cpu-prepare] [--alu-iters N] [--iterations N] [--warmup N] [--hold-after-check-sec N] [--count N] [drm-node]\n",
+                    "usage: %s [--perf] [--gpu-eventfd] [--exclude-cpu-prepare] [--alu-iters N] [--iterations N] [--warmup N] [--hold-after-check-sec N] [--count N] [drm-node]\n",
                     argv[0]);
             return 2;
         }
     }
 
+    if (gpu_eventfd && perf) {
+        fprintf(stderr, "--gpu-eventfd is a correctness probe; use without --perf\n");
+        return 2;
+    }
     if (perf && !iterations_set)
         iterations = 50;
     if (perf && !warmup_set)
@@ -672,7 +741,8 @@ int main(int argc, char **argv)
 
         iter_start_us = now_us();
         for (unsigned i = 0; i < count; i++)
-            input[i] = i;
+            /* Distinct rounds make stale readback fail the correctness probe. */
+            input[i] = gpu_eventfd ? i ^ (0x9e3779b9u * (iter + 1u)) : i;
         cpu_prepare_done_us = now_us();
 
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
@@ -695,6 +765,9 @@ int main(int argc, char **argv)
             goto out;
         barrier_done_us = now_us();
 
+        if (gpu_eventfd && gpu_dispatch_eventfd(dpy, fd))
+            goto out;
+
         if (!perf)
             stage("map-result");
         mapped = glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0,
@@ -707,7 +780,19 @@ int main(int argc, char **argv)
         }
         map_done_us = now_us();
 
-        glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+        if (gpu_eventfd) {
+            for (unsigned i = 0; i < count; i++) {
+                if (mapped[i] != expected_value(input[i], alu_iters)) {
+                    fprintf(stderr, "GPU eventfd result mismatch iteration=%u index=%u\n", iter, i);
+                    glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+                    rc = 22;
+                    goto out;
+                }
+            }
+        }
+        GLboolean unmapped = glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+        if (gpu_eventfd && (unmapped != GL_TRUE || check_gl("GPU eventfd result readback")))
+            goto out;
 
         iter_end_us = now_us();
         if (measured) {
@@ -753,7 +838,7 @@ int main(int argc, char **argv)
                          0 :
                          (unsigned)(((uint64_t)sample * (uint64_t)(count - 1)) /
                                     (uint64_t)(sample_count - 1));
-            uint32_t expected = expected_value(i, alu_iters);
+            uint32_t expected = expected_value(input[i], alu_iters);
 
             if (mapped[i] != expected) {
                 fprintf(stderr,
@@ -770,6 +855,9 @@ int main(int argc, char **argv)
 
     printf("COMPUTE_CHECK=PASS count=%u samples=%u formula=x*3+7+alu_mix alu_iters=%u\n",
            count, count < 16 ? count : 16, alu_iters);
+    if (gpu_eventfd)
+        printf("GPU_COMPLETION_EVENTFD=PASS iterations=%u values_per_iteration=%u binary=1 timeline=1 source=PRIVATE_GPU_SYNC_FILE\n",
+               total_loops, count);
     if (perf) {
         printf("PERF_ITER_US min=%llu avg=%.2f max=%llu total=%llu\n",
                (unsigned long long)min_iter_us,

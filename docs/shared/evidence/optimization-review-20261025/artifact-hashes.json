@@ -1,0 +1,12 @@
+{
+  "docs/shared/GPU_OPTIMIZATION_CORRECTNESS_AND_GENERALITY_REVIEW_20261025.md": "15b712328649c5986d0fed4d3330ceb2171b4b15138e1fc30824b152c20a4513",
+  "docs/shared/CURRENT_BASELINE.md": "505bb1e386496bb64c232e562979a4a8ae19f83103da8accad58761d4381d5fb",
+  "docs/shared/evidence/optimization-review-20261025/source-hashes.json": "d11cdbb00356036bb62f877914d7d1806b0ffcebb137088461dd963a3aaaa245",
+  "docs/shared/evidence/optimization-review-20261025/inputs.json": "e7a7985e063aa263a3ce5ebed9b0cd526079eca351fd0fb8cb6fd15d662afcaa",
+  "docs/shared/evidence/optimization-review-20261025/test-fixture.json": "4bd7a8e461d99cd4b5e02817af4b59c3dce41b94df84c8bfe5a005ccfba7efaf",
+  "docs/shared/evidence/optimization-review-20261025/validation.json": "82e031a3c3be928e342fa5bda14cd2cd0603fb12c16bdf1152fb32e5a640954b",
+  "build/optimization-review-20261025/run-hardware.py": "2934c6d4d7279aece16c96aead202d46b8f833d8fcd3b9ce018c42c508984e95",
+  "build/optimization-review-20261025/audit-hardware.py": "8be7e5c685d9e8b6a0e525691544f530cc03442e340b79744c53f50aad72bceb",
+  "build/optimization-review-20261025/restore-and-verify.py": "5619fe9b8ec5952fff1ae8426cc151297df250a206f7ed4158662e77baa4be25",
+  "build/optimization-review-20261025/complete-review.py": "1d08728308b57fb0d259d5ed1115f1c40dca44fdbe66b39a68d1fc951f6bab18"
+}

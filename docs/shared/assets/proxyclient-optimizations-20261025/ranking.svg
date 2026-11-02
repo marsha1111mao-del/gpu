@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1220" viewBox="0 0 1440 1220">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#667791"/></marker></defs>
+<style>text { font-family: "Noto Sans CJK SC", sans-serif; }</style>
+<rect width="1440" height="1220" fill="white"/>
+<text x="58" y="64" font-size="36" fill="#17243b" font-weight="700" text-anchor="start">先看收益：早期突破与近期增量分开排序</text>
+<text x="60" y="104" font-size="21" fill="#52627a" font-weight="400" text-anchor="start">各项只对自己的历史对照负责；两个面板的横轴不同，不能相加或直接比较成本收益。</text>
+<text x="60" y="170" font-size="26" fill="#16836a" font-weight="700" text-anchor="start">早期历史突破（单轮或组合，详见正文）</text>
+<text x="445" y="202" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">相对各自对照的分数增幅，横轴 0–110%</text>
+<text x="60" y="251" font-size="23" fill="#17243b" font-weight="400" text-anchor="start">tiler heap所有权交接</text>
+<rect x="445" y="227" width="570.1636363636363" height="34" rx="3" fill="#16836a" stroke="none"/>
+<text x="1025.1636363636362" y="252" font-size="22" fill="#16836a" font-weight="700" text-anchor="start">+104.53%</text>
+<text x="1190" y="251" font-size="19" fill="#52627a" font-weight="400" text-anchor="start">309 → 632</text>
+<text x="60" y="331" font-size="23" fill="#17243b" font-weight="400" text-anchor="start">通信IRQ接收链精简</text>
+<rect x="445" y="307" width="274.0909090909091" height="34" rx="3" fill="#16836a" stroke="none"/>
+<text x="729.0909090909091" y="332" font-size="22" fill="#16836a" font-weight="700" text-anchor="start">+50.25%</text>
+<text x="1190" y="331" font-size="19" fill="#52627a" font-weight="400" text-anchor="start">197 → 296</text>
+<text x="60" y="411" font-size="23" fill="#17243b" font-weight="400" text-anchor="start">Client回复轮询组合</text>
+<rect x="445" y="387" width="151.9090909090909" height="34" rx="3" fill="#16836a" stroke="none"/>
+<text x="606.9090909090909" y="412" font-size="22" fill="#16836a" font-weight="700" text-anchor="start">+27.85%</text>
+<text x="1190" y="411" font-size="19" fill="#52627a" font-weight="400" text-anchor="start">632 → 808</text>
+<text x="60" y="491" font-size="23" fill="#17243b" font-weight="400" text-anchor="start">快照退役捎带</text>
+<rect x="445" y="467" width="74.67272727272727" height="34" rx="3" fill="#16836a" stroke="none"/>
+<text x="529.6727272727272" y="492" font-size="22" fill="#16836a" font-weight="700" text-anchor="start">+13.69%</text>
+<text x="1190" y="491" font-size="19" fill="#52627a" font-weight="400" text-anchor="start">1023 → 1159 / 1163</text>
+<text x="60" y="650" font-size="26" fill="#2767d8" font-weight="700" text-anchor="start">1158之后六项保留增量（两轮均值）</text>
+<text x="445" y="682" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">相对各自对照的分数增幅，横轴 0–8%</text>
+<text x="60" y="731" font-size="23" fill="#17243b" font-weight="400" text-anchor="start">硬IRQ提前观察真实完成</text>
+<rect x="445" y="707" width="537.75" height="34" rx="3" fill="#2767d8" stroke="none"/>
+<text x="992.75" y="732" font-size="22" fill="#2767d8" font-weight="700" text-anchor="start">+7.17%</text>
+<text x="1190" y="731" font-size="19" fill="#52627a" font-weight="400" text-anchor="start">1311 → 1405</text>
+<text x="60" y="796" font-size="23" fill="#17243b" font-weight="400" text-anchor="start">旧前缀完成后观察当前fence</text>
+<rect x="445" y="772" width="260.25" height="34" rx="3" fill="#2767d8" stroke="none"/>
+<text x="715.25" y="797" font-size="22" fill="#2767d8" font-weight="700" text-anchor="start">+3.47%</text>
+<text x="1190" y="796" font-size="19" fill="#52627a" font-weight="400" text-anchor="start">1267 → 1311</text>
+<text x="60" y="861" font-size="23" fill="#17243b" font-weight="400" text-anchor="start">提交与完成两端减少交接</text>
+<rect x="445" y="837" width="182.25" height="34" rx="3" fill="#2767d8" stroke="none"/>
+<text x="637.25" y="862" font-size="22" fill="#2767d8" font-weight="700" text-anchor="start">+2.43%</text>
+<text x="1190" y="861" font-size="19" fill="#52627a" font-weight="400" text-anchor="start">1237 → 1267</text>
+<text x="60" y="926" font-size="23" fill="#17243b" font-weight="400" text-anchor="start">SGI15目标端直接返回</text>
+<rect x="445" y="902" width="180.0" height="34" rx="3" fill="#2767d8" stroke="none"/>
+<text x="635.0" y="927" font-size="22" fill="#2767d8" font-weight="700" text-anchor="start">+2.40%</text>
+<text x="1190" y="926" font-size="19" fill="#52627a" font-weight="400" text-anchor="start">1208 → 1237</text>
+<text x="60" y="991" font-size="23" fill="#17243b" font-weight="400" text-anchor="start">全路径所有权复用组合</text>
+<rect x="445" y="967" width="165.0" height="34" rx="3" fill="#2767d8" stroke="none"/>
+<text x="620.0" y="992" font-size="22" fill="#2767d8" font-weight="700" text-anchor="start">+2.20%</text>
+<text x="1190" y="991" font-size="19" fill="#52627a" font-weight="400" text-anchor="start">1182 → 1208</text>
+<text x="60" y="1056" font-size="23" fill="#17243b" font-weight="400" text-anchor="start">Proxy驻留请求唤醒</text>
+<rect x="445" y="1032" width="155.25" height="34" rx="3" fill="#2767d8" stroke="none"/>
+<text x="610.25" y="1057" font-size="22" fill="#2767d8" font-weight="700" text-anchor="start">+2.07%</text>
+<text x="1190" y="1056" font-size="19" fill="#52627a" font-weight="400" text-anchor="start">1158 → 1182</text>
+<text x="60" y="1148" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">早期退役捎带范围为+13.29%～+13.69%，图中展示范围上端；轮询组合还含超时判定修复。</text>
+<text x="60" y="1178" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">1158→1405累计+21.33%，不是六项百分比相加；图中没有任何新增跑分。</text>
+</svg>

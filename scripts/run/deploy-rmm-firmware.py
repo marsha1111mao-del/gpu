@@ -54,6 +54,10 @@ try:
         subprocess.run(['python3', str(ROOT/'opencca/scripts/check-firmware-layout.py'),
                         '--rmm', str(a.firmware/'tf-rmm.elf'),
                         '--uboot', str(a.firmware/'u-boot')], check=True, stdout=layout)
+    with (out/'rmm-fit.json').open('w') as fit_check:
+        subprocess.run(['python3', str(ROOT/'scripts/check/check-rmm-firmware.py'),
+                        '--fit', str(a.firmware/'u-boot.itb'),
+                        '--rmm', str(a.firmware/'tf-rmm.elf')], check=True, stdout=fit_check)
     before = resources.audit('rk')
     pi = resources.audit('pi')
     (out/'pi-before.json').write_text(json.dumps(pi, indent=2)+'\n')

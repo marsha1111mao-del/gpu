@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1300" viewBox="0 0 1440 1300">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#667791"/></marker></defs>
+<style>text { font-family: "Noto Sans CJK SC", sans-serif; }</style>
+<rect width="1440" height="1300" fill="white"/>
+<text x="58" y="64" font-size="36" fill="#17243b" font-weight="700" text-anchor="start">达到1158之前：先修阻塞，再减少重复工作</text>
+<text x="60" y="104" font-size="21" fill="#52627a" font-weight="400" text-anchor="start">普通VM与Realm分开阅读；框内数字为各阶段历史结果，不是统一条件下的连续A/B。</text>
+<rect x="60" y="155" width="1320" height="165" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="155" width="6" height="165" rx="3" fill="#2767d8" stroke="none"/>
+<text x="82" y="193" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">更早的普通VM：基础能力</text>
+<text x="82" y="231" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">ACK：消除恒假条件导致的整tick等待；锁等待7.071 ms → 4.43 μs（短诊断）</text>
+<text x="82" y="261" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">并发RPC：720p 938 → 989；精确完成点缓存：989 → 1023</text>
+<text x="82" y="291" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">后续1058含OPP / 诊断差异；不能与Realm成绩直接串联。</text>
+<rect x="60" y="395" width="620" height="175" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="395" width="6" height="175" rx="3" fill="#d58120" stroke="none"/>
+<text x="82" y="433" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">Realm P1–P4</text>
+<text x="82" y="471" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">98 → 196 → 197 → 296 → 318</text>
+<text x="82" y="501" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">配置恢复、ACK_ARM、IRQ接收精简</text>
+<text x="82" y="531" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">融合快照 + 按需启动等待</text>
+<rect x="760" y="395" width="620" height="175" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="760" y="395" width="6" height="175" rx="3" fill="#16836a" stroke="none"/>
+<text x="782" y="433" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">P8–P12</text>
+<text x="782" y="471" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">诊断309 → 632 → 808 → 820 → 826 → 829</text>
+<text x="782" y="501" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">tiler所有权交接、Client回复轮询</text>
+<text x="782" y="531" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">日志、Proxy空闲内联、睡前ARM</text>
+<rect x="60" y="650" width="620" height="175" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="650" width="6" height="175" rx="3" fill="#7c58bb" stroke="none"/>
+<text x="82" y="688" font-size="25" fill="#7c58bb" font-weight="700" text-anchor="start">P17 / P19 / P25</text>
+<text x="82" y="726" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">829 → 859；诊断关闭864 → 882 / 881</text>
+<text x="82" y="756" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">按对象同步固件输出</text>
+<text x="82" y="786" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">FW worker直接执行原group完成</text>
+<rect x="760" y="650" width="620" height="175" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="760" y="650" width="6" height="175" rx="3" fill="#2767d8" stroke="none"/>
+<text x="782" y="688" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">P27–P30</text>
+<text x="782" y="726" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">881 → 902 → 914 → 918 → 957</text>
+<text x="782" y="756" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">先扩大RPC回复轮询预算</text>
+<text x="782" y="786" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">再以真实cookie覆盖完成等待</text>
+<rect x="60" y="905" width="620" height="175" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="905" width="6" height="175" rx="3" fill="#16836a" stroke="none"/>
+<text x="82" y="943" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">P38 + P39</text>
+<text x="82" y="981" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">957 → 962 → 1022 / 1022</text>
+<text x="82" y="1011" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">完整原生chain的真实完成证明</text>
+<text x="82" y="1041" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">同对象 / 同epoch覆盖较早有效point</text>
+<rect x="760" y="905" width="620" height="175" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="760" y="905" width="6" height="175" rx="3" fill="#d58120" stroke="none"/>
+<text x="782" y="943" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">P41 + P42</text>
+<text x="782" y="981" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">1022 → 1023 → 1159 / 1163</text>
+<text x="782" y="1011" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">下一次捕获附带旧快照退役</text>
+<text x="782" y="1041" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">省独立DESTROY，不复用旧快照</text>
+<polyline points="680,480 760,480" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="1060,570 1060,605 370,605 370,650" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="680,735 760,735" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="1060,825 1060,860 370,860 370,905" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="680,990 760,990" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="60" y="1135" width="1320" height="65" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="1135" width="6" height="65" rx="3" fill="#2767d8" stroke="none"/>
+<text x="82" y="1173" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">之后指定1158为近期对照，再推进到1405；两批输入与采样按各自报告读取。</text>
+<text x="60" y="1228" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">图中跳过的P阶段并未丢失：正文P1–P42索引保留撤回、未命中和未执行条目。</text>
+<text x="60" y="1258" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">百分比不累加；配置恢复、关闭诊断与生产算法改动分开归因。</text>
+</svg>

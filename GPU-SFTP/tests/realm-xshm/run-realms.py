@@ -28,6 +28,7 @@ p.add_argument('--trusted-events', action='store_true', help='Require RMM-owned 
 p.add_argument('--transport', action='store_true', help='Bind the RMM pool to real kernel control queues')
 p.add_argument('--parallel-boot', action='store_true', help='Exercise concurrent Host Realm population')
 p.add_argument('--gpu-flow', action='store_true', help='Assign GPU to provider and exercise Client DRM over the RMM pool')
+p.add_argument('--private-gpu', action='store_true', help='Require RMM metadata-only Proxy, Client-private data and trusted service bootstrap; never use shared-data fallback')
 p.add_argument('--glmark-rootfs', type=Path, help='Read-only prepared Panfrost rootfs for the complete glmark suite')
 p.add_argument('--compute-rootfs', type=Path, help='Read-only rootfs for concurrent actual compute in two Clients')
 p.add_argument('--clients', type=int, choices=(1, 2, 3, 4), default=1)
@@ -67,7 +68,7 @@ if a.compact_memory and (not a.benchmark_only or a.large_pool or a.memory_pages 
     p.error('--compact-memory requires benchmark-only and a 128/160/192/256/336/384 MiB pool')
 if a.reclaim_targets and not (a.compact_memory and a.profiles == ['ncnn-resnet50']):
     p.error('--reclaim-targets requires compact memory and only ncnn-resnet50')
-if a.glmark_rootfs and (not a.gpu_flow or (not a.compact_memory and a.memory_pages != (131072 if a.large_pool else 65536))):
+if a.glmark_rootfs and (not a.gpu_flow or (not a.private_gpu and not a.compact_memory and a.memory_pages != (131072 if a.large_pool else 65536))):
     p.error('--glmark-rootfs requires --gpu-flow and the selected pool size')
 if a.compute_rootfs and (not a.gpu_flow or a.clients != 2):
     p.error('--compute-rootfs requires --gpu-flow --clients 2')
@@ -86,10 +87,24 @@ if a.gpu_fault_isolation and (not a.compute_rootfs or a.benchmark_only):
     p.error('--gpu-fault-isolation requires the two-Client compute suite')
 if a.bo_sg_mmap and (not a.compute_rootfs or a.benchmark_only):
     p.error('--bo-sg-mmap requires the two-Client compute suite')
-if (a.client_cpu_layout != 'shared' or a.cpu_frequency_khz or a.telemetry) and not (
+if a.private_gpu:
+    if not (a.gpu_flow and a.transport and a.trusted_events):
+        p.error('--private-gpu requires --gpu-flow --transport --trusted-events')
+    if (a.large_pool or a.compact_memory or a.reclaim_targets or a.transfer_capture or
+            a.completion_trace or a.bo_sg_mmap or a.gpu_fault_isolation):
+        p.error('--private-gpu cannot use shared-data pool profiles, cookie traces or shared-BO fault probes')
+    if a.suite and (not a.profiles or not (a.profiles in (['glmark-720'], ['glmark-1080']) or
+                                         all(profile in ML_PROFILES for profile in a.profiles))):
+        p.error('--private-gpu suite requires one full glmark profile or explicit ML profiles')
+if (a.client_cpu_layout != 'shared' or a.telemetry) and not (
         a.performance and a.benchmark_only and a.compact_memory and
         a.profiles in (['glmark-720'], ['glmark-1080'])):
-    p.error('controlled CPU placement/frequency/telemetry require a compact full glmark performance run')
+    p.error('controlled CPU placement/telemetry require a compact full glmark performance run')
+if a.cpu_frequency_khz is not None and not (
+        a.cpu_frequency_khz > 0 and a.performance and a.benchmark_only and
+        (a.compact_memory or a.private_gpu) and
+        a.profiles in (['glmark-720'], ['glmark-1080'])):
+    p.error('controlled CPU frequency requires a compact or private full glmark performance run')
 vm_count = a.clients + 1 if a.benchmark_only else 3
 workload_rootfs = a.glmark_rootfs or a.compute_rootfs
 out.mkdir(parents=True, exist_ok=False)
@@ -114,6 +129,10 @@ result['client_cpu_layout'] = a.client_cpu_layout
 result['cpu_frequency_khz'] = a.cpu_frequency_khz
 result['telemetry'] = a.telemetry
 result['bo_sg_mmap_check'] = 'NOT_RUN'
+result['private_gpu'] = {'enabled': a.private_gpu, 'bootstrap': 'NOT_RUN',
+                         'drm_probes': {}, 'shared_data_fallback': False,
+                         'gpu_completion_eventfd': 'NOT_RUN',
+                         'isolation_attacks': 'NOT_RUN', 'dynamic_tiler_growth': 'NOT_VERIFIED'}
 result['inputs'] = {}
 inputs = [Path(__file__), bins/'bin/firecracker',
           bins/'kernels/realm-xshm/Image', bins/'kernels/realm-xshm/initrd.cpio']
@@ -149,6 +168,22 @@ def monitor_resources():
 
 
 def realm_memory(vm):
+    if a.private_gpu:
+        # Only RPC/control pools use CMA. Private BOs and the donated arena
+        # use ordinary alloc_page backing, so shared-mode CMA sizing cannot
+        # be used as their memory budget. These are admission estimates, not
+        # runtime reservations or guarantees that a workload fits.
+        if vm > a.clients:
+            return 256, 16  # Unbound outsider in the three-Realm suite.
+        control_mib = (a.memory_pages + 255) // 256
+        cma_mib = control_mib * (a.clients if vm == 0 else 1) + 16
+        # CMA uses 4 MiB allocation alignment on this 4 KiB-page kernel.
+        # Round up without borrowing from the ordinary/private data budget.
+        cma_mib = (cma_mib + 3) & ~3
+        ordinary_mib = (208 + 32 * a.clients if vm == 0 else
+                        192 + (384 if 'ncnn-resnet50' in (a.profiles or []) else 256))
+        # Firecracker's Realm FDT requires a 2 MiB-aligned memory size.
+        return (cma_mib + ordinary_mib + 1) & ~1, cma_mib
     if a.benchmark_only and (a.compact_memory or a.clients > 1):
         cma_mib = (a.memory_pages // 256) * (a.clients if vm == 0 else 1) + 16
         ordinary_mib = (192 + 32 * a.clients if vm == 0 else
@@ -361,6 +396,115 @@ def text_command(vm, command, markers, timeout=120, sent=False):
     if code or not all(entry['markers'].values()):
         raise RuntimeError(f'GPU workload failed: {entry}')
     return data.decode(errors='replace')
+
+
+def gpu_mode_boot_args(vm):
+    if not a.private_gpu:
+        return ''
+    return ' panthor_client.rmm_private_data=1' if vm else ' panthor.rmm_service=1'
+
+
+def bootstrap_private_gpu():
+    # Actual driver parameters catch old Images which ignore unknown boot
+    # args. Bootstrap independently requires RMM-observed MMIO handoff and
+    # fixed firmware verification. No retry/reset on partial failure.
+    for vm in range(vm_count):
+        role = 'client' if vm else 'proxy'
+        text_command(vm, f'gpu-private mode-check {role}',
+                     [f'GPU_PRIVATE_MODE=PASS role={role}'])
+    result['private_gpu']['bootstrap'] = 'ATTEMPTED'
+    save()
+    text_command(0, 'gpu-private service-bootstrap /mali_csffw.bin',
+                 ['GPU_RMM_SERVICE_BOOTSTRAP=CONFIGURED'], 300)
+    result['private_gpu']['bootstrap'] = 'CONFIGURED'
+    save()
+
+
+def test_private_gpu():
+    """Exercise private data through ordinary DRM; pools carry control only.
+
+    Existing shared-BO selftests/cookies/plan counters are not private-mode
+    evidence. Keep both data paths' evidence distinct and never silently run
+    the shared suite when private bootstrap/open/submission fails.
+    """
+    endpoints = [call(vm, 'register') for vm in range(vm_count)]
+    assert len({endpoint[1] for endpoint in endpoints}) == vm_count
+    assert all(endpoint[2] & 16 for endpoint in endpoints)
+    for vm in range(vm_count):
+        assert call(vm, 'irq-bind')[0] == 127
+    before = [call(vm, 'irq-stats')[0] for vm in range(vm_count)]
+    active = []
+    size = a.memory_pages * 4096
+    for vm in range(1, a.clients + 1):
+        channel = call(0, f'offer {endpoints[vm][1]}')[0]
+        call(vm, f'accept {channel}')
+        source = call(0, f'pool-source {size}')[0]
+        target = call(vm, f'pool-target {size}')[0]
+        grant = memory_operation(0, f'mem-offer {channel} {source} {size}', 2)
+        memory_operation(vm, f'mem-attach {grant} {target}', 5)
+        for other in range(1, vm_count):
+            if other != vm:
+                call(other, f'mem-describe {grant}', 1)
+        for member in (0, vm):
+            call(member, f'pool-bind-gpu {grant}')
+            bindings.append((member, grant))
+        active.append((vm, channel, grant))
+    result['private_gpu']['control_pool_bytes_per_client'] = size
+    result['simultaneous_client_bindings'] = a.clients
+    save()
+    if a.benchmark_only:
+        if a.profiles and all(profile in ML_PROFILES for profile in a.profiles):
+            run_concurrent_ml()
+        elif a.suite:
+            run_concurrent_glmark()
+        else:
+            glmark(1)
+        if a.profiles == ['glmark-720'] or not a.suite:
+            scores = ([item['score'] for item in result['concurrent_glmark']]
+                      if a.suite else [result['glmark']['score']])
+            result['private_gpu']['glmark_720_gate'] = {
+                'threshold': 1000, 'scores': scores,
+                'status': 'PASS' if all(score >= 1000 for score in scores) else 'FAIL'}
+            save()
+            assert all(score >= 1000 for score in scores), 'private full-720p score below 1000'
+    else:
+        for vm in range(1, a.clients + 1):
+            text_command(vm, 'gpu-private drm-selftest', ['GPU_PRIVATE_DRM=PASS'], 300)
+            text_command(vm, 'gpu-private drm-submit-selftest', ['GPU_PRIVATE_DRM_SUBMIT=PASS'], 300)
+            result['private_gpu']['drm_probes'][str(vm)] = 'PASS'
+            save()
+        if a.compute_rootfs:
+            result['private_gpu']['gpu_completion_eventfd'] = 'ATTEMPTED'
+            save()
+            for vm in range(1, a.clients + 1):
+                buffers[vm] = b''
+                processes[vm].stdin.write(b'compute-eventfd\n')
+                processes[vm].stdin.flush()
+            for vm in range(1, a.clients + 1):
+                data = text_command(vm, 'compute-eventfd', ['COMPUTE_CHECK=PASS count=65536 samples=16',
+                                    'GPU_COMPLETION_EVENTFD=PASS iterations=4 values_per_iteration=65536 binary=1 timeline=1 source=PRIVATE_GPU_SYNC_FILE',
+                                    'GL_RENDERER=Mali-G610'], 300, sent=True)
+                assert 'alu_iters=64' in data
+            result['private_gpu']['gpu_completion_eventfd'] = 'PASS'
+            result['two_client_compute_check'] = 'PASS'
+        if a.glmark_rootfs:
+            glmark(1)
+    after = [call(vm, 'irq-stats')[0] for vm in range(vm_count)]
+    assert all(after[vm] > before[vm] for vm in range(a.clients + 1))
+    result['event_irq'] = {'before': before, 'after_workloads': after, 'intid': 127}
+    for vm, channel, grant in reversed(active):
+        for member in (vm, 0):
+            call(member, f'pool-unbind {grant}')
+            bindings.remove((member, grant))
+        memory_operation(vm, f'mem-detach {grant}', 2)
+        memory_operation(0, f'mem-revoke {grant}', 0)
+        call(0, f'close {channel}')
+    for vm in range(vm_count):
+        call(vm, 'unregister')
+    result['private_gpu']['control_transport_cleanup'] = 'PASS'
+    # GPU arena retirement and dead-Realm cleanup are separate obligations;
+    # successful pool teardown is not proof of whole-device reclamation.
+    result['private_gpu']['trusted_device_reclamation'] = 'NOT_VERIFIED'
 
 
 # Exercise the baseline DRM modes and GPUVM isolation over the actual Realm
@@ -865,7 +1009,7 @@ try:
                          if line.startswith('MemAvailable:'))
     result['memory_plan'] = {'realm_mib': [memory[0] for memory in memory_plan],
                              'cma_mib': [memory[1] for memory in memory_plan],
-                             'swiotlb_mib': realm_swiotlb_mib() if a.compact_memory else None,
+                             'swiotlb_mib': realm_swiotlb_mib() if a.compact_memory or a.private_gpu else None,
                              'host_headroom_mib': 256, 'available_mib': available_kib / 1024}
     admission_mib = sum(memory[0] for memory in memory_plan)
     if a.reclaim_targets:
@@ -899,6 +1043,7 @@ try:
         path = out/f'realm-{vm}.json'
         if memory_plan[vm][1] is not None:
             config['boot-source']['boot_args'] += f' cma={memory_plan[vm][1]}M swiotlb={realm_swiotlb_mib() * 512}'
+        config['boot-source']['boot_args'] += gpu_mode_boot_args(vm)
         if a.gpu_flow and vm == 0:
             if a.clients == 4:
                 config['boot-source']['boot_args'] += ' panthor.max_inflight_jobs=3'
@@ -909,9 +1054,11 @@ try:
                     ' panthor.submit_stats=1 panthor.job_irq_stats=1 panthor_proxy.rpc_stats=1')
         if a.performance and vm:
             config['boot-source']['boot_args'] += (
-                ' client_comm_vmshm.realm_poll_us=1000 client_comm_vmshm.concurrent_rpc=1'
-                ' panthor_client.completed_wait_cache=1 panthor_client.fused_snapshot=1'
-                ' panthor_client.lazy_snapshot_wait=1')
+                ' client_comm_vmshm.realm_poll_us=1000 client_comm_vmshm.concurrent_rpc=1')
+            if not a.private_gpu:
+                config['boot-source']['boot_args'] += (
+                    ' panthor_client.completed_wait_cache=1 panthor_client.fused_snapshot=1'
+                    ' panthor_client.lazy_snapshot_wait=1')
         if a.notify_trace:
             config['boot-source']['boot_args'] += ' realm_xshm.notify_trace=1'
         if a.completion_trace:
@@ -955,7 +1102,10 @@ try:
     if a.notify_trace:
         for vm in range(vm_count):
             assert call(vm, 'register')[2] & 64, 'RMM notification timing capability missing'
-    if a.benchmark_only:
+    if a.private_gpu:
+        bootstrap_private_gpu()
+        test_private_gpu()
+    elif a.benchmark_only:
         if a.compact_memory or a.clients > 1:
             test_concurrent_benchmark()
         else:
@@ -1076,7 +1226,7 @@ except (Exception, KeyboardInterrupt) as exc:
         if process.poll() is not None:
             continue
         try:
-            failure_log = text_command(vm, 'kernel-log', ['XSHM_KERNEL_LOG_END'], 15)
+            failure_log = text_command(vm, 'kernel-log', ['XSHM_KERNEL_LOG_END'], 120)
             (out/f'failure-kernel-{vm}.log').write_text(failure_log)
         except Exception as diagnostic_error:
             result.setdefault('failure_log_errors', []).append(str(diagnostic_error))

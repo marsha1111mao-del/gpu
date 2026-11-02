@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-27",
+  "task": "focused Arm CCA / TEE shared GPU literature study",
+  "scope": {
+    "main": [
+      "StrongBox",
+      "CAGE",
+      "ACAI",
+      "PORTAL",
+      "Devlore",
+      "CAEC",
+      "TEEtime"
+    ],
+    "supplementary": [
+      "MOLE",
+      "PhantomMap"
+    ],
+    "prior_63_entry_task": "paused; counts unchanged",
+    "runtime_code_changed": false,
+    "hardware_tests_run": false,
+    "new_performance_measurements": false
+  },
+  "notion_parent": {
+    "title": "GPU Virtualization",
+    "page_id": "2c7659a3-b8cc-802c-9267-d9b8368aaf45"
+  },
+  "pages": [
+    {
+      "file": "GPU_CCA_TEE_FOCUSED_RESEARCH_20261027.md",
+      "page_id": "406659a3-b8cc-8195-8ae1-fd1e5abfc57b",
+      "url": "https://app.notion.com/p/406659a3b8cc81958ae1fd1e5abfc57b?pvs=204",
+      "source_sha256": "821fbeccca1f7fd520ca7bbd7ff3ea7603ca4569f561de0114bd679dd13045dd",
+      "checked_nonblank_lines": 86,
+      "checked_headings": 18,
+      "checked_table_rows": 20,
+      "checked_external_urls": 11,
+      "missing": [],
+      "missingUrls": [],
+      "preserved_child_pages": 3,
+      "readback_complete": true
+    },
+    {
+      "file": "GPU_DEVLORE_DEEP_REVIEW_20261027.md",
+      "page_id": "406659a3-b8cc-8197-8d41-d7af8338e496",
+      "url": "https://app.notion.com/p/406659a3b8cc81978d41d7af8338e496?pvs=204",
+      "source_sha256": "08ffdcec650bd80b15cfb50c144828f640f00f3979f50576e45507cfe9488dde",
+      "checked_nonblank_lines": 50,
+      "checked_headings": 14,
+      "checked_table_rows": 9,
+      "checked_external_urls": 3,
+      "missing": [],
+      "missingUrls": [],
+      "preserved_child_pages": 0,
+      "readback_complete": true
+    },
+    {
+      "file": "GPU_CAEC_DEEP_REVIEW_20261027.md",
+      "page_id": "406659a3-b8cc-81df-98f7-f2c098107319",
+      "url": "https://app.notion.com/p/406659a3b8cc81df98f7f2c098107319?pvs=204",
+      "source_sha256": "f0a27f5dc930d1350d3c3523aeb9d16945e957d24754245c48314a1aab5b0cd7",
+      "checked_nonblank_lines": 67,
+      "checked_headings": 16,
+      "checked_table_rows": 10,
+      "checked_external_urls": 12,
+      "missing": [],
+      "missingUrls": [],
+      "preserved_child_pages": 0,
+      "readback_complete": true
+    },
+    {
+      "file": "GPU_TEETIME_REVIEW_20261027.md",
+      "page_id": "406659a3-b8cc-81d3-919e-cf2ad99d5eed",
+      "url": "https://app.notion.com/p/406659a3b8cc81d3919ecf2ad99d5eed?pvs=204",
+      "source_sha256": "168ec30e88e626b481a89808d8fe1eccc66a6b183fe9f98f8f6a6b6bd11d91cc",
+      "checked_nonblank_lines": 43,
+      "checked_headings": 8,
+      "checked_table_rows": 11,
+      "checked_external_urls": 2,
+      "missing": [],
+      "missingUrls": [],
+      "preserved_child_pages": 0,
+      "readback_complete": true
+    }
+  ],
+  "verification": {
+    "method": "Read back every Notion page. Compared every nonblank source line, headings, table rows and final paragraphs after formatting normalization; canonicalized native mentions by URL because Notion resolves labels to page titles. Checked all external URLs and preservation of three child pages.",
+    "result": "all four page contents matched",
+    "hardware_PASS_claimed": false
+  },
+  "sources": [
+    {
+      "title": "Devlore: Device Interrupt Protection for Confidential VMs",
+      "version": "arXiv 2408.05835v3, 2026-08-11; RAID 2026 extended version",
+      "url": "https://arxiv.org/abs/2408.05835v3",
+      "sha256": "4fd64876e9f0c197158c085fd3bbee49ee7517331068a27fd61dae0d1b6a88e0",
+      "complete_file": "build/cca-gpu-focused-study-20261027/devlore.pdf",
+      "review": "original core design, evaluation and selected appendices; full public implementation not identified"
+    },
+    {
+      "title": "CAEC: Confidential, Attestable, and Efficient Inter-CVM Communication with Arm CCA",
+      "version": "arXiv 2512.01594v5, 2026-05-06; EuroS&P 2026",
+      "url": "https://arxiv.org/abs/2512.01594",
+      "sha256": "7915ec3f6adf4c3e683f0bb9ed03029a8540992a49ebf76b384b8121206890c8",
+      "complete_file": "build/cca-gpu-focused-study-20261027/caec.pdf",
+      "artifact_commit": "271e1e10decc0cee75329b4ac1c4ad5c58de755f",
+      "rmm_commit": "43ffec10b98a6a5ea6b1116c4429fee684069233",
+      "review": "original paper plus targeted static audit of author benchmark and RMM; not executed; publication commit equivalence not established"
+    },
+    {
+      "title": "It’s TEEtime: Secure Interrupt Isolation for Normal-world Enclaves on Arm",
+      "version": "TCHES 2026(1),135–160",
+      "url": "https://doi.org/10.46586/tches.v2026.i1.135-160",
+      "sha256": "a511657dc83c1cf15624f376ae48a5dc89bd3cbef415f8bcff6834d955f8dc05",
+      "complete_file": "build/cca-gpu-focused-study-20261027/teetime.pdf",
+      "review": "original architecture, design, security and evaluation sections; no independent implementation audit"
+    }
+  ],
+  "limitations": [
+    "Partial failed devlore-v3.pdf and caec-v2.pdf excluded; complete downloads used instead.",
+    "CAGE-related TDSC DOI 10.1109/TDSC.2025.3615787 metadata verified; full text not obtained.",
+    "Static source concerns are not confirmed exploits.",
+    "Local unrelated dirty files and current baseline left untouched.",
+    "No general GPU literature completeness or first-of-kind novelty claim."
+  ]
+}

@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1190" viewBox="0 0 1440 1190">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#667791"/></marker></defs>
+<style>text { font-family: "Noto Sans CJK SC", sans-serif; }</style>
+<rect width="1440" height="1190" fill="white"/>
+<text x="58" y="64" font-size="36" fill="#17243b" font-weight="700" text-anchor="start">两种主动轮询，与一种周期重试</text>
+<text x="60" y="104" font-size="21" fill="#52627a" font-weight="400" text-anchor="start">三个位置都可能出现1000 μs，但等待的对象、回退和实验归因不同。</text>
+<rect x="60" y="155" width="620" height="240" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="155" width="6" height="240" rx="3" fill="#2767d8" stroke="none"/>
+<text x="82" y="193" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">A  RPC回复轮询</text>
+<text x="82" y="231" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">位置：client_comm_vmshm_poll_response</text>
+<text x="82" y="261" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">对象：seq / type匹配的本次RPC回复</text>
+<text x="82" y="291" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">参数：realm_poll_us，P27/P28改预算</text>
+<text x="82" y="321" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">881 → 902 → 914；100 → 200 → 1000 μs</text>
+<text x="82" y="351" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">没有回复：恢复通知 → ARM / 重查 → 睡眠</text>
+<rect x="760" y="155" width="620" height="240" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="760" y="155" width="6" height="240" rx="3" fill="#16836a" stroke="none"/>
+<text x="782" y="193" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">B  真实GPU完成页检查</text>
+<text x="782" y="231" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">位置：panthor_client_completion_wait</text>
+<text x="782" y="261" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">对象：不可变快照对应的精确成功cookie</text>
+<text x="782" y="291" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">P29/P30：100 → 1000 μs，受用户超时裁剪</text>
+<text x="782" y="321" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">918 → 957；命中率1.44% → 99.58%</text>
+<text x="782" y="351" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">没有成功证明：回退原生WAIT RPC</text>
+<rect x="60" y="500" width="1320" height="150" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="500" width="6" height="150" rx="3" fill="#d58120" stroke="none"/>
+<text x="82" y="538" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">先后关系：提交已接纳，与GPU已完成是两个事件</text>
+<text x="82" y="576" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">GROUP_SUBMIT → PLAN_EXEC RPC → 接纳回复（A结束）→ GPU异步执行</text>
+<text x="82" y="606" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">导出 / 等待真实fence → 成功cookie（B可命中）→ Client完成对应等待</text>
+<polyline points="370,395 370,500" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="1060,395 1060,500" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="60" y="755" width="1320" height="165" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="755" width="6" height="165" rx="3" fill="#7c58bb" stroke="none"/>
+<text x="82" y="793" font-size="25" fill="#7c58bb" font-weight="700" text-anchor="start">C  sync_file worker：先查cookie，未完成则零超时WAIT，再睡眠重试</text>
+<text x="82" y="831" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">参数sync_file_poll_us控制usleep_range的间隔，是睡眠周期，不是忙轮询预算。</text>
+<text x="82" y="861" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">lazy_snapshot_wait决定有真实消费者时再启动worker；并非每次导出都启动。</text>
+<text x="82" y="891" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">成功cookie本身不唤醒睡眠线程；完整主动完成订阅仍未实现。</text>
+<rect x="60" y="985" width="1320" height="75" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="985" width="6" height="75" rx="3" fill="#2767d8" stroke="none"/>
+<text x="82" y="1023" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">预算是上限：回复 / 真实完成、need_resched或截止时间到达，就提前退出。</text>
+<text x="60" y="1118" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">A减少通信睡眠；B减少冗余完成查询；C是后台等待机制，不能把三者混成一次实验。</text>
+<text x="60" y="1148" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">主动检查可能增加CPU活跃时间；未测功耗，不宣称节能。</text>
+</svg>

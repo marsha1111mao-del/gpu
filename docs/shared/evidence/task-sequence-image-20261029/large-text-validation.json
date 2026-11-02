@@ -1,0 +1,15 @@
+{
+  "purpose": "放大图2字体并优化阅读布局",
+  "participants": 6,
+  "messages": 17,
+  "message_text_and_order_preserved": true,
+  "old_canvas_width": 2510,
+  "new_canvas_width": 1580,
+  "old_message_font": 27,
+  "new_message_font": 34,
+  "effective_text_size_at_equal_display_width": "2.00x",
+  "png_sha256": "c0034108499f417144531b515983f8f0edb5ed2586aa5787d9c1add83b8b54e4",
+  "notion_update": "success",
+  "render_exit_code": 0,
+  "note": "未改运行代码，无新增性能测量"
+}

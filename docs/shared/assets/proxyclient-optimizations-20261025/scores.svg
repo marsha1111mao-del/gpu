@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1000" viewBox="0 0 1440 1000">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#667791"/></marker></defs>
+<style>text { font-family: "Noto Sans CJK SC", sans-serif; }</style>
+<rect width="1440" height="1000" fill="white"/>
+<text x="58" y="64" font-size="36" fill="#17243b" font-weight="700" text-anchor="start">近期已保留的完整720p优化链</text>
+<text x="60" y="104" font-size="21" fill="#52627a" font-weight="400" text-anchor="start">同单Client、128 MiB、CPU 1.8GHz / GPU594MHz；阶段计时关闭。</text>
+<text x="60" y="191" font-size="23" fill="#17243b" font-weight="400" text-anchor="start">起始组合</text>
+<rect x="455" y="163" width="463.20000000000005" height="42" rx="4" fill="#52627a" stroke="none"/>
+<text x="932.2" y="192" font-size="25" fill="#52627a" font-weight="700" text-anchor="start">1158</text>
+<text x="1130" y="191" font-size="22" fill="#52627a" font-weight="400" text-anchor="start">对照</text>
+<text x="60" y="284" font-size="23" fill="#17243b" font-weight="400" text-anchor="start">驻留请求唤醒</text>
+<rect x="455" y="256" width="472.8" height="42" rx="4" fill="#2767d8" stroke="none"/>
+<text x="941.8" y="285" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">1182</text>
+<text x="1130" y="284" font-size="22" fill="#2767d8" font-weight="400" text-anchor="start">+24 / +2.07%</text>
+<text x="60" y="377" font-size="23" fill="#17243b" font-weight="400" text-anchor="start">全路径所有权复用组合</text>
+<rect x="455" y="349" width="483.20000000000005" height="42" rx="4" fill="#16836a" stroke="none"/>
+<text x="952.2" y="378" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">1208</text>
+<text x="1130" y="377" font-size="22" fill="#16836a" font-weight="400" text-anchor="start">+26 / +2.20%</text>
+<text x="60" y="470" font-size="23" fill="#17243b" font-weight="400" text-anchor="start">SGI15目标端直接返回</text>
+<rect x="455" y="442" width="494.8" height="42" rx="4" fill="#d58120" stroke="none"/>
+<text x="963.8" y="471" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">1237</text>
+<text x="1130" y="470" font-size="22" fill="#d58120" font-weight="400" text-anchor="start">+29 / +2.40%</text>
+<text x="60" y="563" font-size="23" fill="#17243b" font-weight="400" text-anchor="start">提交与IRQ尾部交接组合</text>
+<rect x="455" y="535" width="506.8" height="42" rx="4" fill="#7c58bb" stroke="none"/>
+<text x="975.8" y="564" font-size="25" fill="#7c58bb" font-weight="700" text-anchor="start">1267</text>
+<text x="1130" y="563" font-size="22" fill="#7c58bb" font-weight="400" text-anchor="start">+30 / +2.43%</text>
+<text x="60" y="656" font-size="23" fill="#17243b" font-weight="400" text-anchor="start">已完成前缀观察当前fence</text>
+<rect x="455" y="628" width="524.4" height="42" rx="4" fill="#2767d8" stroke="none"/>
+<text x="993.4" y="657" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">1311</text>
+<text x="1130" y="656" font-size="22" fill="#2767d8" font-weight="400" text-anchor="start">+44 / +3.47%</text>
+<text x="60" y="749" font-size="23" fill="#17243b" font-weight="400" text-anchor="start">硬IRQ有界提前观察完成</text>
+<rect x="455" y="721" width="562.0" height="42" rx="4" fill="#16836a" stroke="none"/>
+<text x="1031.0" y="750" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">1405</text>
+<text x="1130" y="749" font-size="22" fill="#16836a" font-weight="400" text-anchor="start">+94 / +7.17%</text>
+<rect x="60" y="842" width="1320" height="64" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="842" width="6" height="64" rx="3" fill="#16836a" stroke="none"/>
+<text x="82" y="880" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">累计1158 → 1405：+247 / +21.33%</text>
+<text x="60" y="928" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">横条从0分开始；这是历史演进顺序，不是收益排名，也不是GPU利用率。</text>
+<text x="60" y="958" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">同代码最新矩阵单轮1395（720p）/1043（1080p），不替换这条历史分阶段对照链。</text>
+</svg>

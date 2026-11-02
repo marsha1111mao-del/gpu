@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1580" height="2604" viewBox="0 0 1580 2604">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#334155"/></marker></defs>
+<style>text{font-family:"Noto Sans CJK SC",sans-serif;fill:#17243b}</style>
+<rect width="1580" height="2604" fill="white"/>
+<line x1="115" y1="138" x2="115" y2="2469" stroke="#9aa9bd" stroke-width="2.3" stroke-dasharray="9 8"/>
+<rect x="5" y="50" width="220" height="88" rx="10" fill="#eff5ff" stroke="#2563eb" stroke-width="2.5"/>
+<text x="115" y="106" font-size="32" text-anchor="middle" font-weight="600">Client应用</text>
+<rect x="5" y="2469" width="220" height="88" rx="10" fill="#eff5ff" stroke="#2563eb" stroke-width="2.5"/>
+<text x="115" y="2525" font-size="32" text-anchor="middle" font-weight="600">Client应用</text>
+<line x1="385" y1="138" x2="385" y2="2469" stroke="#9aa9bd" stroke-width="2.3" stroke-dasharray="9 8"/>
+<rect x="275" y="50" width="220" height="88" rx="10" fill="#eff5ff" stroke="#2563eb" stroke-width="2.5"/>
+<text x="385" y="106" font-size="32" text-anchor="middle" font-weight="600">Client Mesa</text>
+<rect x="275" y="2469" width="220" height="88" rx="10" fill="#eff5ff" stroke="#2563eb" stroke-width="2.5"/>
+<text x="385" y="2525" font-size="32" text-anchor="middle" font-weight="600">Client Mesa</text>
+<line x1="655" y1="138" x2="655" y2="2469" stroke="#9aa9bd" stroke-width="2.3" stroke-dasharray="9 8"/>
+<rect x="545" y="50" width="220" height="88" rx="10" fill="#eff5ff" stroke="#2563eb" stroke-width="2.5"/>
+<text x="655" y="106" font-size="32" text-anchor="middle" font-weight="600">Client前端</text>
+<rect x="545" y="2469" width="220" height="88" rx="10" fill="#eff5ff" stroke="#2563eb" stroke-width="2.5"/>
+<text x="655" y="2525" font-size="32" text-anchor="middle" font-weight="600">Client前端</text>
+<line x1="925" y1="138" x2="925" y2="2469" stroke="#9aa9bd" stroke-width="2.3" stroke-dasharray="9 8"/>
+<rect x="815" y="50" width="220" height="88" rx="10" fill="#edf8f4" stroke="#13846d" stroke-width="2.5"/>
+<text x="925" y="106" font-size="32" text-anchor="middle" font-weight="600">Proxy后端</text>
+<rect x="815" y="2469" width="220" height="88" rx="10" fill="#edf8f4" stroke="#13846d" stroke-width="2.5"/>
+<text x="925" y="2525" font-size="32" text-anchor="middle" font-weight="600">Proxy后端</text>
+<line x1="1195" y1="138" x2="1195" y2="2469" stroke="#9aa9bd" stroke-width="2.3" stroke-dasharray="9 8"/>
+<rect x="1085" y="50" width="220" height="88" rx="10" fill="#edf8f4" stroke="#13846d" stroke-width="2.5"/>
+<text x="1195" y="106" font-size="32" text-anchor="middle" font-weight="600">原生Panthor</text>
+<rect x="1085" y="2469" width="220" height="88" rx="10" fill="#edf8f4" stroke="#13846d" stroke-width="2.5"/>
+<text x="1195" y="2525" font-size="32" text-anchor="middle" font-weight="600">原生Panthor</text>
+<line x1="1465" y1="138" x2="1465" y2="2469" stroke="#9aa9bd" stroke-width="2.3" stroke-dasharray="9 8"/>
+<rect x="1355" y="50" width="220" height="88" rx="10" fill="#f5f0fc" stroke="#8056b8" stroke-width="2.5"/>
+<text x="1465" y="106" font-size="32" text-anchor="middle" font-weight="600">GPU</text>
+<rect x="1355" y="2469" width="220" height="88" rx="10" fill="#f5f0fc" stroke="#8056b8" stroke-width="2.5"/>
+<text x="1465" y="2525" font-size="32" text-anchor="middle" font-weight="600">GPU</text>
+<g><title>绘制或计算API</title>
+<line x1="115" y1="207" x2="385" y2="207" stroke="#334155" stroke-width="3.2" marker-end="url(#arrow)"/>
+<rect x="124.83" y="150" width="250.34" height="45" fill="white"/>
+<text x="250.0" y="185" font-size="34" text-anchor="middle" font-weight="500">绘制或计算API</text>
+</g>
+<g><title>BO创建和mmap及VM_BIND</title>
+<line x1="385" y1="357" x2="655" y2="357" stroke="#334155" stroke-width="3.2" marker-end="url(#arrow)"/>
+<rect x="394.65999999999997" y="256" width="250.68" height="45" fill="white"/>
+<text x="520.0" y="291" font-size="34" text-anchor="middle" font-weight="500">BO创建和mmap</text>
+<rect x="417.27" y="300" width="205.46" height="45" fill="white"/>
+<text x="520.0" y="335" font-size="34" text-anchor="middle" font-weight="500">及VM_BIND</text>
+</g>
+<g><title>会话内对象请求</title>
+<line x1="655" y1="463" x2="925" y2="463" stroke="#334155" stroke-width="3.2" marker-end="url(#arrow)"/>
+<rect x="665.0" y="406" width="250" height="45" fill="white"/>
+<text x="790.0" y="441" font-size="34" text-anchor="middle" font-weight="500">会话内对象请求</text>
+</g>
+<g><title>创建实际对象并建立映射</title>
+<line x1="925" y1="613" x2="1195" y2="613" stroke="#334155" stroke-width="3.2" marker-end="url(#arrow)"/>
+<rect x="952.0" y="512" width="216" height="45" fill="white"/>
+<text x="1060.0" y="547" font-size="34" text-anchor="middle" font-weight="500">创建实际对象</text>
+<rect x="969.0" y="556" width="182" height="45" fill="white"/>
+<text x="1060.0" y="591" font-size="34" text-anchor="middle" font-weight="500">并建立映射</text>
+</g>
+<g><title>写共享BO中的命令和输入</title>
+<path d="M385,763 H620 V803 H385" fill="none" stroke="#334155" stroke-width="3.2" marker-end="url(#arrow)"/>
+<rect x="388.72" y="662" width="227.56" height="45" fill="white"/>
+<text x="502.5" y="697" font-size="34" text-anchor="middle" font-weight="500">写共享BO中的</text>
+<rect x="411.5" y="706" width="182" height="45" fill="white"/>
+<text x="502.5" y="741" font-size="34" text-anchor="middle" font-weight="500">命令和输入</text>
+</g>
+<g><title>GROUP_SUBMIT ioctl</title>
+<line x1="385" y1="929" x2="655" y2="929" stroke="#334155" stroke-width="3.2" marker-end="url(#arrow)"/>
+<rect x="377.32" y="828" width="285.36" height="45" fill="white"/>
+<text x="520.0" y="863" font-size="34" text-anchor="middle" font-weight="500">GROUP_SUBMIT</text>
+<rect x="451.1" y="872" width="137.8" height="45" fill="white"/>
+<text x="520.0" y="907" font-size="34" text-anchor="middle" font-weight="500"> ioctl</text>
+</g>
+<g><title>PLAN_EXEC及本次动态参数</title>
+<line x1="655" y1="1079" x2="925" y2="1079" stroke="#334155" stroke-width="3.2" marker-end="url(#arrow)"/>
+<rect x="664.49" y="978" width="251.02" height="45" fill="white"/>
+<text x="790.0" y="1013" font-size="34" text-anchor="middle" font-weight="500">PLAN_EXEC及</text>
+<rect x="682.0" y="1022" width="216" height="45" fill="white"/>
+<text x="790.0" y="1057" font-size="34" text-anchor="middle" font-weight="500">本次动态参数</text>
+</g>
+<g><title>原生group submit</title>
+<line x1="925" y1="1229" x2="1195" y2="1229" stroke="#334155" stroke-width="3.2" marker-end="url(#arrow)"/>
+<rect x="963.05" y="1128" width="193.9" height="45" fill="white"/>
+<text x="1060.0" y="1163" font-size="34" text-anchor="middle" font-weight="500">原生group</text>
+<rect x="985.66" y="1172" width="148.68" height="45" fill="white"/>
+<text x="1060.0" y="1207" font-size="34" text-anchor="middle" font-weight="500">submit</text>
+</g>
+<g><title>已接纳提交</title>
+<line x1="1195" y1="1335" x2="925" y2="1335" stroke="#334155" stroke-width="3.2" stroke-dasharray="10 7" marker-end="url(#arrow)"/>
+<rect x="969.0" y="1278" width="182" height="45" fill="white"/>
+<text x="1060.0" y="1313" font-size="34" text-anchor="middle" font-weight="500">已接纳提交</text>
+</g>
+<g><title>RPC提交结果</title>
+<line x1="925" y1="1441" x2="655" y2="1441" stroke="#334155" stroke-width="3.2" stroke-dasharray="10 7" marker-end="url(#arrow)"/>
+<rect x="681.83" y="1384" width="216.34" height="45" fill="white"/>
+<text x="790.0" y="1419" font-size="34" text-anchor="middle" font-weight="500">RPC提交结果</text>
+</g>
+<g><title>ioctl返回</title>
+<line x1="655" y1="1547" x2="385" y2="1547" stroke="#334155" stroke-width="3.2" stroke-dasharray="10 7" marker-end="url(#arrow)"/>
+<rect x="423.05" y="1490" width="193.9" height="45" fill="white"/>
+<text x="520.0" y="1525" font-size="34" text-anchor="middle" font-weight="500">ioctl返回</text>
+</g>
+<g><title>调度并启动命令流</title>
+<line x1="1195" y1="1697" x2="1465" y2="1697" stroke="#334155" stroke-width="3.2" marker-end="url(#arrow)"/>
+<rect x="1239.0" y="1596" width="182" height="45" fill="white"/>
+<text x="1330.0" y="1631" font-size="34" text-anchor="middle" font-weight="500">调度并启动</text>
+<rect x="1273.0" y="1640" width="114" height="45" fill="white"/>
+<text x="1330.0" y="1675" font-size="34" text-anchor="middle" font-weight="500">命令流</text>
+</g>
+<g><title>完成中断</title>
+<line x1="1465" y1="1803" x2="1195" y2="1803" stroke="#334155" stroke-width="3.2" stroke-dasharray="10 7" marker-end="url(#arrow)"/>
+<rect x="1256.0" y="1746" width="148" height="45" fill="white"/>
+<text x="1330.0" y="1781" font-size="34" text-anchor="middle" font-weight="500">完成中断</text>
+</g>
+<g><title>原生fence完成</title>
+<path d="M1195,1909 H1430 V1949 H1195" fill="none" stroke="#334155" stroke-width="3.2" marker-end="url(#arrow)"/>
+<rect x="1181.55" y="1852" width="261.9" height="45" fill="white"/>
+<text x="1312.5" y="1887" font-size="34" text-anchor="middle" font-weight="500">原生fence完成</text>
+</g>
+<g><title>真实fence回调发布完成cookie</title>
+<line x1="1195" y1="2075" x2="655" y2="2075" stroke="#334155" stroke-width="3.2" stroke-dasharray="10 7" marker-end="url(#arrow)"/>
+<rect x="760.05" y="1974" width="329.9" height="45" fill="white"/>
+<text x="925.0" y="2009" font-size="34" text-anchor="middle" font-weight="500">真实fence回调发布</text>
+<rect x="816.66" y="2018" width="216.68" height="45" fill="white"/>
+<text x="925.0" y="2053" font-size="34" text-anchor="middle" font-weight="500">完成cookie</text>
+</g>
+<g><title>等待完成或导出同步</title>
+<line x1="385" y1="2225" x2="655" y2="2225" stroke="#334155" stroke-width="3.2" marker-end="url(#arrow)"/>
+<rect x="446.0" y="2124" width="148" height="45" fill="white"/>
+<text x="520.0" y="2159" font-size="34" text-anchor="middle" font-weight="500">等待完成</text>
+<rect x="429.0" y="2168" width="182" height="45" fill="white"/>
+<text x="520.0" y="2203" font-size="34" text-anchor="middle" font-weight="500">或导出同步</text>
+</g>
+<g><title>本地可信命中或真实等待结果</title>
+<line x1="655" y1="2375" x2="385" y2="2375" stroke="#334155" stroke-width="3.2" stroke-dasharray="10 7" marker-end="url(#arrow)"/>
+<rect x="412.0" y="2274" width="216" height="45" fill="white"/>
+<text x="520.0" y="2309" font-size="34" text-anchor="middle" font-weight="500">本地可信命中</text>
+<rect x="395.0" y="2318" width="250" height="45" fill="white"/>
+<text x="520.0" y="2353" font-size="34" text-anchor="middle" font-weight="500">或真实等待结果</text>
+</g>
+</svg>

@@ -232,7 +232,7 @@ mkdir -p "${WORK_DIR}"
 cc -O2 -Wall -Wextra -std=c11 \
 	"${SRC_DIR}/gles_compute_smoke.c" \
 	-o "${SMOKE_BIN}" \
-	$(pkg-config --cflags --libs egl glesv2 gbm)
+	$(pkg-config --cflags --libs egl glesv2 gbm libdrm)
 
 mkdir -p "${MNT}"
 

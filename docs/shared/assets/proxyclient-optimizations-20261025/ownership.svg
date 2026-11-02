@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1080" viewBox="0 0 1440 1080">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#667791"/></marker></defs>
+<style>text { font-family: "Noto Sans CJK SC", sans-serif; }</style>
+<rect width="1440" height="1080" fill="white"/>
+<text x="58" y="64" font-size="36" fill="#17243b" font-weight="700" text-anchor="start">缓存与内存：先明确所有权，再减少重复工作</text>
+<text x="60" y="104" font-size="21" fill="#52627a" font-weight="400" text-anchor="start">同一物理页共享不等于CPU/GPU天然一致；缓存维护必须对应实际交接。</text>
+<rect x="60" y="165" width="390" height="180" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="165" width="6" height="180" rx="3" fill="#d58120" stroke="none"/>
+<text x="82" y="203" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">旧tiler同步方式</text>
+<text x="82" y="241" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">CPU初始化一次</text>
+<text x="82" y="271" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">每次提交和完成都扫描 / 同步</text>
+<text x="82" y="301" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">长期由GPU使用却反复交接</text>
+<rect x="525" y="165" width="855" height="180" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="525" y="165" width="6" height="180" rx="3" fill="#16836a" stroke="none"/>
+<text x="547" y="203" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">GPU-only heap交接</text>
+<text x="547" y="241" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">CPU初始化 → 全chunk clean / invalidate → 撤销vmap</text>
+<text x="547" y="271" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">GPU长期持有；普通BO / heap context仍按需同步</text>
+<text x="547" y="301" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">历史309 → 632；BO同步605.877 → 8.075 μs</text>
+<polyline points="450,250 525,250" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="60" y="440" width="620" height="160" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="440" width="6" height="160" rx="3" fill="#16836a" stroke="none"/>
+<text x="82" y="478" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">managed提交：限定来源与同步点</text>
+<text x="82" y="516" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">授权、pinned、WC payload；root预留仍保留</text>
+<text x="82" y="546" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">ring / sync record / 固件输入在写入点维护</text>
+<text x="82" y="576" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">省去逐提交全BO扫描；普通VM保留原路径</text>
+<rect x="760" y="440" width="620" height="160" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="760" y="440" width="6" height="160" rx="3" fill="#2767d8" stroke="none"/>
+<text x="782" y="478" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">分段BO：解决物理碎片</text>
+<text x="782" y="516" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">同一owner池内多个extent → 连续GPU VA</text>
+<text x="782" y="546" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">mmap按逻辑偏移遍历分段</text>
+<text x="782" y="576" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">提高可分配性；没有独立提分证据</text>
+<rect x="60" y="700" width="620" height="160" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="700" width="6" height="160" rx="3" fill="#d58120" stroke="none"/>
+<text x="82" y="738" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">共享前：两批物理后备</text>
+<text x="82" y="776" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">Proxy源页A + Client挂接目标旧页B</text>
+<text x="82" y="806" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">映射改到A后，B仍可能留在guest_memfd</text>
+<text x="82" y="836" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">旧384 MiB目标＝98304页</text>
+<rect x="760" y="700" width="620" height="160" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="760" y="700" width="6" height="160" rx="3" fill="#16836a" stroke="none"/>
+<text x="782" y="738" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">共享后：同一批A，回收旧B</text>
+<text x="782" y="776" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">KVM成功切换属性 / 撤销旧映射后打洞</text>
+<text x="782" y="806" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">源页A仍保留98304页，旧B变为0页</text>
+<text x="782" y="836" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">分项峰值合计903.26 → 519.33 MiB</text>
+<polyline points="680,780 760,780" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="60" y="1008" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">回收旧后备不是回收仍供GPU使用的源池；启动阶段仍先取得目标区。</text>
+<text x="60" y="1038" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">内存为历史ResNet50口径，非GLMark当前整机RAM；各分项峰值不保证同时发生。</text>
+</svg>

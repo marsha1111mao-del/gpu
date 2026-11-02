@@ -9,12 +9,88 @@ import re
 import runpy
 import shlex
 import subprocess
+import stat
+import struct
 
 ROOT = Path(__file__).resolve().parents[2]
+
+
+def private_initrd_inputs(path, workload=None, profiles=None):
+    """Validate required private-mode inputs before uploading anything.
+
+    This checks packaging/version mistakes, not attestation. RMM independently
+    verifies firmware and actual service isolation at runtime.
+    """
+    data = path.read_bytes()
+    if not data or len(data) % 4096:
+        raise ValueError('private initrd must be padded to 4096 bytes')
+    needed = {'init', 'realm-gpu-private', 'mali_csffw.bin'}
+    if workload:
+        needed.update(('glmark.env', 'gpu-smoke.sh'))
+    if workload == 'compute':
+        needed.add('gles-compute-smoke')
+    if profiles:
+        needed.add('performance-suite.sh')
+        if any(profile.startswith(('ml-', 'attention-')) for profile in profiles):
+            needed.add('gles-ml-smoke')
+    position, names, required = 0, set(), {}
+    while True:
+        if data[position:position + 6] != b'070701' or position + 110 > len(data):
+            raise ValueError('invalid/truncated private initrd header')
+        fields = [int(data[position + 6 + 8 * i:position + 14 + 8 * i], 16)
+                  for i in range(13)]
+        mode, size, name_size = fields[1], fields[6], fields[11]
+        start = position + 110
+        end = start + name_size
+        if not name_size or end > len(data):
+            raise ValueError('invalid private initrd name length')
+        encoded = data[start:end]
+        if encoded[-1:] != b'\0' or b'\0' in encoded[:-1]:
+            raise ValueError('invalid private initrd name')
+        name = encoded[:-1].decode()
+        if name in names:
+            raise ValueError('duplicate private initrd entry: ' + name)
+        names.add(name)
+        body = (end + 3) & ~3
+        following = (body + size + 3) & ~3
+        if following > len(data) or any(data[end:body]) or any(data[body + size:following]):
+            raise ValueError('invalid private initrd payload or padding')
+        payload = data[body:body + size]
+        if name == 'TRAILER!!!':
+            if mode or size or any(data[following:]):
+                raise ValueError('invalid private initrd trailer')
+            break
+        if name in needed:
+            if not stat.S_ISREG(mode) or fields[4] != 1:
+                raise ValueError('private input must be an ordinary file: ' + name)
+            if name in ('init', 'realm-gpu-private', 'gles-ml-smoke', 'gles-compute-smoke'):
+                if not mode & 0o111 or len(payload) < 20 or payload[:6] != b'\x7fELF\x02\x01' or struct.unpack_from('<H', payload, 18)[0] != 183:
+                    raise ValueError('private tool must be executable AArch64 ELF: ' + name)
+            elif name == 'mali_csffw.bin' and (size != 274432 or hashlib.sha256(payload).hexdigest() != '43c3c36b914c031d88ae152fd89019d8f99ad41d9879fb5ab7496ed13f7b378b'):
+                raise ValueError('private initrd firmware differs from RMM allowlist')
+            elif name.endswith('.sh') and (not size or not mode & 0o111):
+                raise ValueError('private workload script must be executable: ' + name)
+            if name == 'init' and b'/realm-gpu-private\0' not in payload:
+                raise ValueError('init lacks gpu-private command dispatch')
+            if name == 'init' and workload == 'compute' and b'compute-eventfd\0' not in payload:
+                raise ValueError('init lacks compute-eventfd command dispatch')
+            if name == 'gles-compute-smoke' and b'--gpu-eventfd\0' not in payload:
+                raise ValueError('compute tool lacks GPU eventfd mode')
+            if name == 'realm-gpu-private' and b'mode-check\0' not in payload:
+                raise ValueError('private tool lacks actual driver-mode checking')
+            required[name] = {'bytes': size, 'sha256': hashlib.sha256(payload).hexdigest(),
+                              'mode': oct(mode)}
+        position = following
+    if set(required) != needed:
+        raise ValueError('private initrd missing required inputs: ' + ', '.join(sorted(needed - set(required))))
+    return required
+
+
 p = argparse.ArgumentParser(description=__doc__)
 p.add_argument('--images', type=Path, required=True,
                help='Frozen client-Image, proxy-Image, initrd.cpio, runner.py and hashes.json')
 p.add_argument('--workload', choices=('events', 'compute', 'glmark'), default='compute')
+p.add_argument('--private-gpu', action='store_true', help='Require RMM-controlled GPU execution and Client-private data; frozen initrd must include private tools and pinned firmware')
 p.add_argument('--performance', action='store_true', help='Controlled 600 MHz / separate CPU performance profile')
 p.add_argument('--benchmark-only', action='store_true', help='Only full glmark over the real RMM transport')
 p.add_argument('--suite', action='store_true', help='Remeasure the common performance suite (requires glmark benchmark profile)')
@@ -58,6 +134,14 @@ if a.gpu_fault_isolation and a.workload != 'compute':
     p.error('--gpu-fault-isolation requires --workload compute')
 if a.bo_sg_mmap and a.workload != 'compute':
     p.error('--bo-sg-mmap requires --workload compute')
+if a.private_gpu and (a.workload == 'events' or a.large_pool or a.compact_memory or
+        a.reclaim_targets or a.transfer_capture or a.completion_trace or
+        a.bo_sg_mmap or a.gpu_fault_isolation):
+    p.error('--private-gpu requires a GPU workload without shared-data profiles/cookie traces/fault probes')
+if a.private_gpu and a.suite and (not a.profiles or not (
+        a.profiles in (['glmark-720'], ['glmark-1080']) or
+        all(profile.startswith(('ml-', 'attention-', 'ncnn-')) for profile in a.profiles))):
+    p.error('--private-gpu suite requires one full glmark profile or explicit ML profiles')
 run_id = os.getenv('RUN_ID', '')
 if not run_id or os.getenv('GPU_LAB_ALLOW_RK_REBOOT') != '0':
     p.error('run through scripts/maintenance/lab-run.py without --allow-rk-reboot')
@@ -87,6 +171,15 @@ for name, target in files:
     inputs.append({'source': str(source.resolve()), 'target': str(a.remote_root/target),
                    'sha256': digest})
 
+private_inputs = None
+if a.private_gpu:
+    try:
+        private_inputs = private_initrd_inputs(a.images/'initrd.cpio', a.workload, a.profiles)
+    except (ValueError, UnicodeError, OSError) as exc:
+        p.error(str(exc))
+    if not re.search(rb"p.add_argument\(['\"]--private-gpu['\"]", (a.images/'runner.py').read_bytes()):
+        p.error('frozen runner does not support --private-gpu')
+
 resources = runpy.run_path(str(ROOT/'scripts/maintenance/lab-resources.py'))
 ssh, env = resources['ssh']('rk')
 def remote(command, **kwargs):
@@ -108,6 +201,8 @@ for item in inputs:
 command = ['python3', str(a.remote_root/'tests/realm-xshm/run-realms.py'),
            '--root', str(a.remote_root), '--run-id', run_id,
            '--trusted-events', '--parallel-boot']
+if a.private_gpu:
+    command += ['--private-gpu']
 if a.performance:
     command += ['--performance']
 if a.benchmark_only:
@@ -147,12 +242,14 @@ if a.workload != 'events':
     remote('test -r '+shlex.quote(str(rootfs)))
     command += ['--transport', '--gpu-flow', '--pin-cpus']
     if a.workload == 'glmark':
-        pool_pages = (a.pool_mib or 128)*256 if a.compact_memory else (131072 if a.large_pool else 65536)
+        pool_pages = (2049 if a.private_gpu else
+                      (a.pool_mib or 128)*256 if a.compact_memory else (131072 if a.large_pool else 65536))
         command += ['--memory-pages', str(pool_pages), '--glmark-rootfs', str(rootfs)]
     else:
         command += ['--memory-pages', '2049', '--clients', '2', '--compute-rootfs', str(rootfs)]
 evidence.write_text(json.dumps({'run_id': run_id, 'inputs': inputs,
-                               'command': command}, indent=2)+'\n')
+                               'command': command, 'private_gpu': a.private_gpu,
+                               'private_initrd_inputs': private_inputs}, indent=2)+'\n')
 host_before = remote('dmesg', capture_output=True).stdout
 evidence.with_name('host-dmesg-before.log').write_bytes(host_before)
 returncode = subprocess.run(ssh+[shlex.join(command)], env=env).returncode

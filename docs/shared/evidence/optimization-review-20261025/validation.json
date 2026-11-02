@@ -1,0 +1,610 @@
+{
+  "status": "REVIEW_COMPLETE_WITH_DOCUMENTED_LIMITS",
+  "baseline_720p_mean": 1405,
+  "production_code_changed": false,
+  "reviewed_mechanisms": [
+    "3.1",
+    "3.2",
+    "3.3",
+    "3.4",
+    "3.5",
+    "3.6",
+    "3.7",
+    "4.1",
+    "4.2",
+    "4.3",
+    "4.4",
+    "4.5",
+    "4.6",
+    "4.7",
+    "4.8",
+    "4.9",
+    "4.10",
+    "5.1",
+    "5.2",
+    "5.3",
+    "5.4",
+    "5.5",
+    "5.6",
+    "5.7",
+    "5.8"
+  ],
+  "source_file_count": 51,
+  "source_unchanged": true,
+  "local_checks": [
+    {
+      "name": "rmm-sanitizers",
+      "command": [
+        "bash",
+        "scripts/check/check-rmm-xshm-events.sh"
+      ],
+      "returncode": 0,
+      "duration_seconds": 0.7463719844818115,
+      "log": "build/optimization-review-20261025/rmm-sanitizers.log"
+    },
+    {
+      "name": "patch-manifest",
+      "command": [
+        "python3",
+        "opencca/scripts/setup/apply-local-patches.py",
+        "--check"
+      ],
+      "returncode": 0,
+      "duration_seconds": 0.21767687797546387,
+      "log": "build/optimization-review-20261025/patch-manifest.log"
+    },
+    {
+      "name": "retained-run-evidence",
+      "command": [
+        "python3",
+        "build/raw-fence-observation-20261024/goal-completion-audit.py"
+      ],
+      "returncode": 0,
+      "duration_seconds": 0.2764894962310791,
+      "log": "build/optimization-review-20261025/retained-run-evidence.log"
+    },
+    {
+      "name": "dma-ownership",
+      "command": [
+        "bash",
+        "scripts/check/check-dma-guard.sh"
+      ],
+      "returncode": 0,
+      "duration_seconds": 0.41763973236083984,
+      "log": "build/optimization-review-20261025/dma-ownership.log"
+    },
+    {
+      "name": "iommu-ownership",
+      "command": [
+        "bash",
+        "scripts/check/check-secure-iommu.sh"
+      ],
+      "returncode": 0,
+      "duration_seconds": 0.40927624702453613,
+      "log": "build/optimization-review-20261025/iommu-ownership.log"
+    }
+  ],
+  "verified_runs": [
+    {
+      "run_id": "optimization-review-compute-20261025-a",
+      "case": "compute",
+      "status": "VERIFIED",
+      "wrapper_returncode": 0,
+      "resources_restored": true,
+      "verified_remote_files": 10,
+      "vm_exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "raw_completed_jobs": 105,
+      "irq_tail_direct": 92,
+      "irq_tail_deferred": 145,
+      "command": [
+        "python3",
+        "scripts/maintenance/lab-run.py",
+        "--run-id",
+        "optimization-review-compute-20261025-a",
+        "--",
+        "python3",
+        "scripts/run/run-realm-wake-sgi.py",
+        "--module",
+        "build/fast-target-irq-20261024/host-sgi/xshm_wake_sgi.ko",
+        "--",
+        "python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/raw-fence-observation-20261024/candidate",
+        "--workload",
+        "compute",
+        "--performance",
+        "--transfer-capture",
+        "--rpc-stats",
+        "--bo-sg-mmap",
+        "--gpu-fault-isolation"
+      ],
+      "input_sha256": {
+        "client-Image": "bc495269491b44879d1f84556f537903650afad34a06fb94d6676e9ae799349f",
+        "initrd.cpio": "903465ce6f7ca4290aed6f979c7501606ff6729c03656b9e48de4de1f343f0f3",
+        "proxy-Image": "d0debf770a9a83c332c8fad540d69fdb27f44e30397a76942fdef71d30165304",
+        "runner.py": "19fcc60567a232ed8050a710e33baad8eb90225db7fb1ba4bea2123dd9247565"
+      },
+      "module_unloaded": true,
+      "ioctl_commands": 39,
+      "expected_gpu_fault": {
+        "status": "PASS",
+        "address": "0xa00000",
+        "lines": [
+          "<3>[   45.404862] exception type 0xC2: TRANSLATION_FAULT_2"
+        ]
+      },
+      "rpc_concurrency_peaks": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "same_client_rpc_overlap_observed": true,
+      "wrapper_log": "build/optimization-review-20261025/optimization-review-compute-20261025-a.log",
+      "lab_evidence": "build/lab-runs/optimization-review-compute-20261025-a"
+    },
+    {
+      "run_id": "optimization-review-1080-20261025-a",
+      "case": "1080",
+      "status": "VERIFIED",
+      "wrapper_returncode": 0,
+      "resources_restored": true,
+      "verified_remote_files": 11,
+      "vm_exit_codes": [
+        0,
+        0
+      ],
+      "raw_completed_jobs": 411056,
+      "irq_tail_direct": 400861,
+      "irq_tail_deferred": 436209,
+      "command": [
+        "python3",
+        "scripts/maintenance/lab-run.py",
+        "--run-id",
+        "optimization-review-1080-20261025-a",
+        "--",
+        "python3",
+        "scripts/run/run-realm-wake-sgi.py",
+        "--module",
+        "build/fast-target-irq-20261024/host-sgi/xshm_wake_sgi.ko",
+        "--",
+        "python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/raw-fence-observation-20261024/candidate",
+        "--workload",
+        "glmark",
+        "--performance",
+        "--benchmark-only",
+        "--suite",
+        "--profiles",
+        "glmark-1080",
+        "--clients",
+        "1",
+        "--compact-memory",
+        "--pool-mib",
+        "192",
+        "--client-cpu-layout",
+        "round-robin",
+        "--cpu-frequency-khz",
+        "1800000",
+        "--telemetry",
+        "--transfer-capture"
+      ],
+      "input_sha256": {
+        "client-Image": "bc495269491b44879d1f84556f537903650afad34a06fb94d6676e9ae799349f",
+        "initrd.cpio": "903465ce6f7ca4290aed6f979c7501606ff6729c03656b9e48de4de1f343f0f3",
+        "proxy-Image": "d0debf770a9a83c332c8fad540d69fdb27f44e30397a76942fdef71d30165304",
+        "runner.py": "19fcc60567a232ed8050a710e33baad8eb90225db7fb1ba4bea2123dd9247565"
+      },
+      "module_unloaded": true,
+      "glmark_scores": [
+        1044
+      ],
+      "validation": [
+        [
+          26,
+          1,
+          6
+        ]
+      ],
+      "wrapper_log": "build/optimization-review-20261025/optimization-review-1080-20261025-a.log",
+      "lab_evidence": "build/lab-runs/optimization-review-1080-20261025-a"
+    },
+    {
+      "run_id": "optimization-review-ml2-20261025-a",
+      "case": "ml2",
+      "status": "VERIFIED",
+      "wrapper_returncode": 0,
+      "resources_restored": true,
+      "verified_remote_files": 14,
+      "vm_exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "raw_completed_jobs": 421,
+      "irq_tail_direct": 439,
+      "irq_tail_deferred": 854,
+      "command": [
+        "python3",
+        "scripts/maintenance/lab-run.py",
+        "--run-id",
+        "optimization-review-ml2-20261025-a",
+        "--",
+        "python3",
+        "scripts/run/run-realm-wake-sgi.py",
+        "--module",
+        "build/fast-target-irq-20261024/host-sgi/xshm_wake_sgi.ko",
+        "--",
+        "python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/raw-fence-observation-20261024/candidate",
+        "--workload",
+        "glmark",
+        "--performance",
+        "--benchmark-only",
+        "--suite",
+        "--profiles",
+        "ml-gemm",
+        "ml-conv",
+        "--clients",
+        "2",
+        "--compact-memory",
+        "--pool-mib",
+        "128",
+        "--transfer-capture"
+      ],
+      "input_sha256": {
+        "client-Image": "bc495269491b44879d1f84556f537903650afad34a06fb94d6676e9ae799349f",
+        "initrd.cpio": "903465ce6f7ca4290aed6f979c7501606ff6729c03656b9e48de4de1f343f0f3",
+        "proxy-Image": "d0debf770a9a83c332c8fad540d69fdb27f44e30397a76942fdef71d30165304",
+        "runner.py": "19fcc60567a232ed8050a710e33baad8eb90225db7fb1ba4bea2123dd9247565"
+      },
+      "module_unloaded": true,
+      "ml": [
+        {
+          "profile": "ml-gemm",
+          "clients": [
+            {
+              "client": 1,
+              "returncode": 0,
+              "pass_marker": true,
+              "errors": [],
+              "metrics_ms": {
+                "gemm_512_fp32": 57.56239
+              }
+            },
+            {
+              "client": 2,
+              "returncode": 0,
+              "pass_marker": true,
+              "errors": [],
+              "metrics_ms": {
+                "gemm_512_fp32": 57.8538
+              }
+            }
+          ],
+          "barrier": true,
+          "events": {
+            "1": {
+              "dispatch": 42938426902125,
+              "ready": 42938567142217,
+              "release": 42938567192677,
+              "start": 42938587209933,
+              "timing_ready": 42945409984968,
+              "timing_release": 42945627046887,
+              "timing_start": 42945630640304,
+              "timing_end": 42951388877858,
+              "end": 42951589637857
+            },
+            "2": {
+              "dispatch": 42938426931876,
+              "ready": 42938563820348,
+              "release": 42938567220677,
+              "start": 42938583837605,
+              "timing_ready": 42945626989719,
+              "timing_release": 42945627087430,
+              "timing_start": 42945646920349,
+              "timing_end": 42951424342141,
+              "end": 42951722452526
+            }
+          },
+          "overlap": {
+            "observation_clock": "Host CLOCK_MONOTONIC serial receive; measured iterations after warmup",
+            "common_seconds": 5.741957509,
+            "union_seconds": 5.793701837,
+            "fraction": 0.9910688659071911
+          },
+          "status": "PASS"
+        },
+        {
+          "profile": "ml-conv",
+          "clients": [
+            {
+              "client": 1,
+              "returncode": 0,
+              "pass_marker": true,
+              "errors": [],
+              "metrics_ms": {
+                "conv2d_64x64x32_3x3_fp32": 66.58179
+              }
+            },
+            {
+              "client": 2,
+              "returncode": 0,
+              "pass_marker": true,
+              "errors": [],
+              "metrics_ms": {
+                "conv2d_64x64x32_3x3_fp32": 66.25267
+              }
+            }
+          ],
+          "barrier": true,
+          "events": {
+            "1": {
+              "dispatch": 42951934019901,
+              "ready": 42951993319737,
+              "release": 42951993365239,
+              "start": 42952013402037,
+              "timing_ready": 42953478754255,
+              "timing_release": 42953478888717,
+              "timing_start": 42953498687510,
+              "timing_end": 42960159918056,
+              "end": 42960340451959
+            },
+            "2": {
+              "dispatch": 42951934115570,
+              "ready": 42951989420939,
+              "release": 42951993384197,
+              "start": 42952009446654,
+              "timing_ready": 42953434897653,
+              "timing_release": 42953478914093,
+              "timing_start": 42953494927256,
+              "timing_end": 42960114928010,
+              "end": 42960315670217
+            }
+          },
+          "overlap": {
+            "observation_clock": "Host CLOCK_MONOTONIC serial receive; measured iterations after warmup",
+            "common_seconds": 6.6162405,
+            "union_seconds": 6.6649908,
+            "fraction": 0.9926856163102281
+          },
+          "status": "PASS"
+        }
+      ],
+      "wrapper_log": "build/optimization-review-20261025/optimization-review-ml2-20261025-a.log",
+      "lab_evidence": "build/lab-runs/optimization-review-ml2-20261025-a"
+    },
+    {
+      "run_id": "optimization-review-native-fallback-20261025-d",
+      "case": "native-fallback",
+      "status": "VERIFIED",
+      "wrapper_returncode": 0,
+      "resources_restored": true,
+      "verified_remote_files": 10,
+      "vm_exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "raw_completed_jobs": 72,
+      "irq_tail_direct": 95,
+      "irq_tail_deferred": 94,
+      "command": [
+        "python3",
+        "scripts/maintenance/lab-run.py",
+        "--run-id",
+        "optimization-review-native-fallback-20261025-d",
+        "--",
+        "python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/optimization-review-20261025/native-fallback-bundle-v4",
+        "--workload",
+        "compute",
+        "--performance",
+        "--transfer-capture"
+      ],
+      "input_sha256": {
+        "client-Image": "bc495269491b44879d1f84556f537903650afad34a06fb94d6676e9ae799349f",
+        "proxy-Image": "d0debf770a9a83c332c8fad540d69fdb27f44e30397a76942fdef71d30165304",
+        "initrd.cpio": "e2dcbcbd1334019b5eaa50f09b5ca7cae4cb4518027841f45d9f48fe62dba1d4",
+        "runner.py": "234fed1dbe071fc4d2ea1c051ddcde53161ba7a82a3031f9eb390ba4fafd212f"
+      },
+      "fast_irq_counters": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ]
+      ],
+      "ioctl_commands": 40,
+      "native_proxy_modes": [
+        "basic",
+        "vm-bind-async-sync",
+        "group-submit-syncpoint",
+        "tiler-heap-lifecycle"
+      ],
+      "native_proxy_compute": "PASS",
+      "wrapper_log": "build/optimization-review-20261025/optimization-review-native-fallback-20261025-d.log",
+      "lab_evidence": "build/lab-runs/optimization-review-native-fallback-20261025-d"
+    },
+    {
+      "run_id": "optimization-review-fence-proof-20261025-a",
+      "case": "fence-proof",
+      "status": "VERIFIED",
+      "wrapper_returncode": 0,
+      "resources_restored": true,
+      "proof": {
+        "module_sha256": "a9b5bd1c1ede3fe54caca40d68c60d82d2ebf8220382bd02a639f0ec1f7af16f",
+        "helper_sha256": "82cd71b9768434573f4efc6cdf05dfd0c21102153d63c7bdb600e926dd984b88",
+        "module_unloaded": true,
+        "dmesg_ring_wrapped": false,
+        "pass_marker": true,
+        "kernel_error": false
+      },
+      "command": [
+        "python3",
+        "scripts/maintenance/lab-run.py",
+        "--run-id",
+        "optimization-review-fence-proof-20261025-a",
+        "--",
+        "python3",
+        "build/chain-callback-proof-20261024/run-proof.py"
+      ],
+      "wrapper_log": "build/optimization-review-20261025/optimization-review-fence-proof-20261025-a.log",
+      "lab_evidence": "build/lab-runs/optimization-review-fence-proof-20261025-a"
+    }
+  ],
+  "preserved_failures": [
+    {
+      "run_id": "optimization-review-native-fallback-20261025-a",
+      "status": "FAIL_PRESERVED",
+      "reason": "Client-only probe expected PRIME=0; native Panthor correctly returned PRIME=3",
+      "command": [
+        "python3",
+        "scripts/maintenance/lab-run.py",
+        "--run-id",
+        "optimization-review-native-fallback-20261025-a",
+        "--",
+        "python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/optimization-review-20261025/native-fallback-bundle",
+        "--workload",
+        "compute",
+        "--performance",
+        "--transfer-capture"
+      ],
+      "wrapper_returncode": 1,
+      "collect_returncode": 0,
+      "verified_remote_files": 13,
+      "vm_exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "native_modes_passed": [],
+      "resources_restored": true,
+      "log": "build/optimization-review-20261025/optimization-review-native-fallback-20261025-a.log"
+    },
+    {
+      "run_id": "optimization-review-native-fallback-20261025-b",
+      "status": "FAIL_PRESERVED",
+      "reason": "Client-only ISOLATED VM_CREATE flag rejected by ordinary native VM_CREATE with EINVAL",
+      "command": [
+        "python3",
+        "scripts/maintenance/lab-run.py",
+        "--run-id",
+        "optimization-review-native-fallback-20261025-b",
+        "--",
+        "python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/optimization-review-20261025/native-fallback-bundle-v2",
+        "--workload",
+        "compute",
+        "--performance",
+        "--transfer-capture"
+      ],
+      "wrapper_returncode": 1,
+      "collect_returncode": 0,
+      "verified_remote_files": 13,
+      "vm_exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "native_modes_passed": [
+        "basic",
+        "vm-bind-async-sync",
+        "group-submit-syncpoint",
+        "tiler-heap-lifecycle"
+      ],
+      "resources_restored": true,
+      "log": "build/optimization-review-20261025/optimization-review-native-fallback-20261025-b.log"
+    },
+    {
+      "run_id": "optimization-review-native-fallback-20261025-c",
+      "status": "FAIL_PRESERVED",
+      "reason": "Native compute fixture omitted the Proxy read-only workload rootfs; /dev/vda absent, rc127",
+      "command": [
+        "python3",
+        "scripts/maintenance/lab-run.py",
+        "--run-id",
+        "optimization-review-native-fallback-20261025-c",
+        "--",
+        "python3",
+        "scripts/run/run-realm-xshm.py",
+        "--images",
+        "build/optimization-review-20261025/native-fallback-bundle-v3",
+        "--workload",
+        "compute",
+        "--performance",
+        "--transfer-capture"
+      ],
+      "wrapper_returncode": 1,
+      "collect_returncode": 0,
+      "verified_remote_files": 13,
+      "vm_exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "native_modes_passed": [
+        "basic",
+        "vm-bind-async-sync",
+        "group-submit-syncpoint",
+        "tiler-heap-lifecycle"
+      ],
+      "resources_restored": true,
+      "log": "build/optimization-review-20261025/optimization-review-native-fallback-20261025-c.log"
+    }
+  ],
+  "verified_remote_files_successful_runs": 45,
+  "verified_remote_files_failed_runs": 39,
+  "finalize_run_id": "optimization-review-finalize-20261025-a",
+  "final_runtime_restored": true,
+  "limits": [
+    "no formal proof",
+    "no long-duration/reset/suspend stress",
+    "no full lockdep build",
+    "no single-Realm multi-vCPU test",
+    "no universal speedup or energy claim",
+    "no real CCA device-protection hardware proof",
+    "completed_snapshot switch not exercised",
+    "no isolated 1080p or ML old/new speed comparison",
+    "no provider replacement hardware test"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "new_branch": "baseline/rmm-private-fu-ft-20261102",
+  "old_branch": "baseline/legacy-proxy-allocated-1158-20261102",
+  "old_commit": "e2904e0f20ac7f106a005a81049d493462195e12",
+  "old_design": "Proxy-allocated Client GPU memory",
+  "new_design": "Client-private BO backing and RMM-owned GPU page tables",
+  "old_scores": [
+    1158,
+    1158
+  ],
+  "new_retained_scores": [
+    971,
+    971
+  ],
+  "latest_unmodified_score": 972,
+  "last_attempt_score": 980,
+  "last_attempt_withdrawn": true,
+  "stop_further_optimization_experiments": true,
+  "archive_restore_checks": "old11 and new17 files restored and rechecked",
+  "new_hardware_after_archive": false,
+  "goal_complete": false
+}

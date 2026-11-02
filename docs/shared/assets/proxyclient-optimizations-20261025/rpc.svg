@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1080" viewBox="0 0 1440 1080">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#667791"/></marker></defs>
+<style>text { font-family: "Noto Sans CJK SC", sans-serif; }</style>
+<rect width="1440" height="1080" fill="white"/>
+<text x="58" y="64" font-size="36" fill="#17243b" font-weight="700" text-anchor="start">一次同步RPC：先短轮询，再可靠地睡眠</text>
+<text x="60" y="104" font-size="21" fill="#52627a" font-weight="400" text-anchor="start">轮询由已经等待的Client调用线程执行；Proxy接收侧忙等是另一种方案，曾被撤回。</text>
+<rect x="60" y="155" width="620" height="140" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="155" width="6" height="140" rx="3" fill="#2767d8" stroke="none"/>
+<text x="82" y="193" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">① 发布请求</text>
+<text x="82" y="231" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">先登记seq / type对应的私有waiter</text>
+<text x="82" y="261" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">发布描述符 → RSI NOTIFY唤醒Proxy</text>
+<rect x="760" y="155" width="620" height="140" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="760" y="155" width="6" height="140" rx="3" fill="#16836a" stroke="none"/>
+<text x="782" y="193" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">② Proxy处理并发布回复</text>
+<text x="782" y="231" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">私有复制、owner / 参数校验、真实接纳</text>
+<text x="782" y="261" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">先写回复，再根据NO_NOTIFY提示决定通知</text>
+<polyline points="680,225 760,225" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="60" y="390" width="620" height="170" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="390" width="6" height="170" rx="3" fill="#d58120" stroke="none"/>
+<text x="82" y="428" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">③ Client短时检查</text>
+<text x="82" y="466" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">poll_lock只允许一个提示owner</text>
+<text x="82" y="496" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">处理所有可见回复，按seq / type分派</text>
+<text x="82" y="526" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">完成、need_resched或预算到期即退出</text>
+<rect x="760" y="390" width="620" height="170" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="760" y="390" width="6" height="170" rx="3" fill="#d58120" stroke="none"/>
+<text x="782" y="428" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">④ 恢复通知并重新检查</text>
+<text x="782" y="466" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">清NO_NOTIFY → 完整屏障 → 排空回复</text>
+<text x="782" y="496" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">仍未完成的每个调用者独立ARM</text>
+<text x="782" y="526" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">ARM之后acquire重查，避免丢唤醒</text>
+<polyline points="1060,295 1060,335 370,335 370,390" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="680,475 760,475" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="60" y="665" width="620" height="145" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="665" width="6" height="145" rx="3" fill="#2767d8" stroke="none"/>
+<text x="82" y="703" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">已收到匹配回复</text>
+<text x="82" y="741" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">返回本次RPC结果；不必睡眠</text>
+<text x="82" y="771" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">PLAN_EXEC成功仍不代表GPU已执行完成</text>
+<rect x="760" y="665" width="620" height="145" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="760" y="665" width="6" height="145" rx="3" fill="#7c58bb" stroke="none"/>
+<text x="782" y="703" font-size="25" fill="#7c58bb" font-weight="700" text-anchor="start">仍未收到回复</text>
+<text x="782" y="741" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">wait_for_completion_timeout睡眠</text>
+<text x="782" y="771" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">IRQ → RX work → 匹配waiter → 唤醒</text>
+<polyline points="1060,560 1060,610 370,610 370,665" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="1060,560 1060,665" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="60" y="875" width="1320" height="80" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="875" width="6" height="80" rx="3" fill="#16836a" stroke="none"/>
+<text x="82" y="913" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">收益与代价</text>
+<text x="82" y="951" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">历史632 → 808；减少睡眠/通知往返，但忙轮询占CPU，未证明节能。</text>
+<text x="60" y="1008" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">当前性能profile的回复轮询预算1000 μs；历史提分实验用100 μs，不能混用参数归因。</text>
+<text x="60" y="1038" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">RPC回复轮询与sync_file worker的周期重试不是同一机制。</text>
+</svg>

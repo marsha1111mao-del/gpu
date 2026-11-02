@@ -1,0 +1,46 @@
+{
+  "status": "VERIFIED",
+  "new_independent_qualifying_designs": [
+    {
+      "design": "chain-callback-fences",
+      "previous_baseline": 1267,
+      "scores": [
+        1314,
+        1308
+      ],
+      "mean_score": 1311.0,
+      "increase_percent": 3.4727703235990504,
+      "verified_files": 42
+    },
+    {
+      "design": "raw-fence-observation",
+      "previous_baseline": 1311,
+      "scores": [
+        1406,
+        1404
+      ],
+      "mean_score": 1405.0,
+      "increase_percent": 7.170099160945842,
+      "verified_files": 42
+    }
+  ],
+  "count": 2,
+  "required_minimum": 2,
+  "original_baseline": 1158,
+  "current_baseline": 1405.0,
+  "cumulative_increase_percent": 21.329879101899827,
+  "earlier_four_designs_counted_again": false,
+  "worktree": "exact final frozen combination; no hardware workload left running",
+  "not_run": [
+    "1080p",
+    "multiClient performance",
+    "long-duration stress",
+    "full hardware attack matrix",
+    "same-condition ML speed comparison",
+    "provider replacement",
+    "matched SGI attribution and latency",
+    "intentional GPU faults/reset stress",
+    "debug-lockdep build",
+    "isolated IRQ-to-cookie latency"
+  ]
+}

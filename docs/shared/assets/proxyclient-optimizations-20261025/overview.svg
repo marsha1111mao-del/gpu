@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1090" viewBox="0 0 1440 1090">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#667791"/></marker></defs>
+<style>text { font-family: "Noto Sans CJK SC", sans-serif; }</style>
+<rect width="1440" height="1090" fill="white"/>
+<text x="58" y="64" font-size="36" fill="#17243b" font-weight="700" text-anchor="start">优化发生在哪一层？</text>
+<text x="60" y="104" font-size="21" fill="#52627a" font-weight="400" text-anchor="start">蓝：Mesa原有接口；橙：ClientProxy内部协议；绿：原生驱动；紫：真实GPU与完成。</text>
+<rect x="60" y="155" width="390" height="150" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="155" width="6" height="150" rx="3" fill="#2767d8" stroke="none"/>
+<text x="82" y="193" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">应用 / Mesa UMD</text>
+<text x="82" y="231" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">VM_CREATE、BO_CREATE、VM_BIND</text>
+<text x="82" y="261" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">GROUP_CREATE、GROUP_SUBMIT</text>
+<rect x="525" y="155" width="390" height="150" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="525" y="155" width="6" height="150" rx="3" fill="#d58120" stroke="none"/>
+<text x="547" y="193" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">Client前端</text>
+<text x="547" y="231" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">缓存固定shape；按需物化对象</text>
+<text x="547" y="261" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">快照、epoch与本地完成检查</text>
+<rect x="990" y="155" width="390" height="150" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="990" y="155" width="6" height="150" rx="3" fill="#16836a" stroke="none"/>
+<text x="1012" y="193" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">Proxy / 原生Panthor</text>
+<text x="1012" y="231" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">会话校验；真实GPUVM与job</text>
+<text x="1012" y="261" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">依赖、调度与真实fence</text>
+<polyline points="450,230 525,230" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="915,230 990,230" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="60" y="400" width="620" height="145" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="400" width="6" height="145" rx="3" fill="#d58120" stroke="none"/>
+<text x="82" y="438" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">控制面：减少等待与重复处理</text>
+<text x="82" y="476" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">PLAN_REGISTER / PLAN_EXEC、TRANSFER_CAPTURE</text>
+<text x="82" y="506" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">短轮询、退役捎带、驻留唤醒、SGI15</text>
+<rect x="760" y="400" width="620" height="145" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="760" y="400" width="6" height="145" rx="3" fill="#16836a" stroke="none"/>
+<text x="782" y="438" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">数据面：共享页与缓存所有权</text>
+<text x="782" y="476" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">CPU与GPU访问同一份BO；分段分配</text>
+<text x="782" y="506" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">tiler交接、精确同步、旧目标后备回收</text>
+<polyline points="720,305 720,350 370,350 370,400" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="1185,305 1185,400" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="60" y="650" width="390" height="155" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="650" width="6" height="155" rx="3" fill="#7c58bb" stroke="none"/>
+<text x="82" y="688" font-size="25" fill="#7c58bb" font-weight="700" text-anchor="start">真实GPU执行</text>
+<text x="82" y="726" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">GPU读取命令 / 输入，写结果</text>
+<text x="82" y="756" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">更新真实队列seqno并触发IRQ</text>
+<rect x="525" y="650" width="390" height="155" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="525" y="650" width="6" height="155" rx="3" fill="#16836a" stroke="none"/>
+<text x="547" y="688" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">Proxy完成路径</text>
+<text x="547" y="726" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">减少worker交接；有界提前观察</text>
+<text x="547" y="756" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">真实fence → 精确cookie发布</text>
+<rect x="990" y="650" width="390" height="155" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="990" y="650" width="6" height="155" rx="3" fill="#2767d8" stroke="none"/>
+<text x="1012" y="688" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">Client完成路径</text>
+<text x="1012" y="726" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">匹配slot / cookie / epoch</text>
+<text x="1012" y="756" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">signal本地fence → poll / wait</text>
+<polyline points="450,725 525,725" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="915,725 990,725" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="60" y="870" width="1320" height="95" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="870" width="6" height="95" rx="3" fill="#7c58bb" stroke="none"/>
+<text x="82" y="908" font-size="25" fill="#7c58bb" font-weight="700" text-anchor="start">两个不能混淆的返回</text>
+<text x="82" y="946" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">PLAN_EXEC回复＝原生驱动已接纳；cookie成功证明＝对应真实fence已完成。</text>
+<text x="60" y="1018" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">共享数据不随每次提交复制；控制请求仍私有复制和校验。</text>
+<text x="60" y="1048" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">RMM授权、对象引用、真实执行与错误处理不因优化而省略。</text>
+</svg>

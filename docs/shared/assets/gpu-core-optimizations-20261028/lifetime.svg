@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="930" viewBox="0 0 1440 930">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#667791"/></marker></defs>
+<style>text { font-family: "Noto Sans CJK SC", sans-serif; }</style>
+<rect width="1440" height="930" fill="white"/>
+<text x="58" y="64" font-size="36" fill="#17243b" font-weight="700" text-anchor="start">同步对象：固定依赖，再减少不必要的RPC</text>
+<text x="60" y="104" font-size="21" fill="#52627a" font-weight="400" text-anchor="start">公开syncobj可以改变；已导出的sync_file必须继续指向导出时的真实依赖。</text>
+<rect x="60" y="160" width="620" height="150" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="160" width="6" height="150" rx="3" fill="#d58120" stroke="none"/>
+<text x="82" y="198" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">公开syncobj</text>
+<text x="82" y="236" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">当前指向fence A</text>
+<text x="82" y="266" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">RESET / IMPORT / TRANSFER后可能指向B</text>
+<text x="82" y="296" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">不能用它的新状态替代旧导出依赖</text>
+<rect x="760" y="160" width="620" height="150" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="760" y="160" width="6" height="150" rx="3" fill="#16836a" stroke="none"/>
+<text x="782" y="198" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">私有不可变快照</text>
+<text x="782" y="236" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">导出时固定fence A并持有强引用</text>
+<text x="782" y="266" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">源对象之后改变，旧sync_file仍等待A</text>
+<text x="782" y="296" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">完成观察绑定精确fence / cookie</text>
+<polyline points="680,230 760,230" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="60" y="415" width="620" height="150" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="415" width="6" height="150" rx="3" fill="#d58120" stroke="none"/>
+<text x="82" y="453" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">旧控制路径</text>
+<text x="82" y="491" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">最后用户释放 → 独立DESTROY RPC</text>
+<text x="82" y="521" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">下一次导出 → 独立捕获RPC</text>
+<text x="82" y="551" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">短生命周期对象带来额外往返</text>
+<rect x="760" y="415" width="620" height="150" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="760" y="415" width="6" height="150" rx="3" fill="#2767d8" stroke="none"/>
+<text x="782" y="453" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">退役捎带</text>
+<text x="782" y="491" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">无人使用的句柄进入有界退役队列</text>
+<text x="782" y="521" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">下次捕获一起发送；Proxy整批校验</text>
+<text x="782" y="551" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">满队 / close显式排空</text>
+<polyline points="680,490 760,490" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="60" y="675" width="1320" height="110" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="675" width="6" height="110" rx="3" fill="#7c58bb" stroke="none"/>
+<text x="82" y="713" font-size="25" fill="#7c58bb" font-weight="700" text-anchor="start">不改变GPU依赖，只改变控制对象的创建与回收时机</text>
+<text x="82" y="751" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">退役捎带不复用旧fence；TRANSFER_CAPTURE是另一机制，虽减少RPC，未证明GLMark提速。</text>
+<text x="60" y="858" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">历史退役捎带：1023 → 1159 / 1163（+13.29%～13.69%）；不归因给其他快照优化。</text>
+<text x="60" y="888" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">这项适合作为完成快速路径的支撑机制；单纯批处理不是独立的新颖性依据。</text>
+</svg>

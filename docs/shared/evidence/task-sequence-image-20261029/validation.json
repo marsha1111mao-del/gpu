@@ -1,0 +1,11 @@
+{
+  "purpose": "将图2的Mermaid时序图替换为相同消息的真实PNG图片",
+  "participants": 6,
+  "messages": 17,
+  "other_local_content_unchanged": true,
+  "notion_page_id": "401659a3-b8cc-817c-a3c0-d4a99e055b92",
+  "notion_update": "success",
+  "render_exit_code": 0,
+  "render_command": "python3 scripts/analysis/render-clientproxy-sequence.py --fontconfig build/clientproxy-guide-20261022/fonts.conf",
+  "note": "未改运行代码，无新增性能测量"
+}

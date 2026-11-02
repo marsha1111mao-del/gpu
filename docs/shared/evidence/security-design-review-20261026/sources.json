@@ -1,0 +1,336 @@
+{
+  "date": "2026-10-26",
+  "scope": "Read-only primary-source and selected source-code design review; not a complete security audit.",
+  "runtime_code_modified": false,
+  "hardware_tests_run": false,
+  "performance_measurements_added": false,
+  "notion_modified": false,
+  "baseline": "CURRENT_BASELINE.md top: 1405 frozen combination; existing fixed-frequency GLMark 1395/1043.",
+  "primary_papers_reused": [
+    {
+      "file": "cage.pdf",
+      "url": "https://www.ndss-symposium.org/wp-content/uploads/2024-763-paper.pdf",
+      "sha256": "8517554d28f352fd05aa608d3903a6e942432f560a485a6a69a6d6944602cfdc",
+      "cache": "build/gpu-isolation-research-20261018/cage.pdf",
+      "review": "Primary text; selected relevant sections rechecked."
+    },
+    {
+      "file": "portal.pdf",
+      "url": "https://mainarke.github.io/assets/papers/sp25_sang.pdf",
+      "sha256": "6efeaf10bcc39a46a789363db9affc14f3f229f04f2f3a8f59789e59deb054f0",
+      "cache": "build/gpu-isolation-research-20261018/portal.pdf",
+      "review": "Primary text; selected relevant sections rechecked."
+    },
+    {
+      "file": "acai.pdf",
+      "url": "https://www.usenix.org/system/files/usenixsecurity24-sridhara.pdf",
+      "sha256": "56a6244e47cd7ae90fef945603160ac38d2f13dd974f0989d0099382dc20c1b9",
+      "cache": "build/gpu-isolation-research-20261018/acai.pdf",
+      "review": "Primary text; selected relevant sections rechecked."
+    },
+    {
+      "file": "honeycomb.pdf",
+      "url": "https://www.usenix.org/system/files/osdi23-mai.pdf",
+      "sha256": "b84527a411ae476050b72f0788117b9849632a2c06358308a501450e868b187a",
+      "cache": "build/gpu-isolation-research-20261018/honeycomb.pdf",
+      "review": "Primary text; selected relevant sections rechecked."
+    },
+    {
+      "file": "guardian.pdf",
+      "url": "https://arxiv.org/pdf/2401.09290",
+      "sha256": "732821f748a79280b94814b1f246b310101f9db2e6d1a3094ee2b24f87565549",
+      "cache": "build/gpu-isolation-research-20261018/guardian.pdf",
+      "review": "Primary text; selected relevant sections rechecked."
+    },
+    {
+      "file": "graviton.pdf",
+      "url": "https://www.usenix.org/system/files/osdi18-volos.pdf",
+      "sha256": "e74fe9a7a567d1bf58166f9cb2256f8f95598f376ab67d3c8e34345740ec1d7b",
+      "cache": "build/gpu-isolation-research-20261018/graviton.pdf",
+      "review": "Primary text; selected relevant sections rechecked."
+    },
+    {
+      "file": "phantommap.pdf",
+      "url": "https://www.ndss-symposium.org/wp-content/uploads/2026-f201-paper.pdf",
+      "sha256": "aa899ab6114a3cc351bf50fad3df53de9802b4acdbe87aace8e9294fb1f45e08",
+      "cache": "build/gpu-isolation-research-20261018/phantommap.pdf",
+      "review": "Primary text; selected relevant sections rechecked."
+    },
+    {
+      "file": "cronus.pdf",
+      "url": "https://i.cs.hku.hk/~heming/papers/micro22-cronus.pdf",
+      "sha256": "ec82491d9ae55de7d4727eb0964539d9499dc50eaa88f673c15e1c0ae2bbf301",
+      "cache": "build/gpu-isolation-research-20261018/cronus.pdf",
+      "review": "Primary text; selected relevant sections rechecked."
+    },
+    {
+      "file": "strongbox.pdf",
+      "url": "https://raw.githubusercontent.com/Compass-All/CCS22-StrongBox/8b1502ff2dfc9199d64528b5f3fb4478143aee25/strongbox-ccs22.pdf",
+      "sha256": "6ab905049dedc7a813f674be65958a76d80693a9bdb7f127ef6277e8ead19da2",
+      "cache": "build/gpu-isolation-research-20261018/strongbox.pdf",
+      "review": "Primary text; selected relevant sections rechecked."
+    }
+  ],
+  "new_retrievals": [
+    {
+      "name": "sok",
+      "url": "https://compass.sustech.edu.cn/sok-xputee/",
+      "final_url": "https://compass.sustech.edu.cn/sok-xputee/",
+      "file": "sok.html",
+      "sha256": "f8ab583d425613b01b16e5190990e83cff14f18abeac53b0780975bd55dec2c3",
+      "bytes": 8557,
+      "cache": "build/security-design-review-20261026/sok.html"
+    },
+    {
+      "name": "mole",
+      "url": "https://fengweiz.github.io/paper/mole-ccs25.pdf",
+      "final_url": "https://fengweiz.github.io/paper/mole-ccs25.pdf",
+      "file": "mole.pdf",
+      "sha256": "3ce1f279b58feeab3d14b81c0cc3b1875afeb2c3d99e1e8d498bc2ed5e6f7332",
+      "bytes": 1645370,
+      "pages": 15,
+      "cache": "build/security-design-review-20261026/mole.pdf"
+    },
+    {
+      "name": "mole-metadata",
+      "url": "https://api.crossref.org/works/10.1145/3719027.3744823",
+      "final_url": "https://api.crossref.org/works/10.1145/3719027.3744823",
+      "file": "mole-metadata.json",
+      "sha256": "91b740ee0df1f8e100007bbc0eb1fb86151691db99cf43e71b52caed9f11fdd7",
+      "bytes": 18416,
+      "cache": "build/security-design-review-20261026/mole-metadata.json"
+    },
+    {
+      "name": "survey-metadata",
+      "url": "https://api.crossref.org/works/10.1145/3793532",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "name": "cca-tdsc-metadata",
+      "url": "https://api.crossref.org/works/10.1109/TDSC.2025.3615787",
+      "final_url": "https://api.crossref.org/works/10.1109/TDSC.2025.3615787",
+      "file": "cca-tdsc-metadata.json",
+      "sha256": "a9fb5972602636b8b24e56406d6841c4132195bcceb3127e9ee29ff20d1217cf",
+      "bytes": 14617,
+      "cache": "build/security-design-review-20261026/cca-tdsc-metadata.json"
+    },
+    {
+      "name": "arm-tdsc-metadata",
+      "url": "https://api.crossref.org/works/10.1109/TDSC.2023.3334277",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "name": "telekine",
+      "url": "https://www.usenix.org/system/files/nsdi20-paper-hunt.pdf",
+      "error": "<urlopen error _ssl.c:1063: The handshake operation timed out>"
+    },
+    {
+      "name": "nvidia-security",
+      "url": "https://docs.nvidia.com/confidential-computing/security/index.html",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "name": "nvidia-user-guide",
+      "url": "https://docs.nvidia.com/confidential-computing/user-guide/index.html",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "name": "paper-list",
+      "url": "https://raw.githubusercontent.com/ConfidentialComputing/GPU-TEE-Papers/main/README.md",
+      "final_url": "https://raw.githubusercontent.com/ConfidentialComputing/GPU-TEE-Papers/main/README.md",
+      "file": "paper-list.html",
+      "sha256": "f6c6f77884a0cefb2bc848cbf301739d2198066d07eda1360f4c08a5189432ec",
+      "bytes": 1086,
+      "cache": "build/security-design-review-20261026/paper-list.html"
+    },
+    {
+      "name": "security-list",
+      "url": "https://raw.githubusercontent.com/trilateral-gpu-sec/gpu-security-papers/main/README.md",
+      "final_url": "https://raw.githubusercontent.com/trilateral-gpu-sec/gpu-security-papers/main/README.md",
+      "file": "security-list.html",
+      "sha256": "15a2e920c0a8c724eca56de134ba9f000571ec0e9c3d6361fcc5455e8c061661",
+      "bytes": 112205,
+      "cache": "build/security-design-review-20261026/security-list.html"
+    },
+    {
+      "name": "publications",
+      "url": "https://compass.sustech.edu.cn/publications_en.html",
+      "final_url": "https://compass.sustech.edu.cn/publications_en.html",
+      "file": "publications.html",
+      "sha256": "dfb0015a1b033c453d4e8fa2c5319c2a3acf6a7707cb75da49042220a80dc472",
+      "bytes": 134653,
+      "cache": "build/security-design-review-20261026/publications.html"
+    },
+    {
+      "name": "strongbox-tdsc",
+      "url": "https://compass.sustech.edu.cn/paper/strongbox-tdsc24.pdf",
+      "final_url": "https://compass.sustech.edu.cn/paper/strongbox-tdsc24.pdf",
+      "file": "strongbox-tdsc.pdf",
+      "sha256": "9b1eb0526a2b5ed8b410e2c6101716e1cf7882ae01ae9ee04d16b77b2a0293fc",
+      "bytes": 1997471,
+      "pages": 16,
+      "cache": "build/security-design-review-20261026/strongbox-tdsc.pdf"
+    },
+    {
+      "name": "ccai",
+      "url": "https://compass.sustech.edu.cn/paper/ccai-micro25.pdf",
+      "final_url": "https://compass.sustech.edu.cn/paper/ccai-micro25.pdf",
+      "file": "ccai.pdf",
+      "sha256": "6b2952a4c04e499371cf27074178238a5bffb4a702ecb56e983fe42f2b6b622f",
+      "bytes": 4148737,
+      "pages": 14,
+      "cache": "build/security-design-review-20261026/ccai.pdf"
+    },
+    {
+      "name": "sok-ndss",
+      "url": "https://www.ndss-symposium.org/ndss-paper/sok-analysis-of-accelerator-tee-designs/",
+      "final_url": "https://www.ndss-symposium.org/ndss-paper/sok-analysis-of-accelerator-tee-designs/",
+      "file": "sok-ndss.html",
+      "sha256": "db43a04087656cdd9691e608acabd2d25ff9485c1c347bdd54e788c2f0d570cd",
+      "bytes": 70286,
+      "cache": "build/security-design-review-20261026/sok-ndss.html"
+    },
+    {
+      "name": "telekine-page",
+      "url": "https://www.usenix.org/conference/nsdi20/presentation/hunt",
+      "error": "<urlopen error _ssl.c:1063: The handshake operation timed out>"
+    },
+    {
+      "name": "sage-page",
+      "url": "https://www.usenix.org/conference/atc23/presentation/ivanov",
+      "final_url": "https://www.usenix.org/conference/atc23/presentation/ivanov",
+      "file": "sage-page.html",
+      "sha256": "85f7e84e5e93fcf0ec2b57b273f01c392afba1099e6b10702f21298d4b5c48c2",
+      "bytes": 38117,
+      "cache": "build/security-design-review-20261026/sage-page.html"
+    },
+    {
+      "name": "replay-code",
+      "url": "https://raw.githubusercontent.com/bakhi/GPUReplay/master/README.md",
+      "error": "The read operation timed out"
+    },
+    {
+      "name": "survey-metadata-retry",
+      "url": "https://api.crossref.org/works/10.1145%2F3793532",
+      "final_url": "https://api.crossref.org/works/10.1145%2F3793532",
+      "file": "survey-metadata-retry.json",
+      "sha256": "6ce1fcf88b0c2dd8f4377e6d7a89aa9391fd63d0a21cc357269135ee8eb0147a",
+      "bytes": 37961,
+      "cache": "build/security-design-review-20261026/survey-metadata-retry.json"
+    },
+    {
+      "name": "arm-tdsc-metadata-retry",
+      "url": "https://api.crossref.org/works/10.1109%2FTDSC.2023.3334277",
+      "final_url": "https://api.crossref.org/works/10.1109%2FTDSC.2023.3334277",
+      "file": "arm-tdsc-metadata-retry.json",
+      "sha256": "86062b3b1f0256c0d72a149680ac36d56ac63f32684c865873501d6962186ca4",
+      "bytes": 11575,
+      "cache": "build/security-design-review-20261026/arm-tdsc-metadata-retry.json"
+    },
+    {
+      "name": "nvidia-landing",
+      "url": "https://docs.nvidia.com/confidential-computing/",
+      "final_url": "https://docs.nvidia.com/confidential-computing/",
+      "file": "nvidia-landing.html",
+      "sha256": "77fbb1bca55c04954e983d354a73c9bb8d2b2c2adb69394e70f2608951301cfb",
+      "bytes": 92761,
+      "cache": "build/security-design-review-20261026/nvidia-landing.html"
+    },
+    {
+      "name": "behind-bars",
+      "url": "https://www.usenix.org/conference/usenixsecurity26/presentation/gu-cheng",
+      "error": "The read operation timed out"
+    },
+    {
+      "name": "sok-paper",
+      "url": "https://www.ndss-symposium.org/wp-content/uploads/2026-f1424-paper.pdf",
+      "final_url": "https://www.ndss-symposium.org/wp-content/uploads/2026-f1424-paper.pdf",
+      "file": "sok-paper.pdf",
+      "sha256": "8a3278373d5b1a9600083c0ad885cdd52da396ed1937f903a1423f0d7e23e416",
+      "bytes": 1215103,
+      "pages": 18,
+      "cache": "build/security-design-review-20261026/sok-paper.pdf"
+    },
+    {
+      "name": "nvidia-overview",
+      "url": "https://docs.nvidia.com/confidential-computing/overview",
+      "final_url": "https://docs.nvidia.com/confidential-computing/overview",
+      "file": "nvidia-overview.html",
+      "sha256": "e1fa322652147fdb42d6e176b63341cef972b00430bfa070ebeff89ec66c6b3c",
+      "bytes": 154077,
+      "cache": "build/security-design-review-20261026/nvidia-overview.html"
+    },
+    {
+      "name": "grt-metadata",
+      "url": "https://api.crossref.org/works/10.1145%2F3552326.3567483",
+      "final_url": "https://api.crossref.org/works/10.1145%2F3552326.3567483",
+      "file": "grt-metadata.json",
+      "sha256": "5338fc162bdff5aa5973cb1cb3e79380fd118aeabe79399a4b1c4819bd9811bf",
+      "bytes": 21392,
+      "cache": "build/security-design-review-20261026/grt-metadata.json"
+    }
+  ],
+  "coverage_note": "Review depth and unverified bibliography entries are distinguished in document sections 3 and 11.",
+  "unverified_security_boundary": "GPU-visible internal ring/sync objects and the authenticity of completion input under malicious GPU command streams; no exploit demonstrated.",
+  "code_inputs": [
+    {
+      "path": "Linux-Guest-GPU/drivers/char/proxy_vmshm_comm/proxy_comm_vmshm.c",
+      "sha256": "de8e926369f351750a2ba9a3c75e4be39af2f84291d366d0eb82200625d6c366"
+    },
+    {
+      "path": "Linux-Guest-GPU/drivers/char/proxy_vmshm_manager/proxy_vmshm_manager.c",
+      "sha256": "372b06cdb8d2a4908ecf3e7a06b50502046bd9e1f2b9dd6d8fc8af512bdbaaf4"
+    },
+    {
+      "path": "Linux-Guest-GPU/drivers/gpu/drm/panthor-proxy/panthor_proxy_drv.c",
+      "sha256": "abed04d3fb699e88593326ac78d02a40690c25ddaef5eef44b9365f30521ff60"
+    },
+    {
+      "path": "Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_mmu.c",
+      "sha256": "41eb490e4cc8d7d45883d1508ff308b53fce456f6839642fc02c5de95c793c58"
+    },
+    {
+      "path": "Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_gem.c",
+      "sha256": "1ae1f2ca913a4846aff007f6e6b37afd58572e87f06e9d398cb8dc0994667ca5"
+    },
+    {
+      "path": "Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_sched.c",
+      "sha256": "1456fbae27532450a45a683f6de85e02073265e9e7b34b2fe475e1a10e7aa29e"
+    },
+    {
+      "path": "Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_fw.c",
+      "sha256": "84ae6222d7597122720af2936991e6c41972b3d601a1505809c250017f7a4acd"
+    },
+    {
+      "path": "opencca/tf-rmm/runtime/rsi/opencca_gpu.c",
+      "sha256": "5541731ecf9f39bb91529b46a8c0295eee3a6dfc0588c6b1bb594b38c1208ca3"
+    },
+    {
+      "path": "opencca/tf-rmm/runtime/core/opencca_iommu.c",
+      "sha256": "ba9f10de1f5acd6ee513319bf2af5a3d44766bb5f9f3f9ff83350502e074a081"
+    }
+  ],
+  "repositories": [
+    {
+      "path": ".",
+      "head": "9127c47607792d84c39156af747c9483f901c164",
+      "tracked_changes": true
+    },
+    {
+      "path": "Linux-Guest-GPU",
+      "head": "39d95dd028d485ca837bf1b3c5123db2eefbaa75",
+      "tracked_changes": true
+    },
+    {
+      "path": "opencca",
+      "head": "8014f360db0c7d4912a6e0cd4f5c5ee18e586435",
+      "tracked_changes": true
+    },
+    {
+      "path": "opencca/tf-rmm",
+      "head": "15c7ee14af5deacda757342c169fd98722f58f90",
+      "tracked_changes": true
+    }
+  ],
+  "local_link_check": "All relative file links exist; source line anchors are in range."
+}

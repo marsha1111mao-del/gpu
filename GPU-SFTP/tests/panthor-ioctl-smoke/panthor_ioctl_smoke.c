@@ -12,6 +12,7 @@
 #include <string.h>
 #include <time.h>
 #include <sys/ioctl.h>
+#include <sys/eventfd.h>
 #include <sys/mman.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -277,11 +278,19 @@ static int expect_unsupported_ioctl(int fd, unsigned long request, void *arg,
 	return 0;
 }
 
-static int unsupported_fd_ioctl_checks(int fd)
+#include "syncobj_eventfd.h"
+
+static int fd_ioctl_checks(int fd)
 {
 	struct drm_prime_handle prime = { 0 };
 	struct drm_syncobj_handle sync_handle = { 0 };
 	struct drm_syncobj_eventfd eventfd = { 0 };
+	int private_mode = private_syncobj_mode();
+
+	if (private_mode < 0) {
+		fprintf(stderr, "cannot determine Client syncobj mode\n");
+		return -1;
+	}
 
 	if (get_cap(fd, DRM_CAP_PRIME, "DRM_CAP_PRIME", 0))
 		return -1;
@@ -300,9 +309,13 @@ static int unsupported_fd_ioctl_checks(int fd)
 				     &sync_handle,
 				     "SYNCOBJ_FD_TO_HANDLE_UNSUPPORTED"))
 		return -1;
-	if (expect_unsupported_ioctl(fd, DRM_IOCTL_SYNCOBJ_EVENTFD,
-				     &eventfd, "SYNCOBJ_EVENTFD_UNSUPPORTED"))
+	if (private_mode) {
+		if (private_syncobj_eventfd_check(fd))
+			return -1;
+	} else if (expect_unsupported_ioctl(fd, DRM_IOCTL_SYNCOBJ_EVENTFD,
+					    &eventfd, "SYNCOBJ_EVENTFD_UNSUPPORTED")) {
 		return -1;
+	}
 
 	return 0;
 }
@@ -424,7 +437,7 @@ static int basic_checks(int fd)
 	    get_cap(fd, DRM_CAP_SYNCOBJ, "DRM_CAP_SYNCOBJ", 1) ||
 	    get_cap(fd, DRM_CAP_SYNCOBJ_TIMELINE,
 		    "DRM_CAP_SYNCOBJ_TIMELINE", 1) ||
-	    unsupported_fd_ioctl_checks(fd) ||
+	    fd_ioctl_checks(fd) ||
 	    query_gpu_info(fd) ||
 	    query_csif_info(fd))
 		return -1;

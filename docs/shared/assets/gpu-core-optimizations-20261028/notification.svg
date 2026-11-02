@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1110" viewBox="0 0 1440 1110">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#667791"/></marker></defs>
+<style>text { font-family: "Noto Sans CJK SC", sans-serif; }</style>
+<rect width="1440" height="1110" fill="white"/>
+<text x="58" y="64" font-size="36" fill="#17243b" font-weight="700" text-anchor="start">可信通知：在驻留条件满足时减少Host往返</text>
+<text x="60" y="104" font-size="21" fill="#52627a" font-weight="400" text-anchor="start">本图只展开Client请求唤醒Proxy的优化方向；不代表任意中断或全部GPU完成通知。</text>
+<text x="60" y="145" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">原路径</text>
+<rect x="60" y="165" width="300" height="95" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="165" width="6" height="95" rx="3" fill="#d58120" stroke="none"/>
+<text x="82" y="203" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">Client → RMM</text>
+<polyline points="360,213 400,213" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="400" y="165" width="300" height="95" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="400" y="165" width="6" height="95" rx="3" fill="#d58120" stroke="none"/>
+<text x="422" y="203" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">发送端Host / KVM</text>
+<polyline points="700,213 740,213" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="740" y="165" width="300" height="95" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="740" y="165" width="6" height="95" rx="3" fill="#d58120" stroke="none"/>
+<text x="762" y="203" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">目标Host → RMM</text>
+<polyline points="1040,213 1080,213" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="1080" y="165" width="300" height="95" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="1080" y="165" width="6" height="95" rx="3" fill="#d58120" stroke="none"/>
+<text x="1102" y="203" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">IRQ127 → Proxy</text>
+<text x="60" y="370" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">驻留唤醒：发送端可直接返回</text>
+<rect x="60" y="390" width="300" height="95" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="390" width="6" height="95" rx="3" fill="#2767d8" stroke="none"/>
+<text x="82" y="428" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">Client → RMM</text>
+<polyline points="360,438 400,438" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="400" y="390" width="300" height="95" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="400" y="390" width="6" height="95" rx="3" fill="#2767d8" stroke="none"/>
+<text x="422" y="428" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">Root发送SGI0</text>
+<polyline points="700,438 740,438" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="740" y="390" width="300" height="95" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="740" y="390" width="6" height="95" rx="3" fill="#2767d8" stroke="none"/>
+<text x="762" y="428" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">目标Host → RMM</text>
+<polyline points="1040,438 1080,438" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="1080" y="390" width="300" height="95" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="1080" y="390" width="6" height="95" rx="3" fill="#2767d8" stroke="none"/>
+<text x="1102" y="428" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">IRQ127 → Proxy</text>
+<text x="60" y="595" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">目标端快速返回：再减少目标Host往返</text>
+<rect x="60" y="615" width="300" height="95" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="615" width="6" height="95" rx="3" fill="#16836a" stroke="none"/>
+<text x="82" y="653" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">Client → RMM</text>
+<polyline points="360,663 400,663" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="400" y="615" width="300" height="95" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="400" y="615" width="6" height="95" rx="3" fill="#16836a" stroke="none"/>
+<text x="422" y="653" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">Root发送SGI15</text>
+<polyline points="700,663 740,663" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="740" y="615" width="300" height="95" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="740" y="615" width="6" height="95" rx="3" fill="#16836a" stroke="none"/>
+<text x="762" y="653" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">目标RMM核对 / TAKE</text>
+<polyline points="1040,663 1080,663" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="1080" y="615" width="300" height="95" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="1080" y="615" width="6" height="95" rx="3" fill="#16836a" stroke="none"/>
+<text x="1102" y="653" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">更新私有LR → Proxy</text>
+<rect x="60" y="825" width="620" height="145" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="825" width="6" height="145" rx="3" fill="#7c58bb" stroke="none"/>
+<text x="82" y="863" font-size="25" fill="#7c58bb" font-weight="700" text-anchor="start">授权依据仍在可信状态中</text>
+<text x="82" y="901" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">RMM：endpoint / peer / pending / MPIDR</text>
+<text x="82" y="931" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">Root：受限SGI发送与TAKE</text>
+<text x="82" y="961" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">物理SGI本身不证明消息合法或GPU完成</text>
+<rect x="760" y="825" width="620" height="145" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="760" y="825" width="6" height="145" rx="3" fill="#d58120" stroke="none"/>
+<text x="782" y="863" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">条件不满足就回退</text>
+<text x="782" y="901" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">非驻留 / 同CPU / Root失败等走Host路径</text>
+<text x="782" y="931" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">当前约束REC0；不是通用多vCPU承诺</text>
+<text x="782" y="961" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">Host仍可拒绝调度，不保证任意时限送达</text>
+<text x="60" y="1038" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">历史各阶段：1158 → 1182（+2.07%）；1208 → 1237（+2.40%）。</text>
+<text x="60" y="1068" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">RK/OpenCCA平台扩展，非标准CCA现成ABI；普通中断和KVM VGIC路径继续保留。</text>
+</svg>

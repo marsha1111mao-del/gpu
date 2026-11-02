@@ -1,0 +1,638 @@
+{
+  "date": "2026-10-27",
+  "report": "docs/shared/GPU_CCA_TEE_FOLLOWUP_RESEARCH_20261027.md",
+  "scope": "Focused continuation of PORTAL/CAGE/ACAI research, not an exhaustive GPU bibliography.",
+  "originals": [
+    {
+      "local_path": "build/cca-gpu-followup-20261027/asgard.pdf",
+      "bytes": 958373,
+      "sha256": "2a2bc8533b16ac26d58313727e5dbfc0cad3e2948ddb2893a924aa002f7fcadc",
+      "name": "ASGARD",
+      "url": "https://www.ndss-symposium.org/wp-content/uploads/2025-449-paper.pdf",
+      "doi": "10.14722/ndss.2025.240449",
+      "pages": 18,
+      "first_page_excerpt": "ASGARD: Protecting On-Device Deep Neural Networks with Virtualization-Based Trusted Execution Environments Myungsuk Moon, Minhee Kim, Joonkyo Jung, Dokyung Song ∗ Department of Computer Science Yonsei University Abstract—On-device deep learning, increasingly popular for enhancing user privacy, now poses a serious risk to the privacy of deep neural network (DNN) models. Researchers have proposed to leverage Arm TrustZone’s trusted execution environment (TEE) to protect models from attacks originating in the rich execution environment (REE). Existing solutions, however, fall short: (i) those that fully contain DNN inference within a TEE either support inference on CPUs only, or require substan",
+      "reading_coverage": "Original core sections III–VII; reset, rogue IRQ and evaluation.",
+      "device_and_model": "Rockchip NPU / pKVM",
+      "artifact_entry": "https://github.com/yonsei-sslab/asgard",
+      "artifact_code_audit": "not performed in this followup"
+    },
+    {
+      "local_path": "build/cca-gpu-followup-20261027/tzllm.pdf",
+      "bytes": 1187741,
+      "sha256": "f35721fa68b07c4685ed7b6c04c0c9892b46fe9eacae0aab4747d3540ba6f4fb",
+      "name": "TZ-LLM",
+      "url": "https://ipads.sjtu.edu.cn/zh/publications/eurosys26-wang.pdf",
+      "doi": "10.1145/3767295.3769334",
+      "pages": 18,
+      "first_page_excerpt": "TZ-LLM: Protecting On-Device Large Language Models with Arm TrustZone Xunjie Wang*, Jiacheng Shi*, Zihan Zhao, Yang Yu, Zhichao Hua, Jinyu Gu Institute of Parallel and Distributed Systems, School of Computer Science, Shanghai Jiao Tong University Abstract Large Language Models (LLMs) deployed on mobile devices offer benefits like user privacy and reduced network latency, but introduce a significant security risk: the leakage of pro- prietary models to end users. To mitigate this risk, we propose a system design for protecting on-device LLMs using Arm Trusted Execution Environment (TEE), TrustZone. Our system addresses two primary challenges: (1) The dilemma between memory effi- ciency and fa",
+      "reading_coverage": "Original sections 3–7, especially 4.1–4.3 and artifact appendix.",
+      "device_and_model": "Rockchip NPU / TrustZone",
+      "artifact_entry": "https://doi.org/10.5281/zenodo.17213486",
+      "artifact_code_audit": "not performed in this followup"
+    },
+    {
+      "local_path": "build/security-design-review-20261026/ccai.pdf",
+      "bytes": 4148737,
+      "sha256": "6b2952a4c04e499371cf27074178238a5bffb4a702ecb56e983fe42f2b6b622f",
+      "name": "ccAI",
+      "url": "https://compass.sustech.edu.cn/paper/ccai-micro25.pdf",
+      "doi": "10.1145/3725843.3756104",
+      "pages": 14,
+      "first_page_excerpt": "ccAI: A Compatible and Confidential System for AI Computing Chenxu Wang∗†‡ Research Institute of Trustworthy Autonomous Systems, Southern University of Science and Technology Shenzhen, Guangdong, China Department of Computer Science and Engineering, Southern University of Science and Technology Shenzhen, Guangdong, China Department of Computing, The Hong Kong Polytechnic University Kowloon, Hong Kong, China 12150073@mail.sustech.edu.cn Danqing Tang∗ Ant Group Hangzhou, Zhejiang, China tangdanqing.tdq@antgroup.com Changxu Ci∗ Ant Group Hangzhou, Zhejiang, China cichangxu.ccx@antgroup.com Junjie Huang Department of Computer Science and Engineering, Southern University of Science and Technology",
+      "reading_coverage": "Reused cached original; architecture, packet policy, security and Figure 8.",
+      "device_and_model": "PCIe GPU/xPU / TVM and trusted external security controller",
+      "artifact_entry": null,
+      "artifact_code_audit": "not performed in this followup"
+    },
+    {
+      "local_path": "build/cca-gpu-followup-20261027/mytee.pdf",
+      "bytes": 797081,
+      "sha256": "fff112124321a00319700c81bf6818ccb97e6ac2260af10d7187b14c5a017e70",
+      "name": "MyTEE",
+      "url": "https://www.ndss-symposium.org/wp-content/uploads/2023-41-paper.pdf",
+      "doi": "10.14722/ndss.2023.23041",
+      "pages": 15,
+      "first_page_excerpt": "MyTEE: Own the Trusted Execution Environment on Embedded Devices Seungkyun Han Chungnam National University yakmg3000@gmail.com Jinsoo Jang Chungnam National University jisjang@cnu.ac.kr process may require vendor involvement for using proprietary APIs and performing security verification [9]. This can in- crease the time-to-market for new third-party services. We propose MyTEE to address the limitations of hosting TEE on embedded devices. It is designed with the harsh assumption that most TrustZone extensions are not supported (other than the security state of the CPU). In other words, TrustZone Address Space Controller (TZASC) and TrustZone Memory Adapter (TZMA) for memory access control, ",
+      "reading_coverage": "Original design, security analysis and evaluation; supporting trusted I/O work.",
+      "device_and_model": "Trusted I/O / Raspberry Pi and TrustZone",
+      "artifact_entry": "https://github.com/sssecret2019/mytee",
+      "artifact_code_audit": "not performed in this followup"
+    },
+    {
+      "local_path": "build/cca-gpu-followup-20261027/sok-2026-candidate.pdf",
+      "bytes": 1215103,
+      "sha256": "8a3278373d5b1a9600083c0ad885cdd52da396ed1937f903a1423f0d7e23e416",
+      "name": "SoK: Analysis of Accelerator TEE Designs",
+      "url": "https://www.ndss-symposium.org/wp-content/uploads/2026-f1424-paper.pdf",
+      "doi": null,
+      "pages": 18,
+      "first_page_excerpt": "SoK: Analysis of Accelerator TEE Designs Chenxu Wang1∗†‡ , Junjie Huang 1†, Yujun Liang †, Xuanyao Peng †¶, Yuqun Zhang †, Fengwei Zhang †∗ B, Jiannong Cao ‡, Hang Lu ¶, Rui Hou §¶, Shoumeng Yan ∥B, Tao Wei∥ and Zhengyu He ∥ ∗Research Institute of Trustworthy Autonomous Systems, Southern University of Science and Technology, China †Department of Computer Science and Engineering, Southern University of Science and Technology, China ‡Department of Computing, The Hong Kong Polytechnic University, China §State Key Laboratory of Cyberspace Security Defense, IIE, Chinese Academy of Sciences, China ¶University of Chinese Academy of Sciences, China, ∥Ant Group, China Abstract—Accelerator trusted exe",
+      "reading_coverage": "Classification tables and references used for discovery; not every section audited.",
+      "device_and_model": "Accelerator TEE survey",
+      "artifact_entry": null,
+      "artifact_code_audit": "not performed in this followup"
+    }
+  ],
+  "candidate_metadata": [
+    {
+      "title": "FlexServe: A Fast and Secure LLM Serving System for Mobile Devices with Flexible Resource Isolation",
+      "openalex_id": "https://openalex.org/W7165816745",
+      "doi": null,
+      "publication_year": 2026,
+      "authors": [
+        "Yinpeng Wu",
+        "Yitong Chen",
+        "Lixiang Wang",
+        "Jinyu Gu",
+        "Zhichao Hua",
+        "Yubin Xia"
+      ],
+      "primary_location": {
+        "id": "pmh:oai:arXiv.org:2606.23370",
+        "doi": null,
+        "is_oa": true,
+        "landing_page_url": "https://arxiv.org/abs/2606.23370",
+        "pdf_url": "https://arxiv.org/pdf/2606.23370",
+        "source": {
+          "id": "https://openalex.org/S4306400194",
+          "display_name": "arXiv (Cornell University)",
+          "issn_l": "2331-8422",
+          "issn": [
+            "2331-8422"
+          ],
+          "is_oa": true,
+          "is_in_doaj": false,
+          "is_core": false,
+          "listed_in": [],
+          "host_organization": "https://openalex.org/I205783295",
+          "host_organization_name": "Cornell University",
+          "host_organization_lineage": [
+            "https://openalex.org/I205783295"
+          ],
+          "host_organization_lineage_names": [],
+          "type": "repository"
+        },
+        "license": null,
+        "license_id": null,
+        "version": "submittedVersion",
+        "is_accepted": false,
+        "is_published": false,
+        "raw_source_name": null,
+        "raw_type": "text"
+      },
+      "best_oa_location": {
+        "id": "pmh:oai:arXiv.org:2606.23370",
+        "doi": null,
+        "is_oa": true,
+        "landing_page_url": "https://arxiv.org/abs/2606.23370",
+        "pdf_url": "https://arxiv.org/pdf/2606.23370",
+        "source": {
+          "id": "https://openalex.org/S4306400194",
+          "display_name": "arXiv (Cornell University)",
+          "issn_l": "2331-8422",
+          "issn": [
+            "2331-8422"
+          ],
+          "is_oa": true,
+          "is_in_doaj": false,
+          "is_core": false,
+          "listed_in": [],
+          "host_organization": "https://openalex.org/I205783295",
+          "host_organization_name": "Cornell University",
+          "host_organization_lineage": [
+            "https://openalex.org/I205783295"
+          ],
+          "host_organization_lineage_names": [],
+          "type": "repository"
+        },
+        "license": null,
+        "license_id": null,
+        "version": "submittedVersion",
+        "is_accepted": false,
+        "is_published": false,
+        "raw_source_name": null,
+        "raw_type": "text"
+      },
+      "indexed_abstract": "Device-side Large Language Models (LLMs) have grown explosively, offering stronger privacy and higher availability than their cloud-side counterparts. During LLM inference, both the model weights and the user data are valuable, and attackers may compromise the OS kernel to steal them. ARM TrustZone is the de facto hardware-based isolation technology on mobile devices, used to protect sensitive applications from a compromised OS. However, protecting LLM inference with TrustZone incurs significant overhead to both the secure inference and the normal aplications, due to two challenges: the inflexible resource isolation and the inefficient secure resource management. To address these challenges, this paper presents FlexServe, a fast and secure LLM inference system for mobile devices. The key idea is to decouple the access permission from the management permission of secure resources, so that the normal-world OS cannot access them but can still manage them as usual. First, FlexServe introduces a Recallable Resource Isolation mechanism to construct Recallable Secure Memory (Flex-Mem) and a Recallable Secure NPU (Flex-NPU). They can only be accessed by the secure world, but can be efficiently allocated and reclaimed by the normal-world OS. Based on them, FlexServe further introduces a FlexServe Framework to run secure LLM inference in the secure world. It works together with the normal-world OS to perform cooperative secure memory management. We implement a prototype of FlexServe and compare it with two TrustZone-based strawman designs. The results show that FlexServe achieves average TTFT speedups of 10.05X over the strawman and 2.44X over an optimized strawman.",
+      "evidence_level": "metadata/indexed abstract; not original full-text verification",
+      "metadata_cache": {
+        "local_path": "build/cca-gpu-followup-20261027/xputee-heterogeneous-trusted-execution.json",
+        "bytes": 236342,
+        "sha256": "38a3c18bee25bcfacac8bf79cc5c134133234f970f29209380b082a9cdf4db4d"
+      }
+    },
+    {
+      "title": "BarriCCAde: Isolating Closed-Source Drivers with ARM CCA",
+      "openalex_id": "https://openalex.org/W4402158519",
+      "doi": "https://doi.org/10.1109/eurospw61312.2024.00033",
+      "publication_year": 2024,
+      "authors": [
+        "Matti Schulze",
+        "Christian Lindenmeier",
+        "Jonas Röckl"
+      ],
+      "primary_location": {
+        "id": "doi:10.1109/eurospw61312.2024.00033",
+        "doi": "https://doi.org/10.1109/eurospw61312.2024.00033",
+        "is_oa": false,
+        "landing_page_url": "https://doi.org/10.1109/eurospw61312.2024.00033",
+        "pdf_url": null,
+        "source": {
+          "id": "https://openalex.org/S7407086460",
+          "display_name": "IEEE European Symposium on Security and Privacy Workshops (EuroS&PW)",
+          "issn_l": null,
+          "issn": null,
+          "is_oa": false,
+          "is_in_doaj": false,
+          "is_core": false,
+          "listed_in": [],
+          "host_organization": null,
+          "host_organization_name": null,
+          "host_organization_lineage": [],
+          "host_organization_lineage_names": [],
+          "type": "conference"
+        },
+        "license": null,
+        "license_id": null,
+        "version": "publishedVersion",
+        "is_accepted": true,
+        "is_published": true,
+        "raw_source_name": "2024 IEEE European Symposium on Security and Privacy Workshops (EuroS&amp;amp;PW)",
+        "raw_type": "proceedings-article"
+      },
+      "best_oa_location": null,
+      "indexed_abstract": "Due to the nature of monolithic kernels, a driver's vulnerability always results in a vulnerable kernel, as disas-trous examples show. Some research aims to solve this issue by isolating drivers from the main kernel. The most promising approaches rely on virtualization techniques. However, as they usually require driver and kernel modification, they can only be applied to open-source drivers. As closed-source drivers are also standard these days, e.g., for GPUs or anti-cheat tools, we propose BarriCCAde, a new design for isolating even closed -source drivers from the kernel. Most notably, BarriCCAde allows driver isolation without adding a hypervisor to the TCB. Relying on upcoming confidential computing techniques, we only add small-scale memory protection components to our TCB. Contemporary approaches focus on deciding which of the kernel's resources the driver may access and how they can be synchronized between the kernel and the driver. However, one aspect mainly ignored is cases in which the driver misuses kernel resources it can access to attack the system, e.g., by crafting malicious inputs for kernel functions. To cover such cases, we integrate an eBPF -based filter into our system architecture, which allows a fine-granular specification of which kernel-level resource can be accessed in which way. We believe that BarriCCAde is an important step towards isolating future closed-source drivers and, thus, strengthening the confidentiality, integrity, and availability of future kernels.",
+      "evidence_level": "metadata/indexed abstract; not original full-text verification",
+      "metadata_cache": {
+        "local_path": "build/cca-gpu-followup-20261027/barriccade-arm-cca.json",
+        "bytes": 69598,
+        "sha256": "eb52339d4e9eb718e3703b0b0c0e7903437296f3a2a22416f4ed5b4b5720a01f"
+      }
+    },
+    {
+      "title": "XpuTEE: A High-Performance and Practical Heterogeneous Trusted Execution Environment for GPUs",
+      "openalex_id": "https://openalex.org/W4407974266",
+      "doi": "https://doi.org/10.1145/3719653",
+      "publication_year": 2025,
+      "authors": [
+        "Shulin Fan",
+        "Zhichao Hua",
+        "Yubin Xia",
+        "Haibo Chen"
+      ],
+      "primary_location": {
+        "id": "doi:10.1145/3719653",
+        "doi": "https://doi.org/10.1145/3719653",
+        "is_oa": false,
+        "landing_page_url": "https://doi.org/10.1145/3719653",
+        "pdf_url": null,
+        "source": {
+          "id": "https://openalex.org/S193109227",
+          "display_name": "ACM Transactions on Computer Systems",
+          "issn_l": "0734-2071",
+          "issn": [
+            "0734-2071",
+            "1557-7333"
+          ],
+          "is_oa": false,
+          "is_in_doaj": false,
+          "is_core": true,
+          "listed_in": [
+            "ccf-a",
+            "cwts-core",
+            "dongbi-a",
+            "jufo-3",
+            "norway-2",
+            "poland-200",
+            "russia-white-list-1"
+          ],
+          "host_organization": "https://openalex.org/P4310319798",
+          "host_organization_name": "Association for Computing Machinery",
+          "host_organization_lineage": [
+            "https://openalex.org/P4310319798"
+          ],
+          "host_organization_lineage_names": [
+            "Association for Computing Machinery"
+          ],
+          "type": "journal"
+        },
+        "license": null,
+        "license_id": null,
+        "version": "publishedVersion",
+        "is_accepted": true,
+        "is_published": true,
+        "raw_source_name": "ACM Transactions on Computer Systems",
+        "raw_type": "journal-article"
+      },
+      "best_oa_location": null,
+      "indexed_abstract": "AI applications are employed in diverse scenarios, including data centers, personal computers, smart cars, and so on. Their privacy is threatened by the intricate software stacks and the potential malfeasance of system maintainers. The Trusted Execution Environment (TEE) has become popular for safeguarding applications from untrusted system software. However, AI applications are always speeded up with heterogeneous accelerators, e.g., GPU, which requires the TEE to be heterogeneous. A heterogeneous TEE should satisfy three requirements: (1) the joint heterogeneous abstraction that covers the CPU and GPUs and minimizes cooperation overhead among enclaves on them; (2) the high performance for supporting high-speed GPUs and introducing limited performance overhead; and (3) the compatibility with existing CPUs and GPUs so that existing machines can directly benefit from it. To meet the above requirements, this article introduces XpuTEE, a practical and high-performance heterogeneous TEE system. XpuTEE provides a new abstraction called XpuEnclave, comprising the CEnclave to protect CPU-side logic and numerous XEnclaves to guard GPU tasks. XpuEnclave is a joint TEE crossing the CPU and connected GPUs, and it removes all cryptographic operations and extra memory copies for CPU-GPU communication, which allows XpuTEE to achieve high performance. The results demonstrate that XpuTEE has an average performance overhead of 2.48% for common AI applications.",
+      "evidence_level": "metadata/indexed abstract; not original full-text verification",
+      "metadata_cache": {
+        "local_path": "build/cca-gpu-followup-20261027/xputee-heterogeneous-trusted-execution.json",
+        "bytes": 236342,
+        "sha256": "38a3c18bee25bcfacac8bf79cc5c134133234f970f29209380b082a9cdf4db4d"
+      }
+    },
+    {
+      "title": "WarpGuard: Towards Control-Flow Attestation for Heterogeneous CPU-GPU Execution",
+      "openalex_id": "https://openalex.org/W7169633979",
+      "doi": null,
+      "publication_year": 2026,
+      "authors": [
+        "Christian Lindenmeier",
+        "Meni Orenbach",
+        "Amro Awad",
+        "Fabian Schwarz",
+        "Fritz Alder",
+        "Ahmad Atamli"
+      ],
+      "primary_location": {
+        "id": "pmh:oai:arXiv.org:2607.13640",
+        "doi": null,
+        "is_oa": true,
+        "landing_page_url": "https://arxiv.org/abs/2607.13640",
+        "pdf_url": "https://arxiv.org/pdf/2607.13640",
+        "source": {
+          "id": "https://openalex.org/S4306400194",
+          "display_name": "arXiv (Cornell University)",
+          "issn_l": "2331-8422",
+          "issn": [
+            "2331-8422"
+          ],
+          "is_oa": true,
+          "is_in_doaj": false,
+          "is_core": false,
+          "listed_in": [],
+          "host_organization": "https://openalex.org/I205783295",
+          "host_organization_name": "Cornell University",
+          "host_organization_lineage": [
+            "https://openalex.org/I205783295"
+          ],
+          "host_organization_lineage_names": [],
+          "type": "repository"
+        },
+        "license": null,
+        "license_id": null,
+        "version": "submittedVersion",
+        "is_accepted": false,
+        "is_published": false,
+        "raw_source_name": null,
+        "raw_type": "text"
+      },
+      "best_oa_location": {
+        "id": "pmh:oai:arXiv.org:2607.13640",
+        "doi": null,
+        "is_oa": true,
+        "landing_page_url": "https://arxiv.org/abs/2607.13640",
+        "pdf_url": "https://arxiv.org/pdf/2607.13640",
+        "source": {
+          "id": "https://openalex.org/S4306400194",
+          "display_name": "arXiv (Cornell University)",
+          "issn_l": "2331-8422",
+          "issn": [
+            "2331-8422"
+          ],
+          "is_oa": true,
+          "is_in_doaj": false,
+          "is_core": false,
+          "listed_in": [],
+          "host_organization": "https://openalex.org/I205783295",
+          "host_organization_name": "Cornell University",
+          "host_organization_lineage": [
+            "https://openalex.org/I205783295"
+          ],
+          "host_organization_lineage_names": [],
+          "type": "repository"
+        },
+        "license": null,
+        "license_id": null,
+        "version": "submittedVersion",
+        "is_accepted": false,
+        "is_published": false,
+        "raw_source_name": null,
+        "raw_type": "text"
+      },
+      "indexed_abstract": "Heterogeneous CPU-GPU workloads are increasingly used in safety-critical embedded systems, yet no existing approach provides joint attestation of their execution. Prior Control-Flow Attestation (CFA) techniques focus on CPU-side CFA, while GPU attestation is limited to static, load-time verification and does not provide runtime guarantees. As a result, runtime attacks on GPU kernels and violations of the CPU-GPU interaction contract remain unaddressed. We present WarpGuard, the first composite CFA framework for heterogeneous CPU-GPU workloads. WarpGuard verifies execution against a unified control-flow graph (CFG) that captures both CPU and GPU components. It extends prior CFA techniques in two ways: it enables runtime CFA of GPU kernels by tracing their execution against kernel-specific CFGs, and it monitors kernel launch events and enforces per-call site policies to detect violations at the CPU-GPU boundary. These extensions address challenges arising from GPU parallelism and cross-device interactions. We implement WarpGuard using software-based instrumentation, requiring no specialized hardware or binary modifications. Our evaluation on an NVIDIA Jetson Orin Nano shows that WarpGuard detects GPU-side control-flow and cross-boundary attacks. Across microbenchmarks, SPECAccel, and eight TensorRT inference workloads, WarpGuard incurs moderate overheads, suggesting practicality for embedded safety-critical settings.",
+      "evidence_level": "metadata/indexed abstract; not original full-text verification",
+      "metadata_cache": {
+        "local_path": "build/cca-gpu-followup-20261027/xputee-heterogeneous-trusted-execution.json",
+        "bytes": 236342,
+        "sha256": "38a3c18bee25bcfacac8bf79cc5c134133234f970f29209380b082a9cdf4db4d"
+      }
+    },
+    {
+      "title": "FlexServe: A Fast and Secure LLM Serving System for Mobile Devices with Flexible Resource Isolation",
+      "openalex_id": "https://openalex.org/W7134992101",
+      "doi": null,
+      "publication_year": 2026,
+      "authors": [
+        "Yinpeng Wu",
+        "Yitong Chen",
+        "Lixiang Wang",
+        "Jinyu Gu",
+        "Zhichao Hua",
+        "Yubin Xia"
+      ],
+      "primary_location": {
+        "id": "pmh:oai:arXiv.org:2603.09046",
+        "doi": null,
+        "is_oa": true,
+        "landing_page_url": "https://arxiv.org/abs/2603.09046",
+        "pdf_url": "https://arxiv.org/pdf/2603.09046",
+        "source": {
+          "id": "https://openalex.org/S4306400194",
+          "display_name": "arXiv (Cornell University)",
+          "issn_l": "2331-8422",
+          "issn": [
+            "2331-8422"
+          ],
+          "is_oa": true,
+          "is_in_doaj": false,
+          "is_core": false,
+          "listed_in": [],
+          "host_organization": "https://openalex.org/I205783295",
+          "host_organization_name": "Cornell University",
+          "host_organization_lineage": [
+            "https://openalex.org/I205783295"
+          ],
+          "host_organization_lineage_names": [],
+          "type": "repository"
+        },
+        "license": null,
+        "license_id": null,
+        "version": "submittedVersion",
+        "is_accepted": false,
+        "is_published": false,
+        "raw_source_name": null,
+        "raw_type": "text"
+      },
+      "best_oa_location": {
+        "id": "pmh:oai:arXiv.org:2603.09046",
+        "doi": null,
+        "is_oa": true,
+        "landing_page_url": "https://arxiv.org/abs/2603.09046",
+        "pdf_url": "https://arxiv.org/pdf/2603.09046",
+        "source": {
+          "id": "https://openalex.org/S4306400194",
+          "display_name": "arXiv (Cornell University)",
+          "issn_l": "2331-8422",
+          "issn": [
+            "2331-8422"
+          ],
+          "is_oa": true,
+          "is_in_doaj": false,
+          "is_core": false,
+          "listed_in": [],
+          "host_organization": "https://openalex.org/I205783295",
+          "host_organization_name": "Cornell University",
+          "host_organization_lineage": [
+            "https://openalex.org/I205783295"
+          ],
+          "host_organization_lineage_names": [],
+          "type": "repository"
+        },
+        "license": null,
+        "license_id": null,
+        "version": "submittedVersion",
+        "is_accepted": false,
+        "is_published": false,
+        "raw_source_name": null,
+        "raw_type": "text"
+      },
+      "indexed_abstract": "Device-side Large Language Models (LLMs) have witnessed explosive growth, offering higher privacy and availability compared to cloud-side LLMs. During LLM inference, both model weights and user data are valuable, and attackers may even compromise the OS kernel to steal them. ARM TrustZone is the de facto hardware-based isolation technology on mobile devices, used to protect sensitive applications from a compromised OS. However, protecting LLM inference with TrustZone incurs significant overhead due to its inflexible isolation of memory and the NPU. To address these challenges, this paper introduces FlexServe, a fast and secure LLM serving system for mobile devices. It first introduces a Flexible Resource Isolation mechanism to construct Flexible Secure Memory (Flex-Mem) and Flexible Secure NPU (Flex-NPU). Both memory pages and the NPU can be efficiently switched between unprotected and protected modes. Based on these mechanisms, FlexServe designs a fast and secure LLM inference framework within TrustZone's secure world. The LLM-Aware Memory Management and Secure Inference Pipeline are introduced to accelerate inference. A Multi-Model Scheduler is proposed to optimize multi-model workflows. We implement a prototype of FlexServe and compare it with two TrustZone-based strawman designs. The results show that FlexServe achieves an average $10.05\\times$ speedup in Time to First Token (TTFT) compared to the strawman, and an average $2.44\\times$ TTFT speedup compared to an optimized strawman with pipeline and secure NPU enabled. For multi-model agent workflows, the end-to-end speedup is up to $24.30\\times$ and $4.05\\times$ compared to the strawman and optimized strawman, respectively.",
+      "evidence_level": "metadata/indexed abstract; not original full-text verification",
+      "metadata_cache": {
+        "local_path": "build/cca-gpu-followup-20261027/xputee-heterogeneous-trusted-execution.json",
+        "bytes": 236342,
+        "sha256": "38a3c18bee25bcfacac8bf79cc5c134133234f970f29209380b082a9cdf4db4d"
+      }
+    },
+    {
+      "title": "Secure and Timely GPU Execution in Cyber-physical Systems",
+      "openalex_id": "https://openalex.org/W4388858468",
+      "doi": "https://doi.org/10.1145/3576915.3623197",
+      "publication_year": 2023,
+      "authors": [
+        "Jinwen Wang",
+        "Yujie Wang",
+        "Ning Zhang"
+      ],
+      "primary_location": {
+        "id": "doi:10.1145/3576915.3623197",
+        "doi": "https://doi.org/10.1145/3576915.3623197",
+        "is_oa": true,
+        "landing_page_url": "https://doi.org/10.1145/3576915.3623197",
+        "pdf_url": "https://dl.acm.org/doi/pdf/10.1145/3576915.3623197",
+        "source": {
+          "id": "https://openalex.org/S4393917527",
+          "display_name": "ACM SIGSAC Conference on Computer and Communications Security (CCS)",
+          "issn_l": "1543-7221",
+          "issn": [
+            "1543-7221"
+          ],
+          "is_oa": false,
+          "is_in_doaj": false,
+          "is_core": false,
+          "listed_in": [
+            "norway-1"
+          ],
+          "host_organization": null,
+          "host_organization_name": null,
+          "host_organization_lineage": [],
+          "host_organization_lineage_names": [],
+          "type": "conference"
+        },
+        "license": "cc-by",
+        "license_id": "https://openalex.org/licenses/cc-by",
+        "version": "publishedVersion",
+        "is_accepted": true,
+        "is_published": true,
+        "raw_source_name": "Proceedings of the 2023 ACM SIGSAC Conference on Computer and Communications Security",
+        "raw_type": "proceedings-article"
+      },
+      "best_oa_location": {
+        "id": "doi:10.1145/3576915.3623197",
+        "doi": "https://doi.org/10.1145/3576915.3623197",
+        "is_oa": true,
+        "landing_page_url": "https://doi.org/10.1145/3576915.3623197",
+        "pdf_url": "https://dl.acm.org/doi/pdf/10.1145/3576915.3623197",
+        "source": {
+          "id": "https://openalex.org/S4393917527",
+          "display_name": "ACM SIGSAC Conference on Computer and Communications Security (CCS)",
+          "issn_l": "1543-7221",
+          "issn": [
+            "1543-7221"
+          ],
+          "is_oa": false,
+          "is_in_doaj": false,
+          "is_core": false,
+          "listed_in": [
+            "norway-1"
+          ],
+          "host_organization": null,
+          "host_organization_name": null,
+          "host_organization_lineage": [],
+          "host_organization_lineage_names": [],
+          "type": "conference"
+        },
+        "license": "cc-by",
+        "license_id": "https://openalex.org/licenses/cc-by",
+        "version": "publishedVersion",
+        "is_accepted": true,
+        "is_published": true,
+        "raw_source_name": "Proceedings of the 2023 ACM SIGSAC Conference on Computer and Communications Security",
+        "raw_type": "proceedings-article"
+      },
+      "indexed_abstract": "Graphics Processing Units (GPU) are increasingly deployed on Cyber-physical Systems (CPSs), frequently used to perform real-time safety-critical functions, such as object detection on autonomous vehicles. As a result, availability is important for GPU tasks in CPS platforms. However, existing Trusted Execution Environments (TEE) solutions with availability guarantees focus only on CPU computing.",
+      "evidence_level": "metadata/indexed abstract; not original full-text verification",
+      "metadata_cache": {
+        "local_path": "build/gpu-security-literature-20261026/oa-secure-timely.json",
+        "bytes": 34050,
+        "sha256": "337b178cf40a45f8edd2578f9f4da748dda4b45cd805bfd5a8444102820d9493"
+      }
+    }
+  ],
+  "additional_source_records": [
+    {
+      "local_path": "build/gpu-security-literature-20261026/doi-secure-timely.json",
+      "bytes": 15167,
+      "sha256": "9570f2a1c7eef447f7e70ef5f128c2e6cb4bcccc9c24b7bd1c065185bf19aae0"
+    },
+    {
+      "local_path": "build/cca-gpu-followup-20261027/hua-home-en.html",
+      "bytes": 30515,
+      "sha256": "b73646f5de4bf9bfafa33e5a45b53833eaa1b0bdb63b538787b566387e620323"
+    },
+    {
+      "local_path": "build/cca-gpu-followup-20261027/fan-home.html",
+      "bytes": 4605,
+      "sha256": "f7c9afc79163922f7af5781766182bc19225054ec72be589629b9f04b0d2c9b7"
+    }
+  ],
+  "secondary_only": [
+    {
+      "name": "LEAP: TrustZone Based Developer-Friendly TEE for Intelligent Mobile Apps",
+      "sources": [
+        "ASGARD references and related work",
+        "NDSS 2026 SoK tables and references"
+      ],
+      "full_text": "not acquired",
+      "doi": "not independently confirmed",
+      "year_note": "ASGARD cites TMC 22(12), 7138–7155, 2023; SoK lists 2022."
+    }
+  ],
+  "fetch_attempts_initial_batch": [
+    {
+      "file": "asgard-page.html",
+      "url": "https://www.ndss-symposium.org/ndss-paper/asgard-protecting-on-device-deep-neural-networks-with-virtualization-based-trusted-execution-environments/",
+      "final_url": "https://www.ndss-symposium.org/ndss-paper/asgard-protecting-on-device-deep-neural-networks-with-virtualization-based-trusted-execution-environments/",
+      "bytes": 71186,
+      "sha256": "95ad8ead4bdb110bcd8f46e0703f0b873e4c0f5207d596b72bae364cc0d29110",
+      "content_type": "text/html; charset=UTF-8",
+      "is_pdf": false
+    },
+    {
+      "file": "mytee-page.html",
+      "url": "https://www.ndss-symposium.org/ndss-paper/mytee-own-the-trusted-execution-environment-on-embedded-devices/",
+      "final_url": "https://www.ndss-symposium.org/ndss-paper/mytee-own-the-trusted-execution-environment-on-embedded-devices/",
+      "bytes": 68876,
+      "sha256": "13aab531b364ba3742cebae4906941fd81781160e6a1452fe0b1196f4d69887f",
+      "content_type": "text/html; charset=UTF-8",
+      "is_pdf": false
+    },
+    {
+      "file": "flexserve-new.pdf",
+      "url": "https://arxiv.org/pdf/2606.23370",
+      "error": "<urlopen error timed out>"
+    },
+    {
+      "file": "flexserve-old.pdf",
+      "url": "https://arxiv.org/pdf/2603.09046",
+      "error": "<urlopen error timed out>"
+    },
+    {
+      "file": "warpguard.pdf",
+      "url": "https://arxiv.org/pdf/2607.13640",
+      "error": "<urlopen error timed out>"
+    },
+    {
+      "file": "xputee-acm.pdf",
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3719653",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "file": "barri-crossref.json",
+      "url": "https://api.crossref.org/works/10.1109/EuroSPW61312.2024.00033",
+      "error": "<urlopen error timed out>"
+    },
+    {
+      "file": "xputee-crossref.json",
+      "url": "https://api.crossref.org/works/10.1145/3719653",
+      "error": "<urlopen error timed out>"
+    },
+    {
+      "file": "compass-pubs.html",
+      "url": "https://compass.sustech.edu.cn/publications_en.html",
+      "error": "<urlopen error [Errno 101] Network is unreachable>"
+    }
+  ],
+  "additional_fetch_notes": [
+    "NDSS ASGARD/MyTEE/SoK PDFs and IPADS TZ-LLM PDF successfully obtained after discovery.",
+    "XpuTEE ACM PDF returned HTTP 403; author pages confirm title and authors but full text not acquired.",
+    "Additional candidate source and repository requests timed out or were unreachable; no source-code audit claimed.",
+    "FlexServe has two same-title indexed arXiv records; exact relationship unverified, counted as one candidate group."
+  ],
+  "notion": {
+    "status": "not_synced",
+    "reason": "No Notion read/write tool available in this session.",
+    "prior_publications_modified": false
+  },
+  "verification": {
+    "runtime_code_changed": false,
+    "hardware_runs": [],
+    "new_glmark_measurement": false,
+    "performance_delta": "not applicable",
+    "claims_are_research_analysis": true
+  }
+}

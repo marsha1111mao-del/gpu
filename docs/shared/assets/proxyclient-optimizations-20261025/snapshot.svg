@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1100" viewBox="0 0 1440 1100">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#667791"/></marker></defs>
+<style>text { font-family: "Noto Sans CJK SC", sans-serif; }</style>
+<rect width="1440" height="1100" fill="white"/>
+<text x="58" y="64" font-size="36" fill="#17243b" font-weight="700" text-anchor="start">快照生命周期与TRANSFER_CAPTURE</text>
+<text x="60" y="104" font-size="21" fill="#52627a" font-weight="400" text-anchor="start">快照固定一次捕获时的真实fence；不是BO数据副本，也不是“GPU已完成”的猜测。</text>
+<rect x="60" y="150" width="390" height="190" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="150" width="6" height="190" rx="3" fill="#2767d8" stroke="none"/>
+<text x="82" y="188" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">Mesa原有调用</text>
+<text x="82" y="226" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">GROUP_SUBMIT</text>
+<text x="82" y="256" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">SYNCOBJ_TRANSFER</text>
+<text x="82" y="286" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">HANDLE_TO_FD → poll / wait</text>
+<text x="82" y="316" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">最后关闭sync_file</text>
+<rect x="525" y="150" width="390" height="190" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="525" y="150" width="6" height="190" rx="3" fill="#d58120" stroke="none"/>
+<text x="547" y="188" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">ClientProxy内部操作</text>
+<text x="547" y="226" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">PLAN_EXEC：结构缓存执行</text>
+<text x="547" y="256" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">TRANSFER_CAPTURE：搬移并捕获</text>
+<text x="547" y="286" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">本地构造sync_file</text>
+<text x="547" y="316" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">最后引用 → 有界退役队列</text>
+<rect x="990" y="150" width="390" height="190" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="990" y="150" width="6" height="190" rx="3" fill="#16836a" stroke="none"/>
+<text x="1012" y="188" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">Proxy / 原生对象</text>
+<text x="1012" y="226" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">接纳真实job，安装输出chain</text>
+<text x="1012" y="256" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">同一fence写入目标与私有快照</text>
+<text x="1012" y="286" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">返回handle + slot + cookie</text>
+<text x="1012" y="316" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">真实引用保护底层fence</text>
+<polyline points="450,245 525,245" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<polyline points="915,245 990,245" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="60" y="450" width="620" height="160" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="450" width="6" height="160" rx="3" fill="#16836a" stroke="none"/>
+<text x="82" y="488" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">A  退役捎带</text>
+<text x="82" y="526" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">下次捕获时附带旧快照handle批次</text>
+<text x="82" y="556" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">Proxy全批验证后退役；满队 / close排空</text>
+<text x="82" y="586" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">历史1023 → 1159 / 1163；明显收益</text>
+<rect x="760" y="450" width="620" height="160" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="760" y="450" width="6" height="160" rx="3" fill="#d58120" stroke="none"/>
+<text x="782" y="488" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">B  预捕获后导出本地命中</text>
+<text x="782" y="526" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">TRANSFER时已保存不可变快照</text>
+<text x="782" y="556" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">epoch未变、无并发修改时免导出RPC</text>
+<text x="782" y="586" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">历史1158 → 1156；只证明少RPC</text>
+<rect x="60" y="715" width="620" height="160" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="715" width="6" height="160" rx="3" fill="#2767d8" stroke="none"/>
+<text x="82" y="753" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">后续RESET / IMPORT / 新提交</text>
+<text x="82" y="791" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">公开syncobj可以改变</text>
+<text x="82" y="821" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">已导出的旧sync_file仍持有旧fence</text>
+<text x="82" y="851" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">源对象销毁不等于快照立即失效</text>
+<rect x="760" y="715" width="620" height="160" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="760" y="715" width="6" height="160" rx="3" fill="#7c58bb" stroke="none"/>
+<text x="782" y="753" font-size="25" fill="#7c58bb" font-weight="700" text-anchor="start">回退与安全约束</text>
+<text x="782" y="791" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">不确定版本 → 重新捕获真实fence</text>
+<text x="782" y="821" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">slot不足 / 未完成 / 错误 → 原生WAIT</text>
+<text x="782" y="851" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">超时不能盲目重放TRANSFER或GPU提交</text>
+<text x="60" y="1028" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">A与B解决不同往返；不能把A的大幅提分算给B。</text>
+<text x="60" y="1058" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">图示为已协商binary TRANSFER快路径；timeline目标保留原有语义。</text>
+</svg>

@@ -60,32 +60,7 @@ RK3588上的Mali-G610只有一套物理设备控制状态。本项目希望多�
 
 ### 图2：一项任务穿过哪些软件层
 
-```mermaid
-sequenceDiagram
-    participant A as Client应用
-    participant M as Client Mesa
-    participant F as Client前端
-    participant P as Proxy后端
-    participant N as 原生Panthor
-    participant G as GPU
-    A->>M: 绘制或计算API
-    M->>F: BO创建和mmap及VM_BIND
-    F->>P: 会话内对象请求
-    P->>N: 创建实际对象并建立映射
-    M->>M: 写共享BO中的命令和输入
-    M->>F: GROUP_SUBMIT ioctl
-    F->>P: PLAN_EXEC及本次动态参数
-    P->>N: 原生group submit
-    N-->>P: 已接纳提交
-    P-->>F: RPC提交结果
-    F-->>M: ioctl返回
-    N->>G: 调度并启动命令流
-    G-->>N: 完成中断
-    N->>N: 原生fence完成
-    N-->>F: 真实fence回调发布完成cookie
-    M->>F: 等待完成或导出同步
-    F-->>M: 本地可信命中或真实等待结果
-```
+![图2：一项任务穿过哪些软件层](assets/clientproxy-guide-20261022/task-sequence.png)
 
 **图怎么读：** 上半段的对象建立通常不是每帧都做；对象和计划可以复用。中间的提交RPC返回表示驱动已经接纳这项工作，GPU可能还未运行。下半段才是异步执行与完成。完成cookie实际通过共享完成页被Client观察，图中的跨层箭头表示逻辑信息流，并不是Panthor直接调用另一Realm的函数。
 

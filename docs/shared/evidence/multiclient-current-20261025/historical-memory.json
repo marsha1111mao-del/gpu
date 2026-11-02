@@ -1,0 +1,82 @@
+[
+  {
+    "run_id": "fair-realm-720-4c-20261021-a",
+    "status": "PASS",
+    "memory_plan": {
+      "realm_mib": [
+        848,
+        336,
+        336,
+        336,
+        336
+      ],
+      "cma_mib": [
+        528,
+        144,
+        144,
+        144,
+        144
+      ],
+      "host_headroom_mib": 256,
+      "available_mib": 3080.71875
+    },
+    "inputs": {
+      "/root/GPU-SFTP/tests/realm-xshm/run-realms.py": "b3dbde27794967245a81878f6978a0082997e76dd6cebcc2df61415f3ee812dd",
+      "/root/GPU-SFTP/firecracker-bins/bin/firecracker": "1da45f6ad565434ff4bef82f8e1c15faed17f940ae8297a7a05bfc7278be6b66",
+      "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/Image": "31f31f15c148bba2194bb1ccc0335f6bdbd300729ca0278ed1431fa439420647",
+      "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/initrd.cpio": "f8f325ba66b6b3ba85cf9fac21e9b383f8d2307ec214ece66f0f318b3308d7e1",
+      "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/proxy/Image": "f3c3f28e25617784d7d681fa6a1270b5561eaf82526e9ce41a97e9fd399103fc",
+      "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4": "5d0c2ec8e5c1830f6a93c39d34bd8ae02a99702792e9e16a9d9034388f606d60"
+    },
+    "scores": [
+      381,
+      359,
+      332,
+      353
+    ],
+    "host_initial_available_mib": 3080.71875,
+    "host_min_available_mib": 663.4375,
+    "host_available_drop_mib": 2417.28125,
+    "verified_files": 23
+  },
+  {
+    "run_id": "fair-realm-720-4c-20261021-b",
+    "status": "PASS",
+    "memory_plan": {
+      "realm_mib": [
+        848,
+        336,
+        336,
+        336,
+        336
+      ],
+      "cma_mib": [
+        528,
+        144,
+        144,
+        144,
+        144
+      ],
+      "host_headroom_mib": 256,
+      "available_mib": 3068.00390625
+    },
+    "inputs": {
+      "/root/GPU-SFTP/tests/realm-xshm/run-realms.py": "b3dbde27794967245a81878f6978a0082997e76dd6cebcc2df61415f3ee812dd",
+      "/root/GPU-SFTP/firecracker-bins/bin/firecracker": "1da45f6ad565434ff4bef82f8e1c15faed17f940ae8297a7a05bfc7278be6b66",
+      "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/Image": "31f31f15c148bba2194bb1ccc0335f6bdbd300729ca0278ed1431fa439420647",
+      "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/initrd.cpio": "f8f325ba66b6b3ba85cf9fac21e9b383f8d2307ec214ece66f0f318b3308d7e1",
+      "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/proxy/Image": "f3c3f28e25617784d7d681fa6a1270b5561eaf82526e9ce41a97e9fd399103fc",
+      "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4": "5d0c2ec8e5c1830f6a93c39d34bd8ae02a99702792e9e16a9d9034388f606d60"
+    },
+    "scores": [
+      353,
+      355,
+      332,
+      379
+    ],
+    "host_initial_available_mib": 3068.00390625,
+    "host_min_available_mib": 654.87890625,
+    "host_available_drop_mib": 2413.125,
+    "verified_files": 23
+  }
+]

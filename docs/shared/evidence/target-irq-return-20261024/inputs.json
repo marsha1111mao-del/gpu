@@ -1,0 +1,27 @@
+{
+  "status": "RETAINED_LOCAL",
+  "baseline_score": 1237,
+  "previous_baseline_score": 1208,
+  "runtime": {
+    "client-Image": "bc495269491b44879d1f84556f537903650afad34a06fb94d6676e9ae799349f",
+    "proxy-Image": "435f0d46df7ae37fe4e4d254c0b67edefb0c64a9f0de196c2753bc9179669e18",
+    "initrd.cpio": "903465ce6f7ca4290aed6f979c7501606ff6729c03656b9e48de4de1f343f0f3",
+    "runner.py": "19fcc60567a232ed8050a710e33baad8eb90225db7fb1ba4bea2123dd9247565"
+  },
+  "firmware": {
+    "idbloader.img": "aafd53464c97c69e3498e299eccb78de4d92d777f271be02f8cc66682ad67dc7",
+    "u-boot.itb": "5cd766a1e1c38cff67d04319c2e07ebad39171e6c42a914190e4836043be3289",
+    "tf-rmm.elf": "5f694fd068f99fc00bb37c325eda2b75b3fe9983352872c37ae8d125ed474f72",
+    "bl31.elf": "3b6095b3fc3c62358ae2c718fe95803bd3d3afe7985f0822355d035675378dd8",
+    "u-boot": "1c842dae79e1d9f8890f4ae2b14db8b5cef84e08efc16187a929392ae5c46061"
+  },
+  "host_module": "af65a9312274c0acd4cf0c26e713f304627bb0eb40566432c55b19dd7b5cf9eb",
+  "host_kernelrelease": "6.12.0-opencca-pmthor-opp3",
+  "host_module_source": "tools/xshm-wake-sgi/xshm_wake_sgi.c",
+  "runtime_bundle": "build/fast-target-irq-20261024/candidate-final",
+  "firmware_bundle": "build/fast-target-irq-20261024/firmware-final",
+  "host_module_binary": "build/fast-target-irq-20261024/host-sgi/xshm_wake_sgi.ko",
+  "client_source": "retained 1208 binary; no Client rebuild in this candidate",
+  "rollback_runtime": "build/pipeline-ownership-20261024/candidate",
+  "rollback_firmware": "build/request-resident-20261024/firmware"
+}

@@ -1,0 +1,35 @@
+{
+  "status": "PASS_FX_WITHDRAWN_FU_RESTORED",
+  "classification": "PROGRESS",
+  "retained": false,
+  "retained_variant": "FU RMM + FT Client + original DX",
+  "retained_scores": [
+    971,
+    971
+  ],
+  "latest_unmodified_control_score": 972,
+  "candidate_score": 980,
+  "difference": 8,
+  "difference_percent": 0.8230452674897082,
+  "retention_floor": 982,
+  "gate1000_pass": false,
+  "baseline_frozen_inputs_verified": 219,
+  "candidate_frozen_inputs_verified": 246,
+  "actual_sd2_verified": true,
+  "four_guest_inputs_verified": true,
+  "resources_restored": true,
+  "source_restored": true,
+  "actual_core_differential_cases": 42,
+  "compiled_mutants_rejected": 3,
+  "private_suite_exit": 0,
+  "private_suite_pass_marker_lines": 640,
+  "validation": [
+    26,
+    1,
+    6
+  ],
+  "each_run_sha_verified_files": 11,
+  "extensions": "NOT_RUN until1000",
+  "new_gpu_measurement_after_restore": false,
+  "goal_complete": false
+}

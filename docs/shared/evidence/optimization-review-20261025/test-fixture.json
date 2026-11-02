@@ -1,0 +1,99 @@
+{
+  "purpose": "Native PRIME=3 versus Client PRIME=0; unchanged functional checks",
+  "compiler_command": [
+    "aarch64-linux-gnu-gcc",
+    "-O2",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-static",
+    "-I/home/mzh/gpu/build/panthor-ioctl-uapi/export/include/drm",
+    "-I/home/mzh/gpu/GPU-SFTP/tests/panthor-ioctl-smoke",
+    "-o",
+    "/home/mzh/gpu/build/optimization-review-20261025/native-fallback-bundle-v2/panthor_ioctl_smoke",
+    "/home/mzh/gpu/build/optimization-review-20261025/native-fallback-bundle-v2/panthor_ioctl_smoke.c"
+  ],
+  "archive_entries": [
+    {
+      "name": "dev",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "candidate_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "dev/console",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "candidate_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "init",
+      "original_sha256": "bdd0ec07f63689bc98f495f50f367f7fa093f887c6de89e5f375646626a7f722",
+      "candidate_sha256": "bdd0ec07f63689bc98f495f50f367f7fa093f887c6de89e5f375646626a7f722"
+    },
+    {
+      "name": "realm-xshm",
+      "original_sha256": "62037617405ebae6b500b4943ccb2fb6e9cc9c7b22e63a314a696d8008509612",
+      "candidate_sha256": "62037617405ebae6b500b4943ccb2fb6e9cc9c7b22e63a314a696d8008509612"
+    },
+    {
+      "name": "ioctl-perf",
+      "original_sha256": "b7524a7e562c03dc3f682b1d47a8a1fd592f3ecb04c0391fe15739002bb1cbd7",
+      "candidate_sha256": "b7524a7e562c03dc3f682b1d47a8a1fd592f3ecb04c0391fe15739002bb1cbd7"
+    },
+    {
+      "name": "performance-suite.sh",
+      "original_sha256": "7d4d5aec69cb7d06fbe1c623d128d0661e944b692ba9e1e5107cffc6754e038d",
+      "candidate_sha256": "7d4d5aec69cb7d06fbe1c623d128d0661e944b692ba9e1e5107cffc6754e038d"
+    },
+    {
+      "name": "panthor_ioctl_smoke",
+      "original_sha256": "e2de066c757e29507155b85f01517ae42b2bd0c7cc753cae0de9477a9a45e171",
+      "candidate_sha256": "4cbcfd75b04107f3f2d1888d7961898c0907086a60c67a492294b3e859f5c007"
+    },
+    {
+      "name": "glmark.env",
+      "original_sha256": "f05552a92cf79c16e33b30cc9309d1620145ff66a638567696900c3590b188b5",
+      "candidate_sha256": "f05552a92cf79c16e33b30cc9309d1620145ff66a638567696900c3590b188b5"
+    },
+    {
+      "name": "gpu-smoke.sh",
+      "original_sha256": "5b5875f78a42fb44a2bd074582b7056a5bee4b9d3141f2e0f02bde0625f9766d",
+      "candidate_sha256": "5b5875f78a42fb44a2bd074582b7056a5bee4b9d3141f2e0f02bde0625f9766d"
+    },
+    {
+      "name": "gles-ml-smoke",
+      "original_sha256": "7964392ca01a8d5f88c9a64ded1c321bb24631378f683949bc15503162320a50",
+      "candidate_sha256": "7964392ca01a8d5f88c9a64ded1c321bb24631378f683949bc15503162320a50"
+    },
+    {
+      "name": "gpu-memory",
+      "original_sha256": "aeca65a0430b444b0e0bbc6f4ba5c1b6f1b182f12962d333bfd558497ecd274c",
+      "candidate_sha256": "aeca65a0430b444b0e0bbc6f4ba5c1b6f1b182f12962d333bfd558497ecd274c"
+    },
+    {
+      "name": "pool_memory.ko",
+      "original_sha256": "01f5c5c1e207284398aea78214e46ff92a18dbd5a1b8528345a5e30ea9e2f323",
+      "candidate_sha256": "01f5c5c1e207284398aea78214e46ff92a18dbd5a1b8528345a5e30ea9e2f323"
+    },
+    {
+      "name": "TRAILER!!!",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "candidate_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "original_source_sha256": "b8142647674231f59e8cdd48ec8523bfc15a5c76df2c6013ecbba6124e4534d9",
+  "adapted_source_sha256": "9c382e6da6384607ffb651e0f7aa438ef064e3552a3d7fb1af13bc6a89fca6ac",
+  "input_sha256": {
+    "client-Image": "bc495269491b44879d1f84556f537903650afad34a06fb94d6676e9ae799349f",
+    "proxy-Image": "d0debf770a9a83c332c8fad540d69fdb27f44e30397a76942fdef71d30165304",
+    "initrd.cpio": "e2dcbcbd1334019b5eaa50f09b5ca7cae4cb4518027841f45d9f48fe62dba1d4",
+    "runner.py": "c1fc876a8ae265d34ebcf863ed287a69a9282939908558b3d8db0f824ed60fcc"
+  },
+  "final_input_sha256": {
+    "client-Image": "bc495269491b44879d1f84556f537903650afad34a06fb94d6676e9ae799349f",
+    "proxy-Image": "d0debf770a9a83c332c8fad540d69fdb27f44e30397a76942fdef71d30165304",
+    "initrd.cpio": "e2dcbcbd1334019b5eaa50f09b5ca7cae4cb4518027841f45d9f48fe62dba1d4",
+    "runner.py": "234fed1dbe071fc4d2ea1c051ddcde53161ba7a82a3031f9eb390ba4fafd212f"
+  },
+  "source_patch": "--- baseline/panthor_ioctl_smoke.c\n+++ test-only/panthor_ioctl_smoke.c\n@@ -31,6 +31,8 @@\n };\n #define DRM_IOCTL_SYNCOBJ_EVENTFD DRM_IOWR(0xCF, struct drm_syncobj_eventfd)\n #endif\n+\n+static bool native_mode;\n \n enum smoke_mode {\n \tSMOKE_BASIC,\n@@ -282,6 +284,9 @@\n \tstruct drm_prime_handle prime = { 0 };\n \tstruct drm_syncobj_handle sync_handle = { 0 };\n \tstruct drm_syncobj_eventfd eventfd = { 0 };\n+\n+\tif (native_mode)\n+\t\treturn get_cap(fd, DRM_CAP_PRIME, \"DRM_CAP_PRIME\", 3);\n \n \tif (get_cap(fd, DRM_CAP_PRIME, \"DRM_CAP_PRIME\", 0))\n \t\treturn -1;\n@@ -3266,7 +3271,9 @@\n \tsize_t i;\n \n \tfor (i = 1; i < (size_t)argc; i++) {\n-\t\tif (!strcmp(argv[i], \"--basic\")) {\n+\t\tif (!strcmp(argv[i], \"--native\")) {\n+\t\t\tnative_mode = true;\n+\t\t} else if (!strcmp(argv[i], \"--basic\")) {\n \t\t\tmode = SMOKE_BASIC;\n \t\t} else if (!strcmp(argv[i], \"--vm-create\")) {\n \t\t\tmode = SMOKE_VM_CREATE;\n",
+  "runner_patch": "--- baseline/runner.py\n+++ test-only/runner.py\n@@ -781,6 +781,17 @@\n \n \n def test_two_clients(channel, endpoints):\n+    result['native_proxy_modes'] = []\n+    for mode in ('basic', 'vm-bind-async-sync', 'group-submit-syncpoint',\n+                 'tiler-heap-lifecycle'):\n+        text_command(0, f'gpu-smoke --native --{mode} /dev/dri/renderD128',\n+                     ['PANTHOR_IOCTL_SMOKE='+mode.upper().replace('-', '_')+'_PASS'])\n+        result['native_proxy_modes'].append(mode)\n+        save()\n+    text_command(0, 'compute', ['COMPUTE_CHECK=PASS count=65536 samples=16',\n+                                'GL_RENDERER=Mali-G610'], 120)\n+    result['native_proxy_compute'] = 'PASS'\n+    save()\n     size = a.memory_pages * 4096\n     channels = [channel, call(0, f'offer {endpoints[2]}')[0]]\n     call(2, f'accept {channels[1]}')\n@@ -922,7 +933,7 @@\n             config['boot-source']['boot_args'] += ' panthor_client.transfer_capture=1 panthor_client.fused_snapshot=1'\n         if a.rpc_stats and vm:\n             config['boot-source']['boot_args'] += ' client_comm_vmshm.rpc_stats=1'\n-        if workload_rootfs and (a.benchmark_only and vm or vm == 1 or (a.clients == 2 and vm == 2)):\n+        if workload_rootfs:\n             config['drives'] = [{'drive_id': 'workload', 'path_on_host': str(workload_rootfs),\n                                  'is_root_device': False, 'is_read_only': True}]\n         path.write_text(json.dumps(config, indent=2)+'\\n')\n"
+}

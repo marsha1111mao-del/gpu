@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1050" viewBox="0 0 1440 1050">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#667791"/></marker></defs>
+<style>text { font-family: "Noto Sans CJK SC", sans-serif; }</style>
+<rect width="1440" height="1050" fill="white"/>
+<text x="58" y="64" font-size="36" fill="#17243b" font-weight="700" text-anchor="start">下一步如何定位：串行响应延迟与流水吞吐分开看</text>
+<text x="60" y="104" font-size="21" fill="#52627a" font-weight="400" text-anchor="start">这是依赖关系示意，不按时间比例绘制；RPC、GPU执行和通知阶段可能重叠。</text>
+<text x="60" y="148" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">CPU接纳链</text>
+<rect x="60" y="170" width="410" height="105" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="170" width="6" height="105" rx="3" fill="#2767d8" stroke="none"/>
+<text x="82" y="208" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">Client发布请求</text>
+<polyline points="470,222 515,222" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="515" y="170" width="410" height="105" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="515" y="170" width="6" height="105" rx="3" fill="#2767d8" stroke="none"/>
+<text x="537" y="208" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">Proxy校验 / 接纳</text>
+<polyline points="925,222 970,222" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="970" y="170" width="410" height="105" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="970" y="170" width="6" height="105" rx="3" fill="#2767d8" stroke="none"/>
+<text x="992" y="208" font-size="25" fill="#2767d8" font-weight="700" text-anchor="start">返回接纳结果</text>
+<text x="60" y="378" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">异步执行链</text>
+<rect x="60" y="400" width="410" height="105" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="400" width="6" height="105" rx="3" fill="#16836a" stroke="none"/>
+<text x="82" y="438" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">原生调度 / ring</text>
+<polyline points="470,452 515,452" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="515" y="400" width="410" height="105" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="515" y="400" width="6" height="105" rx="3" fill="#16836a" stroke="none"/>
+<text x="537" y="438" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">GPU执行 / 缓存刷新</text>
+<polyline points="925,452 970,452" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="970" y="400" width="410" height="105" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="970" y="400" width="6" height="105" rx="3" fill="#16836a" stroke="none"/>
+<text x="992" y="438" font-size="25" fill="#16836a" font-weight="700" text-anchor="start">真实fence完成</text>
+<text x="60" y="608" font-size="25" fill="#7c58bb" font-weight="700" text-anchor="start">结果可见链</text>
+<rect x="60" y="630" width="410" height="105" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="630" width="6" height="105" rx="3" fill="#7c58bb" stroke="none"/>
+<text x="82" y="668" font-size="25" fill="#7c58bb" font-weight="700" text-anchor="start">Proxy发布cookie</text>
+<polyline points="470,682 515,682" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="515" y="630" width="410" height="105" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="515" y="630" width="6" height="105" rx="3" fill="#7c58bb" stroke="none"/>
+<text x="537" y="668" font-size="25" fill="#7c58bb" font-weight="700" text-anchor="start">Client观察 / 唤醒</text>
+<polyline points="925,682 970,682" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="970" y="630" width="410" height="105" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="970" y="630" width="6" height="105" rx="3" fill="#7c58bb" stroke="none"/>
+<text x="992" y="668" font-size="25" fill="#7c58bb" font-weight="700" text-anchor="start">应用继续或读回</text>
+<polyline points="720,275 720,330 265,330 265,400" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)" stroke-dasharray="8,7"/>
+<polyline points="1175,505 1175,560 265,560 265,630" fill="none" stroke="#667791" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="60" y="815" width="1320" height="100" rx="14" fill="#f3f6fb" stroke="#d9e1ee"/>
+<rect x="60" y="815" width="6" height="100" rx="3" fill="#d58120" stroke="none"/>
+<text x="82" y="853" font-size="25" fill="#d58120" font-weight="700" text-anchor="start">先回答哪个条件让应用不能继续</text>
+<text x="82" y="891" font-size="21" fill="#17243b" font-weight="400" text-anchor="start">同步finish看端到端延迟；异步多在途看服务率与瓶颈；多Client再看尾延迟与整批完成时间。</text>
+<text x="60" y="978" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">不能把重叠计时相加，也不能由低Proxy CPU利用率证明它不在延迟关键路径上。</text>
+<text x="60" y="1008" font-size="20" fill="#52627a" font-weight="400" text-anchor="start">FLUSH_ID、WC读写、分配清零和准入限制都是候选解释，尚未通过新实验确定根因。</text>
+</svg>

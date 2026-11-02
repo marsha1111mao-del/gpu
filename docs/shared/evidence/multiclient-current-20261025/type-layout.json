@@ -1,0 +1,277 @@
+{
+  "current_build": {
+    "panthor_sched": {
+      "path": "build/point-feed-20261024/rollback-build/proxy/drivers/gpu/drm/panthor/panthor_sched.o",
+      "sha256": "9703a560e50a57c74c20c7c8408bb5630887b3d84ff7a09b84a05c12dc473c32",
+      "types": {
+        "panthor_group": {
+          "size_bytes": 592,
+          "member_offsets": {
+            "refcount": 0,
+            "ptdev": 8,
+            "vm": 16,
+            "compute_core_mask": 24,
+            "fragment_core_mask": 32,
+            "tiler_core_mask": 40,
+            "max_compute_cores": 48,
+            "max_fragment_cores": 49,
+            "max_tiler_cores": 50,
+            "priority": 51,
+            "blocked_queues": 52,
+            "idle_queues": 56,
+            "fatal_lock": 60,
+            "fatal_queues": 64,
+            "tiler_oom": 68,
+            "queue_count": 72,
+            "queues": 80,
+            "csg_id": 336,
+            "destroyed": 340,
+            "timedout": 341,
+            "syncobjs": 344,
+            "state": 352,
+            "suspend_buf": 360,
+            "protm_suspend_buf": 368,
+            "completion_lock": 376,
+            "completion_irq_lock": 408,
+            "raw_done_jobs": 416,
+            "sync_upd_work": 432,
+            "tiler_oom_work": 464,
+            "term_work": 496,
+            "release_work": 528,
+            "run_node": 560,
+            "wait_node": 576
+          }
+        },
+        "panthor_scheduler": {
+          "size_bytes": 1272,
+          "member_offsets": {
+            "ptdev": 0,
+            "admission_lock": 8,
+            "admission_fences": 40,
+            "wq": 288,
+            "heap_alloc_wq": 296,
+            "tick_work": 304,
+            "irq_tail_direct": 392,
+            "irq_tail_deferred": 400,
+            "completion_lookup_lock": 408,
+            "raw_completed_jobs": 416,
+            "sync_upd_work": 424,
+            "fw_events_work": 456,
+            "fw_events": 488,
+            "idle_event": 492,
+            "resched_target": 496,
+            "last_tick": 504,
+            "tick_period": 512,
+            "lock": 520,
+            "groups": 552,
+            "csg_slots": 696,
+            "csg_slot_count": 1192,
+            "cs_slot_count": 1196,
+            "as_slot_count": 1200,
+            "used_csg_slot_count": 1204,
+            "sb_slot_count": 1208,
+            "might_have_idle_groups": 1212,
+            "pm": 1213,
+            "reset": 1216
+          }
+        }
+      }
+    },
+    "panthor_proxy": {
+      "path": "build/point-feed-20261024/rollback-build/proxy/drivers/gpu/drm/panthor-proxy/panthor_proxy_drv.o",
+      "sha256": "7f3c6fc4ccb8a7f8993340c579e203e30bdd39f40b874aad502c6b98306e43c3",
+      "types": {
+        "panthor_proxy_snapshot_watch": {
+          "size_bytes": 104,
+          "member_offsets": {
+            "refs": 0,
+            "fence": 8,
+            "callback_fence": 16,
+            "cb": 24,
+            "done": 48,
+            "record": 80,
+            "cookie": 88,
+            "slot": 96,
+            "armed": 100
+          }
+        },
+        "panthor_proxy_plan": {
+          "size_bytes": 392,
+          "member_offsets": {
+            "id": 0,
+            "proxy_group_handle": 8,
+            "shape": 16,
+            "syncobjs": 264
+          }
+        },
+        "panthor_proxy_session": {
+          "size_bytes": 352,
+          "member_offsets": {
+            "node": 0,
+            "sched_node": 16,
+            "submit_queue": 32,
+            "session_id": 48,
+            "owner_vmid": 56,
+            "real_session": 64,
+            "channel": 72,
+            "lock": 80,
+            "completion_page": 112,
+            "completion_slots": 120,
+            "next_completion_cookie": 128,
+            "vms": 136,
+            "bos": 152,
+            "syncobjs": 168,
+            "groups": 184,
+            "heaps": 200,
+            "refcnt": 216,
+            "closing": 220,
+            "sched_queued": 221,
+            "submit_queue_depth": 224,
+            "next_plan_id": 232,
+            "plan_runs": 240,
+            "completion_watch_reuses": 248,
+            "completion_leaf_watches": 256,
+            "completion_chain_watches": 264,
+            "plan_registers": 272,
+            "snapshot_retired": 280,
+            "plans": 288
+          }
+        }
+      }
+    },
+    "image_path": "build/point-feed-20261024/rollback-build/proxy/arch/arm64/boot/Image"
+  },
+  "older_build_reference": {
+    "panthor_sched": {
+      "path": "build/native-submit-plan-20261024/rollback-build/proxy/drivers/gpu/drm/panthor/panthor_sched.o",
+      "sha256": "7f33e9d44608506a165504330845c56462227b463228ec9cf38bbd6e9e8ece9c",
+      "types": {
+        "panthor_group": {
+          "size_bytes": 568,
+          "member_offsets": {
+            "refcount": 0,
+            "ptdev": 8,
+            "vm": 16,
+            "compute_core_mask": 24,
+            "fragment_core_mask": 32,
+            "tiler_core_mask": 40,
+            "max_compute_cores": 48,
+            "max_fragment_cores": 49,
+            "max_tiler_cores": 50,
+            "priority": 51,
+            "blocked_queues": 52,
+            "idle_queues": 56,
+            "fatal_lock": 60,
+            "fatal_queues": 64,
+            "tiler_oom": 68,
+            "queue_count": 72,
+            "queues": 80,
+            "csg_id": 336,
+            "destroyed": 340,
+            "timedout": 341,
+            "syncobjs": 344,
+            "state": 352,
+            "suspend_buf": 360,
+            "protm_suspend_buf": 368,
+            "completion_lock": 376,
+            "sync_upd_work": 408,
+            "tiler_oom_work": 440,
+            "term_work": 472,
+            "release_work": 504,
+            "run_node": 536,
+            "wait_node": 552
+          }
+        },
+        "panthor_scheduler": {
+          "size_bytes": 1240,
+          "member_offsets": {
+            "ptdev": 0,
+            "admission_lock": 8,
+            "admission_fences": 40,
+            "wq": 288,
+            "heap_alloc_wq": 296,
+            "tick_work": 304,
+            "sync_upd_work": 392,
+            "fw_events_work": 424,
+            "fw_events": 456,
+            "idle_event": 460,
+            "resched_target": 464,
+            "last_tick": 472,
+            "tick_period": 480,
+            "lock": 488,
+            "groups": 520,
+            "csg_slots": 664,
+            "csg_slot_count": 1160,
+            "cs_slot_count": 1164,
+            "as_slot_count": 1168,
+            "used_csg_slot_count": 1172,
+            "sb_slot_count": 1176,
+            "might_have_idle_groups": 1180,
+            "pm": 1181,
+            "reset": 1184
+          }
+        }
+      }
+    },
+    "panthor_proxy": {
+      "path": "build/native-submit-plan-20261024/rollback-build/proxy/drivers/gpu/drm/panthor-proxy/panthor_proxy_drv.o",
+      "sha256": "cd01d27a6868e7566e5c944d33bbee050cb2f478cb9574728653bc7efb41b2e4",
+      "types": {
+        "panthor_proxy_snapshot_watch": {
+          "size_bytes": 88,
+          "member_offsets": {
+            "fence": 0,
+            "cb": 8,
+            "done": 32,
+            "record": 64,
+            "cookie": 72,
+            "slot": 80,
+            "armed": 84
+          }
+        },
+        "panthor_proxy_plan": {
+          "size_bytes": 392,
+          "member_offsets": {
+            "id": 0,
+            "proxy_group_handle": 8,
+            "shape": 16,
+            "syncobjs": 264
+          }
+        },
+        "panthor_proxy_session": {
+          "size_bytes": 328,
+          "member_offsets": {
+            "node": 0,
+            "sched_node": 16,
+            "submit_queue": 32,
+            "session_id": 48,
+            "owner_vmid": 56,
+            "real_session": 64,
+            "channel": 72,
+            "lock": 80,
+            "completion_page": 112,
+            "completion_slots": 120,
+            "next_completion_cookie": 128,
+            "vms": 136,
+            "bos": 152,
+            "syncobjs": 168,
+            "groups": 184,
+            "heaps": 200,
+            "refcnt": 216,
+            "closing": 220,
+            "sched_queued": 221,
+            "submit_queue_depth": 224,
+            "next_plan_id": 232,
+            "plan_runs": 240,
+            "plan_registers": 248,
+            "snapshot_retired": 256,
+            "plans": 264
+          }
+        }
+      }
+    },
+    "image_path": "build/native-submit-plan-20261024/rollback-build/proxy/arch/arm64/boot/Image"
+  },
+  "current_build_image_sha256": "d0debf770a9a83c332c8fad540d69fdb27f44e30397a76942fdef71d30165304",
+  "limits": "DWARF struct sizes are allocation requests, not allocator physical capacity; older build reference is not a same-condition runtime baseline."
+}
