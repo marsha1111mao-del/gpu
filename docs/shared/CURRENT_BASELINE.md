@@ -1,5 +1,7 @@
 # 当前开发基线：ProxyClient 正式路径清理版（2026-10-23）
 
+**本分支冻结用户指定的旧内存设计及1158.00分载荷。** Proxy分配Client数据页；两轮1158／1158，Native历史参考1431.50、80.89%。[恢复入口与源码边界](../../baselines/legacy-proxy-allocated-1158-20261102/README.md)。本次归档无新增性能测量；下方1160等记录是后续同设计源码历史，不替代本分支的1158实测标识。
+
 **2026-10-23当前GitHub源码基线：** Guest提交`39d95dd028d485ca837bf1b3c5123db2eefbaa75`已推送并核对远端`main`；主仓库以包含本段和[发布记录](GIT_CODE_CHECKPOINT_20261023.md)的提交固定Guest指针、runner、分析工具、设计文档与配图。Host、RMM、OpenCCA和Firecracker没有新的运行代码改动。当前正式路径保留`PLAN_REGISTER/PLAN_EXEC`、完成cookie、TRANSFER预捕获及默认关闭的RPC/通知/完成诊断，删除或撤回无稳定收益的A/B专用协议、提交融合和Proxy接收侧8微秒轮询。
 
 **当前基线硬件验收：** 清理版Client/Proxy ARM64 Image均构建rc0；SHA-256分别为`8e336f099408d90e178b64fab84fd4a115bd1d8b8b6316b55e2387246230a564`和`ea4714ecadf358e6ea794a5bc9c48001ac631cb03a738b7468f50dbd80ecfa27`。单Client完整720p在CPU固定1.8GHz、GPU请求600MHz/实际594MHz、128MiB紧凑池、round-robin落核、TRANSFER预捕获开启且RPC/通知/完成诊断关闭时得分**1160**；对历史同条件1156为+4/+0.35%，仅一轮，不宣称稳定提分。33场景、validation 26/1/6、两个VM退出0、Host内核健康、GPU/DMA租约归零及普通输入恢复通过；外层rc0，run-id `clientproxy-cleanup-720-20261023-b`。准备轮`clientproxy-cleanup-720-20261023-a`因旧runner仍检查已删除的A/B参数而在glmark前失败，无分数并保留。当前版本没有重跑1080p、API、计算、多Client或完整安全回归，不继承旧组合的全矩阵PASS。

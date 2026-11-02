@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "baseline": "legacy-proxy-allocated-1158-20261102",
+  "artifacts": [
+    {
+      "archive": "GPU-SFTP/runtime/legacy-proxy-allocated-1158-20261102-runtime.tar.gz",
+      "sha256": "9eb92751a9db7fbb8a85be2649bbb81bb916c93104dc1ba3c17e345da7879dff",
+      "size": 30393455,
+      "files": {
+        "runtime/runner.py": {
+          "size": 61007,
+          "sha256": "5907c82c78f2c6fb1e9df01a0e685f679a01e1aa59f56ceb12021c47f0262344"
+        },
+        "runtime/proxy-Image": {
+          "size": 39375360,
+          "sha256": "b4d10123bfd3c73c569f482e00a08919db136bbcf72262801362fb675f11ed0a"
+        },
+        "runtime/initrd.cpio": {
+          "size": 4243456,
+          "sha256": "903465ce6f7ca4290aed6f979c7501606ff6729c03656b9e48de4de1f343f0f3"
+        },
+        "runtime/client-Image": {
+          "size": 39176704,
+          "sha256": "09e525f1351670b8362aead0128b10214d8702c119171bbe52f91be3ace9a7ff"
+        },
+        "runtime/hashes.json": {
+          "size": 342,
+          "sha256": "d0b4060938543c0131df064f128ea6ec76aeec2f9f6ff92778741a6f0f26b54e"
+        }
+      }
+    },
+    {
+      "archive": "GPU-SFTP/runtime/legacy-proxy-allocated-1158-20261102-firmware.tar.gz",
+      "sha256": "4f1ec49f65230681ff8e93679ddf66822fdbc22caca96a74059f1ec84f64a1a2",
+      "size": 4743050,
+      "files": {
+        "firmware/tf-rmm.elf": {
+          "size": 2583304,
+          "sha256": "47c479824b871b1a37413565481baa6097e4f0c91ee8b60550398651b324e3ee"
+        },
+        "firmware/u-boot": {
+          "size": 8781240,
+          "sha256": "51ef99640cf85fa5652c6359f646ac87f0f91f6ddc8400b32829d5593cad885f"
+        },
+        "firmware/idbloader.img": {
+          "size": 266240,
+          "sha256": "017d565f4b908c4d2e35a560d34352b330995713e1f8d7423d82aa1502b519ef"
+        },
+        "firmware/u-boot.itb": {
+          "size": 1733120,
+          "sha256": "07d470af4468f7a4723a9ae45b5024cd4411e4e664ed4ad6451fc983465e8864"
+        },
+        "firmware/bl31.elf": {
+          "size": 1219120,
+          "sha256": "7a39301ea5ab7c370d262a1e3385c7e54fa346335d54cd81755979c325ea1b14"
+        },
+        "firmware/rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.16.bin": {
+          "size": 75480,
+          "sha256": "5aa6271195e422a2c30a8e801baa64e4a10cbc6a5f1963f9a29e6dc85096c7bf"
+        }
+      }
+    }
+  ]
+}

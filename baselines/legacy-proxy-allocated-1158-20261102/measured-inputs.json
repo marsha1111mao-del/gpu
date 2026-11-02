@@ -1,0 +1,40 @@
+{
+  "guest_source_base": "206c612afc921bc8b65dcfae210b1db18c858a2e",
+  "measured_source_sha256": {
+    "drivers/char/realm_xshm_control.c": "8143029386f5202f6cf8641f0ffa10bb94201cc7aafb74f1064894aeacba5612",
+    "include/linux/xshm_control_memory.h": "9aed78202c680793b63733786f74adafba14085ed91b41a02c35325b119d9fd4",
+    "include/linux/panthor_vmshm.h": "1ade12887621c7e282931dabaca967178195325468a71c79b262d1be25c8a6bd",
+    "drivers/gpu/drm/panthor-client/panthor_client_drv.c": "24b779c43e353ab0283e5b3f434099b26c6a16d23c4f439d809ff2636a156f10",
+    "drivers/gpu/drm/panthor-proxy/panthor_proxy_drv.c": "9d1acff8f4854224a4422803bf9551d6d7ccb08e0d66430ddffdc5844da050fb",
+    "drivers/char/client_vmshm_comm/client_comm_vmshm.c": "207d4bb20f68bc880cbb9eea60f4e1d67e0b6b65f84e46a6a975bfc8c22ddf4b",
+    "drivers/char/proxy_vmshm_comm/proxy_comm_vmshm.c": "31ebd339ab10733d384f36ad2fc612ed5975385110c474ed03dfe001df95aa89",
+    "drivers/char/client_vmshm_manager/client_vmshm_manager.c": "94fdbd0c863d5ac475b0f51678332ada3f0450640f1b983499511beebb4b10f0",
+    "drivers/char/proxy_vmshm_manager/proxy_vmshm_manager.c": "744dda183cdeb90d8d697ee8fa4dbc75cbecf5ab0bce7ae4eeef1085c8ee2cf3"
+  },
+  "runtime_sha256": {
+    "runner.py": "5907c82c78f2c6fb1e9df01a0e685f679a01e1aa59f56ceb12021c47f0262344",
+    "proxy-Image": "b4d10123bfd3c73c569f482e00a08919db136bbcf72262801362fb675f11ed0a",
+    "initrd.cpio": "903465ce6f7ca4290aed6f979c7501606ff6729c03656b9e48de4de1f343f0f3",
+    "client-Image": "09e525f1351670b8362aead0128b10214d8702c119171bbe52f91be3ace9a7ff"
+  },
+  "rmm_sha256": "47c479824b871b1a37413565481baa6097e4f0c91ee8b60550398651b324e3ee",
+  "builds": {
+    "client": {
+      "log": "build/plan-cache-ab-20261022/client-build-v6.log",
+      "sha256": "93401f232f3c1d07c5e6cfba32cfa9bcdeb4a882545805adbeb7d2dadba642b8",
+      "image_sha256": "09e525f1351670b8362aead0128b10214d8702c119171bbe52f91be3ace9a7ff",
+      "config_sha256": "37a642928a689ff18bba1fa4305e27d1de3cf9da91f00634699a2554c440eaa7",
+      "returncode": 0,
+      "command": "make -C Linux-Guest-GPU O=/home/mzh/gpu/build/verified-kernels/client ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CONFIG_EXTRA_FIRMWARE_DIR=/home/mzh/gpu/build/verified-kernels/firmware -j8 Image"
+    },
+    "proxy": {
+      "log": "build/plan-cache-ab-20261022/proxy-build-v5.log",
+      "sha256": "7eb1c5aaf01a697ff15239f8fde4eb43d185ca2dc8543386f5c60550253d9675",
+      "image_sha256": "b4d10123bfd3c73c569f482e00a08919db136bbcf72262801362fb675f11ed0a",
+      "config_sha256": "32dff91a531a9795b08bb9066a8f85a77e291048e53e43ae99c0dd004d72b751",
+      "returncode": 0,
+      "command": "make -C Linux-Guest-GPU O=/home/mzh/gpu/build/verified-kernels/proxy ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CONFIG_EXTRA_FIRMWARE_DIR=/home/mzh/gpu/build/verified-kernels/firmware -j8 Image"
+    }
+  },
+  "source_rebuild_limitation": "Measured A/B instrumentation sources realm_xshm_control.c and xshm_control_memory.h were later deleted and only their hashes remain. This branch pins cleaned same-design Guest39d95dd and preserves exact tested binaries plus available experimental diff. It does not claim byte-identical source rebuild of measured binaries."
+}

@@ -1,0 +1,36 @@
+{
+  "status": "ARCHIVED_EXISTING_MEASUREMENTS",
+  "design": "Proxy VM allocates Client GPU BO backing and shares it with Client; native Proxy Panthor owns GPUVM",
+  "scores": [
+    1158,
+    1158
+  ],
+  "mean": 1158.0,
+  "native_reference_user_specified": 1431.5,
+  "retention_reference_percent": 80.89,
+  "native_not_remeasured": true,
+  "runs": [
+    {
+      "run_id": "plan-cache-performance-on-720-20261022-b",
+      "exit": 0,
+      "score": 1158,
+      "scenes": 33,
+      "gpu_hz": 594000000,
+      "cpu_khz": 1800000,
+      "pool_mib": 128,
+      "inputs_sha_verified": true
+    },
+    {
+      "run_id": "plan-cache-performance-on-720-20261022-d",
+      "exit": 0,
+      "score": 1158,
+      "scenes": 33,
+      "gpu_hz": 594000000,
+      "cpu_khz": 1800000,
+      "pool_mib": 128,
+      "inputs_sha_verified": true
+    }
+  ],
+  "new_hardware_run": false,
+  "source_baseline": "9127c47607792d84c39156af747c9483f901c164"
+}

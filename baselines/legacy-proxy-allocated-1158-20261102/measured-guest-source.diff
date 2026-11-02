@@ -1,0 +1,1237 @@
+diff --git a/drivers/char/Makefile b/drivers/char/Makefile
+index 4b703b4e3..1a596a55e 100644
+--- a/drivers/char/Makefile
++++ b/drivers/char/Makefile
+@@ -47,4 +47,4 @@ obj-$(CONFIG_PROXY_VMSHM_MANAGER)	+= proxy_vmshm_manager/
+ obj-$(CONFIG_CLIENT_VMSHM_MANAGER)	+= client_vmshm_manager/
+ obj-$(CONFIG_PROXY_VMSHM_COMM)	+= proxy_vmshm_comm/
+ obj-$(CONFIG_CLIENT_VMSHM_COMM)	+= client_vmshm_comm/
+-obj-$(CONFIG_REALM_XSHM)		+= realm_xshm.o
++obj-$(CONFIG_REALM_XSHM)		+= realm_xshm.o realm_xshm_control.o
+diff --git a/drivers/char/client_vmshm_comm/client_comm_vmshm.c b/drivers/char/client_vmshm_comm/client_comm_vmshm.c
+index eae69bf3f..1cfa0d40e 100644
+--- a/drivers/char/client_vmshm_comm/client_comm_vmshm.c
++++ b/drivers/char/client_vmshm_comm/client_comm_vmshm.c
+@@ -31,6 +31,9 @@
+ #include <linux/vmshm_manager.h>
+ #include <linux/workqueue.h>
+ 
++#define XSHM_CONTROL_COMPONENT "client-transport"
++#include <linux/xshm_control_memory.h>
++
+ #define CLIENT_COMM_VMSHM_NAME		"client_comm_vmshm"
+ #define CLIENT_COMM_VMSHM_RPC_MIN_TIMEOUT_MS	100
+ #define CLIENT_COMM_VMSHM_RPC_DEFAULT_TIMEOUT_MS	10000
+@@ -211,6 +214,8 @@ static const char *client_comm_vmshm_req_name(u32 type)
+ 		return "PLAN_REGISTER";
+ 	case PANTHOR_VMSHM_MSG_PLAN_EXEC_REQ:
+ 		return "PLAN_EXEC";
++	case PANTHOR_VMSHM_MSG_UNCACHED_SUBMIT_REQ:
++		return "UNCACHED_SUBMIT";
+ 	default:
+ 		return "UNKNOWN";
+ 	}
+diff --git a/drivers/char/client_vmshm_manager/client_vmshm_manager.c b/drivers/char/client_vmshm_manager/client_vmshm_manager.c
+index ed2237db2..486d7c8f4 100644
+--- a/drivers/char/client_vmshm_manager/client_vmshm_manager.c
++++ b/drivers/char/client_vmshm_manager/client_vmshm_manager.c
+@@ -19,6 +19,9 @@
+ #include <linux/slab.h>
+ #include <linux/vmshm_comm.h>
+ 
++#define XSHM_CONTROL_COMPONENT "client-manager"
++#include <linux/xshm_control_memory.h>
++
+ struct client_vmshm_object {
+ 	struct vmshm_manager_desc desc;
+ 	struct vmshm_manager_segment *segments;
+diff --git a/drivers/char/proxy_vmshm_comm/proxy_comm_vmshm.c b/drivers/char/proxy_vmshm_comm/proxy_comm_vmshm.c
+index 88a877143..d945f6dc3 100644
+--- a/drivers/char/proxy_vmshm_comm/proxy_comm_vmshm.c
++++ b/drivers/char/proxy_vmshm_comm/proxy_comm_vmshm.c
+@@ -27,10 +27,13 @@
+ #include <linux/vmshm_comm_protocol.h>
+ #include <linux/workqueue.h>
+ 
++#define XSHM_CONTROL_COMPONENT "proxy-transport"
++#include <linux/xshm_control_memory.h>
++
+ #define PROXY_COMM_VMSHM_NAME		"proxy_comm_vmshm"
+ #define PROXY_COMM_VMSHM_SELFTEST_REQ	0x54534551U /* "TSEQ" */
+ #define PROXY_COMM_VMSHM_SELFTEST_RSP	0x54534552U /* "TSER" */
+-#define PROXY_COMM_VMSHM_MAX_HANDLERS	32
++#define PROXY_COMM_VMSHM_MAX_HANDLERS	33
+ #define PROXY_COMM_VMSHM_MAX_CHANNELS	32
+ 
+ enum proxy_comm_vmshm_obj_type {
+diff --git a/drivers/char/proxy_vmshm_manager/proxy_vmshm_manager.c b/drivers/char/proxy_vmshm_manager/proxy_vmshm_manager.c
+index 4de55fd8f..861c6c738 100644
+--- a/drivers/char/proxy_vmshm_manager/proxy_vmshm_manager.c
++++ b/drivers/char/proxy_vmshm_manager/proxy_vmshm_manager.c
+@@ -39,6 +39,9 @@
+ 
+ #include "proxy_vmshm_manager.h"
+ 
++#define XSHM_CONTROL_COMPONENT "proxy-manager"
++#include <linux/xshm_control_memory.h>
++
+ #define PROXY_VMSHM_RESERVE_SIZE	SZ_1M
+ #define PROXY_VMSHM_MIN_ALLOC_ORDER	0
+ #define PROXY_VMSHM_ZERO_INLINE_MAX	SZ_64K
+diff --git a/drivers/char/realm_xshm.c b/drivers/char/realm_xshm.c
+index 4e7eb6fc9..c967f586f 100644
+--- a/drivers/char/realm_xshm.c
++++ b/drivers/char/realm_xshm.c
+@@ -37,7 +37,8 @@ static bool notify_trace;
+ module_param(notify_trace, bool, 0444);
+ MODULE_PARM_DESC(notify_trace, "Record bounded physical-counter notification and receive timings");
+ static bool notify_timing_supported;
+-#define REALM_XSHM_TRACE_MAX 32768U
++static u64 trace_period_ticks, trace_window_ticks;
++#define REALM_XSHM_TRACE_MAX 65536U
+ struct realm_xshm_trace_record {
+ 	u64 channel, sequence;
+ 	u64 ticks[5];
+@@ -62,6 +63,11 @@ u64 realm_xshm_counter(void)
+ }
+ EXPORT_SYMBOL_GPL(realm_xshm_counter);
+ 
++static bool realm_xshm_trace_sample(u64 tick)
++{
++	return tick % trace_period_ticks < trace_window_ticks;
++}
++
+ static void realm_xshm_trace_record(const struct realm_xshm_trace_record *record)
+ {
+ 	unsigned long flags;
+@@ -81,11 +87,26 @@ void realm_xshm_trace_receive(u64 channel, u64 sequence, u32 type, u64 irq, u64
+ 		.ticks = { irq, work, realm_xshm_counter() },
+ 	};
+ 
+-	if (realm_xshm_trace_enabled())
++	if (realm_xshm_trace_enabled() && realm_xshm_trace_sample(record.ticks[2]))
+ 		realm_xshm_trace_record(&record);
+ }
+ EXPORT_SYMBOL_GPL(realm_xshm_trace_receive);
+ 
++void realm_xshm_trace_completion(u64 session, u64 cookie, u32 path, u32 kind,
++				const u64 ticks[5])
++{
++	struct realm_xshm_trace_record record = {
++		.kind = 3, .channel = session, .sequence = cookie,
++		.type = path, .flags = kind,
++	};
++
++	if (!realm_xshm_trace_enabled())
++		return;
++	memcpy(record.ticks, ticks, sizeof(record.ticks));
++	realm_xshm_trace_record(&record);
++}
++EXPORT_SYMBOL_GPL(realm_xshm_trace_completion);
++
+ static int realm_xshm_trace_show(struct seq_file *stream, void *data)
+ {
+ 	struct realm_xshm_trace_record record;
+@@ -97,8 +118,9 @@ static int realm_xshm_trace_show(struct seq_file *stream, void *data)
+ 	count = trace_count;
+ 	dropped = trace_dropped;
+ 	spin_unlock_irqrestore(&trace_lock, flags);
+-	seq_printf(stream, "XSHM_TRACE clock=cntpct freq=%llu supported=%u count=%u dropped=%llu\n",
+-		   read_sysreg(cntfrq_el0), notify_timing_supported, count, dropped);
++	seq_printf(stream, "XSHM_TRACE clock=cntpct freq=%llu supported=%u count=%u dropped=%llu period=%llu window=%llu\n",
++		   read_sysreg(cntfrq_el0), notify_timing_supported, count, dropped,
++		   trace_period_ticks, trace_window_ticks);
+ 	seq_puts(stream, "kind channel sequence type flags status tick0 tick1 tick2 tick3 tick4\n");
+ 	for (index = 0; index < count; index++) {
+ 		spin_lock_irqsave(&trace_lock, flags);
+@@ -209,8 +231,10 @@ static void realm_xshm_notify(u64 channel, u32 type, u64 sequence)
+ 	/* Queue publication precedes this coalesced event. A failed hint must
+ 	 * never cause replay of a published request.
+ 	 */
+-	if (trace)
++	if (trace) {
+ 		record.ticks[0] = realm_xshm_counter();
++		trace = realm_xshm_trace_sample(record.ticks[0]);
++	}
+ 	xshm_call(trace && notify_timing_supported ? REALM_XSHM_NOTIFY_TIMED :
+ 		  REALM_XSHM_NOTIFY, channel, &output);
+ 	if (trace) {
+@@ -751,6 +775,10 @@ static int __init realm_xshm_init(void)
+ 	if (ret)
+ 		return ret;
+ 	if (notify_trace) {
++		trace_period_ticks = read_sysreg(cntfrq_el0) / 10;
++		trace_window_ticks = read_sysreg(cntfrq_el0) / 500;
++		if (!trace_window_ticks)
++			return -EINVAL;
+ 		trace_records = vzalloc(array_size(REALM_XSHM_TRACE_MAX, sizeof(*trace_records)));
+ 		if (!trace_records)
+ 			return -ENOMEM;
+diff --git a/drivers/gpu/drm/panthor-client/panthor_client_drv.c b/drivers/gpu/drm/panthor-client/panthor_client_drv.c
+index d8d6192c5..ca19d97a6 100644
+--- a/drivers/gpu/drm/panthor-client/panthor_client_drv.c
++++ b/drivers/gpu/drm/panthor-client/panthor_client_drv.c
+@@ -31,6 +31,7 @@
+ #include <linux/vmshm_comm.h>
+ #include <linux/workqueue.h>
+ #include <linux/panthor_vmshm.h>
++#include <linux/realm_xshm.h>
+ #include <linux/xarray.h>
+ 
+ #include <drm/drm_drv.h>
+@@ -40,6 +41,9 @@
+ #include <uapi/drm/drm.h>
+ #include <drm/panthor_drm.h>
+ 
++#define XSHM_CONTROL_COMPONENT "client-drm"
++#include <linux/xshm_control_memory.h>
++
+ #define DRIVER_NAME	"panthor"
+ #define PLATFORM_NAME	"panthor-client"
+ #define DRIVER_DESC	"Panthor client VM DRM frontend"
+@@ -90,6 +94,9 @@ struct panthor_client_completion_page {
+ 	u32 retire_count;
+ 	bool retire_enabled;
+ 	bool retire_closing;
++	bool timing_enabled;
++	spinlock_t observation_lock;
++	u64 observed_cookies[PANTHOR_VMSHM_COMPLETION_SLOTS];
+ };
+ 
+ struct panthor_client_syncobj {
+@@ -148,6 +155,9 @@ struct panthor_client_plan {
+ 	struct panthor_vmshm_plan_register_req shape;
+ };
+ 
++static bool panthor_client_plan_cache = true;
++module_param_named(plan_cache, panthor_client_plan_cache, bool, 0444);
++
+ struct panthor_client_file {
+ 	struct panthor_client_completion_page *completion_page;
+ 	u64 session_id;
+@@ -215,6 +225,15 @@ module_param_named(fused_snapshot, panthor_client_fused_snapshot, bool, 0444);
+ MODULE_PARM_DESC(fused_snapshot,
+ 		 "Use negotiated single-RPC sync-file snapshot creation (experimental)");
+ static bool panthor_client_transfer_capture;
++static bool panthor_client_completion_trace;
++module_param_named(completion_trace, panthor_client_completion_trace, bool, 0444);
++MODULE_PARM_DESC(completion_trace, "Record the first physical-counter observation of each completion cookie");
++static atomic64_t completion_first_seen = ATOMIC64_INIT(0);
++static atomic64_t completion_unsampled = ATOMIC64_INIT(0);
++static atomic64_t completion_samples = ATOMIC64_INIT(0);
++static atomic64_t completion_metadata_errors = ATOMIC64_INIT(0);
++static atomic64_t completion_rpc_successes = ATOMIC64_INIT(0);
++static atomic64_t completion_rpc_without_proof = ATOMIC64_INIT(0);
+ module_param_named(transfer_capture, panthor_client_transfer_capture, bool, 0444);
+ MODULE_PARM_DESC(transfer_capture, "Capture reusable sync-file snapshots during binary transfers");
+ static atomic64_t panthor_client_capture_calls = ATOMIC64_INIT(0);
+@@ -348,6 +367,11 @@ static int panthor_client_sync_file_stats_get(char *buffer,
+ 			 atomic64_read(&panthor_client_point_checks),
+ 			 atomic64_read(&panthor_client_point_hits),
+ 			 atomic64_read(&panthor_client_point_prefix_hits));
++	len += scnprintf(buffer + len, PAGE_SIZE - len,
++			 "first_seen=%lld unsampled=%lld completion_samples=%lld metadata_errors=%lld rpc_successes=%lld rpc_without_proof=%lld\n",
++			 atomic64_read(&completion_first_seen), atomic64_read(&completion_unsampled),
++			 atomic64_read(&completion_samples), atomic64_read(&completion_metadata_errors),
++			 atomic64_read(&completion_rpc_successes), atomic64_read(&completion_rpc_without_proof));
+ 	return len;
+ }
+ 
+@@ -629,13 +653,63 @@ static void panthor_client_completion_page_put(struct panthor_client_completion_
+ /* Only an acquire-read matching the private expected cookie proves success.
+  * The peer publishes that cookie after the exact native snapshot completes.
+  */
+-static bool panthor_client_snapshot_completed(struct panthor_client_syncobj *snapshot)
++static bool panthor_client_cookie_completed(struct panthor_client_completion_page *page,
++					    u32 slot, u64 cookie, u32 path)
++{
++	const struct panthor_vmshm_completion_slot *record;
++	u64 ticks[5];
++	unsigned long flags;
++	u32 kind;
++
++	if (!page || !cookie || slot >= PANTHOR_VMSHM_COMPLETION_SLOTS)
++		return false;
++	record = &page->kva->slots[slot];
++	if (!page->timing_enabled)
++		return smp_load_acquire(&record->cookie) == cookie;
++	spin_lock_irqsave(&page->observation_lock, flags);
++	if (smp_load_acquire(&record->cookie) != cookie)
++		goto not_completed;
++	if (page->observed_cookies[slot] >= cookie) {
++		spin_unlock_irqrestore(&page->observation_lock, flags);
++		return true;
++	}
++	ticks[2] = realm_xshm_counter();
++	ticks[0] = READ_ONCE(record->completed_counter);
++	ticks[1] = READ_ONCE(record->published_counter);
++	kind = READ_ONCE(record->observation_kind);
++	ticks[4] = READ_ONCE(record->counter_frequency);
++	smp_rmb();
++	ticks[3] = realm_xshm_counter();
++	if (smp_load_acquire(&record->cookie) != cookie)
++		goto not_completed;
++	page->observed_cookies[slot] = cookie;
++	spin_unlock_irqrestore(&page->observation_lock, flags);
++	atomic64_inc(&completion_first_seen);
++	if (!kind) {
++		atomic64_inc(&completion_unsampled);
++		return true;
++	}
++	if ((kind != 1 && kind != 2) || !ticks[0] || ticks[1] < ticks[0] ||
++	    ticks[2] < ticks[1] || !ticks[4]) {
++		atomic64_inc(&completion_metadata_errors);
++		return true;
++	}
++	atomic64_inc(&completion_samples);
++	realm_xshm_trace_completion(page->session_id, cookie, path, kind, ticks);
++	return true;
++not_completed:
++	spin_unlock_irqrestore(&page->observation_lock, flags);
++	return false;
++}
++
++static bool panthor_client_snapshot_completed(struct panthor_client_syncobj *snapshot,
++					       u32 path)
+ {
+ 	if (!snapshot || !snapshot->completion_page || !snapshot->completion_cookie ||
+ 	    snapshot->completion_slot >= PANTHOR_VMSHM_COMPLETION_SLOTS)
+ 		return false;
+-	return smp_load_acquire(&snapshot->completion_page->kva->slots[
+-			snapshot->completion_slot].cookie) == snapshot->completion_cookie;
++	return panthor_client_cookie_completed(snapshot->completion_page,
++		snapshot->completion_slot, snapshot->completion_cookie, path);
+ }
+ 
+ static void
+@@ -863,7 +937,10 @@ static void panthor_client_completion_page_init(struct panthor_client_file *pcfi
+ 	}
+ 	refcount_set(&page->refs, 1);
+ 	spin_lock_init(&page->retire_lock);
++	spin_lock_init(&page->observation_lock);
+ 	page->session_id = pcfile->session_id;
++	page->timing_enabled = panthor_client_completion_trace && realm_xshm_trace_enabled() &&
++		(pcfile->feature_bits & PANTHOR_VMSHM_FEATURE_COMPLETION_TIMING);
+ 	page->retire_enabled = panthor_client_fused_snapshot &&
+ 		(pcfile->feature_bits & PANTHOR_VMSHM_FEATURE_SNAPSHOT_RETIRE);
+ 	pcfile->completion_page = page;
+@@ -1525,7 +1602,7 @@ static bool panthor_client_completion_wait(struct panthor_client_syncobj **snaps
+ 		u32 ready = 0, first = 0;
+ 
+ 		for (i = 0; i < args->count_handles; i++) {
+-			if (panthor_client_snapshot_completed(snapshots[i])) {
++			if (panthor_client_snapshot_completed(snapshots[i], 3)) {
+ 				if (!ready)
+ 					first = i;
+ 				ready++;
+@@ -1622,6 +1699,17 @@ static int panthor_client_syncobj_wait(struct panthor_client_file *pcfile,
+ 	}
+ 
+ 	args->first_signaled = rsp.first_signaled;
++	if (panthor_client_completion_trace) {
++		bool all = args->flags & DRM_SYNCOBJ_WAIT_FLAGS_WAIT_ALL;
++
++		for (i = 0; i < args->count_handles; i++) {
++			if (!all && i != rsp.first_signaled)
++				continue;
++			atomic64_inc(&completion_rpc_successes);
++			if (!panthor_client_snapshot_completed(snapshots[i], 6))
++				atomic64_inc(&completion_rpc_without_proof);
++		}
++	}
+ 	pr_debug("panthor-client: SYNCOBJ_WAIT session=%llu count=%u flags=0x%x first=%u\n",
+ 			    pcfile->session_id, args->count_handles,
+ 			    args->flags, rsp.first_signaled);
+@@ -1657,6 +1745,15 @@ panthor_client_sync_fence_timeline_name(struct dma_fence *fence)
+  * A running wait worker owns a fence reference and clears the handle before
+  * dropping that reference; consequently it can never race this cleanup.
+  */
++static void panthor_client_sync_fence_rcu_free(struct rcu_head *head)
++{
++	struct dma_fence *fence = container_of(head, struct dma_fence, rcu);
++	struct panthor_client_sync_fence *sync_fence =
++		container_of(fence, struct panthor_client_sync_fence, base);
++
++	kfree(sync_fence);
++}
++
+ static void panthor_client_sync_fence_cleanup(struct work_struct *work)
+ {
+ 	struct panthor_client_sync_fence *sync_fence =
+@@ -1666,7 +1763,7 @@ static void panthor_client_sync_fence_cleanup(struct work_struct *work)
+ 	atomic64_inc(&panthor_client_lazy_discards);
+ 	fput(sync_fence->session_file);
+ 	mutex_destroy(&sync_fence->snapshot_lock);
+-	dma_fence_free(&sync_fence->base);
++	call_rcu(&sync_fence->base.rcu, panthor_client_sync_fence_rcu_free);
+ }
+ 
+ static bool panthor_client_sync_fence_enable_signaling(struct dma_fence *fence)
+@@ -1693,7 +1790,7 @@ panthor_client_sync_fence_release(struct dma_fence *fence)
+ 		return;
+ 	}
+ 	mutex_destroy(&sync_fence->snapshot_lock);
+-	dma_fence_free(&sync_fence->base);
++	call_rcu(&sync_fence->base.rcu, panthor_client_sync_fence_rcu_free);
+ }
+ 
+ static const struct dma_fence_ops panthor_client_sync_fence_ops = {
+@@ -1733,13 +1830,19 @@ static void panthor_client_sync_fence_work(struct work_struct *work)
+ 		 */
+ 		req.timeout_rel_nsec = 0;
+ 		segments++;
+-		if (panthor_client_snapshot_completed(sync_fence->snapshot)) {
++		if (panthor_client_snapshot_completed(sync_fence->snapshot, 1)) {
+ 			ret = 0;
+ 			break;
+ 		}
+ 		ret = panthor_client_rpc_syncobj_wait(&req, &rsp);
+-		if (!ret && !rsp.ret)
++		if (!ret && !rsp.ret) {
++			if (panthor_client_completion_trace) {
++				atomic64_inc(&completion_rpc_successes);
++				if (!panthor_client_snapshot_completed(sync_fence->snapshot, 4))
++					atomic64_inc(&completion_rpc_without_proof);
++			}
+ 			break;
++		}
+ 
+ 		/*
+ 		 * An unsignaled snapshot returns -ETIME. Transport timeouts
+@@ -2335,8 +2438,8 @@ panthor_client_syncobj_timeline_wait(
+ 		    syncobj->proof_epoch == pcfile->proof_epoch &&
+ 		    syncobj->proof_point >= points[0]) {
+ 			atomic64_inc(&panthor_client_point_checks);
+-			if (smp_load_acquire(&pcfile->completion_page->kva->slots[
+-					syncobj->proof_slot].cookie) == syncobj->proof_cookie) {
++			if (panthor_client_cookie_completed(pcfile->completion_page,
++					syncobj->proof_slot, syncobj->proof_cookie, 2)) {
+ 				args->first_signaled = 0;
+ 				atomic64_inc(&panthor_client_point_hits);
+ 				if (points[0] < syncobj->proof_point)
+@@ -2392,6 +2495,25 @@ panthor_client_syncobj_timeline_wait(
+ 		goto out_put_syncobjs;
+ 	}
+ 
++	if (panthor_client_completion_trace) {
++		bool proved = false;
++
++		atomic64_inc(&completion_rpc_successes);
++		if (args->count_handles == 1 && !rsp.first_signaled && points[0]) {
++			struct panthor_client_syncobj *syncobj = syncobjs[0];
++
++			mutex_lock(&pcfile->lock);
++			if (!pcfile->sync_mutations && !pcfile->sync_epoch_wrapped &&
++			    syncobj->proof_epoch == pcfile->proof_epoch &&
++			    syncobj->proof_point >= points[0])
++				proved = panthor_client_cookie_completed(pcfile->completion_page,
++					syncobj->proof_slot, syncobj->proof_cookie, 5);
++			mutex_unlock(&pcfile->lock);
++		}
++		if (!proved)
++			atomic64_inc(&completion_rpc_without_proof);
++	}
++
+ 	/* A concurrent mutation, even one that failed, invalidates this proof. */
+ 	if (cache_record && !rsp.first_signaled) {
+ 		mutex_lock(&pcfile->lock);
+@@ -2966,6 +3088,41 @@ static int panthor_client_execute_plan(struct panthor_client_file *pcfile,
+ 	u32 slot;
+ 	int attempt, ret;
+ 
++	if (!panthor_client_plan_cache) {
++		struct panthor_vmshm_uncached_submit_req uncached = {
++			.session_id = submit->session_id,
++			.client_group_handle = submit->client_group_handle,
++			.job_count = submit->job_count,
++			.sync_count = submit->sync_count,
++		};
++		u32 index;
++
++		if (!(pcfile->feature_bits & PANTHOR_VMSHM_FEATURE_UNCACHED_SUBMIT))
++			return -EOPNOTSUPP;
++		if (panthor_client_completed_wait_cache && pcfile->completion_page &&
++		    (pcfile->feature_bits & PANTHOR_VMSHM_FEATURE_PLAN_COMPLETION)) {
++			uncached.flags = PANTHOR_VMSHM_PLAN_EXEC_WATCH;
++			rsp_size = sizeof(*watch);
++		}
++		for (index = 0; index < submit->job_count; index++) {
++			uncached.jobs[index].queue_index = submit->jobs[index].queue_index;
++			uncached.jobs[index].sync_start = submit->jobs[index].sync_start;
++			uncached.jobs[index].sync_count = submit->jobs[index].sync_count;
++			uncached.jobs[index].pad = submit->jobs[index].pad;
++			uncached.jobs[index].stream_addr = patch->jobs[index].stream_addr;
++			uncached.jobs[index].stream_size = patch->jobs[index].stream_size;
++			uncached.jobs[index].latest_flush = patch->jobs[index].latest_flush;
++		}
++		for (index = 0; index < submit->sync_count; index++) {
++			uncached.syncs[index].flags = submit->syncs[index].flags;
++			uncached.syncs[index].client_syncobj_handle = submit->syncs[index].client_syncobj_handle;
++			uncached.syncs[index].timeline_value = patch->timeline_values[index];
++		}
++		return panthor_client_rpc_call(PANTHOR_VMSHM_MSG_UNCACHED_SUBMIT_REQ,
++			&uncached, sizeof(uncached), PANTHOR_VMSHM_MSG_UNCACHED_SUBMIT_RSP,
++			watch, rsp_size, rsp_size, NULL);
++	}
++
+ 	mutex_lock(&pcfile->plan_lock);
+ 	for (slot = 0; slot < PANTHOR_VMSHM_PLAN_SLOTS; slot++)
+ 		if (pcfile->plans[slot].id &&
+diff --git a/drivers/gpu/drm/panthor-proxy/panthor_proxy_drv.c b/drivers/gpu/drm/panthor-proxy/panthor_proxy_drv.c
+index 03593d035..eb2475110 100644
+--- a/drivers/gpu/drm/panthor-proxy/panthor_proxy_drv.c
++++ b/drivers/gpu/drm/panthor-proxy/panthor_proxy_drv.c
+@@ -30,6 +30,11 @@
+ #include <linux/workqueue.h>
+ #include <linux/xarray.h>
+ #include <linux/panthor_vmshm.h>
++#include <linux/realm_xshm.h>
++#include <asm/arch_timer.h>
++
++#define XSHM_CONTROL_COMPONENT "proxy-drm"
++#include <linux/xshm_control_memory.h>
+ 
+ #define PANTHOR_PROXY_SEND_RETRIES	1000
+ #define PANTHOR_PROXY_SEND_WAIT_US	1000
+@@ -38,7 +43,7 @@
+ #define PANTHOR_PROXY_MAX_SYNCOBJS_PER_SESSION	4096
+ #define PANTHOR_PROXY_MAX_GROUPS_PER_SESSION	128
+ #define PANTHOR_PROXY_MAX_HEAPS_PER_SESSION	512
+-#define PANTHOR_PROXY_RPC_STATS_MAX	40
++#define PANTHOR_PROXY_RPC_STATS_MAX	41
+ #define PANTHOR_PROXY_SUBMIT_SCHED_MAX_DEPTH	256
+ #define PANTHOR_PROXY_BO_CREATE_SLOW_NS		100000000ULL
+ #define PANTHOR_PROXY_SYNC_OP_FLAGS_MASK \
+@@ -150,6 +155,25 @@ struct panthor_proxy_rpc_stat {
+ 	u64 max_ns;
+ };
+ 
++struct panthor_proxy_submit_phases {
++	u64 calls;
++	u64 errors;
++	u64 lookup_ns;
++	u64 validate_ns;
++	u64 assemble_ns;
++	u64 native_ns;
++	u64 queue_ns;
++	u64 auxiliary_ns;
++	u64 service_ns;
++};
++
++struct panthor_proxy_submit_sample {
++	bool enabled;
++	u64 phase_start;
++	u64 service_start;
++	struct panthor_proxy_submit_phases phases;
++};
++
+ struct panthor_proxy_rpc_stats {
+ 	u64 bad_rx;
+ 	u64 unknown_type;
+@@ -158,6 +182,8 @@ struct panthor_proxy_rpc_stats {
+ 	u64 response_errors;
+ 	u64 response_ns;
+ 	u64 response_max_ns;
++	struct panthor_proxy_submit_phases plan_register;
++	struct panthor_proxy_submit_phases plan_execute;
+ 	struct panthor_proxy_rpc_stat op[PANTHOR_PROXY_RPC_STATS_MAX];
+ };
+ 
+@@ -167,6 +193,8 @@ struct panthor_proxy_submit_req {
+ 	struct panthor_vmshm_plan_exec_req plan_exec;
+ 	struct panthor_vmshm_plan_exec_watch_rsp rsp;
+ 	struct completion done;
++	struct panthor_proxy_submit_sample *sample;
++	const struct panthor_vmshm_plan_register_req *uncached_shape;
+ 	int ret;
+ };
+ 
+@@ -187,6 +215,34 @@ static struct panthor_proxy_submit_scheduler panthor_proxy_submit_sched;
+ static bool panthor_proxy_rpc_stats_enabled;
+ static struct panthor_proxy_rpc_stats panthor_proxy_rpc_stats_data;
+ static unsigned int panthor_proxy_group_core_partitions;
++static bool panthor_proxy_completion_trace;
++module_param_named(completion_trace, panthor_proxy_completion_trace, bool, 0444);
++MODULE_PARM_DESC(completion_trace, "Sample physical-counter full-fence completion timestamps");
++static atomic64_t completion_callbacks = ATOMIC64_INIT(0);
++static atomic64_t completion_immediate = ATOMIC64_INIT(0);
++static atomic64_t completion_errors = ATOMIC64_INIT(0);
++static atomic64_t completion_sampled_callbacks = ATOMIC64_INIT(0);
++static atomic64_t completion_sampled_immediate = ATOMIC64_INIT(0);
++static atomic64_t completion_slot_full = ATOMIC64_INIT(0);
++static atomic64_t completion_cancelled = ATOMIC64_INIT(0);
++static atomic64_t completion_requested = ATOMIC64_INIT(0);
++static atomic64_t completion_watch_failed = ATOMIC64_INIT(0);
++
++static int panthor_proxy_completion_stats_get(char *buffer, const struct kernel_param *param)
++{
++	return scnprintf(buffer, PAGE_SIZE,
++		"callbacks=%lld immediate=%lld errors=%lld sampled_callbacks=%lld sampled_immediate=%lld slot_full=%lld cancelled=%lld requested=%lld watch_failed=%lld\n",
++		atomic64_read(&completion_callbacks), atomic64_read(&completion_immediate),
++		atomic64_read(&completion_errors), atomic64_read(&completion_sampled_callbacks),
++		atomic64_read(&completion_sampled_immediate), atomic64_read(&completion_slot_full),
++		atomic64_read(&completion_cancelled), atomic64_read(&completion_requested),
++		atomic64_read(&completion_watch_failed));
++}
++
++static const struct kernel_param_ops panthor_proxy_completion_stats_ops = {
++	.get = panthor_proxy_completion_stats_get,
++};
++module_param_cb(completion_trace_stats, &panthor_proxy_completion_stats_ops, NULL, 0444);
+ module_param_named(group_core_partitions,
+ 		   panthor_proxy_group_core_partitions, uint, 0644);
+ MODULE_PARM_DESC(group_core_partitions,
+@@ -199,7 +255,9 @@ static void panthor_proxy_plans_invalidate(struct panthor_proxy_session *session
+ 					 u32 group_handle, u32 sync_handle);
+ static int panthor_proxy_plan_execute(struct panthor_proxy_session *session,
+ 	const struct panthor_vmshm_plan_exec_req *req,
+-	struct panthor_vmshm_plan_exec_watch_rsp *rsp);
++	struct panthor_vmshm_plan_exec_watch_rsp *rsp,
++	struct panthor_proxy_submit_sample *sample,
++	const struct panthor_vmshm_plan_register_req *uncached_shape);
+ static void
+ panthor_proxy_submit_sched_fail_session(struct panthor_proxy_session *session,
+ 					int ret);
+@@ -212,6 +270,43 @@ static bool panthor_proxy_rpc_stats_is_enabled(void)
+ 	return READ_ONCE(panthor_proxy_rpc_stats_enabled);
+ }
+ 
++static void panthor_proxy_submit_phase(struct panthor_proxy_submit_sample *sample,
++				       u64 *field)
++{
++	u64 now;
++
++	if (!sample->enabled)
++		return;
++	now = ktime_get_ns();
++	*field += now - sample->phase_start;
++	sample->phase_start = now;
++}
++
++static void panthor_proxy_submit_record(struct panthor_proxy_submit_sample *sample,
++					bool registration, int ret)
++{
++	struct panthor_proxy_submit_phases *total;
++	struct panthor_proxy_submit_phases *phases = &sample->phases;
++	unsigned long flags;
++
++	if (!sample->enabled)
++		return;
++	sample->phases.service_ns = ktime_get_ns() - sample->service_start;
++	spin_lock_irqsave(&panthor_proxy_rpc_stats_lock, flags);
++	total = registration ? &panthor_proxy_rpc_stats_data.plan_register :
++		&panthor_proxy_rpc_stats_data.plan_execute;
++	total->calls++;
++	total->errors += !!ret;
++	total->lookup_ns += phases->lookup_ns;
++	total->validate_ns += phases->validate_ns;
++	total->assemble_ns += phases->assemble_ns;
++	total->native_ns += phases->native_ns;
++	total->queue_ns += phases->queue_ns;
++	total->auxiliary_ns += phases->auxiliary_ns;
++	total->service_ns += phases->service_ns;
++	spin_unlock_irqrestore(&panthor_proxy_rpc_stats_lock, flags);
++}
++
+ static u64 panthor_proxy_partition_core_mask(u64 mask, u64 session_id,
+ 					     unsigned int partitions)
+ {
+@@ -454,27 +549,57 @@ static int panthor_proxy_session_create(struct proxy_comm_vmshm_channel *channel
+ /* Native callbacks may run under a fence spinlock. Publish only immutable
+  * success and make completion the final context access; never send RPC here.
+  */
+-static void panthor_proxy_snapshot_complete(struct dma_fence *fence,
+-					   struct dma_fence_cb *cb)
++static void panthor_proxy_snapshot_publish(struct dma_fence *fence,
++					  struct panthor_proxy_snapshot_watch *watch,
++					  u32 kind)
+ {
+-	struct panthor_proxy_snapshot_watch *watch =
+-		container_of(cb, struct panthor_proxy_snapshot_watch, cb);
++	u64 completed = panthor_proxy_completion_trace ? realm_xshm_counter() : 0;
+ 
+ 	/* The callback (or add_callback -ENOENT) proves it is signaled.
+ 	 * Do not reacquire fence->lock through dma_fence_get_status().
+ 	 */
+-	if (!READ_ONCE(fence->error))
++	if (!READ_ONCE(fence->error)) {
++		if (panthor_proxy_completion_trace) {
++			u64 frequency = read_sysreg(cntfrq_el0);
++			bool sampled = completed % (frequency / 10) < frequency / 500;
++
++			atomic64_inc(kind == 1 ? &completion_callbacks : &completion_immediate);
++			if (sampled) {
++				WRITE_ONCE(watch->record->completed_counter, completed);
++				WRITE_ONCE(watch->record->counter_frequency, frequency);
++				WRITE_ONCE(watch->record->observation_kind, kind);
++				atomic64_inc(kind == 1 ? &completion_sampled_callbacks :
++						       &completion_sampled_immediate);
++				WRITE_ONCE(watch->record->published_counter, realm_xshm_counter());
++			}
++		}
+ 		smp_store_release(&watch->record->cookie, watch->cookie);
++	} else if (panthor_proxy_completion_trace) {
++		atomic64_inc(&completion_errors);
++	}
+ 	complete(&watch->done);
+ }
+ 
++static void panthor_proxy_snapshot_complete(struct dma_fence *fence,
++					   struct dma_fence_cb *cb)
++{
++	struct panthor_proxy_snapshot_watch *watch =
++		container_of(cb, struct panthor_proxy_snapshot_watch, cb);
++
++	panthor_proxy_snapshot_publish(fence, watch, 1);
++}
++
+ static void panthor_proxy_snapshot_unwatch(struct panthor_proxy_session *session,
+ 					 struct panthor_proxy_snapshot_watch *watch)
+ {
+ 	if (!watch)
+ 		return;
+-	if (watch->armed && !dma_fence_remove_callback(watch->fence, &watch->cb))
+-		wait_for_completion(&watch->done);
++	if (watch->armed) {
++		if (!dma_fence_remove_callback(watch->fence, &watch->cb))
++			wait_for_completion(&watch->done);
++		else if (panthor_proxy_completion_trace)
++			atomic64_inc(&completion_cancelled);
++	}
+ 	/* An old callback can no longer publish into a reused slot. */
+ 	dma_fence_put(watch->fence);
+ 	clear_bit(watch->slot, session->completion_slots);
+@@ -491,24 +616,37 @@ static void panthor_proxy_point_watch(struct panthor_proxy_session *session,
+ 	u32 slot;
+ 	int ret;
+ 
++	if (panthor_proxy_completion_trace)
++		atomic64_inc(&completion_requested);
+ 	if (!session->completion_page ||
+-	    session->next_completion_cookie == U64_MAX)
++	    session->next_completion_cookie == U64_MAX) {
++		if (panthor_proxy_completion_trace)
++			atomic64_inc(&completion_watch_failed);
+ 		return;
++	}
+ 	/* Drain before reusing this public object's slot; stale readers require
+ 	 * the exact non-reused cookie and therefore cannot accept a new fence. */
+ 	panthor_proxy_snapshot_unwatch(session, syncobj->watch);
+ 	syncobj->watch = NULL;
+ 	slot = find_first_zero_bit(session->completion_slots,
+ 				   PANTHOR_VMSHM_COMPLETION_SLOTS);
+-	if (slot == PANTHOR_VMSHM_COMPLETION_SLOTS)
++	if (slot == PANTHOR_VMSHM_COMPLETION_SLOTS) {
++		if (panthor_proxy_completion_trace)
++			atomic64_inc(&completion_slot_full);
+ 		return;
++	}
+ 	watch = kzalloc(sizeof(*watch), GFP_KERNEL);
+-	if (!watch)
++	if (!watch) {
++		if (panthor_proxy_completion_trace)
++			atomic64_inc(&completion_watch_failed);
+ 		return;
++	}
+ 	ret = panthor_vmshm_syncobj_fence_get_at(session->real_session,
+ 					     syncobj->proxy_syncobj_handle, point,
+ 					     &watch->fence);
+ 	if (ret) {
++		if (panthor_proxy_completion_trace)
++			atomic64_inc(&completion_watch_failed);
+ 		kfree(watch);
+ 		return;
+ 	}
+@@ -519,13 +657,22 @@ static void panthor_proxy_point_watch(struct panthor_proxy_session *session,
+ 	watch->cookie = ++session->next_completion_cookie;
+ 	init_completion(&watch->done);
+ 	WRITE_ONCE(watch->record->cookie, 0);
++	if (panthor_proxy_completion_trace) {
++		smp_wmb();
++		WRITE_ONCE(watch->record->completed_counter, 0);
++		WRITE_ONCE(watch->record->published_counter, 0);
++		WRITE_ONCE(watch->record->counter_frequency, 0);
++		WRITE_ONCE(watch->record->observation_kind, 0);
++	}
+ 	ret = dma_fence_add_callback(watch->fence, &watch->cb,
+ 				     panthor_proxy_snapshot_complete);
+ 	if (!ret) {
+ 		watch->armed = true;
+ 	} else if (ret == -ENOENT) {
+-		panthor_proxy_snapshot_complete(watch->fence, &watch->cb);
++		panthor_proxy_snapshot_publish(watch->fence, watch, 2);
+ 	} else {
++		if (panthor_proxy_completion_trace)
++			atomic64_inc(&completion_watch_failed);
+ 		panthor_proxy_snapshot_unwatch(session, watch);
+ 		return;
+ 	}
+@@ -830,7 +977,7 @@ panthor_proxy_submit_sched_pick_locked(void)
+ static void panthor_proxy_submit_execute(struct panthor_proxy_submit_req *submit)
+ {
+ 	submit->ret = panthor_proxy_plan_execute(submit->session,
+-		&submit->plan_exec, &submit->rsp);
++		&submit->plan_exec, &submit->rsp, submit->sample, submit->uncached_shape);
+ 	panthor_proxy_session_put(submit->session);
+ 	complete(&submit->done);
+ }
+@@ -863,10 +1010,14 @@ static void panthor_proxy_submit_sched_work(struct work_struct *work)
+ static int
+ panthor_proxy_submit_sched_run(struct panthor_proxy_session *session,
+ 			       const struct panthor_vmshm_plan_exec_req *plan_exec,
+-			       struct panthor_vmshm_plan_exec_watch_rsp *rsp)
++			       struct panthor_vmshm_plan_exec_watch_rsp *rsp,
++			       struct panthor_proxy_submit_sample *sample,
++			       const struct panthor_vmshm_plan_register_req *uncached_shape)
+ {
+ 	struct panthor_proxy_submit_req submit = {
+ 		.session = session,
++		.sample = sample,
++		.uncached_shape = uncached_shape,
+ 	};
+ 	bool inline_submit = false;
+ 	int queued;
+@@ -2126,30 +2277,28 @@ static void panthor_proxy_plans_invalidate(struct panthor_proxy_session *session
+ 	}
+ }
+ 
+-static int panthor_proxy_plan_register(struct panthor_proxy_session *session,
++static int panthor_proxy_plan_init_locked(struct panthor_proxy_session *session,
+ 	const struct panthor_vmshm_plan_register_req *req,
+-	struct panthor_vmshm_plan_register_rsp *rsp)
++	struct panthor_proxy_plan *plan,
++	struct panthor_proxy_submit_sample *sample)
+ {
+-	struct panthor_proxy_plan *plan;
+-	u32 i, slot;
+-	int ret = -EINVAL;
++	u32 i;
++	int ret;
+ 
++	lockdep_assert_held(&session->lock);
+ 	if (req->slot >= PANTHOR_VMSHM_PLAN_SLOTS ||
+ 	    !req->job_count || req->job_count > PANTHOR_VMSHM_MAX_GROUP_SUBMITS ||
+ 	    req->sync_count > PANTHOR_VMSHM_MAX_GROUP_SUBMIT_SYNCS)
+ 		return -EINVAL;
+-	slot = req->slot;
+-	plan = kzalloc(sizeof(*plan), GFP_KERNEL);
+-	if (!plan)
+-		return -ENOMEM;
++	panthor_proxy_submit_phase(sample, &sample->phases.validate_ns);
+ 	plan->shape = *req;
+ 	plan->shape.slot = 0;
+-	mutex_lock(&session->lock);
++	panthor_proxy_submit_phase(sample, &sample->phases.assemble_ns);
+ 	ret = panthor_proxy_session_translate_group_locked(session,
+ 		req->client_group_handle, &plan->proxy_group_handle);
++	panthor_proxy_submit_phase(sample, &sample->phases.lookup_ns);
+ 	if (ret)
+-		goto out;
+-	ret = -EINVAL;
++		return ret;
+ 	for (i = 0; i < req->job_count; i++) {
+ 		const struct panthor_vmshm_plan_job *job = &req->jobs[i];
+ 
+@@ -2157,36 +2306,61 @@ static int panthor_proxy_plan_register(struct panthor_proxy_session *session,
+ 		    job->queue_index >= PANTHOR_VMSHM_MAX_GROUP_QUEUES ||
+ 		    job->sync_start > req->sync_count ||
+ 		    job->sync_count > req->sync_count - job->sync_start)
+-			goto out;
++			return -EINVAL;
+ 	}
+ 	for (i = 0; i < req->sync_count; i++) {
+ 		struct panthor_proxy_syncobj *syncobj;
+ 
+ 		if (panthor_proxy_check_sync_op_fields(req->syncs[i].flags, 0))
+-			goto out;
++			return -EINVAL;
++		panthor_proxy_submit_phase(sample, &sample->phases.validate_ns);
+ 		syncobj = xa_load(&session->syncobjs,
+ 				  req->syncs[i].client_syncobj_handle);
+ 		if (!syncobj || !panthor_proxy_syncobj_get(syncobj)) {
+-			ret = -ENOENT;
+-			goto out;
++			return -ENOENT;
+ 		}
++		panthor_proxy_submit_phase(sample, &sample->phases.lookup_ns);
+ 		plan->syncobjs[i] = syncobj;
++		panthor_proxy_submit_phase(sample, &sample->phases.assemble_ns);
+ 		if (syncobj->private_snapshot &&
+ 		    (req->syncs[i].flags & DRM_PANTHOR_SYNC_OP_SIGNAL)) {
+-			ret = -EPERM;
+-			goto out;
++			return -EPERM;
+ 		}
+ 	}
++	panthor_proxy_submit_phase(sample, &sample->phases.validate_ns);
++	return 0;
++}
++
++static int panthor_proxy_plan_register(struct panthor_proxy_session *session,
++	const struct panthor_vmshm_plan_register_req *req,
++	struct panthor_vmshm_plan_register_rsp *rsp,
++	struct panthor_proxy_submit_sample *sample)
++{
++	struct panthor_proxy_plan *plan;
++	u32 slot = req->slot;
++	int ret;
++
++	plan = kzalloc(sizeof(*plan), GFP_KERNEL);
++	if (!plan)
++		return -ENOMEM;
++	panthor_proxy_submit_phase(sample, &sample->phases.assemble_ns);
++	mutex_lock(&session->lock);
++	panthor_proxy_submit_phase(sample, &sample->phases.queue_ns);
++	ret = panthor_proxy_plan_init_locked(session, req, plan, sample);
++	if (ret)
++		goto out;
+ 	if (session->next_plan_id == U64_MAX) {
+ 		ret = -EOVERFLOW;
+ 		goto out;
+ 	}
++	panthor_proxy_submit_phase(sample, &sample->phases.validate_ns);
+ 	plan->id = ++session->next_plan_id;
+ 	panthor_proxy_plan_free(session, session->plans[slot]);
+ 	session->plans[slot] = plan;
+ 	session->plan_registers++;
+ 	rsp->slot = slot;
+ 	rsp->plan_id = plan->id;
++	panthor_proxy_submit_phase(sample, &sample->phases.assemble_ns);
+ 	mutex_unlock(&session->lock);
+ 	return 0;
+ out:
+@@ -2197,8 +2371,11 @@ static int panthor_proxy_plan_register(struct panthor_proxy_session *session,
+ 
+ static int panthor_proxy_plan_execute(struct panthor_proxy_session *session,
+ 	const struct panthor_vmshm_plan_exec_req *req,
+-	struct panthor_vmshm_plan_exec_watch_rsp *rsp)
++	struct panthor_vmshm_plan_exec_watch_rsp *rsp,
++	struct panthor_proxy_submit_sample *sample,
++	const struct panthor_vmshm_plan_register_req *uncached_shape)
+ {
++	struct panthor_proxy_plan temporary = { 0 };
+ 	struct drm_panthor_queue_submit jobs[PANTHOR_VMSHM_MAX_GROUP_SUBMITS] = { 0 };
+ 	struct drm_panthor_sync_op syncs[PANTHOR_VMSHM_MAX_GROUP_SUBMIT_SYNCS] = { 0 };
+ 	u32 starts[PANTHOR_VMSHM_MAX_GROUP_SUBMITS] = { 0 };
+@@ -2207,43 +2384,61 @@ static int panthor_proxy_plan_execute(struct panthor_proxy_session *session,
+ 	u32 i;
+ 	int ret;
+ 
++	panthor_proxy_submit_phase(sample, &sample->phases.queue_ns);
+ 	if (req->pad & ~PANTHOR_VMSHM_PLAN_EXEC_WATCH ||
+-	    req->slot >= PANTHOR_VMSHM_PLAN_SLOTS || !req->plan_id)
++	    (!uncached_shape && (req->slot >= PANTHOR_VMSHM_PLAN_SLOTS || !req->plan_id)))
+ 		return -EINVAL;
++	panthor_proxy_submit_phase(sample, &sample->phases.validate_ns);
+ 	mutex_lock(&session->lock);
+-	plan = session->plans[req->slot];
+-	if (!plan || plan->id != req->plan_id) {
++	panthor_proxy_submit_phase(sample, &sample->phases.queue_ns);
++	if (uncached_shape) {
++		plan = &temporary;
++		ret = panthor_proxy_plan_init_locked(session, uncached_shape, plan, sample);
++		if (ret)
++			goto out;
++	} else {
++		plan = session->plans[req->slot];
++		panthor_proxy_submit_phase(sample, &sample->phases.lookup_ns);
++	}
++	if (!uncached_shape && (!plan || plan->id != req->plan_id)) {
+ 		/* No dispatch has occurred; the client may register a fresh plan. */
+ 		ret = -ESTALE;
+ 		goto out;
+ 	}
++	panthor_proxy_submit_phase(sample, &sample->phases.validate_ns);
+ 	for (i = 0; i < plan->shape.job_count; i++) {
+ 		if (req->jobs[i].latest_flush & GENMASK(30, 24)) {
+ 			ret = -EINVAL;
+ 			goto out;
+ 		}
++		panthor_proxy_submit_phase(sample, &sample->phases.validate_ns);
+ 		jobs[i].queue_index = plan->shape.jobs[i].queue_index;
+ 		jobs[i].stream_addr = req->jobs[i].stream_addr;
+ 		jobs[i].stream_size = req->jobs[i].stream_size;
+ 		jobs[i].latest_flush = req->jobs[i].latest_flush;
+ 		starts[i] = plan->shape.jobs[i].sync_start;
+ 		counts[i] = plan->shape.jobs[i].sync_count;
++		panthor_proxy_submit_phase(sample, &sample->phases.assemble_ns);
+ 	}
+ 	for (i = 0; i < plan->shape.sync_count; i++) {
+ 		ret = panthor_proxy_check_sync_op_fields(plan->shape.syncs[i].flags,
+ 						       req->timeline_values[i]);
+ 		if (ret)
+ 			goto out;
++		panthor_proxy_submit_phase(sample, &sample->phases.validate_ns);
+ 		syncs[i].flags = plan->shape.syncs[i].flags;
+ 		syncs[i].handle = plan->syncobjs[i]->proxy_syncobj_handle;
+ 		syncs[i].timeline_value = req->timeline_values[i];
++		panthor_proxy_submit_phase(sample, &sample->phases.assemble_ns);
+ 	}
+ 	rsp->result.proxy_group_handle = plan->proxy_group_handle;
+ 	rsp->result.job_count = plan->shape.job_count;
+ 	rsp->result.sync_count = plan->shape.sync_count;
++	panthor_proxy_submit_phase(sample, &sample->phases.assemble_ns);
+ 	ret = panthor_vmshm_group_submit(session->real_session,
+ 		plan->proxy_group_handle, jobs, syncs, starts, counts,
+ 		plan->shape.job_count);
++	panthor_proxy_submit_phase(sample, &sample->phases.native_ns);
+ 	if (!ret) {
+ 		u32 signal = plan->shape.sync_count, signals = 0;
+ 
+@@ -2278,7 +2473,11 @@ static int panthor_proxy_plan_execute(struct panthor_proxy_session *session,
+ 		plan->shape.sync_count, req->jobs[0].stream_addr,
+ 		req->jobs[0].stream_size, ret, plan->id);
+ out:
++	if (uncached_shape)
++		for (i = 0; i < temporary.shape.sync_count; i++)
++			panthor_proxy_syncobj_put(session, temporary.syncobjs[i]);
+ 	mutex_unlock(&session->lock);
++	panthor_proxy_submit_phase(sample, &sample->phases.auxiliary_ns);
+ 	return ret;
+ }
+ 
+@@ -2346,7 +2545,10 @@ panthor_proxy_handle_open_session(struct proxy_comm_vmshm_channel *channel,
+ 			   PANTHOR_VMSHM_FEATURE_SNAPSHOT_COMPLETION |
+ 			   PANTHOR_VMSHM_FEATURE_PLAN_COMPLETION |
+ 			   PANTHOR_VMSHM_FEATURE_SNAPSHOT_RETIRE |
+-			   PANTHOR_VMSHM_FEATURE_TRANSFER_CAPTURE;
++			   PANTHOR_VMSHM_FEATURE_TRANSFER_CAPTURE |
++			   PANTHOR_VMSHM_FEATURE_UNCACHED_SUBMIT;
++	if (panthor_proxy_completion_trace)
++		rsp.feature_bits |= PANTHOR_VMSHM_FEATURE_COMPLETION_TIMING;
+ 	ret = panthor_proxy_session_create(channel, owner_vmid, &rsp.session_id);
+ 	if (ret)
+ 		rsp.ret = ret;
+@@ -3296,11 +3498,22 @@ static void panthor_proxy_handle_plan_register(
+ 	const struct panthor_vmshm_plan_register_req *req = payload;
+ 	struct panthor_vmshm_plan_register_rsp rsp = { 0 };
+ 	struct panthor_proxy_session *session;
++	struct panthor_proxy_submit_sample sample = {
++		.enabled = panthor_proxy_rpc_stats_is_enabled(),
++	};
+ 
++	if (sample.enabled) {
++		sample.service_start = ktime_get_ns();
++		sample.phase_start = sample.service_start;
++	}
+ 	session = panthor_proxy_session_lookup(req->session_id,
+ 		proxy_comm_vmshm_channel_client_vmid(channel));
+-	rsp.ret = session ? panthor_proxy_plan_register(session, req, &rsp) : -ENOENT;
++	panthor_proxy_submit_phase(&sample, &sample.phases.lookup_ns);
++	rsp.ret = session ? panthor_proxy_plan_register(session, req, &rsp,
++		&sample) : -ENOENT;
+ 	panthor_proxy_session_put(session);
++	panthor_proxy_submit_phase(&sample, &sample.phases.auxiliary_ns);
++	panthor_proxy_submit_record(&sample, true, rsp.ret);
+ 	if (panthor_proxy_send_rsp(channel, rx->seq,
+ 		PANTHOR_VMSHM_MSG_PLAN_REGISTER_RSP, rsp.ret, &rsp, sizeof(rsp)))
+ 		pr_warn_ratelimited("panthor-proxy: PLAN_REGISTER response lost\n");
+@@ -3313,18 +3526,90 @@ static void panthor_proxy_handle_plan_exec(
+ 	const struct panthor_vmshm_plan_exec_req *req = payload;
+ 	struct panthor_vmshm_plan_exec_watch_rsp rsp = { 0 };
+ 	struct panthor_proxy_session *session;
++	struct panthor_proxy_submit_sample sample = {
++		.enabled = panthor_proxy_rpc_stats_is_enabled(),
++	};
+ 
++	if (sample.enabled) {
++		sample.service_start = ktime_get_ns();
++		sample.phase_start = sample.service_start;
++	}
+ 	session = panthor_proxy_session_lookup(req->session_id,
+ 		proxy_comm_vmshm_channel_client_vmid(channel));
++	panthor_proxy_submit_phase(&sample, &sample.phases.lookup_ns);
+ 	rsp.result.ret = session ? panthor_proxy_submit_sched_run(session, req,
+-		&rsp) : -ENOENT;
++		&rsp, &sample, NULL) : -ENOENT;
+ 	panthor_proxy_session_put(session);
++	panthor_proxy_submit_phase(&sample, &sample.phases.auxiliary_ns);
++	panthor_proxy_submit_record(&sample, false, rsp.result.ret);
+ 	if (panthor_proxy_send_rsp(channel, rx->seq,
+ 		PANTHOR_VMSHM_MSG_PLAN_EXEC_RSP, rsp.result.ret, &rsp, req->pad & PANTHOR_VMSHM_PLAN_EXEC_WATCH ?
+ 			sizeof(rsp) : sizeof(rsp.result)))
+ 		pr_warn_ratelimited("panthor-proxy: PLAN_EXEC response lost (no retry)\n");
+ }
+ 
++static void panthor_proxy_handle_uncached_submit(
++	struct proxy_comm_vmshm_channel *channel, const struct vmshm_comm_rx *rx,
++	const void *payload)
++{
++	const struct panthor_vmshm_uncached_submit_req *req = payload;
++	struct panthor_vmshm_plan_register_req shape = {
++		.session_id = req->session_id,
++		.client_group_handle = req->client_group_handle,
++		.job_count = req->job_count,
++		.sync_count = req->sync_count,
++	};
++	struct panthor_vmshm_plan_exec_req patch = {
++		.session_id = req->session_id,
++		.pad = req->flags,
++	};
++	struct panthor_vmshm_plan_exec_watch_rsp rsp = { 0 };
++	struct panthor_proxy_session *session;
++	struct panthor_proxy_submit_sample sample = {
++		.enabled = panthor_proxy_rpc_stats_is_enabled(),
++	};
++	u32 index;
++
++	if (sample.enabled) {
++		sample.service_start = ktime_get_ns();
++		sample.phase_start = sample.service_start;
++	}
++	if (!req->job_count || req->job_count > PANTHOR_VMSHM_MAX_GROUP_SUBMITS ||
++	    req->sync_count > PANTHOR_VMSHM_MAX_GROUP_SUBMIT_SYNCS ||
++	    req->flags & ~PANTHOR_VMSHM_PLAN_EXEC_WATCH) {
++		rsp.result.ret = -EINVAL;
++		goto respond;
++	}
++	for (index = 0; index < req->job_count; index++) {
++		shape.jobs[index].queue_index = req->jobs[index].queue_index;
++		shape.jobs[index].sync_start = req->jobs[index].sync_start;
++		shape.jobs[index].sync_count = req->jobs[index].sync_count;
++		shape.jobs[index].pad = req->jobs[index].pad;
++		patch.jobs[index].stream_addr = req->jobs[index].stream_addr;
++		patch.jobs[index].stream_size = req->jobs[index].stream_size;
++		patch.jobs[index].latest_flush = req->jobs[index].latest_flush;
++	}
++	for (index = 0; index < req->sync_count; index++) {
++		shape.syncs[index].flags = req->syncs[index].flags;
++		shape.syncs[index].client_syncobj_handle = req->syncs[index].client_syncobj_handle;
++		patch.timeline_values[index] = req->syncs[index].timeline_value;
++	}
++	panthor_proxy_submit_phase(&sample, &sample.phases.assemble_ns);
++	session = panthor_proxy_session_lookup(req->session_id,
++		proxy_comm_vmshm_channel_client_vmid(channel));
++	panthor_proxy_submit_phase(&sample, &sample.phases.lookup_ns);
++	rsp.result.ret = session ? panthor_proxy_submit_sched_run(session, &patch,
++		&rsp, &sample, &shape) : -ENOENT;
++	panthor_proxy_session_put(session);
++respond:
++	panthor_proxy_submit_phase(&sample, &sample.phases.auxiliary_ns);
++	panthor_proxy_submit_record(&sample, false, rsp.result.ret);
++	if (panthor_proxy_send_rsp(channel, rx->seq,
++		PANTHOR_VMSHM_MSG_UNCACHED_SUBMIT_RSP, rsp.result.ret, &rsp,
++		req->flags & PANTHOR_VMSHM_PLAN_EXEC_WATCH ? sizeof(rsp) : sizeof(rsp.result)))
++		pr_warn_ratelimited("panthor-proxy: UNCACHED_SUBMIT response lost\n");
++}
++
+ static void
+ panthor_proxy_handle_tiler_heap_create(struct proxy_comm_vmshm_channel *channel,
+ 				       const struct vmshm_comm_rx *rx,
+@@ -3594,6 +3879,13 @@ static const struct panthor_proxy_msg_handler panthor_proxy_handlers[] = {
+ 		.name = "PLAN_EXEC",
+ 		.handler = panthor_proxy_handle_plan_exec,
+ 	},
++	{
++		.req_type = PANTHOR_VMSHM_MSG_UNCACHED_SUBMIT_REQ,
++		.rsp_type = PANTHOR_VMSHM_MSG_UNCACHED_SUBMIT_RSP,
++		.req_size = sizeof(struct panthor_vmshm_uncached_submit_req),
++		.name = "UNCACHED_SUBMIT",
++		.handler = panthor_proxy_handle_uncached_submit,
++	},
+ 	{
+ 		.req_type = PANTHOR_VMSHM_MSG_TILER_HEAP_CREATE_REQ,
+ 		.rsp_type = PANTHOR_VMSHM_MSG_TILER_HEAP_CREATE_RSP,
+@@ -3638,6 +3930,19 @@ panthor_proxy_rpc_stats_dump_snapshot(const struct panthor_proxy_rpc_stats *stat
+ 	if (!stats)
+ 		return;
+ 
++	for (i = 0; i < 2; i++) {
++		const struct panthor_proxy_submit_phases *phases = i ?
++			&stats->plan_execute : &stats->plan_register;
++
++		if (!phases->calls)
++			continue;
++		pr_info("panthor-proxy: [MZH][PANTHOR_PROXY_SUBMIT_PHASES] op=%s calls=%llu errors=%llu lookup_ns=%llu validate_ns=%llu assemble_ns=%llu native_ns=%llu queue_ns=%llu auxiliary_ns=%llu service_ns=%llu\n",
++			i ? "PLAN_EXEC" : "PLAN_REGISTER", phases->calls,
++			phases->errors, phases->lookup_ns, phases->validate_ns,
++			phases->assemble_ns, phases->native_ns, phases->queue_ns,
++			phases->auxiliary_ns, phases->service_ns);
++	}
++
+ 	pr_info("panthor-proxy: [MZH][PANTHOR_PROXY_RPC_STATS_SUMMARY] bad_rx=%llu unknown_type=%llu bad_len=%llu\n",
+ 		stats->bad_rx, stats->unknown_type, stats->bad_len);
+ 	if (stats->response_calls)
+diff --git a/include/linux/panthor_vmshm.h b/include/linux/panthor_vmshm.h
+index f23fbe9f7..636f9ad52 100644
+--- a/include/linux/panthor_vmshm.h
++++ b/include/linux/panthor_vmshm.h
+@@ -65,6 +65,9 @@
+ #define PANTHOR_VMSHM_MSG_PLAN_REGISTER_RSP 0x50546e53U
+ #define PANTHOR_VMSHM_MSG_PLAN_EXEC_REQ 0x50546f52U
+ #define PANTHOR_VMSHM_MSG_PLAN_EXEC_RSP 0x50546f53U
++#define PANTHOR_VMSHM_MSG_UNCACHED_SUBMIT_REQ 0x50546f54U
++#define PANTHOR_VMSHM_MSG_UNCACHED_SUBMIT_RSP 0x50546f55U
++#define PANTHOR_VMSHM_FEATURE_UNCACHED_SUBMIT (1ULL << 10)
+ #define PANTHOR_VMSHM_PLAN_SLOTS 8
+ /* Optional PLAN_EXEC response extension; legacy pad=0 keeps the old ABI. */
+ #define PANTHOR_VMSHM_FEATURE_PLAN_COMPLETION (1ULL << 6)
+@@ -86,13 +89,18 @@
+ #define PANTHOR_VMSHM_FEATURE_TRANSFER_CAPTURE (1ULL << 8)
+ #define PANTHOR_VMSHM_MSG_TRANSFER_CAPTURE_REQ 0x50547952U
+ #define PANTHOR_VMSHM_MSG_TRANSFER_CAPTURE_RSP 0x50547953U
++#define PANTHOR_VMSHM_FEATURE_COMPLETION_TIMING (1ULL << 9)
+ 
+ /* Each slot publishes one non-reused cookie, never a completion watermark.
+  * Zero means no proof. Slot reuse first drains the previous native callback.
+  */
+ struct panthor_vmshm_completion_slot {
+ 	__u64 cookie;
+-	__u8 reserved[56];
++	__u64 completed_counter;
++	__u64 published_counter;
++	__u64 counter_frequency;
++	__u32 observation_kind;
++	__u8 reserved[28];
+ };
+ struct panthor_vmshm_completion_page {
+ 	struct panthor_vmshm_completion_slot slots[PANTHOR_VMSHM_COMPLETION_SLOTS];
+@@ -524,6 +532,28 @@ struct panthor_vmshm_plan_exec_req {
+ 	__u64 timeline_values[PANTHOR_VMSHM_MAX_GROUP_SUBMIT_SYNCS];
+ };
+ 
++struct panthor_vmshm_uncached_job {
++	__u32 queue_index, sync_start, sync_count, latest_flush;
++	__u64 stream_addr;
++	__u32 stream_size, pad;
++};
++
++struct panthor_vmshm_uncached_sync {
++	__u32 flags, client_syncobj_handle;
++	__u64 timeline_value;
++};
++
++struct panthor_vmshm_uncached_submit_req {
++	__u64 session_id;
++	__u32 client_group_handle, job_count, sync_count, flags;
++	struct panthor_vmshm_uncached_job jobs[PANTHOR_VMSHM_MAX_GROUP_SUBMITS];
++	struct panthor_vmshm_uncached_sync syncs[PANTHOR_VMSHM_MAX_GROUP_SUBMIT_SYNCS];
++};
++
++static_assert(sizeof(struct panthor_vmshm_uncached_submit_req) == 472);
++static_assert(sizeof(struct panthor_vmshm_uncached_submit_req) <=
++	      PANTHOR_VMSHM_COMM_PAYLOAD_LIMIT);
++
+ static_assert(sizeof(struct panthor_vmshm_group_create_req) <=
+ 	      PANTHOR_VMSHM_COMM_PAYLOAD_LIMIT);
+ static_assert(sizeof(struct panthor_vmshm_vm_bind_req) <=
+diff --git a/include/linux/realm_xshm.h b/include/linux/realm_xshm.h
+index 51f91ce7e..da41d02e0 100644
+--- a/include/linux/realm_xshm.h
++++ b/include/linux/realm_xshm.h
+@@ -29,11 +29,15 @@ bool realm_xshm_trace_enabled(void);
+ u64 realm_xshm_counter(void);
+ void realm_xshm_trace_receive(u64 channel, u64 sequence, u32 type,
+ 			      u64 irq, u64 work);
++void realm_xshm_trace_completion(u64 session, u64 cookie, u32 path, u32 kind,
++				const u64 ticks[5]);
+ #else
+ static inline bool realm_xshm_trace_enabled(void) { return false; }
+ static inline u64 realm_xshm_counter(void) { return 0; }
+ static inline void realm_xshm_trace_receive(u64 channel, u64 sequence, u32 type,
+ 					  u64 irq, u64 work) { }
++static inline void realm_xshm_trace_completion(u64 session, u64 cookie, u32 path,
++					     u32 kind, const u64 ticks[5]) { }
+ #endif
+ 
+ #endif
