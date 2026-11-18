@@ -58,5 +58,6 @@ python3 scripts/maintenance/lab-run.py --run-id gpu1170-reproduction-720-r1 -- \
 | gpu1170-release-offline-20261118 | 全量检查 57 项通过、6 项失败，退出 1。定位到源码提取、历史测试替身与测试依赖的版本不匹配 | build/security-runs/gpu1170-release-offline-20261118 |
 | gpu1170-release-offline-fix-20261118 | 复验中的 RSI 边界、任务桥、内存链、Realm 生命周期和任务恢复均通过。汇总项发现缺失 Group 状态测试源码，整轮退出 1 | build/security-runs/gpu1170-release-offline-fix-20261118 |
 | gpu1170-release-aggregate-20261118 与 gpu1170-release-aggregate-r2-20261118 | 补齐依赖后 Group 状态 31 项通过，汇总随后遇到域归还夹具的版本差异，两轮均退出 1。匹配版域归还 4 项、runner 52 项和 eventfd 25 项定点复验通过 | build/security-runs/ 下对应 run-id，定点记录在 build/checker-trial |
+| gpu1170-release-aggregate-tail-20261118 | 从域归还起执行汇总余项，退出 0。任务链拒绝 25 个编译负例，Realm 生命周期拒绝 9 个编译负例，RMI 分发检查通过 | build/gpu1170-release-aggregate-tail-20261118/suite.log |
 
-离线检查入口为 python3 scripts/run/run-gpu-security-offline.py --verify-runtime --include-aggregate；定点检查通过 --only 选择。复核修订限打包和测试夹具。原始失败和历史验收分别保留。
+离线检查入口为 python3 scripts/run/run-gpu-security-offline.py --verify-runtime --include-aggregate。定点检查通过 --only 选择。发布复核分轮覆盖 63 个检查，汇总项在域归还前、后分别保留证据。首次全量失败和随后定点通过均保留。复核仅调整打包与测试夹具。
