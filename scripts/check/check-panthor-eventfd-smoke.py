@@ -44,7 +44,7 @@ static uint32_t next_handle, active_handle;
 static uint64_t requested_point;
 static bool pending;
 static FILE *mode_file(const char *path,const char *mode) {
-    assert(!strcmp(path,"/sys/module/panthor_client/parameters/rmm_private_data") && !strcmp(mode,"r"));
+    assert(!strcmp(path,"/sys/module/panthor_client/parameters/private_gpu") && !strcmp(mode,"r"));
     if(!mode_value){errno=mode_errno;return NULL;}
     return fmemopen((void *)mode_value,strlen(mode_value),"r");
 }

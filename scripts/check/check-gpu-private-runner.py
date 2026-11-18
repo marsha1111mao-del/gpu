@@ -8,7 +8,9 @@ import ast
 from contextlib import redirect_stderr
 import hashlib
 import io
+import json
 from pathlib import Path
+import re
 import stat
 import struct
 import subprocess
@@ -28,7 +30,7 @@ def functions(path, names):
     tree = ast.parse(path.read_text())
     selected = [node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name in names]
     assert {node.name for node in selected} == set(names)
-    namespace = {'hashlib': hashlib, 'stat': stat, 'struct': struct}
+    namespace = {'hashlib': hashlib, 'stat': stat, 'struct': struct, 're': re, 'json': json}
     exec(compile(ast.Module(body=selected, type_ignores=[]), str(path), 'exec'), namespace)
     return namespace
 
@@ -55,15 +57,17 @@ def cli(path, arguments):
 def environment(clients=2, benchmark=False, profiles=None):
     namespace = functions(RUNNER, ('realm_memory', 'gpu_mode_boot_args',
                                    'bootstrap_private_gpu', 'test_private_gpu'))
-    args = SimpleNamespace(private_gpu=True, clients=clients, memory_pages=2049,
+    args = SimpleNamespace(gpu_flow=True, clients=clients, memory_pages=2049,
                            profiles=profiles, benchmark_only=benchmark,
-                           suite=bool(profiles), compute_rootfs=None, glmark_rootfs=None)
+                           suite=bool(profiles), compute_rootfs=None, glmark_rootfs=None,
+                           session_quota=0, security_selftests=False)
     log, channels, irq_reads = [], [], {}
     result = {'private_gpu': {'bootstrap': 'NOT_RUN', 'drm_probes': {},
                               'gpu_completion_eventfd': 'NOT_RUN'}}
     processes = [SimpleNamespace(stdin=io.BytesIO()) for _ in range(clients + 1 if benchmark else 3)]
     namespace.update(a=args, vm_count=len(processes), result=result, processes=processes,
-                     buffers={}, bindings=[], log=log, fail=None, score=1100)
+                     buffers={}, bindings=[], log=log, fail=None, score=1100,
+                     irq_status_reads=0, irq_failure=None)
 
     def call(vm, command, expected=0):
         log.append(('call', vm, command, expected))
@@ -83,6 +87,18 @@ def environment(clients=2, benchmark=False, profiles=None):
         log.append(('text', vm, command, tuple(markers), sent))
         if namespace['fail'] == (vm, command):
             raise RuntimeError('injected serial/command failure')
+        if command.startswith('gpu-private irq-status '):
+            namespace['irq_status_reads'] += 1
+            after = namespace['irq_status_reads'] > 1
+            status = {'physical': int(after), 'root_samples': 0, 'simulated': 131,
+                      'overflows': 1, 'claims': int(after), 'rejected': 4,
+                      'epoch': 3, 'lost': 0}
+            if after:
+                if namespace['irq_failure'] == 'no-device': status['physical'] = 0
+                if namespace['irq_failure'] == 'no-claim': status['claims'] = 0
+                if namespace['irq_failure'] == 'lost': status['lost'] = 1
+                if namespace['irq_failure'] == 'overflow': status['overflows'] += 1
+            return 'GPU_IRQ_STATUS=' + json.dumps(status)
         return '\n'.join(markers) + '\nalu_iters=64'
 
     def memory(vm, command, expected):
@@ -100,11 +116,162 @@ def environment(clients=2, benchmark=False, profiles=None):
     namespace.update(call=call, text_command=text, memory_operation=memory,
                      save=lambda: None, glmark=glmark, run_concurrent_glmark=concurrent_glmark,
                      run_concurrent_ml=lambda: log.append(('concurrent_ml',)),
+                     test_private_event_irq=lambda endpoints: result.update(
+                         event_irq={'negative_and_coalescing': 'PASS'}),
                      ML_PROFILES=('ml-gemm', 'ncnn-resnet50'))
     return namespace
 
 
 class RunnerTests(unittest.TestCase):
+    def test_monitor_history_and_proxy_claim_failures_block_success(self):
+        for fault in ('no-device', 'no-claim', 'lost', 'overflow'):
+            env = environment()
+            env['irq_failure'] = fault
+            with self.subTest(fault=fault), self.assertRaises(AssertionError):
+                env['test_private_gpu']()
+            self.assertNotIn('control_transport_cleanup', env['result']['private_gpu'])
+
+    def test_security_prechecks_run_in_each_client_before_benchmark(self):
+        env = environment(clients=2, benchmark=True, profiles=['glmark-720'])
+        env['a'].session_quota = 8
+        env['a'].security_selftests = True
+        env['test_private_gpu']()
+        actions = env['log']
+        benchmark = next(index for index, entry in enumerate(actions) if entry[0] == 'concurrent_glmark')
+        quota = [entry for entry in actions[:benchmark] if entry[0] == 'text' and entry[2] == 'session-quota 8']
+        observation = [entry for entry in actions[:benchmark] if entry[0] == 'text' and entry[2].startswith('gpu-private group-selftest ')]
+        self.assertEqual({entry[1] for entry in quota}, {1, 2})
+        self.assertEqual({entry[1] for entry in observation}, {1, 2})
+        self.assertEqual(env['result']['private_gpu']['session_quota'], 8)
+        self.assertEqual(env['result']['private_gpu']['observation_selftests'], 'PASS')
+
+    def test_failed_session_precheck_blocks_benchmark(self):
+        env = environment(clients=1, benchmark=True, profiles=['glmark-720'])
+        env['a'].session_quota = 8
+        env['fail'] = (1, 'session-quota 8')
+        with self.assertRaisesRegex(RuntimeError, 'injected'):
+            env['test_private_gpu']()
+        self.assertNotIn(('concurrent_glmark',), env['log'])
+
+    def test_security_precheck_parsers_require_gpu_workload(self):
+        parsed = cli(RUNNER, ['--run-id', 'unit', '--gpu-flow', '--transport', '--trusted-events',
+                              '--memory-pages', '2049', '--session-quota', '8', '--security-selftests'])
+        self.assertEqual(parsed.session_quota, 8)
+        self.assertTrue(parsed.security_selftests)
+        for arguments in (['--images', '/fixture', '--workload', 'events', '--session-quota', '8'],
+                          ['--images', '/fixture', '--workload', 'events', '--security-selftests'],
+                          ['--images', '/fixture', '--session-quota', '65']):
+            with self.subTest(arguments=arguments), self.assertRaises(SystemExit):
+                cli(WRAPPER, arguments)
+
+    def test_controlled_irq_rejects_delivery_and_authorization_faults(self):
+        # Stateful event transport double: counters change only on delivery,
+        # never merely because the runner reads irq-stats.
+        for fault in (None, 'missing', 'misrouted', 'duplicate', 'outsider'):
+            env = functions(RUNNER, ('test_private_event_irq',))
+            counts, channels = [0, 0, 0], {}
+            env.update(a=SimpleNamespace(clients=2), vm_count=3, result={}, save=lambda: None)
+
+            def call(vm, command, expected=0):
+                parts = command.split()
+                if parts[0] == 'irq-stats':
+                    return [counts[vm], 0, 0, 0]
+                if parts[0] == 'offer':
+                    channel = 100 + len(channels)
+                    channels[channel] = {'members': (vm, int(parts[1]) - 10),
+                                         'sequence': [0, 0, 0], 'ack': [0, 0, 0],
+                                         'armed': [False, False, False]}
+                    return [channel, 0, 0, 0]
+                state = channels[int(parts[1])]
+                if parts[0] in ('accept', 'close'):
+                    return [0, 0, 0, 0]
+                if parts[0] == 'arm':
+                    state['armed'][vm] = True
+                    return [0, 0, 0, 0]
+                if parts[0] == 'ack':
+                    state['ack'][vm] = int(parts[2])
+                    return [0, 0, 0, 0]
+                if parts[0] == 'query':
+                    return [state['sequence'][vm], state['ack'][vm], 0, 0]
+                self.assertEqual(parts[0], 'notify')
+                if vm not in state['members']:
+                    self.assertEqual(expected, 1)
+                    if fault == 'outsider':
+                        counts[state['members'][1]] += 1
+                    return [0, 0, 0, 0]
+                receiver = next(member for member in state['members'] if member != vm)
+                state['sequence'][receiver] += 1
+                armed = state['armed'][receiver]
+                state['armed'][receiver] = False
+                if armed and fault != 'missing':
+                    target = (receiver + 1) % 3 if fault == 'misrouted' else receiver
+                    counts[target] += 1
+                elif not armed and fault == 'duplicate':
+                    counts[receiver] += 1
+                return [state['sequence'][receiver], receiver + 10, int(armed), 0]
+
+            env['call'] = call
+            with self.subTest(fault=fault):
+                if fault:
+                    with self.assertRaises(AssertionError):
+                        env['test_private_event_irq']([[1, 10 + vm, 16, 0] for vm in range(3)])
+                    self.assertNotIn('event_irq', env['result'])
+                else:
+                    env['test_private_event_irq']([[1, 10 + vm, 16, 0] for vm in range(3)])
+                    self.assertEqual(counts, [2, 1, 1])
+                    self.assertEqual(len(env['result']['event_irq']['controlled_armed_events']), 4)
+
+    def test_poll_completed_workload_need_not_deliver_client_irq(self):
+        env = environment()
+        original = env['call']
+        env['call'] = lambda vm, command, expected=0: (
+            [0, 0, 0, 0] if command == 'irq-stats' else original(vm, command, expected))
+        env['test_private_gpu']()
+        self.assertEqual(env['result']['event_irq']['after_workloads'], [0, 0, 0])
+        self.assertEqual(env['result']['private_gpu']['control_transport_cleanup'], 'PASS')
+
+    def test_controlled_irq_failure_blocks_functional_success(self):
+        env = environment()
+        def fail(endpoints):
+            raise AssertionError('missing armed event IRQ')
+        env['test_private_event_irq'] = fail
+        with self.assertRaisesRegex(AssertionError, 'missing armed event'):
+            env['test_private_gpu']()
+        self.assertNotIn('control_transport_cleanup', env['result']['private_gpu'])
+        self.assertEqual(env['result']['private_gpu']['drm_probes'], {})
+
+    def test_benchmark_poll_completion_uses_controlled_irq_before_workload(self):
+        for clients in (1, 2, 3, 4):
+            for profile in ('ml-gemm', 'glmark-720'):
+                env = environment(clients=clients, benchmark=True, profiles=[profile])
+                original = env['call']
+                env['call'] = lambda vm, command, expected=0: (
+                    [0, 0, 0, 0] if command == 'irq-stats' else original(vm, command, expected))
+                def controlled(endpoints):
+                    self.assertFalse(any(x[0].startswith('concurrent_') for x in env['log']))
+                    self.assertEqual(len(endpoints), clients + 1)
+                    env['log'].append(('controlled_irq',))
+                    env['result']['event_irq'] = {'negative_and_coalescing': 'PASS'}
+                env['test_private_event_irq'] = controlled
+                with self.subTest(clients=clients, profile=profile):
+                    env['test_private_gpu']()
+                    self.assertEqual(env['log'].count(('controlled_irq',)), 1)
+                    self.assertEqual(env['result']['event_irq']['after_workloads'], [0] * (clients + 1))
+                    self.assertEqual(env['result']['event_irq']['negative_and_coalescing'], 'PASS')
+                    self.assertEqual(env['result']['private_gpu']['control_transport_cleanup'], 'PASS')
+                    self.assertEqual(env['bindings'], [])
+
+    def test_controlled_irq_failure_blocks_benchmark_success(self):
+        for profile in ('ml-gemm', 'glmark-720'):
+            env = environment(clients=4, benchmark=True, profiles=[profile])
+            def fail(endpoints):
+                raise AssertionError('missing armed benchmark IRQ')
+            env['test_private_event_irq'] = fail
+            with self.subTest(profile=profile), self.assertRaisesRegex(AssertionError, 'missing armed benchmark'):
+                env['test_private_gpu']()
+            self.assertFalse(any(x[0].startswith('concurrent_') for x in env['log']))
+            self.assertNotIn('control_transport_cleanup', env['result']['private_gpu'])
+
     def test_actual_c_driver_mode_check(self):
         source = (ROOT / 'GPU-SFTP/tests/realm-xshm/realm-gpu-private.c').read_text()
         start = source.index('static int private_mode(')
@@ -128,7 +295,7 @@ static FILE *mode_file(const char *path, const char *mode)
 int main(void)
 {
     assert(private_mode("outsider") == 2);
-    expected = "/sys/module/panthor_client/parameters/rmm_private_data";
+    expected = "/sys/module/panthor_client/parameters/private_gpu";
     value = "Y\n"; assert(private_mode("client") == 0);
     value = "1\n"; assert(private_mode("client") == 0);
     value = "N\n"; assert(private_mode("client") == 1);
@@ -153,12 +320,12 @@ int main(void)
     def test_private_boot_parameters(self):
         env = environment()
         self.assertEqual(env['gpu_mode_boot_args'](0), ' panthor.rmm_service=1')
-        self.assertEqual(env['gpu_mode_boot_args'](1), ' panthor_client.rmm_private_data=1')
-        self.assertEqual(env['gpu_mode_boot_args'](2), ' panthor_client.rmm_private_data=1')
+        self.assertEqual(env['gpu_mode_boot_args'](1), '')
+        self.assertEqual(env['gpu_mode_boot_args'](2), '')
 
-    def test_shared_boot_parameters_unchanged(self):
+    def test_event_only_boot_has_no_gpu_service(self):
         env = environment()
-        env['a'].private_gpu = False
+        env['a'].gpu_flow = False
         self.assertEqual(env['gpu_mode_boot_args'](0), '')
         self.assertEqual(env['gpu_mode_boot_args'](1), '')
 
@@ -295,14 +462,14 @@ int main(void)
         self.assertNotIn('glmark_720_gate', env['result']['private_gpu'])
 
     def test_actual_runner_parser_accepts_private_control_pool(self):
-        args = cli(RUNNER, ['--run-id', 'offline', '--private-gpu', '--gpu-flow', '--transport',
+        args = cli(RUNNER, ['--run-id', 'offline', '--gpu-flow', '--transport',
                             '--trusted-events', '--memory-pages', '2049', '--benchmark-only',
                             '--glmark-rootfs', '/fixture/rootfs', '--suite', '--profiles', 'glmark-720'])
-        self.assertTrue(args.private_gpu)
+        self.assertTrue(args.gpu_flow)
         self.assertEqual(args.memory_pages, 2049)
 
     def test_actual_runner_parser_rejects_missing_trust_and_cookie_modes(self):
-        base = ['--run-id', 'offline', '--private-gpu', '--gpu-flow', '--transport', '--memory-pages', '2049']
+        base = ['--run-id', 'offline', '--gpu-flow', '--transport', '--memory-pages', '2049']
         for arguments in (base, base + ['--trusted-events', '--transfer-capture'],
                           base + ['--trusted-events', '--completion-trace']):
             with self.subTest(arguments=arguments), self.assertRaises(SystemExit) as error:
@@ -310,36 +477,110 @@ int main(void)
             self.assertEqual(error.exception.code, 2)
 
     def test_private_full_glmark_allows_controlled_cpu_frequency(self):
-        base = ['--run-id', 'offline', '--private-gpu', '--gpu-flow', '--transport',
+        base = ['--run-id', 'offline', '--gpu-flow', '--transport',
                 '--trusted-events', '--memory-pages', '2049', '--benchmark-only',
                 '--performance', '--glmark-rootfs', '/fixture/rootfs', '--suite']
         for profile in ('glmark-720', 'glmark-1080'):
             args = cli(RUNNER, base + ['--profiles', profile, '--cpu-frequency-khz', '1800000'])
             self.assertEqual(args.cpu_frequency_khz, 1800000)
-            self.assertFalse(args.compact_memory)
+            self.assertFalse(hasattr(args, 'compact_memory'))
         for extra in (['--profiles', 'ml-gemm', '--cpu-frequency-khz', '1800000'],
                       ['--profiles', 'glmark-720', '--cpu-frequency-khz', '0'],
                       ['--profiles', 'glmark-720', '--cpu-frequency-khz', '-1'],
-                      ['--profiles', 'glmark-720', '--telemetry'],
-                      ['--profiles', 'glmark-720', '--client-cpu-layout', 'round-robin']):
+                      ['--profiles', 'glmark-720', '--telemetry']):
             with self.subTest(extra=extra), self.assertRaises(SystemExit) as error:
                 cli(RUNNER, base + extra)
             self.assertEqual(error.exception.code, 2)
 
-    def test_wrapper_parser_accepts_private_full_720p(self):
-        args = cli(WRAPPER, ['--images', '/fixture/images', '--workload', 'glmark', '--private-gpu',
-                            '--benchmark-only', '--suite', '--profiles', 'glmark-720'])
-        self.assertTrue(args.private_gpu)
+    def test_private_performance_accepts_explicit_cpu_layout(self):
+        base = ['--run-id', 'offline', '--gpu-flow', '--transport',
+                '--trusted-events', '--memory-pages', '2049', '--benchmark-only',
+                '--performance', '--glmark-rootfs', '/fixture/rootfs', '--suite',
+                '--clients', '4', '--client-cpu-layout', 'round-robin']
+        for profile in ('glmark-720', 'glmark-1080', 'ml-reduction', 'ncnn-resnet50'):
+            with self.subTest(profile=profile):
+                args = cli(RUNNER, base + ['--profiles', profile])
+                self.assertEqual(args.client_cpu_layout, 'round-robin')
+                self.assertTrue(args.gpu_flow)
+                self.assertFalse(hasattr(args, 'compact_memory'))
+        for flag in ('--performance', '--benchmark-only', '--suite'):
+            with self.subTest(missing=flag), self.assertRaises(SystemExit) as error:
+                cli(RUNNER, [arg for arg in base if arg != flag] + ['--profiles', 'glmark-720'])
+            self.assertEqual(error.exception.code, 2)
 
-    def test_wrapper_parser_rejects_event_and_shared_modes(self):
-        base = ['--images', '/fixture/images', '--private-gpu']
-        for extra in (['--workload', 'events'], ['--transfer-capture'], ['--gpu-fault-isolation']):
-            with self.subTest(extra=extra), self.assertRaises(SystemExit) as error:
-                cli(WRAPPER, base + extra)
+    def test_wrapper_parser_accepts_private_full_720p(self):
+        args = cli(WRAPPER, ['--images', '/fixture/images', '--workload', 'glmark',
+                            '--benchmark-only', '--suite', '--profiles', 'glmark-720'])
+        self.assertEqual(args.workload, 'glmark')
+        self.assertFalse(hasattr(args, 'private_gpu'))
+
+    def test_wrapper_parser_keeps_events_and_rejects_retired_modes(self):
+        base = ['--images', '/fixture/images']
+        self.assertEqual(cli(WRAPPER, base + ['--workload', 'events']).workload, 'events')
+        for flag in ('--private-gpu', '--transfer-capture', '--completion-trace',
+                     '--large-pool', '--compact-memory', '--gpu-fault-isolation', '--bo-sg-mmap'):
+            with self.subTest(flag=flag), self.assertRaises(SystemExit) as error:
+                cli(WRAPPER, base + [flag])
             self.assertEqual(error.exception.code, 2)
 
 
+class KernelHealthTests(unittest.TestCase):
+    def setUp(self):
+        self.env = functions(RUNNER, ('kernel_issues',))
+        self.env['re'] = re
+
+    def test_real_rcu_timer_stall_is_not_healthy(self):
+        log = '\n'.join([
+            '<3>[ 280.453004] rcu: INFO: rcu_preempt self-detected stall on CPU',
+            "<3>[ 280.453100] rcu: rcu_preempt kthread timer wakeup didn't happen for 12480 jiffies!",
+            '<3>[ 280.453200] rcu: rcu_preempt kthread starved for 12481 jiffies!',
+        ])
+        issues = self.env['kernel_issues'](log + '\n' + log)
+        self.assertEqual(len(issues['rcu_stall']), 3)
+        self.assertTrue(any(issues.values()))
+
+    def test_lockup_and_hung_task_are_unhealthy(self):
+        issues = self.env['kernel_issues'](
+            'watchdog: BUG: soft lockup - CPU#0 stuck for 22s!\n'
+            'NMI watchdog: Watchdog detected hard LOCKUP on cpu 0\n'
+            'INFO: task kworker/u5:1:269 blocked for more than 120 seconds.')
+        self.assertEqual(len(issues['cpu_lockup']), 2)
+        self.assertEqual(len(issues['hung_task']), 1)
+
+    def test_normal_rcu_boot_and_success_are_healthy(self):
+        issues = self.env['kernel_issues'](
+            'rcu: Hierarchical SRCU implementation.\n'
+            'rcu: Max phase no-delay instances is 1000.\n'
+            'GLMARK_RESULT=PASS\nGPU_SMOKE_RESULT=PASS')
+        self.assertFalse(any(issues.values()))
+
+
 class PackagingTests(unittest.TestCase):
+    def test_session_quota_packaging_requires_matching_init_and_probe(self):
+        path = self.directory / 'init'
+        path.write_bytes(path.read_bytes() + b'session-quota\0')
+        self.assertEqual(self.pack().returncode, 0)
+        with self.assertRaisesRegex(ValueError, 'session-quota-probe'):
+            self.parse(self.archive, session_quota=8)
+        probe = self.directory / 'session-quota-probe'
+        probe.write_bytes(path.read_bytes() + b'GPU_PROXY_SESSION_QUOTA=PASS')
+        self.command += ['--session-quota-probe', str(probe)]
+        self.assertEqual(self.pack().returncode, 0)
+        self.assertIn('session-quota-probe', self.parse(self.archive, session_quota=8))
+
+    def test_observation_packaging_rejects_old_private_tool(self):
+        self.assertEqual(self.pack().returncode, 0)
+        with self.assertRaisesRegex(ValueError, 'observation selftest'):
+            self.parse(self.archive, security_selftests=True)
+        path = self.directory / 'realm-gpu-private'
+        path.write_bytes(path.read_bytes() + b'GPU_TASK_OBSERVATION=PASS')
+        self.assertEqual(self.pack().returncode, 0)
+        with self.assertRaisesRegex(ValueError, 'Monitor event protocol'):
+            self.parse(self.archive, security_selftests=True)
+        path.write_bytes(path.read_bytes() + b'GPU_IRQ_SECURITY_SELFTEST=PASS')
+        self.assertEqual(self.pack().returncode, 0)
+        self.assertIn('realm-gpu-private', self.parse(self.archive, security_selftests=True))
+
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory(prefix='gpu-private-runner-')
         self.addCleanup(self.temporary.cleanup)
