@@ -16,70 +16,6 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-static pid_t telemetry_pid;
-
-static int telemetry_start(void)
-{
-	if (telemetry_pid)
-		return 1;
-	telemetry_pid = fork();
-	if (telemetry_pid < 0) {
-		telemetry_pid = 0;
-		return 1;
-	}
-	if (!telemetry_pid) {
-		FILE *output = fopen("/cpu-samples.log", "w");
-		char buffer[512];
-
-		if (!output)
-			_exit(1);
-		for (;;) {
-			FILE *input = fopen("/proc/uptime", "r");
-			double uptime = 0;
-
-			if (input) {
-				if (fscanf(input, "%lf", &uptime) != 1)
-					uptime = 0;
-				fclose(input);
-			}
-			input = fopen("/proc/stat", "r");
-			if (input) {
-				if (fgets(buffer, sizeof(buffer), input))
-					fprintf(output, "REALM_CPU_SAMPLE uptime=%.2f %s", uptime, buffer);
-				fclose(input);
-			}
-			fflush(output);
-			sleep(2);
-		}
-	}
-	return 0;
-}
-
-static int telemetry_stop(void)
-{
-	FILE *input;
-	char buffer[512];
-	int status;
-
-	if (!telemetry_pid)
-		return 1;
-	if (kill(telemetry_pid, SIGTERM) && errno != ESRCH)
-		return 1;
-	while (waitpid(telemetry_pid, &status, 0) < 0)
-		if (errno != EINTR)
-			return 1;
-	telemetry_pid = 0;
-	input = fopen("/cpu-samples.log", "r");
-	if (!input)
-		return 1;
-	while (fgets(buffer, sizeof(buffer), input))
-		fputs(buffer, stdout);
-	status = ferror(input);
-	fclose(input);
-	puts("XSHM_CPU_SAMPLES_END");
-	return status ? 1 : 0;
-}
-
 static void gpu_workload(int compute, const char *profile)
 {
 	/* An isolated, read-only workload root. Mounts disappear with this child;
@@ -235,11 +171,6 @@ int main(void)
 			continue;
 		if (!strcmp(word, "halt"))
 			break;
-		if (!strcmp(word, "telemetry-start") || !strcmp(word, "telemetry-stop")) {
-			status = !strcmp(word, "telemetry-start") ? telemetry_start() : telemetry_stop();
-			printf("XSHM_COMMAND_EXIT=%d\n", status);
-			continue;
-		}
 		graphics = !strcmp(word, "glmark");
 		compute = !strcmp(word, "compute");
 		if (!strcmp(word, "compute-eventfd"))
@@ -251,6 +182,9 @@ int main(void)
 		iommu_device = !strcmp(word, "iommu-device");
 		if (!strcmp(word, "gpu-smoke")) {
 			args[0] = "/panthor_ioctl_smoke";
+			word = strtok_r(NULL, " \t\r\n", &save);
+		} else if (!strcmp(word, "session-quota")) {
+			args[0] = "/session-quota-probe";
 			word = strtok_r(NULL, " \t\r\n", &save);
 		} else if (!strcmp(word, "gpu-private")) {
 			args[0] = "/realm-gpu-private";
@@ -275,17 +209,6 @@ int main(void)
 			if (!strcmp(args[1], "notify-trace"))
 				trace_dump("/sys/kernel/debug/realm_xshm/notify_trace",
 					   "XSHM_NOTIFY_TRACE_BEGIN", "XSHM_NOTIFY_TRACE_END");
-			if (!strcmp(args[1], "completion-stats") && count == 3) {
-				const char *path;
-
-				if (!strcmp(args[2], "proxy"))
-					path = "/sys/module/panthor_proxy/parameters/completion_trace_stats";
-				else if (!strcmp(args[2], "client"))
-					path = "/sys/module/panthor_client/parameters/sync_file_wait_stats";
-				else
-					_exit(2);
-				trace_dump(path, "XSHM_COMPLETION_STATS_BEGIN", "XSHM_COMPLETION_STATS_END");
-			}
 			if (iommu_device) {
 				int descriptor;
 				ssize_t written;

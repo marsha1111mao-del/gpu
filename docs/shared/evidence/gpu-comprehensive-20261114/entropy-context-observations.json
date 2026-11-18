@@ -1,0 +1,100 @@
+{
+  "status": "OBSERVED_TEMPORAL_ASSOCIATION_NEEDS_SYSCALL_TRACE",
+  "rows": [
+    {
+      "run_id": "gpu-wide-shared-literallease-t1-r2-20261114",
+      "scheme": "shared",
+      "client": 1,
+      "profile": "ml-exp-lease-gemm128-l1",
+      "context_ms": 13108.301506,
+      "preceding_mount_Guest_s": 7.626096,
+      "CRNG_ready_Guest_s": 20.412484,
+      "CRNG_after_preceding_mount_s": 12.786387999999999,
+      "scope": "Temporal association only; no syscall or stack trace. Missing console notice does not prove early entropy readiness.",
+      "evidence_log": "build/gpu-normalization-20261114/runs/gpu-wide-shared-literallease-t1-r2-20261114/realm-1.log",
+      "evidence_SHA256": "096dcd2f78a47d2712021c56504647ea2d23c545da36c7183dce8f0899ac2e06"
+    },
+    {
+      "run_id": "gpu-wide-shared-literallease-t1-r2-20261114",
+      "scheme": "shared",
+      "client": 2,
+      "profile": "ml-exp-lease-gemm128-l1",
+      "context_ms": 12821.300047,
+      "preceding_mount_Guest_s": 7.559302,
+      "CRNG_ready_Guest_s": 20.113327,
+      "CRNG_after_preceding_mount_s": 12.554025000000003,
+      "scope": "Temporal association only; no syscall or stack trace. Missing console notice does not prove early entropy readiness.",
+      "evidence_log": "build/gpu-normalization-20261114/runs/gpu-wide-shared-literallease-t1-r2-20261114/realm-2.log",
+      "evidence_SHA256": "0432504a6a01cb74d6c21e905a6d541cd171749be29ba68ac7a0fde16287ec49"
+    },
+    {
+      "run_id": "gpu-wide-native-literallease-t1-20261114",
+      "scheme": "native",
+      "client": 0,
+      "profile": "ml-exp-lease-gemm128-l1",
+      "context_ms": 13309.254881,
+      "preceding_mount_Guest_s": 3.663886,
+      "CRNG_ready_Guest_s": 16.747046,
+      "CRNG_after_preceding_mount_s": 13.083160000000001,
+      "scope": "Temporal association only; no syscall or stack trace. Missing console notice does not prove early entropy readiness.",
+      "evidence_log": "build/lab-runs/gpu-wide-native-literallease-t1-20261114/backend-vm-0.log",
+      "evidence_SHA256": "ca219d0e6657b1fdf1b38b7d4870b0c8da75756ba3f51c1fdc7cec77a8bf052c"
+    },
+    {
+      "run_id": "gpu-wide-native-literallease-t1-20261114",
+      "scheme": "native",
+      "client": 1,
+      "profile": "ml-exp-lease-gemm128-l1",
+      "context_ms": 13310.096632,
+      "preceding_mount_Guest_s": 14.656837,
+      "CRNG_ready_Guest_s": 27.742841,
+      "CRNG_after_preceding_mount_s": 13.086003999999999,
+      "scope": "Temporal association only; no syscall or stack trace. Missing console notice does not prove early entropy readiness.",
+      "evidence_log": "build/lab-runs/gpu-wide-native-literallease-t1-20261114/backend-vm-1.log",
+      "evidence_SHA256": "575b6c6da876476c189802b06b26b499a0329f9c6ce6d5db4fd1de979b73cc71"
+    },
+    {
+      "run_id": "gpu-wide-virgl-literallease-t1-20261114",
+      "scheme": "virgl",
+      "client": 0,
+      "profile": "ml-exp-lease-gemm128-l1",
+      "context_ms": 315.002917,
+      "preceding_mount_Guest_s": 1.267311,
+      "CRNG_ready_Guest_s": null,
+      "CRNG_after_preceding_mount_s": null,
+      "scope": "Temporal association only; no syscall or stack trace. Missing console notice does not prove early entropy readiness.",
+      "evidence_log": "build/lab-runs/gpu-wide-virgl-literallease-t1-20261114/backend-vm-0.log",
+      "evidence_SHA256": "918f3291d68b03bf6094573cab55580885488341989f0120d8ea18eeabd3c9a4"
+    },
+    {
+      "run_id": "gpu-wide-virgl-literallease-t1-20261114",
+      "scheme": "virgl",
+      "client": 1,
+      "profile": "ml-exp-lease-gemm128-l1",
+      "context_ms": 379.889125,
+      "preceding_mount_Guest_s": 0.554727,
+      "CRNG_ready_Guest_s": null,
+      "CRNG_after_preceding_mount_s": null,
+      "scope": "Temporal association only; no syscall or stack trace. Missing console notice does not prove early entropy readiness.",
+      "evidence_log": "build/lab-runs/gpu-wide-virgl-literallease-t1-20261114/backend-vm-1.log",
+      "evidence_SHA256": "6067faca9f3a3a3ef91cacc210dbf1837c9d24d9da23d014d2806e025bd6963c"
+    }
+  ],
+  "evidence_SHA256": {
+    "build/gpu-comprehensive-20261114/parameter-bench.c": "78cf5a943e3e8fd9de63342278ab6846674c7dfbb80e9a611c23502b6ceaa36e",
+    "build/gpu-comprehensive-20261114/gpu-wide-shared-literallease-t1-r2-20261114-audit.json": "67fc2e575903de3a9c79b281b5937d3f39ad74dd2afcd25e6457a5c6839e394a",
+    "build/gpu-normalization-20261114/runs/gpu-wide-shared-literallease-t1-r2-20261114/realm-1.log": "096dcd2f78a47d2712021c56504647ea2d23c545da36c7183dce8f0899ac2e06",
+    "build/gpu-normalization-20261114/runs/gpu-wide-shared-literallease-t1-r2-20261114/realm-2.log": "0432504a6a01cb74d6c21e905a6d541cd171749be29ba68ac7a0fde16287ec49",
+    "build/gpu-comprehensive-20261114/gpu-wide-native-literallease-t1-20261114-audit.json": "2a68b76d106e81b7dd030e33754b745c1bdaa28d54dae668b6bf1952f1e9f481",
+    "build/lab-runs/gpu-wide-native-literallease-t1-20261114/backend-vm-0.log": "ca219d0e6657b1fdf1b38b7d4870b0c8da75756ba3f51c1fdc7cec77a8bf052c",
+    "build/lab-runs/gpu-wide-native-literallease-t1-20261114/backend-vm-1.log": "575b6c6da876476c189802b06b26b499a0329f9c6ce6d5db4fd1de979b73cc71",
+    "build/gpu-comprehensive-20261114/gpu-wide-virgl-literallease-t1-20261114-audit.json": "8263a27525ff955a3df5f371df7de289d0a72424850fa979ccd29588cf9e8de8",
+    "build/lab-runs/gpu-wide-virgl-literallease-t1-20261114/backend-vm-0.log": "918f3291d68b03bf6094573cab55580885488341989f0120d8ea18eeabd3c9a4",
+    "build/lab-runs/gpu-wide-virgl-literallease-t1-20261114/backend-vm-1.log": "6067faca9f3a3a3ef91cacc210dbf1837c9d24d9da23d014d2806e025bd6963c"
+  },
+  "frozen_probe_source_SHA256": "78cf5a943e3e8fd9de63342278ab6846674c7dfbb80e9a611c23502b6ceaa36e",
+  "frozen_probe_binary_SHA256": "549febf01c30c7952d3da0264baff7725d46d2380e382f5c09e95ada0779c3b2",
+  "timer_scope": "DRM open, GBM/EGL initialization, context creation/make-current and renderer query; shader compilation is timed separately.",
+  "interpretation": "Guest CRNG initialization notices occur within the first context preparation interval in these protected-VM samples. This supports further entropy-path profiling, but is not proof that getrandom accounts for all context latency or that an optimization will save the full interval.",
+  "optimization_constraint": "Any future entropy pre-initialization must retain a trusted, unpredictable entropy source. No runtime/RNG setting or benchmark input was changed for this observation."
+}

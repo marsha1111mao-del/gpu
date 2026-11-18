@@ -70,6 +70,7 @@ for name, source in variants.items():
     command += ['-I' + str(rmm / path) for path in ['runtime/tests/mmio-stubs', 'runtime/include',
                                                   'ext/mbedtls/include', 'ext/mbedtls/library']]
     command += [str(rmm / path) for path in ['plat/rk3588/src/rk3588_gpu.c', 'runtime/core/opencca_gpu.c',
+                'runtime/core/xshm_endpoint.c',
                 'runtime/core/opencca_gpu_lease.c', 'runtime/core/opencca_gpu_private.c',
                 'ext/mbedtls/library/sha256.c', 'ext/mbedtls/library/platform_util.c']]
     command += [str(firmware), str(fixture_path), '-o', str(directory / 'model')]

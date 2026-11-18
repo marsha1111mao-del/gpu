@@ -4,11 +4,15 @@
 Checks ordering and failed admission, not real Linux probe/unplug or hardware.
 """
 from pathlib import Path
+import argparse
 import os, re, subprocess
 root = Path(__file__).resolve().parents[2]
 guest = root/'Linux-Guest-GPU/drivers/gpu/drm/panthor'
-out = root/'build/rmm-client-bo-20261030/rmm-service-unit'
-out.mkdir(parents=True, exist_ok=True)
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--out', type=Path, required=True)
+args = parser.parse_args()
+out = args.out.resolve()
+out.mkdir(parents=True, exist_ok=False)
 def function(source, name):
     match = re.search(r'^(?:static )?(?:int|void|bool)\s+'+re.escape(name)+r'\s*\(', source, re.M)
     assert match, name

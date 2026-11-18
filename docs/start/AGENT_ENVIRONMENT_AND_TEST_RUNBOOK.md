@@ -2,9 +2,7 @@
 
 版本：2026-10-15。所有控制机命令默认在仓库根目录执行；标注“Pi 上”或“RK 上”的命令只在对应设备执行。
 
-**当前开发入口（2026-10-18）：** [P42 + BO 修复基线](../shared/CURRENT_BASELINE.md)，
-最新结果见 [Native / ProxyClient 汇总](../shared/GPU_NATIVE_PROXYCLIENT_COMPARISON_20261018.md)。
-旧普通 VM/memfd 路径已退役。当前 RMM Realm 测试使用第8节，历史32项PASS只用于对照。
+当前发布入口是[完整 720p 1170 分基线](../shared/CURRENT_BASELINE.md)。先按[发布复验步骤](../design/05-results.md#复验发布载荷)恢复成套镜像，第 8 节提供其他 Realm 工作负载的用法。普通 VM 的 32 项历史测试与 Native/ProxyClient 实验保留在历史记录中。
 
 ## 1. 目标、阅读顺序与证据边界
 

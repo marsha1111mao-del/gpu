@@ -1,0 +1,1113 @@
+{
+  "schema_version": 1,
+  "purpose": "1170 published GPU baseline offline checks and verification of restored graphics inputs",
+  "matrix": "docs/shared/GPU_SHARED_SECURITY_TEST_MATRIX_20261109.csv",
+  "baseline": {
+    "name": "Normalized GPU baseline, complete 720p 1170",
+    "entry": "docs/shared/CURRENT_BASELINE.md",
+    "single_client_720p_glmark": 1170,
+    "rmm_elf_sha256": "41d15522cfda81c404f3504e267d03d7410ab6bfff9e55370a92f7de1440edfa",
+    "fit_sha256": "239b9cb5d067fbdba84b4c0bed867a6e48ce5f1c10161653fd86fd3b6fc03f47",
+    "deployment_state": "Historical 1170 acceptance, with exact frozen graphics inputs."
+  },
+  "runtime_freeze": {
+    "root": "build/gpu-1170-20261114",
+    "firmware": {
+      "firmware/tf-rmm.elf": "41d15522cfda81c404f3504e267d03d7410ab6bfff9e55370a92f7de1440edfa",
+      "firmware/bl31.elf": "9ea06f7beda4254576d4c24cd20af145af6e5090fd9b9c09d36c68cd0b7941fd",
+      "firmware/u-boot.itb": "239b9cb5d067fbdba84b4c0bed867a6e48ce5f1c10161653fd86fd3b6fc03f47"
+    },
+    "manifests": [
+      "graphics-runtime/hashes.json"
+    ]
+  },
+  "checks": [
+    {
+      "name": "rsi-boundary",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-rsi-boundary.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "M01",
+        "A01",
+        "A07",
+        "A11",
+        "T08"
+      ],
+      "evidence_boundary": "Actual dispatcher/copy/IPA helpers and endpoint core with synthetic REC/S2/device state; not physical GPC or Linux concurrency"
+    },
+    {
+      "name": "private-bind",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-private-bind.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "M02",
+        "M08",
+        "M09",
+        "R01",
+        "R06",
+        "R08",
+        "T06",
+        "P09"
+      ],
+      "evidence_boundary": "Actual Client VM_BIND control flow with kernel/DRM/RPC doubles, including middle-range unmap, failed-UNMAP retry, adjacent-node replacement, hole remap, BO/VM close retention, stale zero-reference rejection, owner-transfer reconciliation, bounded work backlogs, preallocation failure, and pending BO/VM references; not actual PTE state, device access, or physical memory pressure"
+    },
+    {
+      "name": "private-metadata",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-private-metadata.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "M09",
+        "T06",
+        "H06"
+      ],
+      "evidence_boundary": "Actual native private GPUVA callbacks with MMIO/page-table doubles; no hardware execution"
+    },
+    {
+      "name": "task-bridge",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-task-bridge.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "A02",
+        "A05",
+        "A07",
+        "A08",
+        "T02",
+        "T03",
+        "T07",
+        "T10",
+        "C16",
+        "P12"
+      ],
+      "evidence_boundary": "Actual task owner/RPC source with kernel/transport/RSI doubles; all Proxy handlers are audited for zero-initialized whole-size replies, pattern-initialized RMM_TASK bytes are checked across error/success paths, VM_SYNC replay idempotence and stale version denial are model/control-flow only; no real firmware, DRM scheduling, DEV_QUERY data semantics, or session-transport recreation"
+    },
+    {
+      "name": "private-submit",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-private-submit.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "A06",
+        "A07",
+        "C16",
+        "P07"
+      ],
+      "evidence_boundary": "Actual submit planner with host doubles; not real RSI, Linux concurrency or GPU execution"
+    },
+    {
+      "name": "bo-cache",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-bo-cache.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "R07",
+        "P08"
+      ],
+      "evidence_boundary": "Cache functions with lock/memory/RSI model; not proof of Linux race freedom"
+    },
+    {
+      "name": "gem-lifecycle",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-gem-lifecycle.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "R10"
+      ],
+      "evidence_boundary": "Actual private/shared Panthor GEM publication functions with DRM handle/reference doubles; initialization precedes publication, handle-create and share failures clean up exactly once, successful creation drops its local reference, immediate close releases the handle, and diagnostic lookup holds a live reference; no real IDR/debugfs/Linux concurrency"
+    },
+    {
+      "name": "stream-status",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-stream-status.py",
+      "output": {
+        "mode": "env",
+        "variable": "GPU_STREAM_STATUS_OUT"
+      },
+      "matrix_ids": [
+        "C07",
+        "C10",
+        "C12",
+        "C13"
+      ],
+      "evidence_boundary": "Actual firmware status load against incoherent device double; real GPU timing needs L3"
+    },
+    {
+      "name": "complete-fault-window",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-complete-fault-window.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "C14"
+      ],
+      "evidence_boundary": "Actual firmware/platform core with modeled post-snapshot completion/fault mutations across 15 cases and two Clients; RMM task observation summaries retain the first failure, reject reobservation after failure without MMIO, and bind the task token. Skipping the post-read check, forgetting the first failure or reobserving a failed task aborts. Counts represent software observations, not physical IRQ or successful STATUS ACK counts. No physical IRQ, W1C timing, GPU execution, Linux concurrency, or L3 device isolation is claimed"
+    },
+    {
+      "name": "completion-authority",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-completion-authority.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "H05"
+      ],
+      "evidence_boundary": "Actual firmware/platform core over completion scenarios 66-93, including absent/stale STATUS ACK, forged queue/consumer/counter/error fields, faults, and return failures; deleting pending-authority validation aborts. Device writes and physical GPU Stage-1 behavior remain modeled"
+    },
+    {
+      "name": "xshm-event-order",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-xshm-event-order.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "C05",
+        "C09",
+        "C15",
+        "R06",
+        "P02",
+        "P03"
+      ],
+      "evidence_boundary": "Actual xshm endpoint pending/acknowledged/arm state machine; duplicate notifications coalesce while pending count is retained, early events before ARM remain pending without a wake, post-ARM events wake once, stale ACK/ARM and nonparticipant operations are rejected, and query/rearm interleaving is repeated. Bounded endpoint, channel, trusted-history, and trusted-IRQ-log pools fail closed without overwriting identities or unconsumed records; history loss cannot be treated as successful FINISH. A trusted IRQ ring driven by actual notification sequences permits only consumed-slot wraparound and rejects forged tail/head, duplicate consumption, owner changes, unrecorded CPU migration, and overwrite of unconsumed records; no one-to-one IRQ/JOB mapping is assumed and no FINISH authority, fence, physical IRQ source/storage, GIC delivery, GPU execution, or unbounded physical log storage is claimed"
+    },
+    {
+      "name": "queue-history",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-queue-history.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "A09"
+      ],
+      "evidence_boundary": "Actual in-RMM queue cursor helper with lease double; no GROUP_CREATE transport or real firmware"
+    },
+    {
+      "name": "group-bridge",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-group-bridge.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "A03",
+        "A10",
+        "X04"
+      ],
+      "evidence_boundary": "Actual Guest group bridge and Proxy reservation paths with host doubles; authoritative queue substitution/count rejection, quarantine retention, high-priority denial, and queue-priority non-upgrade are model/control-flow evidence. For X04 this covers only rejection of the highest requested group priority and non-upgrade of queue priority, not resource-pressure victim selection, fairness, latency, Linux concurrency, or hardware"
+    },
+    {
+      "name": "rmm-service",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-rmm-service.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "A09"
+      ],
+      "evidence_boundary": "Actual native service init/query functions with host RSI/MMIO doubles; forged capability/group/stream bounds and service handoff ordering, not physical FW boot or GPU slots"
+    },
+    {
+      "name": "firmware-config",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-firmware-config.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "A09",
+        "H03",
+        "H04",
+        "H08",
+        "H10",
+        "H11",
+        "R06",
+        "P10",
+        "X04"
+      ],
+      "evidence_boundary": "Actual firmware upload/seal/discovery/config helpers with synthetic MCU boot model and pinned CSF metadata; covers ordered legal upload, private snapshot, digest/section tamper rejection, advertised stream upper bound, immutable two-queue configuration, read-only Client rings, admission-owned CALL wrappers, cached FW properties, per-Client task/group quotas, global arena capacity, active-root/typed-cleanup retention, and install/boot/config failures retained in quarantine without publication or arbitrary control access. For X04 the modeled quota/arena-full failures deny A while another Client retains its active extent; no physical MMIO/MCU boot, GPU execution, physical takeover/DMA drain, physical resource pressure, fair scheduling, or victim latency is claimed"
+    },
+    {
+      "name": "gpu-command-permission",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-command-permission.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "M07"
+      ],
+      "evidence_boundary": "Actual RMM firmware task-stage admission over a mapped Client stream, plus all 256 opcode values compared with the pinned Mesa 25.0.7 v10 enum. Legitimate FINISH_TILING (9) is accepted; undefined 19/35 and synthetic privileged markers are rejected. Three classifier mutants and a pre-admission gate exercise the oracle. Opcode classification does not prove operands, indirect streams, post-admission mutation or hardware privilege isolation; no physical GPU execution is claimed by this offline check"
+    },
+    {
+      "name": "firmware-parser",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-firmware-parser.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "H09"
+      ],
+      "evidence_boundary": "Actual authenticated-image section parser with direct malicious metadata mutants; no digest approval or physical MMIO"
+    },
+    {
+      "name": "map-transaction-rsi",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-map-transaction-rsi.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "M10",
+        "M11",
+        "R12"
+      ],
+      "evidence_boundary": "Actual mapping-transaction RSI dispatch/core with host adapters; no real RTT concurrency or device TLB"
+    },
+    {
+      "name": "rsi-memory-chain",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-rsi-memory-chain.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "M03",
+        "M04",
+        "R02",
+        "R04"
+      ],
+      "evidence_boundary": "Actual RSI/endpoint/snapshot/RTT/private-PT chain with host primitives; includes read-only BO authorization/service-map/PTE and second-GPUVA permission-oracle checks; no shader/GPC/TLBI/concurrent REC"
+    },
+    {
+      "name": "rsi-memory-chain-lifecycle",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-rsi-memory-chain.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "extra_args": [
+        "--realm-lifecycle"
+      ],
+      "matrix_ids": [
+        "A04",
+        "A12",
+        "H08",
+        "R04"
+      ],
+      "evidence_boundary": "Actual RMI destroy policy plus endpoint/private-authority invalidation and recycled-RD generation; old pending IRQ/channel authority is released, a recycled RD receives a fresh endpoint generation, old channels remain invalid, and a fresh RD cannot inspect old Client BOs; takeover therefore cannot inherit the previous queue/notification authority. RD reallocation, REC/RTT, smc_realm_create, persistent Proxy session state, transport reconnection, and physical DMA drain are modeled"
+    },
+    {
+      "name": "task-recovery",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-rsi-memory-chain.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "extra_args": [
+        "--task-chain",
+        "--actual-only"
+      ],
+      "matrix_ids": [
+        "A12",
+        "C01",
+        "C02",
+        "C03",
+        "C04",
+        "C06",
+        "C08",
+        "H08",
+        "H14",
+        "P02",
+        "P03",
+        "P04",
+        "P11",
+        "R11",
+        "X01",
+        "X02",
+        "X03",
+        "X04"
+      ],
+      "evidence_boundary": "Actual two-Client task failure, exact two-queue member/queue progress before and after OOM recovery, tiler-OOM event with pending FINISH, native-ENOMEM recovery then fresh complete-state progress, post-snapshot stream fault quarantine surviving fault-bit clear and FINISH/RETURN/RETIRE replay, running-task clock/power/S2-MMIO reconfiguration rejection, trusted and failed reset retention, backing release, reset completion without old-task SUCCESS/publication/CPU return, stale firmware/root authority after reset, hint-free FINISH polling, cross-owner FINISH-token rejection with independent second-Client FINISH success, collusive Proxy late-hint injection and A-token replay with B limited to fresh own state, replacement-task chain, trusted teardown before same-physical-page/table-slot reuse with fresh opaque generations and old dispatch/FINISH/service-map denial, and stale session token/context/service-map denial against the fresh owner. For X03, every task-chain scenario also applies a compromised Proxy's authorized group metadata plus dispatch replay, cross-owner completion/return/retire, service map/unmap, native control reset, malformed Host reset, and raw MMIO reinstall against both running Clients, with no extra device write/cache/flush, no CPU return, unchanged Client bytes, and no raw Proxy control. For X04 A failure, a Proxy late hint, or an A token cannot forge B success and B can progress only from fresh own state; firmware/MMIO/cache/device execution, physical IRQ delivery, GIC ownership, physical device-slot reuse, physical resource pressure, other-device DMA, and physical DMA drain remain models"
+    },
+    {
+      "name": "flush-recovery",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-flush-recovery.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "R11"
+      ],
+      "evidence_boundary": "Actual RK3588 reset sequence with modeled ACK/timer: persistent soft-reset ACK loss performs exactly one bounded hard fallback, double-ACK loss remains false, and a final barrier is required; physical timing, IRQ state, DMA stop, and old-task resource release remain outside this checker"
+    },
+    {
+      "name": "memory-ops",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-memory-ops.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "M10"
+      ],
+      "evidence_boundary": "Actual private memory callbacks/core/RTT with modeled cache/granules and physical probes"
+    },
+    {
+      "name": "private-heap",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-private-heap.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "M05",
+        "C11",
+        "R06",
+        "P05",
+        "X04"
+      ],
+      "evidence_boundary": "Actual heap lifecycle/growth linked to the RMM PT/ref core; a corrupted non-leaf root descriptor and a descriptor aliasing another context root fail closed without changing mapping epoch or cleanup state. BO/page-table allocation, growth, VA, heap-count, transport, and OOM failures retain only owner-attributed references and fail without borrowing a foreign object; preexisting foreign mappings and their pending references survive failed heap cleanup. For X04 this covers modeled allocation/OOM/transport failure isolation, not physical CPU, GPU, DMA, page-table writes, Linux memory pressure, fairness, or victim latency"
+    },
+    {
+      "name": "private-reclaim",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-private-reclaim.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "R03",
+        "R04",
+        "R06",
+        "X04"
+      ],
+      "evidence_boundary": "Actual dead-owner cleanup/PM dispatch and Host reclaim helper with lifecycle doubles. Stopped/NEW RD, reset failure, clear failure, restore/TLB-model failure, control detach, unexpected transport success, and perpetual INCOMPLETE leave busy owner/range references isolated; successful bounded retry retires old service pointers and rejects reuse through the same RD, preserving an owner-attributed retention ledger across delayed work and device failures. For X04 denied or failed A recovery retains B busy ranges/references and PTEs while B remains independently reclaimable; RD/RTT restoration, physical reset, physical memory pressure, fairness, and victim latency are models or not claimed"
+    },
+    {
+      "name": "domain-quantum",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-domain-quantum.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "P06"
+      ],
+      "evidence_boundary": "Actual RSI/core/platform legal two-client task interleaving and bounded domain selection; does not cover stop/UNMAP BO reuse, physical GPU execution, IRQ timing, Linux concurrency, or reset"
+    },
+    {
+      "name": "replay-input",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-replay-input.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "A05"
+      ],
+      "evidence_boundary": "Current START replay inputs through actual firmware/backend; no real device execution or response-loss transport"
+    },
+    {
+      "name": "cache-set",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-cache-set.py",
+      "output": {
+        "mode": "env",
+        "variable": "GPU_CACHE_SET_OUT"
+      },
+      "matrix_ids": [
+        "M11"
+      ],
+      "evidence_boundary": "Actual core differential paths with AS/cache models and rejected mutants; no real device cache or concurrency"
+    },
+    {
+      "name": "control-cache",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-control-cache.py",
+      "output": {
+        "mode": "env",
+        "variable": "GPU_CONTROL_CACHE_TEST_OUT"
+      },
+      "matrix_ids": [
+        "C13"
+      ],
+      "evidence_boundary": "Actual control-read/cache-line synchronization callbacks; slot/granule and noncoherent memory are modeled"
+    },
+    {
+      "name": "live-summary",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-live-summary.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "M11"
+      ],
+      "evidence_boundary": "Actual warm-summary core with mutant rejection; cache/RSI behavior remains modeled"
+    },
+    {
+      "name": "running-check",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-running-check.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "M08",
+        "R02"
+      ],
+      "evidence_boundary": "Actual combined running-AS checks in GPU cores/platform; device adapters remain modeled"
+    },
+    {
+      "name": "mmio-mediation",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-mmio-mediation.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "H01"
+      ],
+      "evidence_boundary": "Actual service ownership/mediation and exact full-window MMIO alias policy with revoke-before-reset; bypassing owner/mediated state or partial-overlap aliases aborts. Physical CPU/DMA access, mixed pages, real Proxy, Linux concurrency, and L3 isolation are modeled"
+    },
+    {
+      "name": "rmi-dispatch",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-rmi-dispatch.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "R05"
+      ],
+      "evidence_boundary": "Actual RMI dispatcher/table/policy with checked host concurrency; no real RD creation, GPU or GPC"
+    },
+    {
+      "name": "unpublished-prepare",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-unpublished-prepare.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "A07",
+        "H04",
+        "X02"
+      ],
+      "evidence_boundary": "Actual RSI/core/platform unpublished-ring preparation; ring producer writes occur only after idle anchor and queue metadata validation; partial producer publication, producer root change, and read fault retain task/backing references while cancel/yield/group/BO destroy are rejected, with negative mutants and failure injection model-level"
+    },
+    {
+      "name": "xshm-memory-boundary",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-xshm-memory-boundary.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "T01",
+        "T03"
+      ],
+      "evidence_boundary": "Actual xshm memory/endpoint/service cores with existing host doubles; no shared-queue race or real REC"
+    },
+    {
+      "name": "service-binding",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-service-binding.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "A01"
+      ],
+      "evidence_boundary": "Actual GPU service core and complete endpoint core with a dedicated fixture; production claim, XSHM unregister, RD destroy, and private-path adapter wiring is source-audited. Registered nonzero endpoint instance, owner binding, running/isolated generation checks, fail-closed invalidation, same-RD fresh-instance ID, stale-channel rejection, and endpoint-ID non-reuse are covered. Synthetic trusted reset callbacks and same-address RD model; no full RMM link, Proxy image measurement, remote attestation, approved-role provisioning, Linux concurrency, physical IRQ/DMA, or L3 hardware isolation is claimed"
+    },
+    {
+      "name": "proxy-role-attestation",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-proxy-role-attestation.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "A01"
+      ],
+      "evidence_boundary": "Actual RMM-private GPU role claim encoding/clear core; RSI claim writes the endpoint-bound claim into reserved REM slot 4 after service acceptance, XSHM unregister/RD destroy clears it, Guest RSI_MEASUREMENT_EXTEND cannot write the slot, and the standard Realm token REM array source includes it. No full RMM link, signed token execution, Proxy image/RIM approval policy, Client verifier, role provisioning, Linux concurrency, physical IRQ/DMA, or L3 isolation is claimed"
+    },
+    {
+      "name": "client-role-token-verifier",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-client-role-token-verifier.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "A01"
+      ],
+      "evidence_boundary": "Actual offline Client verifier executes ES384 COSE_Sign1 signature validation, exact challenge/RIM/profile/hash policy checks, and endpoint-derived REM slot 4 comparison with six fail-closed negatives. It uses a test trust anchor and synthetic delegated token; no platform certificate chain, trusted anchor/RIM provisioning, full TSM report execution, vmshm token transport, Linux concurrency, or L3 validation is claimed"
+    },
+    {
+      "name": "xshm-queue-integrity",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-xshm-queue-integrity.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "T05"
+      ],
+      "evidence_boundary": "Actual Client vmshm queue send/receive validators over a synthetic untrusted window; no concurrent peer, IRQ, or physical vmshm"
+    },
+    {
+      "name": "input-identity",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-input-identity.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "P01"
+      ],
+      "evidence_boundary": "Actual RSI input copy, IPA translation, and endpoint identity policy with synthetic REC/S2 state; no GPU workload, physical GPC, or Linux concurrency"
+    },
+    {
+      "name": "xshm-reply-replay",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-xshm-reply-replay.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "T04"
+      ],
+      "evidence_boundary": "Actual Client response dispatcher and sequence-allocator call path; controlled receive double exposes stale/duplicate matching and any missing sequence-zero wrap policy"
+    },
+    {
+      "name": "rpc-late-waiter",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-rpc-late-waiter.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "T04"
+      ],
+      "evidence_boundary": "Actual Client RPC call and response dispatcher with deterministic dispatcher-first/timeout-first interleavings; host completion, jiffies and receive doubles only, not real Linux waitqueue/workqueue concurrency"
+    },
+    {
+      "name": "late-device-access",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-late-device-access.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "M09"
+      ],
+      "evidence_boundary": "Actual GPU release/control and lease cores with a delayed-transaction double; failed revoke/reset retains the old lease and only successful reset drains before release/new-owner reuse. No physical GPC/IOMMU/TLBI timing"
+    },
+    {
+      "name": "control-residue",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-control-residue.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "M11"
+      ],
+      "evidence_boundary": "Actual private GPU core control-memory path; donated firmware backing is cleared before mapped publication and repeated acquisition is denied. GPU local memory, scratch, registers and hardware caches remain unverified"
+    },
+    {
+      "name": "diagnostic-content",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-diagnostic-content-disclosure.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "H13"
+      ],
+      "evidence_boundary": "Static audit of the actual Proxy scheduler fault diagnostic; raw Client instruction/syncobj/ring words are rejected and only bounded non-content summaries are allowed. No complete output inventory or board serial-capture proof"
+    },
+    {
+      "name": "mmio-vma",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-mmio-vma.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "H12"
+      ],
+      "evidence_boundary": "Actual realm_gpu_bo_mmap and panthor_client_mmap_flush_id with host VMA/page doubles; control/resident backing is denied, MAP_PRIVATE and executable BO mappings are rejected, BO VM_MAYEXEC is cleared, read-only flush-id VM_MAYWRITE is cleared and VM_DONTCOPY is set, and Linux mprotect/fork policy is modeled from those VMA flags. No real Linux mmap/mprotect/fork syscall, concurrent VMA split/merge, RTT install, physical MMIO write, SMMU/DMA request, mixed-page alias, or L3 hardware isolation"
+    },
+    {
+      "name": "debug-disclosure",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-debug-disclosure.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "H13"
+      ],
+      "evidence_boundary": "Actual native Panthor show_each_vm/show_vm_gpuvas and DRM drm_debugfs_gpuva_info with a controlled seq_file and two synthetic Client VMs; the checker executes candidate and pointer-sanitized control variants, verifies frozen Client/Proxy configs enable unrestricted debugfs, and treats raw drm_gem_object addresses as outside the necessary service metadata allowed by the threat model. No real debugfs mount permission, performance counter, trace, coredump, FW debug/readback, physical timing side channel, or L3 hardware execution"
+    },
+    {
+      "name": "proxy-session-budget",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-proxy-session-budget.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "A04",
+        "R06",
+        "T09"
+      ],
+      "evidence_boundary": "Actual Proxy session admission, rollback, lookup, close and OPEN_SESSION reply-failure paths with pthread locks and native DRM/channel doubles. Covers 64 global and 8 per-Client pending/retained sessions, 32 concurrent creators, cross-owner denial, final-reference accounting and permanent ID exhaustion. No actual Linux workqueue, board execution or whole-service fairness claim."
+    },
+    {
+      "name": "rpc-work-budget",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-rpc-work-budget.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "T09"
+      ],
+      "evidence_boundary": "Actual Proxy vmshm queue send/receive, request dispatch, drain, and rx-work functions with a host producer double. Legal maximal requests can sustain more than one queue capacity inside one work invocation, while direct counters cover request count, stack allocations, lock visits/intervals, slot retention, empty wakeups, payload validation, and victim latency. No real Linux workqueue scheduling, handler service cost, concurrent process timing, physical IRQ, fairness SLO, or L3 execution is claimed"
+    },
+    {
+      "name": "proxy-handler-dispatch",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-proxy-handler-dispatch.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "T09"
+      ],
+      "evidence_boundary": "Actual Proxy find/rx dispatch functions over every registered request handler; short/long payload and response-direction type are rejected before callback, while exact-size request reaches the handler. Per-handler field semantics and real transport remain separate"
+    },
+    {
+      "name": "proxy-worker-fairness",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-proxy-worker-fairness.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "C15"
+      ],
+      "evidence_boundary": "Actual Proxy IRQ worker with modelled sessions/xarray/RMM events; Group round-robin visits all 12 Groups within two budget-8 rounds and the reset-cursor mutant starves high IDs. No real Linux workqueue or board timing"
+    },
+    {
+      "name": "fw-worker-teardown",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-fw-worker-teardown.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "R09"
+      ],
+      "evidence_boundary": "Actual native Panthor device/scheduler/FW unplug and reset-work functions with modeled Linux workqueue cancellation. Captures unplug before callback teardown, scheduler tick and PM reference drain, FW watchdog drain, IRQ suspend, FW stop/resource teardown, MMU/GPU unplug, post-unplug reset-work denial through drm_dev_enter, synchronous reset-work drain, and reset-workqueue destruction last. No real Linux workqueue concurrency, IRQ injection, hotplug bus teardown, Realm exit, physical device revocation, KASAN, fence callback execution, or L3 hardware timing"
+    },
+    {
+      "name": "gpu-irq-security",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-irq-security.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "C05",
+        "C09",
+        "C15",
+        "R06"
+      ],
+      "evidence_boundary": "Actual shared Monitor producer, RMM consumer and RMM mailbox bridge plus the actual firmware IRQ-claim fresh-evidence gate. Models capture identity/epoch, ordered offered ACK, fault latching, old-binding/slot reuse, progress coalescing, bounded overflow and Proxy statement rejection. Seven compiled mutants are rejected. Transport/cache/GIC and physical IRQ delivery are doubles here; actual Realm/EL3 integration and physical delivery counters are separate lab-run evidence, not inherited from this offline result."
+    },
+    {
+      "name": "rmm-private-aggregate",
+      "kind": "shell",
+      "script": "scripts/check/check-rmm-gpu-private.sh",
+      "output": {
+        "mode": "env",
+        "variable": "GPU_PRIVATE_TEST_OUT"
+      },
+      "matrix_ids": [],
+      "baseline_gate": true,
+      "evidence_boundary": "Full offline regression gate for core mapping/FW/control/revocation; not an attack-coverage or cross-tenant security proof"
+    },
+    {
+      "name": "control-cpu-views",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-control-cpu-views.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "C13",
+        "R02"
+      ],
+      "evidence_boundary": "Actual persistent RMM CPU view/platform helpers; two-CPU TLB/cache/physical data/locks are models, not physical isolation"
+    },
+    {
+      "name": "control-view-lifecycle",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-control-view-lifecycle.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "C13",
+        "R02"
+      ],
+      "evidence_boundary": "Actual control-object core pin/unpin/hidden/clear/restore journal, quota and partial failure; RTT/GPU primitives are models"
+    },
+    {
+      "name": "control-table-permissions",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-control-table-permissions.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "C13",
+        "R02"
+      ],
+      "evidence_boundary": "Actual cold/runtime CPU table helpers with host RO enforcement; physical EL2/MMU/cache/TLB primitives modeled"
+    },
+    {
+      "name": "as-root-checks",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-as-root-checks.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "M08",
+        "R02"
+      ],
+      "evidence_boundary": "Actual split root equality/fresh implemented-AS mask, independent values/bitmaps and compiled mutants; MMIO modeled"
+    },
+    {
+      "name": "diagnostic-routing",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-diagnostic-routing.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "M01",
+        "A01",
+        "A07",
+        "A11",
+        "T08"
+      ],
+      "evidence_boundary": "Actual merged status arm/FW service auth/mapping-lock wrapper with explicit endpoint/device doubles; counters never execution/completion authority"
+    },
+    {
+      "name": "irq-view",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-irq-view.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [
+        "C05",
+        "C09",
+        "C13",
+        "C15",
+        "R06"
+      ],
+      "evidence_boundary": "Actual Root/RMM bridge and current RAW/mask helper over independent noncoherent cache worlds, 48 scenarios and14 compiled mutants; cache/MMIO/GIC/physical IRQ are models, separate from board provenance evidence"
+    },
+    {
+      "name": "client-local-irq-work",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-local-irq-work.py",
+      "output": {
+        "mode": "arg",
+        "flag": "--out"
+      },
+      "matrix_ids": [],
+      "evidence_boundary": "Actual kernel IRQ-work/chain state-machine and compiled mutant models only; no new matrix or physical-security coverage claim."
+    },
+    {
+      "name": "c-source-contract",
+      "kind": "python",
+      "script": "scripts/check/check-gpu-c-source.py",
+      "output": {
+        "mode": "env",
+        "variable": "GPU_C_SOURCE_CONTRACT_OUT"
+      },
+      "matrix_ids": [],
+      "evidence_boundary": "Formatting-independent checker mutation/extraction contracts only; no GPU attack evidence."
+    },
+    {
+      "name": "lab-postflight-contract",
+      "kind": "python",
+      "script": "scripts/check/check-lab-postflight.py",
+      "output": {
+        "mode": "env",
+        "variable": "GPU_LAB_POSTFLIGHT_OUT"
+      },
+      "matrix_ids": [],
+      "evidence_boundary": "Control-host recovery-state expectations only; no runtime GPU policy evidence."
+    }
+  ],
+  "manifest_sources": [
+    "docs/shared/CURRENT_BASELINE.md",
+    "docs/shared/GPU_SHARED_THREAT_MODEL_SECURITY_DESIGN_ANALYSIS_20261109.md",
+    "docs/shared/GPU_SHARED_ATTACK_TEST_PLAN_20261109.md",
+    "docs/shared/GPU_SHARED_SECURITY_TEST_MATRIX_20261109.csv",
+    "configs/security/offline-attack-map.json",
+    "scripts/run/run-gpu-security-offline.py",
+    "GPU-SFTP/panthor_fw/mali_csffw.bin",
+    "GPU-SFTP/tests/gpu-private-bind/bind-test.c",
+    "GPU-SFTP/tests/gpu-gem-lifecycle/gem-lifecycle-test.c",
+    "Linux-Guest-GPU/include/linux/panthor_vmshm.h",
+    "Linux-Guest-GPU/drivers/char/realm_gpu.c",
+    "Linux-Guest-GPU/drivers/gpu/drm/panthor-client/panthor_client_drv.c",
+    "Linux-Guest-GPU/drivers/gpu/drm/panthor-proxy/panthor_proxy_drv.c",
+    "Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_drv.c",
+    "Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_device.c",
+    "Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_device.h",
+    "Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_mmu.c",
+    "Linux-Guest-GPU/drivers/gpu/drm/drm_debugfs.c",
+    "configs/verified-20261015/client.config",
+    "configs/verified-20261015/proxy.config",
+    "Linux-Guest-GPU/drivers/gpu/drm/drm_gem.c",
+    "Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_fw.c",
+    "Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_gem.c",
+    "Linux-Guest-GPU/drivers/gpu/drm/panthor/panthor_sched.c",
+    "GPU-SFTP/tests/gpu-group-bridge/group-bridge-test.c",
+    "GPU-SFTP/tests/gpu-task-bridge/task-test.c",
+    "GPU-SFTP/tests/gpu-rmm-service/service-test.c",
+    "GPU-SFTP/tests/xshm-queue-integrity/queue-integrity-test.c",
+    "GPU-SFTP/tests/xshm-reply-replay/reply-replay-test.c",
+    "GPU-SFTP/tests/xshm-reply-replay/late-callback-test.c",
+    "Linux-Guest-GPU/drivers/char/client_vmshm_comm/client_comm_vmshm.c",
+    "Linux-Guest-GPU/drivers/char/proxy_vmshm_comm/proxy_comm_vmshm.c",
+    "Linux-Guest-GPU/include/linux/vmshm_comm_protocol.h",
+    "GPU-SFTP/tests/gpu-rpc-work-budget/work-budget-test.c",
+    "GPU-SFTP/tests/gpu-proxy-handler-dispatch/handler-dispatch-test.c",
+    "GPU-SFTP/tests/gpu-irq-security/proxy-worker-fairness-test.c",
+    "opencca/tf-rmm/runtime/tests/xshm_endpoint_test.c",
+    "Linux-Guest-GPU/include/uapi/linux/realm_xshm.h",
+    "scripts/check/check-gpu-group-bridge.py",
+    "scripts/check/check-gpu-rmm-service.py",
+    "scripts/check/check-gpu-xshm-event-order.py",
+    "scripts/check/check-gpu-xshm-queue-integrity.py",
+    "scripts/check/check-gpu-xshm-reply-replay.py",
+    "scripts/check/check-gpu-rpc-late-waiter.py",
+    "scripts/check/check-gpu-late-device-access.py",
+    "scripts/check/check-gpu-control-residue.py",
+    "scripts/check/check-gpu-diagnostic-content-disclosure.py",
+    "opencca/tf-rmm/runtime/rsi/opencca_gpu_private.c",
+    "opencca/tf-rmm/runtime/core/opencca_gpu_private.c",
+    "opencca/tf-rmm/runtime/core/opencca_gpu_firmware.c",
+    "opencca/tf-rmm/runtime/tests/opencca_gpu_firmware_test.c",
+    "opencca/tf-rmm/runtime/tests/opencca_gpu_firmware_parser_test.c",
+    "opencca/tf-rmm/runtime/tests/opencca_gpu_queue_history_test.c",
+    "opencca/tf-rmm/runtime/tests/opencca_gpu_rsi_task_chain_test.c",
+    "opencca/tf-rmm/runtime/tests/opencca_gpu_flush_recovery_test.c",
+    "opencca/tf-rmm/ext/mbedtls/library/sha256.c",
+    "opencca/tf-rmm/ext/mbedtls/library/platform_util.c",
+    "scripts/check/check-gpu-firmware-config.py",
+    "scripts/check/check-gpu-gem-lifecycle.py",
+    "scripts/check/check-gpu-firmware-parser.py",
+    "scripts/check/check-gpu-queue-history.py",
+    "opencca/tf-rmm/plat/rk3588/src/rk3588_gpu.c",
+    "scripts/check/check-gpu-domain-dispatch.py",
+    "scripts/check/check-gpu-domain-quantum.py",
+    "scripts/check/check-gpu-complete-fault-window.py",
+    "scripts/check/check-gpu-completion-authority.py",
+    "scripts/check/check-gpu-mmio-mediation.py",
+    "opencca/tf-rmm/runtime/core/opencca_gpu.c",
+    "opencca/tf-rmm/runtime/core/xshm_endpoint.c",
+    "opencca/tf-rmm/runtime/include/opencca_gpu.h",
+    "opencca/tf-rmm/runtime/core/opencca_gpu_lease.c",
+    "opencca/tf-rmm/runtime/rsi/opencca_gpu.c",
+    "opencca/tf-rmm/runtime/rsi/xshm.c",
+    "opencca/tf-rmm/runtime/tests/opencca_gpu_service_binding_test.c",
+    "opencca/tf-rmm/runtime/tests/opencca_gpu_lease_test.c",
+    "opencca/tf-rmm/runtime/tests/opencca_gpu_reclaim_test.c",
+    "opencca/tf-rmm/runtime/tests/opencca_gpu_rsi_memory_chain_test.c",
+    "opencca/tf-rmm/runtime/tests/opencca_iommu_test.c",
+    "opencca/tf-rmm/runtime/tests/opencca_gpu_backend_test.c",
+    "scripts/check/check-gpu-debug-disclosure.py",
+    "scripts/check/check-gpu-fw-worker-teardown.py",
+    "scripts/check/check-gpu-command-permission.py",
+    "scripts/check/check-gpu-service-binding.py",
+    "opencca/tf-rmm/runtime/include/opencca_gpu_role.h",
+    "opencca/tf-rmm/runtime/core/opencca_gpu_role.c",
+    "opencca/tf-rmm/runtime/tests/opencca_gpu_role_claim_test.c",
+    "opencca/tf-rmm/runtime/rsi/realm_attest.c",
+    "opencca/tf-rmm/lib/attestation/src/attestation_token.c",
+    "scripts/check/check-gpu-proxy-role-attestation.py",
+    "GPU-SFTP/tests/realm-attestation-verifier/README.md",
+    "GPU-SFTP/tests/realm-attestation-verifier/verify_realm_proxy_role_token.py",
+    "scripts/check/check-gpu-client-role-token-verifier.py",
+    "scripts/check/check-gpu-proxy-session-budget.py",
+    "GPU-SFTP/tests/gpu-proxy-session-budget/session-budget-test.c",
+    "configs/security/csf-opcodes-mesa-25.0.7.json",
+    "GPU-SFTP/tests/gpu-proxy-session-budget/session-quota-probe.c",
+    "opencca/tf-rmm/runtime/include/opencca_gpu_firmware.h",
+    "opencca/tf-rmm/runtime/include/opencca_gpu_private.h",
+    "Linux-Guest-GPU/include/uapi/linux/realm_gpu.h",
+    "GPU-SFTP/tests/realm-xshm/realm-gpu-private.c",
+    "GPU-SFTP/tests/realm-xshm/realm-gpu-abi.c",
+    "GPU-SFTP/tests/realm-xshm/init.c",
+    "GPU-SFTP/tests/realm-xshm/run-realms.py",
+    "scripts/run/run-realm-xshm.py",
+    "scripts/build/build-realm-xshm.sh",
+    "scripts/build/build-realm-xshm-initrd.py",
+    "opencca/shared/include/opencca_gpu_irq_abi.h",
+    "opencca/shared/include/opencca_gpu_irq_monitor.h",
+    "opencca/shared/include/opencca_gpu_irq_consumer.h",
+    "opencca/shared/opencca_gpu_irq_monitor.c",
+    "opencca/shared/opencca_gpu_irq_consumer.c",
+    "opencca/tf-rmm/runtime/include/opencca_gpu_irq.h",
+    "opencca/tf-rmm/runtime/core/opencca_gpu_irq.c",
+    "opencca/tf-rmm/runtime/CMakeLists.txt",
+    "opencca/tf-rmm/lib/rmm_el3_ifc/include/rmm_el3_ifc.h",
+    "opencca/trusted-firmware-a/plat/rockchip/rk3588/opencca/rk3588_gpu_irq.c",
+    "opencca/trusted-firmware-a/plat/rockchip/rk3588/opencca/rk3588_opencca.c",
+    "opencca/trusted-firmware-a/plat/rockchip/rk3588/opencca/opencca-rk3588.mk",
+    "opencca/trusted-firmware-a/services/std_svc/rmmd/rmmd_main.c",
+    "opencca/trusted-firmware-a/include/services/rmmd_svc.h",
+    "opencca/trusted-firmware-a/lib/el3_runtime/aarch64/context_mgmt.c",
+    "GPU-SFTP/tests/gpu-irq-security/irq-protocol-test.c",
+    "GPU-SFTP/tests/gpu-irq-security/irq-adapter-test.c",
+    "GPU-SFTP/tests/gpu-irq-security/irq-firmware-gate-test.c",
+    "GPU-SFTP/tests/gpu-irq-security/stubs/arch_helpers.h",
+    "GPU-SFTP/tests/gpu-irq-security/stubs/rmm_el3_ifc.h",
+    "GPU-SFTP/tests/gpu-irq-security/stubs/smc.h",
+    "GPU-SFTP/tests/gpu-irq-security/stubs/debug.h",
+    "opencca/tf-rmm/plat/common/include/plat_common.h",
+    "opencca/tf-rmm/plat/common/src/plat_common_init.c",
+    "opencca/tf-rmm/plat/rk3588/src/rk3588_setup.c",
+    "opencca/tf-rmm/plat/rk3588/CMakeLists.txt",
+    "Linux-Host-GPU/arch/arm64/kvm/rme.c",
+    "Linux-Host-GPU/arch/arm64/kvm/arm.c",
+    "Linux-Host-GPU/arch/arm64/include/asm/rmi_smc.h",
+    "opencca/tf-rmm/runtime/tests/gpu_test_diagnostic_stubs.h",
+    "opencca/tf-rmm/runtime/tests/gpu_test_memory_fallback.h",
+    "opencca/tf-rmm/runtime/tests/opencca_gpu_domain_rsi_test.h",
+    "GPU-SFTP/tests/gpu-private-submit/submit-test.c",
+    "scripts/check/check-gpu-private-submit.py",
+    "scripts/check/check-gpu-rsi-memory-chain.py",
+    "scripts/check/check-gpu-memory-ops.py",
+    "scripts/check/check-gpu-control-cache.py",
+    "scripts/check/check-gpu-control-cpu-views.py",
+    "scripts/check/check-gpu-control-view-lifecycle.py",
+    "scripts/check/check-gpu-control-table-permissions.py",
+    "scripts/check/check-gpu-as-root-checks.py",
+    "scripts/check/check-gpu-diagnostic-routing.py",
+    "scripts/check/check-gpu-irq-view.py",
+    "GPU-SFTP/tests/gpu-irq-security/irq-view-platform.h",
+    "GPU-SFTP/tests/gpu-irq-security/irq-view-test.c",
+    "Linux-Guest-GPU/include/linux/irq_work.h",
+    "Linux-Guest-GPU/kernel/irq_work.c",
+    "Linux-Guest-GPU/drivers/dma-buf/dma-fence-chain.c",
+    "scripts/check/check-gpu-local-irq-work.py",
+    "GPU-SFTP/tests/gpu-local-irq-work/chain-cases.inc",
+    "GPU-SFTP/tests/gpu-local-irq-work/chain-types.inc",
+    "GPU-SFTP/tests/gpu-local-irq-work/core-cases.inc",
+    "GPU-SFTP/tests/gpu-local-irq-work/core-prefix.inc",
+    "Linux-Host-GPU/arch/arm64/kvm/mmu.c",
+    "scripts/maintenance/lab-run.py",
+    "scripts/check/check-lab-postflight.py",
+    "Linux-Guest-GPU/drivers/char/realm_xshm.c",
+    "Linux-Guest-GPU/include/linux/realm_gpu.h",
+    "Linux-Guest-GPU/include/linux/realm_xshm.h",
+    "Linux-Guest-GPU/include/linux/vmshm_comm.h",
+    "opencca/tf-rmm/runtime/include/opencca_gpu_lease.h",
+    "scripts/check/gpu_c_source.py",
+    "scripts/check/check-gpu-c-source.py"
+  ]
+}

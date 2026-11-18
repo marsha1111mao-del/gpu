@@ -1,0 +1,412 @@
+{
+  "status": "COMPLETE_PORTABLE_AUDITED_EXPERIMENT_DATA",
+  "planned_batches": 174,
+  "audited_batches": 174,
+  "verified_unavailable_batches": 0,
+  "client_workload_rows": 1044,
+  "formal_result_sha256": "21fc11eb55dd1c6dbd1a3c005fafcc2887a6d97d149ddf0629d391c43b4a6758",
+  "audit_SHA256": {
+    "gpu-wide-shared-match-scale-t1-r2-20261114": "e35e1adef569c50620f9769f235ee106d4f3a14d24bea4bd6a08f1566d8f1e81",
+    "gpu-wide-shared-match-users2-t1-20261114": "feff85be62167e012be2c2d0de2058110be8d8d1f6021897374602f6fbb39fff",
+    "gpu-wide-shared-match-users4-t1-20261114": "cb7a50039ec18003ed078966f2061588c7a57ab2d979d9387d6d6a0a370a6460",
+    "gpu-wide-shared-match-batch-t1-20261114": "598453eb19e142b3a39ded5ac1fff32eb9776f4cbafc14d678138480e54dae97",
+    "gpu-wide-shared-match-mixed2-t1-20261114": "4c5e0b26c6e83448b85dd65fda6207232b041c894c8b78f948f84a29ae82ed59",
+    "gpu-wide-shared-match-mixed4-t1-r2-20261114": "429324053bbd3597d50301fcddf2a97d5f7d892fa0eda00684543edceaceaef3",
+    "gpu-wide-shared-match-sustained2-t1-20261114": "d43e6a2be1e4f98a3a99c41c5d2c1cf4ef0fa8402c3d6da092881748c85b52a1",
+    "gpu-wide-shared-match-sustained4-t1-20261114": "14e935a702629496aedc940e2dd85fd23462eaf360bafa14f568d75be597cff0",
+    "gpu-wide-shared-match-freq300-t1-20261114": "961c1828d3a26b0c677676248147d3e63a37108a2937a17c75df6aa9a3c1bc2a",
+    "gpu-wide-shared-match-memory320-t1-20261114": "7522fb644d95f24f790a66537b9ef8dc534d1b41a6ccd7e9910c260795452796",
+    "gpu-wide-shared-match-scale-t2-20261114": "367267f3ef0234a3f3960bd775eaced2d0963baed97dc5fd112f9dde752feb72",
+    "gpu-wide-shared-match-users2-t2-20261114": "8267519fc66e68ef175baded0746e2a3da700812348d216f546876f646667989",
+    "gpu-wide-shared-match-users4-t2-20261114": "5baa9948d2bf0ebebda8796021e61f0f3b07fcc3a98b835501ae55f411894b21",
+    "gpu-wide-shared-match-batch-t2-20261114": "eeb72697f4af29a3d6c8646dc99f1e8eb549899e1221e4c620ed039142c4e824",
+    "gpu-wide-shared-match-mixed2-t2-20261114": "67d30dec7ec61d1c4469fec81a9c5be7831a72fbadecc74a85ce2c8572eb74e7",
+    "gpu-wide-shared-match-mixed4-t2-20261114": "51febbbd013eaa1c8bd1b66c7efcd35d5e9133196384206c49764fd34e9f7222",
+    "gpu-wide-shared-match-sustained2-t2-20261114": "9f68c1bf269751d053666f610f732efb0008e836407eaed412d9f888884f880f",
+    "gpu-wide-shared-match-sustained4-t2-20261114": "9a24567c0cfd5b10dcc28b147dfcad38951f5432ea56100cc401a71ce83e2e3a",
+    "gpu-wide-shared-match-freq300-t2-20261114": "2c1f315a5258834cc3b6b93b8c2cf4c007e40724f33b694fc60b9c36575707c0",
+    "gpu-wide-shared-match-memory320-t2-20261114": "30a7433fb5e6c4fe06f5b2e806e54e29cc45b648b74a8a5afcf3cfec91ea5b86",
+    "gpu-wide-shared-match-scale-t3-20261114": "f1073ae166db592d41273dabd3503db20631bbf5ec6483f487caeb4b69bac3d3",
+    "gpu-wide-shared-match-users2-t3-20261114": "397929e121783e004b3385dd064dcdcdd2c6cc59f86dd7d4e7eadd1f2c6cba28",
+    "gpu-wide-shared-match-users4-t3-20261114": "46e203c13bc975426df730d70b5643475e67f649a61026463adab3ce07ef8988",
+    "gpu-wide-shared-match-batch-t3-20261114": "4876fd2f0bdf12c376045adac18b5e6363b55696283189378d54ea7636a4da10",
+    "gpu-wide-shared-match-mixed2-t3-20261114": "257ed133bdb57c7cc66e1ec9be32c4001c843724988582eb7adf8e0d50fd3ddf",
+    "gpu-wide-shared-match-mixed4-t3-20261114": "5a976c7281ed36409bf7f499ddc7a6e5d2c3e3da8e055c338f7def77caa90df3",
+    "gpu-wide-shared-match-sustained2-t3-20261114": "26cd723deb9ea15b95e5e7c2742aae16ccd8c37f53f91b101b54fd054c1bcf94",
+    "gpu-wide-shared-match-sustained4-t3-20261114": "92ccc09a619be8d84dc5af9351d22673b0620d8e87a201e1a283c01efd26ce30",
+    "gpu-wide-shared-match-freq300-t3-20261114": "93e9816deab1f22c306ce1a4c61bba4ddbd1c7a7e5e0b6f5c01a5272126b0f71",
+    "gpu-wide-shared-match-memory320-t3-20261114": "4dd2125be880489801f71a4d88b4da9ab667857ce97a562ef95295527dc06f42",
+    "gpu-wide-native-scale-t1-20261114": "90286e58b659206c263f80bc468585f7fb50f0d5ead2a64209321f091612035b",
+    "gpu-wide-native-users2-t1-20261114": "0e22076cc3e54ecdf9e450fbce9697754c42c3a0ff35e400b8527c1d6c88a611",
+    "gpu-wide-native-users4-t1-20261114": "65d1e3c559b0cb8fb6ebf8578c79cfac713c8a803ea528f0def3a01afa41ab57",
+    "gpu-wide-native-batch-t1-20261114": "1e2fd2d0c411d9d7a23b1ac8fb68b9516cad55e8fce2093cf54b7422cdd634a1",
+    "gpu-wide-native-mixed2-t1-20261114": "4709db955ef79beaddf0a03d91458310b399ce2b4abb9793d00332f5a4c2b0c6",
+    "gpu-wide-native-mixed4-t1-20261114": "402287144dccbb9f233151cf89c63219cb60548f305e990dd054bd49dfcc5ce7",
+    "gpu-wide-native-sustained2-t1-20261114": "5844ee726cc56f55fb01bb76749161e7e4f5ad8c6d4825bb5e09863f5373bd36",
+    "gpu-wide-native-sustained4-t1-20261114": "d4ac942c81d6c4e48347415af0a4d977f11cc1f2a2e0732b612a461b04cd7fc0",
+    "gpu-wide-native-freq300-t1-r2-20261115": "6791308ff14a4909ec16c45adf91d4132002ed590036038889ed0690f2b42b04",
+    "gpu-wide-native-memory320-t1-20261114": "1ad9920f1f68130a591c1938ec576074fd4951b36a48000db13fab22d1988ab3",
+    "gpu-wide-native-scale-t2-20261114": "07b965b86a940eeda94790447f10bf576fa94ec9133340fcabbf834c5f8314b5",
+    "gpu-wide-native-users2-t2-20261114": "8f870a3c7249553afbaf53fb41aa94bb848851cc6e00b270f91c31f3df5bb88c",
+    "gpu-wide-native-users4-t2-20261114": "a905281d0276efe8ecb99c04683cf5408f053e9b280023f03eedffe9bb7a3935",
+    "gpu-wide-native-batch-t2-20261114": "943451f98b510573935d70c104e11c39d9183dacfc0e2d1263dddf76fbd62512",
+    "gpu-wide-native-mixed2-t2-20261114": "fb99b00d2dbbdbaa051dba47e05f4ea0877731d80453641c44893be4d5ba23b0",
+    "gpu-wide-native-mixed4-t2-20261114": "40d9b5f1a7e1d7cacc24ea224c8dfec07447dacb336611fa8d96562050b471cf",
+    "gpu-wide-native-sustained2-t2-20261114": "e466b45ba25acbe30fbaa3ef06452eec548b4a55a306551029e423657ec5bc56",
+    "gpu-wide-native-sustained4-t2-20261114": "bf78ae2c99106657c7083c50c0b972dd596fcffc604ffb136e126caf47afcddc",
+    "gpu-wide-native-freq300-t2-20261114": "c9a4912e1ec5981b9c51b6670ac23ce154b076594430ea9089420177151e803a",
+    "gpu-wide-native-memory320-t2-20261114": "49ae5aa4c70006d7eff4cd4c2c3e18db26d80b24e3a714244384576342e0dc47",
+    "gpu-wide-native-scale-t3-20261114": "7f02d713939c8a93dcc11b31dde5134e2c7d7b393166c3f2c29f4d9d1bf0a07d",
+    "gpu-wide-native-users2-t3-20261114": "15c58e4da0c5157bf72e099446cf64866af7c90404590af5c5dddd635ed872aa",
+    "gpu-wide-native-users4-t3-20261114": "d90194560a2c46f3cff3cac1e2cc5472252e61eb622e60563c14ed7f813061cb",
+    "gpu-wide-native-batch-t3-20261114": "33daee154766560ce97d66898b5f607ac349f0b57bd89578fef5ce7637f45eab",
+    "gpu-wide-native-mixed2-t3-20261114": "6adb1c206838ed426739a08a7fe6730ab62d2a054fab55970e7cb45945439888",
+    "gpu-wide-native-mixed4-t3-20261114": "1bbc4117c83862a62aced5093f1049d3913021ffdb623d17275c0cb233c23892",
+    "gpu-wide-native-sustained2-t3-20261114": "7ee150250075c1ab0b517e6b990385db2e657b0049aeb976ca52d1e555b958ee",
+    "gpu-wide-native-sustained4-t3-20261114": "c5ec3f647abe6c87f0fa2b919ad1b82599dd900f11d0effad4ce0e097bac3131",
+    "gpu-wide-native-freq300-t3-20261114": "6c52c79161bdec7e445741978463a1cd370a6d3a68d0ac394a2e142274fb3003",
+    "gpu-wide-native-memory320-t3-20261114": "68feabc1d56d04abb8d0fa86f9197aae527f7be4457f57e95a2b9eaf91d87688",
+    "gpu-wide-virgl-scale-t1-20261114": "10ecea90bf4717a8d50e86a82329b8eea8f2307d95ebd92048317fea7628ce10",
+    "gpu-wide-virgl-users2-t1-20261114": "ecb0f5228e7945cc430cd1d09b07fd67235d97aacbbe7df22ffdd327317e6fed",
+    "gpu-wide-virgl-users4-t1-20261114": "d246cff98f9efea1288e1bc093f88c3eadee960b86e6db75911b8e3c33b8e004",
+    "gpu-wide-virgl-batch-t1-20261114": "18fb1a6b7a9273c6c57e693e4da8eec6d67b72aa027e6719e2d98032dd49512f",
+    "gpu-wide-virgl-mixed2-t1-20261114": "cf3db3f54751e780606c6817b51351594a91bc83a29e27d6296af36b0ee1727a",
+    "gpu-wide-virgl-mixed4-t1-20261114": "ba6646e2d9c1f5a07d55425ca45f42b3e7fb9c03e743906ed67789bed5f91187",
+    "gpu-wide-virgl-sustained2-t1-20261114": "bdcd13b93bdde8ec01ab6309a2ebc8e11dc0937a7f646999b2dcbe51c6a0a5da",
+    "gpu-wide-virgl-sustained4-t1-20261114": "94e6e170629cdac3919874cb4e17f0bb9d81892c13b86ef354640d26cba801af",
+    "gpu-wide-virgl-freq300-t1-20261114": "44824a7cbb13dcc6dbb6260df7917c556d1b5a4ad131c981a05af86b7e12f200",
+    "gpu-wide-virgl-memory320-t1-20261114": "6ea7d497e9a3f87fc305009ebfc28dd53f17596c71b9e3dee7540ed5d520a636",
+    "gpu-wide-virgl-scale-t2-20261114": "a3aa7b8a0a74c187d8472651b06605cf5400c94d680c4fbc3b921b6b86cb3626",
+    "gpu-wide-virgl-users2-t2-20261114": "00b9901d44867cf9a46fae2b21cdcf6ca70eb9e068e6710b0339fa657ea7f6ef",
+    "gpu-wide-virgl-users4-t2-r2-20261115": "2c18eb0b6950ff69109050dadc40c2e4554319605ef801da825433465af8c6b7",
+    "gpu-wide-virgl-batch-t2-20261114": "48f58033c9fd9ecc7c0a1a021e398cff41ef2ab7a049bf89b0d16290cfba3679",
+    "gpu-wide-virgl-mixed2-t2-20261114": "8b0c547839b3f585b2919b42376a228a7324f4d3e027ce7381a4661882fe73b3",
+    "gpu-wide-virgl-mixed4-t2-20261114": "f4cd4e2300cd7c0ebba4e10db1fc863a6a63bac80233d880a897e4c60de14ac1",
+    "gpu-wide-virgl-sustained2-t2-20261114": "9ede682c79e85d876eee064d50da7c268b77befd719994b2de26546225e9ade0",
+    "gpu-wide-virgl-sustained4-t2-20261114": "40038bfeaebf3da944bd933d02ea63c1946904682e54aac2f2bdaeac2dca1d18",
+    "gpu-wide-virgl-freq300-t2-20261114": "5607aea69a3b2e71eccb2dfcd7f8315a1424cbfad9bef07f5570768b29e510d7",
+    "gpu-wide-virgl-memory320-t2-20261114": "135012f8daf3e18ad1c74a64846dc5fcc8c75f02ff0d00fff821a1835dfa8a57",
+    "gpu-wide-virgl-scale-t3-20261114": "b08821eb404b3023287155aebd70642a8e54997e14d15d6dcf7deae40755b175",
+    "gpu-wide-virgl-users2-t3-20261114": "ec54c5d8efec686387b5fda5b82e20d4f1c8785131b1d1bb3fe18090a12d092a",
+    "gpu-wide-virgl-users4-t3-20261114": "d1673a5412287c1fe54b2f3f15e32ef17401f1652a0a68d40986ae611b7f1546",
+    "gpu-wide-virgl-batch-t3-20261114": "c043b104162788ba52dfc10a4a4eb6a59a0e5930c7197fe4cdd6ead696e9bb80",
+    "gpu-wide-virgl-mixed2-t3-20261114": "099ef3851f42b3decc88b0c560dc448848e32bd59ae48074e3e39d1e17c606e9",
+    "gpu-wide-virgl-mixed4-t3-20261114": "a43eb0065f3b527ee34f3705a23ffa8967e65df807cbb1eb3473099749ec6e92",
+    "gpu-wide-virgl-sustained2-t3-20261114": "86e84880f30deb64649a34203813e1ae9fbb6174a2565b71af64b8e67d07a75f",
+    "gpu-wide-virgl-sustained4-t3-20261114": "cf2ad596c986ab6aa9633b5e9f9b34edfcedd00e760f7043b61f50a262279625",
+    "gpu-wide-virgl-freq300-t3-20261114": "f155373c0e4ddb9a60f40218f0716b18f6497960f6109e985e31a94ce6e09856",
+    "gpu-wide-virgl-memory320-t3-20261114": "0f72f2032fb315fa1ead1f577985b401a9c77a040352ce0d3787c8f78a374656",
+    "gpu-wide-shared-literallease-t1-r2-20261114": "67fc2e575903de3a9c79b281b5937d3f39ad74dd2afcd25e6457a5c6839e394a",
+    "gpu-wide-shared-literallease-t2-20261114": "ea6078622af8221da083a354d5bec6cc0cbe4dd812729a6ee888f1f974bb8111",
+    "gpu-wide-shared-literallease-t3-20261114": "eb17d52db370526f0bfc6e4cf00c8b89a936a9534cad4cc089fbb2ebb7060967",
+    "gpu-wide-shared-trained-u1-t1-udmabuf-r1-20261115": "533cc8853c132889889e18165e05b22378b56017cfc8b2ae4f5f75f5cf4785f8",
+    "gpu-wide-shared-trained-u1-t2-udmabuf-r1-20261115": "6d4ab899f4e28377cc24881916a06f6f8d03b778ab40aa9982777768c5c38663",
+    "gpu-wide-shared-trained-u1-t3-udmabuf-r1-20261115": "dc19153f13066d4db9d69b229caaea9883921e65ccf4ffbd012d2987940ae929",
+    "gpu-wide-graphics-shared-full360-u1-r2-20261114": "90929da4b884dbb1809ff0c8df8aba4e95ec151752c110209492f977cfa1c1ce",
+    "gpu-wide-graphics-shared-full720-u1-20261114": "a8162a47134eaf59689d4ef626462ed7c1ff27e7b01e91dea212f1242787c81c",
+    "gpu-wide-graphics-shared-full1080-u1-20261114": "ce12c761f27a2561be979fdf8b784f9f34c237b2fbd2ab97c512ebd7c3d8bf21",
+    "gpu-wide-graphics-shared-full360-u2-20261114": "582894ce1ab6745afc36cb0410338d87428764f1613b0fe93dda9a2e7cfdfcd9",
+    "gpu-wide-graphics-shared-full720-u2-20261114": "19f3ba8a9f6a90a7eec87b6d82243f87f60d0c8021da4a1402f68224dfe6cfb9",
+    "gpu-wide-graphics-shared-full1080-u2-20261114": "883716199f6b58487a7f61342996822e8d8f7059eb5dabec5d668a2599eca90d",
+    "gpu-wide-graphics-shared-sel360-t1-20261114": "ecf1369dae947316aa09c01485428fed8e460a9137cd0052a4c65c8c9576b458",
+    "gpu-wide-graphics-shared-sel720-t1-20261114": "dc389b12186fa4574d20d9a414b58bdaa53e4572505981f0163b34a22eecc7e9",
+    "gpu-wide-graphics-shared-sel1080-t1-20261114": "b64f238206e6cdad69877dd1b85cfe67474d5aea66cfbcf9fe94d0aa56072535",
+    "gpu-wide-graphics-shared-sel360-t2-20261114": "5e2e8e8e27a7ca409b581028489c1aacdc7fe76187908e488c669443656aed87",
+    "gpu-wide-graphics-shared-sel720-t2-20261114": "38d20612b921a6d28dddad52687a074a913b12802623065000dd2b05d8ad921b",
+    "gpu-wide-graphics-shared-sel1080-t2-20261114": "1a38fda1bc474abab446cd73232736f499bcc61f07db8b08bb6d518b31163200",
+    "gpu-wide-graphics-shared-sel360-t3-20261114": "54ffd983b556a2bdc3d5f5112d6163453949100659969b3475098285279f3aaf",
+    "gpu-wide-graphics-shared-sel720-t3-20261114": "f7a10d547d7582680bf27f9f449603e77b22c406d3bc630aba7d7f93ae75d839",
+    "gpu-wide-graphics-shared-sel1080-t3-r2-20261114": "d71095a08bc9e0b0b58609bc5dd26c3ce91ef482feac2b43cfac75d1307d99c2",
+    "gpu-wide-native-literallease-t1-20261114": "2a68b76d106e81b7dd030e33754b745c1bdaa28d54dae668b6bf1952f1e9f481",
+    "gpu-wide-native-literallease-t2-20261114": "90530ff00e5b3039005141da94827b1b3f5f323e473228f526e068f791f526f2",
+    "gpu-wide-native-literallease-t3-20261114": "92b22fcfd6c34785ddcab9241c3816dcf7d0ec90655435db9d7cae8283be3758",
+    "gpu-wide-native-trained-u1-t1-udmabuf-r1-20261115": "1872faf4cde36ebb2331ac6e643a5b6b9818f21753a2f4fffd1c4f2716cb1d67",
+    "gpu-wide-native-trained-u1-t2-udmabuf-r1-20261115": "f91adb646fce8b5ce14c22f9995598e284ea93b9e37ae04b0a81b2feda99e718",
+    "gpu-wide-native-trained-u1-t3-udmabuf-r1-20261115": "dbc21b534214b48f5e632b560e2f95637a8e92f5c2eba6f47e1ab824c85e25e6",
+    "gpu-wide-graphics-native-full360-u1-20261114": "f98b9177e7cda5fa7d231301042701f3b49239739a4709f4cb044696bd548810",
+    "gpu-wide-graphics-native-full720-u1-20261114": "37531a92f8b7bca531325cdb20e3fdee109e0f349210b7b5e80e5adf310add89",
+    "gpu-wide-graphics-native-full1080-u1-20261114": "cffb1387020a0d032f2b5252833c14d63b5d75be9083f254fedd0ecbdbbcdabb",
+    "gpu-wide-graphics-native-full360-u2-20261114": "aeeb61d9923849ab93fd3e528bcf74dd1537e9329657185ab5ef882c4432766d",
+    "gpu-wide-graphics-native-full720-u2-20261114": "3bfbe60c4f22ff12c0c6f6ec0376818beae170007327cb1e2c6729aabe783166",
+    "gpu-wide-graphics-native-full1080-u2-20261114": "bb3fd1e5ff697b15a8cde4cd26462390cba44b4b215a534fcd720a042a3a5153",
+    "gpu-wide-graphics-native-sel360-t1-20261114": "c5d3ac6b636f37f6087b5933a5491d78afd1ba8d4dd5f9e58ddaec5c710f3ed7",
+    "gpu-wide-graphics-native-sel720-t1-20261114": "83a98055e6934a4e602005e47a22e4302cc049022ae43617ce38b08c9c7800f0",
+    "gpu-wide-graphics-native-sel1080-t1-20261114": "32e497ff4e89ac535207a90710c86e5fd6f2cf6c0bf96e8e6abc939b711add0c",
+    "gpu-wide-graphics-native-sel360-t2-20261114": "5c69bfb0165b1ed42f716f76161bf08b4ed92a327d66f5db3e95cde743b03e0f",
+    "gpu-wide-graphics-native-sel720-t2-20261114": "3c054742cba3a531bc29567cbe0a3d9fd914567c5bf66799e46dbba0e814957d",
+    "gpu-wide-graphics-native-sel1080-t2-20261114": "ec6117cd9543f950afa39104063003938ae06306f18f56f8fed9199859ddca81",
+    "gpu-wide-graphics-native-sel360-t3-20261114": "651b1c8532f69f0259c12f3ddb94d00b690fc6391d457995fa56fbb6230d26a2",
+    "gpu-wide-graphics-native-sel720-t3-20261114": "502479c6a38d0b2a2b5bb2e44e22979f326d3adadd37b42e78c1c2af5b778ba4",
+    "gpu-wide-graphics-native-sel1080-t3-20261114": "63bf9177da3e5e409f05cee31e592851abea27392a9abf41c9c664c490a25f23",
+    "gpu-wide-virgl-literallease-t1-20261114": "8263a27525ff955a3df5f371df7de289d0a72424850fa979ccd29588cf9e8de8",
+    "gpu-wide-virgl-literallease-t2-20261114": "9569e4c20e3447800debf441151fdd2bfba4e23b60c39b209bc039eb7cff905b",
+    "gpu-wide-virgl-literallease-t3-20261114": "6b5f3e40b6658e304d1777a397758b908019eeff54dad45140b2a33a659a037e",
+    "gpu-wide-graphics-virgl-full360-u1-r3-20261115": "672d957a0ed0824f50482f306406ac1ef7452ee470a68f88a7b55ef2a85056fd",
+    "gpu-wide-graphics-virgl-full720-u1-20261114": "7313b62988c09046564c026b32dc985d21eafcf10eb1544b06aa5f4a91e263a2",
+    "gpu-wide-graphics-virgl-full1080-u1-20261114": "347dde5ff829b62b30ab6f4ca0250839e38cb56b08f09f64e7abb5f694e75111",
+    "gpu-wide-graphics-virgl-full360-u2-20261114": "ea1de7ff748be5a3e41ffa794bbb6625b2c84ff562657e2d30908e05948a175d",
+    "gpu-wide-graphics-virgl-full720-u2-20261114": "fc8caac19f7f63357596ba490893d4ca905df0bb3628d754581f56fb85c2809f",
+    "gpu-wide-graphics-virgl-full1080-u2-20261114": "fe07067357a6f5acfe57b6180c980fd24fdb0ee78ed03f8a1841ec8e72085d5f",
+    "gpu-wide-graphics-virgl-sel360-t1-20261114": "41e27ef8a57f391b7da6fac5cf85f20d3fe3ecd2053f16456cf6be4d49084981",
+    "gpu-wide-graphics-virgl-sel720-t1-20261114": "9422ea253646b5ca968abe742c5ca7f241e5f89a463999471a2842daa1ad640a",
+    "gpu-wide-graphics-virgl-sel1080-t1-20261114": "47f7acd65c862667b641f40800166fdfaf6dbe128f7cdc52557c78e614f23481",
+    "gpu-wide-graphics-virgl-sel360-t2-20261114": "f766af2d80e31964ca7f5d393190ca59484e682688735659d236a574cde4f82d",
+    "gpu-wide-graphics-virgl-sel720-t2-20261114": "ac240db8400206c6b035352e38eaac7138e5f655ff1674b89036e6a3ef3cdf51",
+    "gpu-wide-graphics-virgl-sel1080-t2-20261114": "e814f8bb5bfa730b42fb23eef70475f7b32f31c17d1bf1ee986fcc1a50e36737",
+    "gpu-wide-graphics-virgl-sel360-t3-20261114": "59540d92f863054d2a3db6f78477d657567f7c61f7334e32b664578cb10542b7",
+    "gpu-wide-graphics-virgl-sel720-t3-20261114": "c7e105d7328a9fe14cee956faa50af961ba2c56f191180e52824744857753972",
+    "gpu-wide-graphics-virgl-sel1080-t3-20261114": "09c5a9fc72b2aae116135fb0eac06bb9f6f26c570640f9a25193c69059b3cdcf",
+    "gpu-wide-virgl-trained-u1-t1-20261114": "1c87cd96cd8bbe813fc80836cb02c8d958aaa325e4f33cfd7dea6819b0926034",
+    "gpu-wide-virgl-trained-u1-t2-20261114": "bf9f334a93c6db5677d09cd239eee97a5ddc5c343f5284c5808d7d11d9e8c64b",
+    "gpu-wide-virgl-trained-u1-t3-20261114": "349005597e2417c6f3999b9320108cd90328efa8c1bed6ce450e8acf17ad3238",
+    "gpu-wide-shared-workflow-scale-t1-20261115": "ad49feb051f0a8553f61348b6044c48279bda19d4d5ed06ee6268aaccab3534e",
+    "gpu-wide-shared-workflow-users2-t1-20261115": "45ee53df50a16fbbce5cda1776b5bb3b621da464cd7994cf6ad7c16e2ada5c55",
+    "gpu-wide-shared-workflow-users4-t1-20261115": "922ea540014586fde058e647617d98286f673e475f81b7deaaba27d1e590585a",
+    "gpu-wide-shared-workflow-mixed2-t1-20261115": "0bd4abeccc10b52c6f409da4e2eb5e26ab7c26c6768858b40fc4ee4d684f0eb7",
+    "gpu-wide-shared-workflow-mixed4-t1-20261115": "9fea8908a11a8dd56faae87d3a603f798556322da2813217a319586fcc2811f6",
+    "gpu-wide-shared-workflow-sustained2-t1-20261115": "2cb1bbf9d767752dbac97fc3286cad3764f156edf24d1141fd2948b43aa0d094",
+    "gpu-wide-shared-workflow-sustained4-t1-20261115": "6844bfc1e5934d782d5a75ab72f76cba14c73e3bf255a9c44fd7daddd02f294d",
+    "gpu-wide-shared-workflow-scale-t2-20261115": "335422b6a7a01d8a957bd75379e017917d88f6c86b0333a93146fb214cd1c64b",
+    "gpu-wide-shared-workflow-users2-t2-20261115": "b31aaea255755954918b4d8e66c9120e95575a1ad8fd67ecac90f1158aac8944",
+    "gpu-wide-shared-workflow-users4-t2-20261115": "d780f2f5d09a408d46bb54121fd97166fa27dcb3c3fdf066416e0e2c7f241d59",
+    "gpu-wide-shared-workflow-mixed2-t2-20261115": "3147c770498d9ce05850cafd6946b5c67df73f35711bfb888056661198ee508f",
+    "gpu-wide-shared-workflow-mixed4-t2-20261115": "8e0bea43613d83ea5fec44a4515a02e475b49884034561b16a7354225289b39b",
+    "gpu-wide-shared-workflow-sustained2-t2-20261115": "8f6c876ff5b96145cb6db73538a0d73129d8776637f4dd77d4fb4df1b18f4e27",
+    "gpu-wide-shared-workflow-sustained4-t2-20261115": "02c691326da09b301131f5b2ddae40ff4d7e494101ea114142be45fc8bb26e5c",
+    "gpu-wide-shared-workflow-scale-t3-20261115": "824ccae9f4ac212b4245cb8c598e593055de6e2522e0f2b3f3f303f1ab15c02d",
+    "gpu-wide-shared-workflow-users2-t3-20261115": "3b6fa872e394c0ce6be337df7723df7736c38d166cf2d94fb9c5a83576439be5",
+    "gpu-wide-shared-workflow-users4-t3-20261115": "4d5192dda001829b7a1e6c628cb6738d98a106d8fb60a9aa3dd9b875ce2cd6e0",
+    "gpu-wide-shared-workflow-mixed2-t3-20261115": "9a3217290554acb0bff45548780dc6cd5086b549223f29db608aa7ef9ab1904d",
+    "gpu-wide-shared-workflow-mixed4-t3-20261115": "bb893a1c18cb0ea42cb1a3a0ec2ac13a5a6657479b696c8c78523c2fc974a8ea",
+    "gpu-wide-shared-workflow-sustained2-t3-20261115": "db3f31ee7614d048337f8358e81a2f96b20234aa37073fff618c7cba508504b8",
+    "gpu-wide-shared-workflow-sustained4-t3-20261115": "73a2036a047c9cbcea9d9961dcade9158b77b42910a090836533508e31a08016"
+  },
+  "files": {
+    "formal-config-ledger.csv": {
+      "sha256": "4892086a0a3ef548b057c620a0bc12281b10a43e173055d50cf50c26d20fc1b9",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/formal-config-ledger.csv"
+    },
+    "formal-workload-rows.csv": {
+      "sha256": "2e35343b5804e8b54abccab04609599d4efd69fdb139b9cc1fa7ad31c07a3c7d",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/formal-workload-rows.csv"
+    },
+    "formal-independent-summary.csv": {
+      "sha256": "cd579fde36f7d4168baeab1b49bafbb3a0f09f028238113f46c549325f13dc23",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/formal-independent-summary.csv"
+    },
+    "formal-windows-and-leases.csv": {
+      "sha256": "c59ae5093716ebd70a44a35d3b50972e8b624108e5fc38f5fcee1ee96234be8e",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/formal-windows-and-leases.csv"
+    },
+    "three-way-comparison.csv": {
+      "sha256": "7c359764b4c0e71b40b607f67f32d03d7dc7e7383038a4c68284814fd2234f9f",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/three-way-comparison.csv"
+    },
+    "trained-setup-and-inference.csv": {
+      "sha256": "7afa0abe5eaec187b34e5bcf8bec2cc0962c5c08463ec8bd30a2b9098d3a6a74",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/trained-setup-and-inference.csv"
+    },
+    "verified-workflow-windows.csv": {
+      "sha256": "b4970cc649a34ebfacea999f75e9bbb776cc363ff6700848757dca09ed273c34",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/verified-workflow-windows.csv"
+    },
+    "resource-sensitivity.csv": {
+      "sha256": "90685c5d44b7f2effe1739f5fe5d4cc9ab88d437def943df0564c74bd80ed8db",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/resource-sensitivity.csv"
+    },
+    "per-user-active-latency-balance.csv": {
+      "sha256": "a0683b49082fd6a37f4779e13a2932455f171cd396f124806c6ab9efce2f7064",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/per-user-active-latency-balance.csv"
+    },
+    "resource-observations.csv": {
+      "sha256": "be8a4a492104861b8b3cc9ded5b69f4f9c0874786f83a7b7f29bfd5b4024e396",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/resource-observations.csv"
+    },
+    "hint-fallback-observations.csv": {
+      "sha256": "27d0f51024928ad50d7a3a0ac6aab4be682865bc14174a38ff7f3d773a5771b8",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/hint-fallback-observations.csv"
+    },
+    "all-attempts.csv": {
+      "sha256": "cab109f0089864cd4950894258472fca596ab86e9632bc3b982c6a5e32a86a9d",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/all-attempts.csv"
+    },
+    "formal-measurement-samples.csv": {
+      "sha256": "6d61be9dacc312b5b394a08be53de979740ed76659f35e579a8bc0947f37483c",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/formal-measurement-samples.csv"
+    },
+    "formal-graphics-scenes.csv": {
+      "sha256": "805eca3968993508253d9b26eea9fc74c67be01f5eeaa2afeef3df5dd45a036d",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/formal-graphics-scenes.csv"
+    },
+    "complete-workflow-rows.csv": {
+      "sha256": "d87430ee3fc29981ce9085031b1d390d3704b61007a261d8ec3a20ba58ab1d71",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/complete-workflow-rows.csv"
+    },
+    "complete-workflow-summary.csv": {
+      "sha256": "f36aac67ad74dd04dadc9bda4fcdc7356627521e91c3be982b19c746e8ac4fbb",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/complete-workflow-summary.csv"
+    },
+    "comparison-tables.md": {
+      "sha256": "8117a3b11d904a8a8ce0c94983c1867be88789df0e5386ead37d1b3d24f93636",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/comparison-tables.md"
+    },
+    "measurement-samples-provenance.json": {
+      "sha256": "8247b94588cd4bcc669d96fed940bba9c71f34917f0ab0b8c67dad729808f34d",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/measurement-samples-provenance.json"
+    },
+    "complete-workflow-tables.md": {
+      "sha256": "a3d5a5ae9d739f7e6934d597c0233f0b153ec9a1d5e2c998232d6277d9fd5339",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/complete-workflow-tables.md",
+      "source_sha256": "0fc0ab707eb119829b3573aaf23008cd40d2ebb31ecb42c419269b79bf4ddabf"
+    },
+    "workflow-tables-provenance.json": {
+      "sha256": "181eccd644322fe0e71c301b8d6155ddc689259a858a2a5759aee0c3c830dd17",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/workflow-tables-provenance.json"
+    },
+    "entropy-context-observations.csv": {
+      "sha256": "cd8aa48da6138f36c88971100030edb96e0be60ba0943e9614a31d022c30878a",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/entropy-context-observations.csv"
+    },
+    "entropy-context-observations.json": {
+      "sha256": "96e8735d9546e8652044b89fda24919c687178c50ed27afae7ad0bba4c9854fa",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/entropy-context-observations.json"
+    },
+    "prior-model-observations.csv": {
+      "sha256": "33a74282baec2b941176e19db904014e14b6697e7da89b795a9d907e0c0f8ee9",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/prior-model-observations.csv"
+    },
+    "prior-model-observations.json": {
+      "sha256": "b79e26fde53c44bfb9434c778cfee0f8f787bb3f2098e57a5ff7d7a4d2b707c7",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/prior-model-observations.json"
+    },
+    "retained-model-extensions.csv": {
+      "sha256": "f0132caaa99d40fa99132eb965f4f00f97932494d386753cd1fcd39348a4e6c9",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/retained-model-extensions.csv"
+    },
+    "retained-model-extensions.json": {
+      "sha256": "df8a38695f99fd707c09bfb1952ce263aecd89b93867f60c0f7000f2e5792220",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/retained-model-extensions.json"
+    },
+    "model-extension-scope-ledger.csv": {
+      "sha256": "0c724900ece8e9c0b5e75e56a8585450dcdca5bb95ae1ac4d0948d454449b8e4",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/model-extension-scope-ledger.csv"
+    },
+    "plots/batch-size.pdf": {
+      "sha256": "cfcf1a8b07bb417f171fa30180768bc89c656e10d7e9cf3b29ad3e16d37b712b",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/plots/batch-size.pdf"
+    },
+    "plots/batch-size.png": {
+      "sha256": "9aa3c816f8a4c19e0bbbd41d6b576b8cfdd9f192d3aad3bf4df02fedcdf7f346",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/plots/batch-size.png"
+    },
+    "plots/batch-size.svg": {
+      "sha256": "34c810e526855385b94157a62312804f1597cabfebbac4cbfa657fcb89fccd3c",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/plots/batch-size.svg"
+    },
+    "plots/complete-workflow-literal.pdf": {
+      "sha256": "8d514ae6813f4889d05271b84c545cedafdf3c9d329f04dacf1b24fcfdc1cbfa",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/plots/complete-workflow-literal.pdf"
+    },
+    "plots/complete-workflow-literal.png": {
+      "sha256": "470532a29eb2d513640e84eab665ab1f8665cbfa81fe1bcd08ce516d169ea4a5",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/plots/complete-workflow-literal.png"
+    },
+    "plots/complete-workflow-literal.svg": {
+      "sha256": "764241f4d9888460bf8d3321d4cf5e00349ad1fbaa768acc0929e571c2a0e184",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/plots/complete-workflow-literal.svg"
+    },
+    "plots/graphics-full.pdf": {
+      "sha256": "51266100ea5ced411efd47bb713d6d5dfcbba9269a569ff19f3580c678acaaee",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/plots/graphics-full.pdf"
+    },
+    "plots/graphics-full.png": {
+      "sha256": "15a7a50ed639a3b21f67a7bd8b58b2047d12bce64262b025a6472352513f75ea",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/plots/graphics-full.png"
+    },
+    "plots/graphics-full.svg": {
+      "sha256": "adc06e8b81c797c45f4aefba387881ccff48127b716be297f86ca83124750649",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/plots/graphics-full.svg"
+    },
+    "plots/graphics-selected.pdf": {
+      "sha256": "123d439f115ed1792a12fa72eaa5990255606a60520a67937e30f4028cbbf00f",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/plots/graphics-selected.pdf"
+    },
+    "plots/graphics-selected.png": {
+      "sha256": "811d1fc4f802618de0de93b0cad81b4b3f8a71882e1e3eec65880eca9444cad5",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/plots/graphics-selected.png"
+    },
+    "plots/graphics-selected.svg": {
+      "sha256": "85406916957a1c7dcf1fb5139d5e0e558f6c94e180806fa47328347d589238e5",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/plots/graphics-selected.svg"
+    },
+    "plots/readback-stages.pdf": {
+      "sha256": "213a6a0ce2ee383d59a3d2a3da55a24bf684992bc432bba263e37efba34e31a3",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/plots/readback-stages.pdf"
+    },
+    "plots/readback-stages.png": {
+      "sha256": "135e75bb066dcf54ecaba3f79bc3e2691201c60266206087f51f3b22ff52c481",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/plots/readback-stages.png"
+    },
+    "plots/readback-stages.svg": {
+      "sha256": "48acf2b1dcc03688522c9b6131bb09752fdefb1035d8e57da85c713cc0806f20",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/plots/readback-stages.svg"
+    },
+    "plots/resource-sensitivity.pdf": {
+      "sha256": "22c06c457821e3044c1330b65259e49cffe8054ddda7f60ff4a7643f3acfa5ea",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/plots/resource-sensitivity.pdf"
+    },
+    "plots/resource-sensitivity.png": {
+      "sha256": "c2593814764ee8c6df0b8785c8b2f30896d383742cbfe83ed59c4c7bba08af26",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/plots/resource-sensitivity.png"
+    },
+    "plots/resource-sensitivity.svg": {
+      "sha256": "dbe919fb44b010e825cc2f4882c0bcd86908171408686d6a4f167f4d400bb84c",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/plots/resource-sensitivity.svg"
+    },
+    "plots/trained-model-inference.pdf": {
+      "sha256": "bfdaed6dec95cc30237df52ff32217694366e3ffd4e5bd71cf0b2060596fd0ba",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/plots/trained-model-inference.pdf"
+    },
+    "plots/trained-model-inference.png": {
+      "sha256": "b8e080ef89944941d314460ab4ff91fe4c2cbee7ac43a2fc8360365162d7ce18",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/plots/trained-model-inference.png"
+    },
+    "plots/trained-model-inference.svg": {
+      "sha256": "12b46cb4ea75391e28aea2bd22c3a29ea40fa00b959e4a1265aacd7f5aa977ac",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/plots/trained-model-inference.svg"
+    },
+    "plots/user-count.pdf": {
+      "sha256": "3ace3c004165143ea5bfcaf6a6c3b519d38eaec4d69fecc983622282c6da6a9f",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/plots/user-count.pdf"
+    },
+    "plots/user-count.png": {
+      "sha256": "0ea9d9f640616016f8d4a906d55c1752316cba56fca11a3e447cccd531c95911",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/plots/user-count.png"
+    },
+    "plots/user-count.svg": {
+      "sha256": "a4398117d7be7ebdfb893a66cdaf4878e25540defd7b243b7d44c05fb7813dbf",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/plots/user-count.svg"
+    },
+    "plots/workload-scale.pdf": {
+      "sha256": "6627f230326b8a5eeda6b4250a7a71d86f99830faeaed1318fdcc5fda55a6b62",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/plots/workload-scale.pdf"
+    },
+    "plots/workload-scale.png": {
+      "sha256": "3c4121a0cbbc55961896f2d85bb12dae4e11ee8c27d9f5500dcd81b3f8e004a6",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/plots/workload-scale.png"
+    },
+    "plots/workload-scale.svg": {
+      "sha256": "522f0ca05a764f022261e008d88761057076a612bb94b2e4de1543fa137547dd",
+      "source": "build/gpu-comprehensive-20261114/analysis-formal/plots/workload-scale.svg"
+    },
+    "restoration-summary.json": {
+      "sha256": "6ccdc128ff31470b69b1656a02ec918746779fad1c42ebeb53eadb2433659d07",
+      "source": "Derived from exact accepted-stack final-state audit"
+    },
+    "venus-compatibility-summary.json": {
+      "sha256": "74cd28de28ceb424193076305df1842eb2053a2ad54503270fccca8743ec9e3c",
+      "source": "Derived from pinned compatibility build, qualification and matched-model execution proofs"
+    }
+  },
+  "scope": "Experiment data and figures only; no runtime logs, credentials, model weights, device tokens or build caches. native in machine-readable files means Realm passthrough time-sharing, never Host Native. Raw log evidence stays in ignored build/lab-runs and verified local run collections."
+}

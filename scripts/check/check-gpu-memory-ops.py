@@ -37,7 +37,7 @@ results = []
 def run(name, bodies, rtt_text=rtt, mutant=False):
     case = out / name
     case.mkdir()
-    (case / 'private-memory-ops.inc').write_text('\n'.join(bodies.values()))
+    (case / 'private-memory-ops.inc').write_text('#include "gpu_test_memory_fallback.h"\n' + '\n'.join(bodies.values()))
     (case / 'rtt.c').write_text(rtt_text)
     command = [os.environ.get('HOST_CC', 'cc'), '-std=c11', '-Wall', '-Wextra', '-Werror',
                '-O2', '-g', '-fsanitize=address,undefined', '-fno-sanitize-recover=undefined',
@@ -72,7 +72,7 @@ mutations = [
     ('skip_scrub', 'clear_page', 'memset(memory, 0, GRANULE_SIZE);', '(void)memory;'),
     ('cpu_return_writes_back', 'sync_page_for_cpu', 'inv_dcache_range((uintptr_t)memory, GRANULE_SIZE);', 'flush_dcache_range((uintptr_t)memory, GRANULE_SIZE);'),
     ('device_handoff_discards', 'sync_page_for_device', 'flush_dcache_range((uintptr_t)memory, GRANULE_SIZE);', '(void)flush_dcache_range; inv_dcache_range((uintptr_t)memory, GRANULE_SIZE);'),
-    ('skip_read_barrier', 'read_page', 'dsb(sy);', '(void)0;'),
+    ('skip_read_barrier', 'read_page', '\tdsb(sy);\n\tmemcpy(destination,', '\t(void)0;\n\tmemcpy(destination,'),
     ('skip_data_unlock', 'write_page', 'granule_unlock(data);', '(void)data;'),
 ]
 for name, function, old, new in mutations:

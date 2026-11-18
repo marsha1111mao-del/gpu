@@ -26,6 +26,7 @@ def function(name):
 if not args.prepare_only:
     includes = ['runtime/tests/mmio-stubs', 'runtime/include', 'ext/mbedtls/include', 'ext/mbedtls/library']
     sources = ['plat/rk3588/src/rk3588_gpu.c', 'runtime/core/opencca_gpu.c',
+               'runtime/core/xshm_endpoint.c',
                'runtime/core/opencca_gpu_lease.c', 'runtime/core/opencca_gpu_private.c',
                'runtime/core/opencca_gpu_firmware.c', 'ext/mbedtls/library/sha256.c',
                'ext/mbedtls/library/platform_util.c', 'runtime/tests/opencca_gpu_backend_test.c']

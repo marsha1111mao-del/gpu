@@ -6,6 +6,7 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import re
 import selectors
 import shlex
 import signal
@@ -59,6 +60,15 @@ def acquire(role, out):
     return proc
 
 
+def expected_postflight(before, online_cpus=None, gpu_driver=None):
+    expected = {key: before[key] for key in ('online_cpus', 'gpu_driver') if key in before}
+    if online_cpus is not None:
+        expected['online_cpus'] = online_cpus
+    if gpu_driver is not None:
+        expected['gpu_driver'] = '/sys/bus/platform/drivers/' + gpu_driver
+    return expected
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--run-id', default='lab-'+dt.datetime.now().strftime('%Y%m%d-%H%M%S'))
@@ -66,10 +76,17 @@ def main():
                    help='release RK lease before command; retain Pi lease through reboot and postflight')
     p.add_argument('--recover-rk-offline', action='store_true',
                    help='Pi-only lease for an offline RK recovery; requires --allow-rk-reboot')
+    p.add_argument('--expected-online-cpus',
+                   help='Explicit postflight CPU set for an intentional recovery; default: preflight set')
+    p.add_argument('--expected-gpu-driver', choices=('pmthor', 'panthor'),
+                   help='Explicit postflight driver for an intentional handoff; default: preflight driver')
     p.add_argument('command', nargs=argparse.REMAINDER)
     args = p.parse_args()
     if args.recover_rk_offline and not args.allow_rk_reboot:
         p.error('--recover-rk-offline requires --allow-rk-reboot')
+    if args.expected_online_cpus is not None:
+        if not re.fullmatch(r'\d+(?:-\d+)?(?:,\d+(?:-\d+)?)*', args.expected_online_cpus):
+            p.error('--expected-online-cpus must be a CPU list such as 0-1 or 0,2-3')
     command = args.command[1:] if args.command[:1] == ['--'] else args.command
     if not command:
         p.error('provide a runner after --')
@@ -172,13 +189,15 @@ def main():
                 if after['active_lab_processes'] or after['loops']['rc'] != 0 or after['loops']['stdout']:
                     issues.append('VM/broker/loop resources remain')
                     result['cleanup_required'] = True
-                changed = [key for key in ('online_cpus', 'gpu_driver')
-                           if key in before and after[key] != before[key]]
+                expected = expected_postflight(before, args.expected_online_cpus,
+                                               args.expected_gpu_driver)
+                result['expected_postflight'] = expected
+                changed = [key for key, value in expected.items() if after[key] != value]
                 if args.recover_rk_offline:
                     issues.extend(resources.violations(after))
                 if changed:
                     result['restore_mismatch'] = changed
-                    issues.append('Host configuration differs from preflight')
+                    issues.append('Host configuration differs from expected postflight state')
                 if issues and child is not None and rc == 0:
                     result['status'] = 'POSTFLIGHT_FAILED'
                     rc = 1

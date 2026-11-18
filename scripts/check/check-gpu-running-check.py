@@ -97,7 +97,7 @@ replace_once('\textend_mmio(root, firmware_root);', '\trunning_mmio(root, firmwa
 replace_once('static bool extend_private(unsigned long root, unsigned int slot, unsigned long firmware_root)', '''static bool check_running_private(unsigned long root, unsigned int slot,
         unsigned long firmware_root, struct gpu_firmware_config *config)
 {
-    assert(alias_revoked && opencca_gpu_service_isolated(&service));
+    assert(alias_revoked && opencca_gpu_service_isolated(&service, SERVICE_ENDPOINT));
     running_checks++;
     return plat_opencca_gpu_pt_check_running(root, slot, firmware_root, config);
 }
@@ -137,10 +137,11 @@ common = [os.environ.get('HOST_CC', 'cc'), '-std=c11', '-Wall', '-Wextra', '-Wer
 common += ['-I' + str(rmm / p) for p in ['runtime/tests/mmio-stubs', 'runtime/tests', 'runtime/include',
            'ext/mbedtls/include', 'ext/mbedtls/library']]
 sources = [rmm / p for p in ['plat/rk3588/src/rk3588_gpu.c', 'runtime/core/opencca_gpu.c',
+           'runtime/core/xshm_endpoint.c',
            'runtime/core/opencca_gpu_lease.c', 'runtime/core/opencca_gpu_private.c',
            'runtime/core/opencca_gpu_firmware.c', 'ext/mbedtls/library/sha256.c',
            'ext/mbedtls/library/platform_util.c']]
-private_original = sources[3].read_text()
+private_original = sources[4].read_text()
 private_fixture = out / 'private-core.c'
 private_fixture.write_text(private_original + '''
 /* Model-only entry: exercise real context metadata without a production API. */
@@ -187,7 +188,7 @@ void gpu_running_metadata_test(const struct gpu_private_ops *ops, const void *se
     *ctx = saved;
 }
 ''')
-sources[3] = private_fixture
+sources[4] = private_fixture
 results = []
 
 def run_case(name, selected_sources, options=(), arguments=(), expected=0):
@@ -210,7 +211,7 @@ mutants = [
     ('skip_dynamic_mcu', 0, 'reg_read(MCU_STATUS) == 1U &&', 'true &&'),
     ('skip_dynamic_fault', 0, '(reg_read(MMU_INT_RAWSTAT) & MMU_FAULT_MASK) == 0U &&', 'true &&'),
     ('skip_dynamic_frequency', 0, 'read_cntfrq_el0() == frequency &&', 'true &&'),
-    ('skip_service_identity', 3, 'ctx->service != service ||', 'false ||'),
+    ('skip_service_identity', 4, 'ctx->service != service ||', 'false ||'),
 ]
 for name, index, old, new in mutants:
     code = sources[index].read_text()

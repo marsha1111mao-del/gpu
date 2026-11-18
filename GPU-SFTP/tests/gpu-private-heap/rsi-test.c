@@ -9,6 +9,7 @@
 struct rec { struct { const void *g_rd; } realm_info; unsigned long regs[8]; };
 static int client_a, client_b, service;
 static bool isolated = true, disconnected;
+static const unsigned long service_endpoint_id = 123UL;
 static unsigned int calls;
 static const struct gpu_firmware_ops firmware_operations;
 static const struct gpu_private_ops operations;
@@ -19,8 +20,10 @@ static const void *xshm_endpoint_peer(const void *owner, unsigned long channel, 
 	*peer = 123UL;
 	return owner == &service ? &client_a : &service;
 }
-static bool opencca_gpu_service_isolated(const void *owner)
-{ return owner == &service && isolated; }
+static unsigned long xshm_endpoint_id(const void *owner)
+{ return owner == &service ? service_endpoint_id : 0UL; }
+static bool opencca_gpu_service_isolated(const void *owner, unsigned long endpoint_id)
+{ return owner == &service && endpoint_id == service_endpoint_id && isolated; }
 void gpu_firmware_task_heap_event(const struct gpu_firmware_ops *f,
 		const struct gpu_private_ops *m, const void *s, const void *o,
 		unsigned long task, struct gpu_private_result *r)

@@ -12,6 +12,7 @@ p.add_argument('--performance-suite', type=Path, help='Include a read-only workl
 p.add_argument('--output', type=Path, default=ROOT/'build/realm-xshm/initrd.cpio')
 p.add_argument('--gpu-smoke', type=Path, help='Include the static DRM validation tool')
 p.add_argument('--gpu-private', type=Path, help='Include the private BO/RSI validation tool')
+p.add_argument('--session-quota-probe', type=Path, help='Include the private Client DRM session quota probe')
 p.add_argument('--gpu-firmware', type=Path, help='Include the pinned firmware for RMM private-service bootstrap')
 p.add_argument('--gles-ml', type=Path, help='Include the matched AArch64 ML workload override')
 p.add_argument('--gles-compute', type=Path, help='Include the matched GLES compute/GPU eventfd probe override')
@@ -35,6 +36,8 @@ if a.gpu_smoke:
     entries.append(('panthor_ioctl_smoke', a.gpu_smoke, 0o755))
 if a.gpu_private:
     entries.append(('realm-gpu-private', a.gpu_private, 0o755))
+if a.session_quota_probe:
+    entries.append(('session-quota-probe', a.session_quota_probe, 0o755))
 if a.gles_ml:
     entries.append(('gles-ml-smoke', a.gles_ml, 0o755))
 if a.gles_compute:

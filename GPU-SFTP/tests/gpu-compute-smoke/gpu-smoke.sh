@@ -108,24 +108,6 @@ apply_cmdline_overrides() {
 		export GPU_SMOKE_START_UPTIME_MS
 	fi
 
-	value="$(cmdline_value gpu_smoke_vmshm_probe_handle || true)"
-	if [ -n "${value}" ]; then
-		GPU_SMOKE_VMSHM_PROBE_HANDLE="${value}"
-		export GPU_SMOKE_VMSHM_PROBE_HANDLE
-	fi
-
-	value="$(cmdline_value gpu_smoke_vmshm_probe_expect || true)"
-	if [ -n "${value}" ]; then
-		GPU_SMOKE_VMSHM_PROBE_EXPECT="${value}"
-		export GPU_SMOKE_VMSHM_PROBE_EXPECT
-	fi
-
-	value="$(cmdline_value gpu_smoke_vmshm_probe_spoof_vmid || true)"
-	if [ -n "${value}" ]; then
-		GPU_SMOKE_VMSHM_PROBE_SPOOF_VMID="${value}"
-		export GPU_SMOKE_VMSHM_PROBE_SPOOF_VMID
-	fi
-
 	value="$(cmdline_value gpu_smoke_ioctl_mode || true)"
 	if [ -n "${value}" ]; then
 		GPU_SMOKE_IOCTL_MODE="${value}"
@@ -150,23 +132,6 @@ apply_cmdline_overrides() {
 		export GPU_SMOKE_GUEST_RINGBUF_READ_PROBE
 	fi
 
-	value="$(cmdline_value gpu_smoke_raw_rpc_probe_session || true)"
-	if [ -n "${value}" ]; then
-		GPU_SMOKE_RAW_RPC_PROBE_SESSION="${value}"
-		export GPU_SMOKE_RAW_RPC_PROBE_SESSION
-	fi
-
-	value="$(cmdline_value gpu_smoke_raw_rpc_probe_ops || true)"
-	if [ -n "${value}" ]; then
-		GPU_SMOKE_RAW_RPC_PROBE_OPS="${value}"
-		export GPU_SMOKE_RAW_RPC_PROBE_OPS
-	fi
-
-	value="$(cmdline_value gpu_smoke_raw_rpc_probe_timeout_ms || true)"
-	if [ -n "${value}" ]; then
-		GPU_SMOKE_RAW_RPC_PROBE_TIMEOUT_MS="${value}"
-		export GPU_SMOKE_RAW_RPC_PROBE_TIMEOUT_MS
-	fi
 }
 
 dump_perf_dmesg() {
@@ -194,19 +159,6 @@ dump_client_comm_rpc_stats() {
 		echo 0 >"${param}" 2>/dev/null || true
 		;;
 	esac
-}
-
-dump_panthor_client_params() {
-	local path="/sys/module/panthor_client/parameters/bo_mmap_cached"
-	local value
-
-	if [ ! -r "${path}" ]; then
-		log "PANTHOR_CLIENT_BO_MMAP_CACHED=missing"
-		return 0
-	fi
-
-	value="$(cat "${path}" 2>/dev/null || true)"
-	log "PANTHOR_CLIENT_BO_MMAP_CACHED=${value}"
 }
 
 glmark2_progress_sample() {
@@ -375,69 +327,6 @@ glmark2_progress_monitor() {
 		tee -a /tmp/glmark2-progress.log
 }
 
-run_vmshm_lookup_probe() {
-	local handle="${GPU_SMOKE_VMSHM_PROBE_HANDLE:-}"
-	local expect="${GPU_SMOKE_VMSHM_PROBE_EXPECT:-denied}"
-	local spoof="${GPU_SMOKE_VMSHM_PROBE_SPOOF_VMID:-}"
-	local rc
-
-	[ -n "${handle}" ] || return 0
-
-	if [ ! -x /root/vmshm_lookup_probe ]; then
-		log "missing /root/vmshm_lookup_probe for vmshm isolation probe"
-		echo "VMSHM_ISOLATION_RESULT=FAIL"
-		return 126
-	fi
-
-	if [ -n "${spoof}" ]; then
-		log "+ /root/vmshm_lookup_probe --handle ${handle} --expect ${expect} --spoof-vmid ${spoof}"
-		/root/vmshm_lookup_probe \
-			--handle "${handle}" \
-			--expect "${expect}" \
-			--spoof-vmid "${spoof}" 2>&1
-	else
-		log "+ /root/vmshm_lookup_probe --handle ${handle} --expect ${expect}"
-		/root/vmshm_lookup_probe \
-			--handle "${handle}" \
-			--expect "${expect}" 2>&1
-	fi
-	rc=$?
-
-	if [ "${rc}" -eq 0 ]; then
-		echo "VMSHM_ISOLATION_RESULT=PASS"
-	else
-		echo "VMSHM_ISOLATION_RESULT=FAIL rc=${rc}"
-	fi
-	return "${rc}"
-}
-
-run_vmshm_raw_rpc_probe() {
-	local session="${GPU_SMOKE_RAW_RPC_PROBE_SESSION:-}"
-	local ops="${GPU_SMOKE_RAW_RPC_PROBE_OPS:-dev-query,close-session}"
-	local timeout_ms="${GPU_SMOKE_RAW_RPC_PROBE_TIMEOUT_MS:-1500}"
-	local rc
-
-	[ -n "${session}" ] || return 0
-
-	if [ ! -x /root/vmshm_raw_rpc_probe ]; then
-		log "missing /root/vmshm_raw_rpc_probe for raw vmshm RPC isolation probe"
-		echo "VMSHM_RAW_RPC_RESULT=FAIL"
-		return 126
-	fi
-
-	log "+ /root/vmshm_raw_rpc_probe --session ${session} --ops ${ops} --timeout-ms ${timeout_ms}"
-	/root/vmshm_raw_rpc_probe \
-		--session "${session}" \
-		--ops "${ops}" \
-		--timeout-ms "${timeout_ms}" 2>&1
-	rc=$?
-
-	if [ "${rc}" -ne 0 ]; then
-		echo "VMSHM_RAW_RPC_RESULT=FAIL rc=${rc}"
-	fi
-	return "${rc}"
-}
-
 run_glmark2_workload() {
 	local flavor="${GPU_SMOKE_GLMARK_FLAVOR:-gbm}"
 	local glmark_bin glmark_winsys_args=""
@@ -514,8 +403,6 @@ run_glmark2_workload() {
 		return 127
 	fi
 
-	dump_panthor_client_params
-
 	rc=99
 	drm_node=
 	if [ -n "${requested_node}" ] && [ ! -e "${requested_node}" ]; then
@@ -590,12 +477,9 @@ run_glmark2_workload() {
 			return 2
 			;;
 	esac
-	# Upstream null's default off-screen frame end creates an EGL fence.  The
-	# vmshm Panthor frontend can export/import its own pending frontend fence,
-	# but not a foreign fence, so some off-screen EGL paths still report
-	# "MESA: error: export failed".  null-noop therefore defaults to no per-frame
-	# fence as a performance/diagnostic choice; use finish explicitly when each
-	# frame must force GPU completion.
+	# null-noop defaults to no per-frame fence for the diagnostic profile.
+	# Use finish explicitly when each frame must force GPU completion.
+	# Frozen performance profiles select their frame-end policy explicitly.
 	if [ "${frame_end}" = "auto" ] && [ "${flavor}" = "null-noop" ]; then
 		frame_end=none
 	fi
@@ -827,8 +711,6 @@ run_ml_workload() {
 		return 127
 	fi
 
-	dump_panthor_client_params
-
 	rc=99
 	if [ -n "${requested_node}" ] && [ ! -e "${requested_node}" ]; then
 		log "requested DRM node ${requested_node} does not exist"
@@ -913,7 +795,6 @@ run_ncnn_workload() {
 	fi
 
 	mkdir -p "${log_dir}"
-	dump_panthor_client_params
 
 	echo "NCNN_LOOP_COUNT=${loop_count}"
 	echo "NCNN_THREADS=${threads}"
@@ -1323,13 +1204,6 @@ if ! apply_cmdline_overrides; then
 	exit 125
 fi
 
-if ! run_vmshm_raw_rpc_probe; then
-	dump_client_comm_rpc_stats
-	dump_perf_dmesg
-	echo "GPU_SMOKE_RESULT=FAIL"
-	exit 126
-fi
-
 if [ "${GPU_SMOKE_QUIET_CONSOLE:-0}" = 1 ]; then
 	log "lowering console loglevel for performance run"
 	dmesg -n 1 2>/dev/null || true
@@ -1409,15 +1283,6 @@ if [ ! -x /root/gles-compute-smoke ]; then
 	log "missing /root/gles-compute-smoke"
 	echo "GPU_SMOKE_RESULT=FAIL"
 	exit 127
-fi
-
-dump_panthor_client_params
-
-if ! run_vmshm_lookup_probe; then
-	dump_client_comm_rpc_stats
-	dump_perf_dmesg
-	echo "GPU_SMOKE_RESULT=FAIL"
-	exit 126
 fi
 
 wait_for_smoke_start

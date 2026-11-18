@@ -8,7 +8,7 @@ OUT="${OUT:-"${SRC_DIR}/panthor_ioctl_smoke"}"
 CC="${CC:-aarch64-linux-gnu-gcc}"
 # Match ioctl structure sizes to the target kernel. New controller headers
 # extend drm_syncobj_handle with a timeline point, changing HANDLE_TO_FD's
-# ioctl number and bypassing the frontend's binary-syncobj interception.
+# ioctl number. The current Client uses its local DRM core for syncobj handling.
 if [[ -z "${DRM_UAPI:-}" ]]; then
 	uapi_root="${ROOT_DIR}/build/panthor-ioctl-uapi"
 	make -s -C "${ROOT_DIR}/Linux-Guest-GPU" \

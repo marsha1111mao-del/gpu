@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "baseline": "gpu-1170-20261114",
+  "artifacts": [
+    {
+      "archive": "GPU-SFTP/runtime/gpu-1170-20261114.tar.gz",
+      "sha256": "86127faba3bd746f3777ceeef962107ff415577658afd7fb598357a958739cf3",
+      "size": 35551038,
+      "files": {
+        "firmware/bl31.elf": {
+          "size": 1279832,
+          "sha256": "9ea06f7beda4254576d4c24cd20af145af6e5090fd9b9c09d36c68cd0b7941fd"
+        },
+        "firmware/hashes.json": {
+          "size": 420,
+          "sha256": "b8026c6eaceba9427051cb573949f1c1ba53948eb031fc95eb28b572e9c39006"
+        },
+        "firmware/idbloader.img": {
+          "size": 266240,
+          "sha256": "aa5327d4c3f9e7cc3073c7cc2b49e056442c62f70c16de7add51c53e7051dff2"
+        },
+        "firmware/tf-rmm.elf": {
+          "size": 3873008,
+          "sha256": "41d15522cfda81c404f3504e267d03d7410ab6bfff9e55370a92f7de1440edfa"
+        },
+        "firmware/u-boot": {
+          "size": 9013000,
+          "sha256": "21965d3c894e9344aedc4144f533d70bc6c80217f36a1365a8c8f925c03e2dee"
+        },
+        "firmware/u-boot.itb": {
+          "size": 1812480,
+          "sha256": "239b9cb5d067fbdba84b4c0bed867a6e48ce5f1c10161653fd86fd3b6fc03f47"
+        },
+        "graphics-runtime/client-Image": {
+          "size": 39176704,
+          "sha256": "c6e6560b9f4340c2514b5b3404bad9e3bcc9eb640f427430b2f6bf23748614d0"
+        },
+        "graphics-runtime/hashes.json": {
+          "size": 342,
+          "sha256": "28199a4fba1f2503733b2672664bdbbd4e331766ee2badf51eac0dbced3c14d2"
+        },
+        "graphics-runtime/initrd.cpio": {
+          "size": 4157440,
+          "sha256": "82342786a7ef8ae0721499f13558fd63f1864bc742078fd4bdcdf4d0702ca1e2"
+        },
+        "graphics-runtime/proxy-Image": {
+          "size": 39375360,
+          "sha256": "9db12d358d6a6ca865842f8c85d4eb72f05fd99ec89967c6811981401490cd22"
+        },
+        "graphics-runtime/runner.py": {
+          "size": 65885,
+          "sha256": "a0ad3085b320655bf8a2a805acc85344b0139ae9be534860fb5713835443d9fc"
+        }
+      }
+    }
+  ]
+}

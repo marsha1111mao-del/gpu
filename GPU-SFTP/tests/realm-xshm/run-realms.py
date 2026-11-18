@@ -12,9 +12,7 @@ import subprocess
 import threading
 import time
 
-PERFORMANCE_PROFILES = ('ioctl', 'compute-4', 'compute-16', 'compute-64', 'compute-128',
-                        'ml-all', 'attention-320', 'ncnn-mobilenet_v2',
-                        'ncnn-mobilenet_v3', 'ncnn-resnet50', 'glmark-720', 'glmark-1080')
+PERFORMANCE_PROFILES = ('glmark-720', 'glmark-1080')
 ML_PROFILES = ('ml-all', 'attention-320', 'ncnn-mobilenet_v2',
                'ncnn-mobilenet_v3', 'ncnn-resnet50', 'ml-gemm', 'ml-conv',
                'ml-depthwise', 'ml-reduction', 'ml-softmax', 'ml-attention')
@@ -22,89 +20,73 @@ ML_PROFILES = ('ml-all', 'attention-320', 'ncnn-mobilenet_v2',
 p = argparse.ArgumentParser(description=__doc__)
 p.add_argument('--run-id', required=True)
 p.add_argument('--memory-pages', type=int, default=0)
-p.add_argument('--large-pool', action='store_true', help='512 MiB RMM pool; 1024 MiB per Realm and 576 MiB CMA (requires updated RMM)')
 p.add_argument('--profiles', nargs='+', choices=tuple(dict.fromkeys(PERFORMANCE_PROFILES + ML_PROFILES)), help='Explicit subset of --suite; omitted cases are not tested')
 p.add_argument('--trusted-events', action='store_true', help='Require RMM-owned actual virtual IRQ delivery and negative/coalescing checks')
 p.add_argument('--transport', action='store_true', help='Bind the RMM pool to real kernel control queues')
 p.add_argument('--parallel-boot', action='store_true', help='Exercise concurrent Host Realm population')
 p.add_argument('--gpu-flow', action='store_true', help='Assign GPU to provider and exercise Client DRM over the RMM pool')
-p.add_argument('--private-gpu', action='store_true', help='Require RMM metadata-only Proxy, Client-private data and trusted service bootstrap; never use shared-data fallback')
+p.add_argument('--session-quota', type=int, default=0, help='Check the actual per-Client DRM session limit before the workload')
+p.add_argument('--security-selftests', action='store_true', help='Run Client-owned RMM group/observation boundary checks before the workload')
 p.add_argument('--glmark-rootfs', type=Path, help='Read-only prepared Panfrost rootfs for the complete glmark suite')
 p.add_argument('--compute-rootfs', type=Path, help='Read-only rootfs for concurrent actual compute in two Clients')
 p.add_argument('--clients', type=int, choices=(1, 2, 3, 4), default=1)
-p.add_argument('--compact-memory', action='store_true', help='Bound benchmark RAM and CMA using the actual per-Client pool size')
-p.add_argument('--reclaim-targets', action='store_true', help='Use verified target-backing reclamation and staged ResNet50 memory admission')
 p.add_argument('--pin-cpus', action='store_true', help='Explicit RK CPU 0 Proxy / CPU 1 active Client placement')
-p.add_argument('--performance', action='store_true', help='600 MHz OPP, separate CPUs, concurrent RPC, wait cache, fused/lazy snapshots and 1000 us Client reply polling')
-p.add_argument('--transfer-capture', action='store_true', help='Capture reusable immutable snapshots in binary TRANSFER replies')
+p.add_argument('--performance', action='store_true', help='600 MHz OPP, separate CPUs, concurrent RPC and bounded Client reply polling')
 p.add_argument('--notify-trace', action='store_true', help='Record bounded RMM/notification/receive physical-counter samples')
-p.add_argument('--completion-trace', action='store_true', help='Sample full-fence completion to first Client cookie observation; implies notify trace')
 p.add_argument('--benchmark-only', action='store_true', help='Two Realms and full glmark; defer the broader lifecycle/API suite')
-p.add_argument('--suite', action='store_true', help='Remeasure common IOCTL, compute, ML, NCNN and both full glmark sizes')
-p.add_argument('--rpc-stats', action='store_true', help='Measure Client/Proxy RPC, backend submission and GPU IRQ latency (adds timing overhead)')
+p.add_argument('--suite', action='store_true', help='Run selected full glmark or ML/NCNN profiles')
+p.add_argument('--rpc-stats', action='store_true', help='Report current Client/Proxy RPC transport timing (adds overhead)')
 p.add_argument('--client-cpu-layout', choices=('shared', 'round-robin'), default='shared')
 p.add_argument('--cpu-frequency-khz', type=int, help='Lock Host CPU policy0 for a controlled performance comparison')
-p.add_argument('--telemetry', action='store_true', help='Collect Realm CPU accounting during full concurrent glmark')
-p.add_argument('--gpu-fault-isolation', action='store_true', help='Require an intentional foreign-VA GPU fault and victim recovery in the two-Client suite')
-p.add_argument('--bo-sg-mmap', action='store_true', help='Validate fragmented BO CPU mappings in the two-Client compute suite')
 p.add_argument('--root', type=Path, default=Path('/root/GPU-SFTP'))
 a = p.parse_args()
-a.notify_trace = a.notify_trace or a.completion_trace
+# Versioned together with the only supported private Client/Proxy protocol.
+SHARED_GPU_ABI = 6
 if a.profiles and not a.suite:
     p.error('--profiles requires --suite')
-if a.large_pool and (not a.benchmark_only or not a.glmark_rootfs or a.memory_pages != 131072):
-    p.error('--large-pool requires --benchmark-only, --glmark-rootfs and --memory-pages 131072')
 if not a.run_id or any(c not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_' for c in a.run_id):
     p.error('invalid run-id')
 bins = a.root/'firecracker-bins'
 out = a.root/'log/realm-xshm'/a.run_id
-if not 0 <= a.memory_pages <= (131072 if a.large_pool or a.compact_memory else 65536):
-    p.error('memory-pages exceeds the selected pool profile')
+if not 0 <= a.memory_pages <= 65536:
+    p.error('memory-pages exceeds the bounded control/transport pool')
 if a.transport and a.memory_pages < 256:
     p.error('--transport requires at least 256 memory pages')
-if a.gpu_flow and (not a.transport or a.memory_pages < 1025):
-    p.error('--gpu-flow requires --transport and at least 1025 memory pages')
-if a.compact_memory and (not a.benchmark_only or a.large_pool or a.memory_pages not in (32768, 40960, 49152, 65536, 86016, 98304)):
-    p.error('--compact-memory requires benchmark-only and a 128/160/192/256/336/384 MiB pool')
-if a.reclaim_targets and not (a.compact_memory and a.profiles == ['ncnn-resnet50']):
-    p.error('--reclaim-targets requires compact memory and only ncnn-resnet50')
-if a.glmark_rootfs and (not a.gpu_flow or (not a.private_gpu and not a.compact_memory and a.memory_pages != (131072 if a.large_pool else 65536))):
-    p.error('--glmark-rootfs requires --gpu-flow and the selected pool size')
+if a.gpu_flow and (not a.transport or not a.trusted_events or a.memory_pages < 1025):
+    p.error('--gpu-flow requires --transport --trusted-events and at least 1025 control pages')
+if not 0 <= a.session_quota <= 64 or (a.session_quota and not a.gpu_flow):
+    p.error('--session-quota requires GPU flow and a limit between 1 and 64')
+if a.security_selftests and not a.gpu_flow:
+    p.error('--security-selftests requires GPU flow')
+if a.glmark_rootfs and not a.gpu_flow:
+    p.error('--glmark-rootfs requires --gpu-flow')
 if a.compute_rootfs and (not a.gpu_flow or a.clients != 2):
     p.error('--compute-rootfs requires --gpu-flow --clients 2')
+if a.glmark_rootfs and a.compute_rootfs:
+    p.error('select only one workload rootfs')
 if a.clients > 1 and (not a.gpu_flow or (not a.benchmark_only and a.clients != 2)):
     p.error('multiple Clients require GPU flow and either benchmark-only or the two-Client compute suite')
-if a.benchmark_only and (a.compact_memory or a.clients > 1) and (not a.suite or not a.profiles or
-        not (a.profiles in (['glmark-720'], ['glmark-1080']) or all(profile in ML_PROFILES for profile in a.profiles))):
-    p.error('concurrent benchmarks require --suite and either one glmark profile or explicit ML profiles')
 if a.suite and not a.benchmark_only:
     p.error('--suite requires --benchmark-only')
 if a.benchmark_only and not a.glmark_rootfs:
     p.error('--benchmark-only requires --glmark-rootfs')
 if a.performance and not a.gpu_flow:
     p.error('--performance requires --gpu-flow')
-if a.gpu_fault_isolation and (not a.compute_rootfs or a.benchmark_only):
-    p.error('--gpu-fault-isolation requires the two-Client compute suite')
-if a.bo_sg_mmap and (not a.compute_rootfs or a.benchmark_only):
-    p.error('--bo-sg-mmap requires the two-Client compute suite')
-if a.private_gpu:
-    if not (a.gpu_flow and a.transport and a.trusted_events):
-        p.error('--private-gpu requires --gpu-flow --transport --trusted-events')
-    if (a.large_pool or a.compact_memory or a.reclaim_targets or a.transfer_capture or
-            a.completion_trace or a.bo_sg_mmap or a.gpu_fault_isolation):
-        p.error('--private-gpu cannot use shared-data pool profiles, cookie traces or shared-BO fault probes')
-    if a.suite and (not a.profiles or not (a.profiles in (['glmark-720'], ['glmark-1080']) or
-                                         all(profile in ML_PROFILES for profile in a.profiles))):
-        p.error('--private-gpu suite requires one full glmark profile or explicit ML profiles')
-if (a.client_cpu_layout != 'shared' or a.telemetry) and not (
-        a.performance and a.benchmark_only and a.compact_memory and
-        a.profiles in (['glmark-720'], ['glmark-1080'])):
-    p.error('controlled CPU placement/telemetry require a compact full glmark performance run')
+if a.suite and (not a.profiles or not (
+        a.profiles in (['glmark-720'], ['glmark-1080']) or
+        all(profile in ML_PROFILES for profile in a.profiles))):
+    p.error('GPU suite requires one full glmark profile or explicit ML profiles')
+if a.benchmark_only and a.clients > 1 and not a.suite:
+    p.error('concurrent benchmarks require an explicit suite')
+if a.client_cpu_layout != 'shared' and not (
+        a.performance and a.benchmark_only and a.suite and a.profiles and
+        (a.profiles in (['glmark-720'], ['glmark-1080']) or
+         all(profile in ML_PROFILES for profile in a.profiles))):
+    p.error('controlled CPU placement requires a private GPU performance suite')
 if a.cpu_frequency_khz is not None and not (
         a.cpu_frequency_khz > 0 and a.performance and a.benchmark_only and
-        (a.compact_memory or a.private_gpu) and
         a.profiles in (['glmark-720'], ['glmark-1080'])):
-    p.error('controlled CPU frequency requires a compact or private full glmark performance run')
+    p.error('controlled CPU frequency requires a full glmark performance run')
 vm_count = a.clients + 1 if a.benchmark_only else 3
 workload_rootfs = a.glmark_rootfs or a.compute_rootfs
 out.mkdir(parents=True, exist_ok=False)
@@ -118,18 +100,13 @@ result = {'run_id': a.run_id, 'status': 'RUNNING', 'commands': commands,
           'performance': a.performance, 'benchmark_only': a.benchmark_only,
           'compute_rootfs': str(a.compute_rootfs) if a.compute_rootfs else None,
           'glmark_rootfs': str(a.glmark_rootfs) if a.glmark_rootfs else None,
-          'rpc_stats': a.rpc_stats, 'transfer_capture': a.transfer_capture,
+          'rpc_stats': a.rpc_stats,
           'notify_trace': a.notify_trace,
-          'completion_trace': a.completion_trace,
-          'suite': a.suite, 'large_pool': a.large_pool,
+          'suite': a.suite, 'shared_gpu_abi': SHARED_GPU_ABI,
           'profiles': a.profiles}
-result['compact_memory'] = a.compact_memory
-result['reclaim_targets'] = a.reclaim_targets
 result['client_cpu_layout'] = a.client_cpu_layout
 result['cpu_frequency_khz'] = a.cpu_frequency_khz
-result['telemetry'] = a.telemetry
-result['bo_sg_mmap_check'] = 'NOT_RUN'
-result['private_gpu'] = {'enabled': a.private_gpu, 'bootstrap': 'NOT_RUN',
+result['private_gpu'] = {'enabled': a.gpu_flow, 'bootstrap': 'NOT_RUN',
                          'drm_probes': {}, 'shared_data_fallback': False,
                          'gpu_completion_eventfd': 'NOT_RUN',
                          'isolation_attacks': 'NOT_RUN', 'dynamic_tiler_growth': 'NOT_VERIFIED'}
@@ -149,7 +126,6 @@ for path in inputs:
 (out/'runner.py').write_bytes(Path(__file__).read_bytes())
 command_log = (out/'commands.jsonl').open('w')
 host_restore = {}
-expected_gpu_fault_lines = set()
 benchmark_events = {}
 monitor_stop = threading.Event()
 monitor_thread = None
@@ -168,7 +144,7 @@ def monitor_resources():
 
 
 def realm_memory(vm):
-    if a.private_gpu:
+    if a.gpu_flow:
         # Only RPC/control pools use CMA. Private BOs and the donated arena
         # use ordinary alloc_page backing, so shared-mode CMA sizing cannot
         # be used as their memory budget. These are admission estimates, not
@@ -184,20 +160,8 @@ def realm_memory(vm):
                         192 + (384 if 'ncnn-resnet50' in (a.profiles or []) else 256))
         # Firecracker's Realm FDT requires a 2 MiB-aligned memory size.
         return (cma_mib + ordinary_mib + 1) & ~1, cma_mib
-    if a.benchmark_only and (a.compact_memory or a.clients > 1):
-        cma_mib = (a.memory_pages // 256) * (a.clients if vm == 0 else 1) + 16
-        ordinary_mib = (192 + 32 * a.clients if vm == 0 else
-                        (304 if 'ncnn-resnet50' in (a.profiles or []) else 192))
-        if a.reclaim_targets and a.clients == 4:
-            ordinary_mib = 232 if vm == 0 else 296
-            if vm:
-                cma_mib -= 8
-        return cma_mib + ordinary_mib, cma_mib
-    return (1024, 576) if a.large_pool else ((768 if workload_rootfs else 512), None)
+    return 512, None
 
-
-def realm_swiotlb_mib():
-    return 8 if a.reclaim_targets and a.clients == 4 else 16
 
 
 def isolate_vmm_io(vm):
@@ -221,15 +185,6 @@ def save():
     (out/'summary.json').write_text(json.dumps(result, indent=2)+'\n')
 
 
-def memory_guard(stage, allocation_mib=0):
-    available_mib = next(int(line.split()[1]) / 1024
-                         for line in Path('/proc/meminfo').read_text().splitlines()
-                         if line.startswith('MemAvailable:'))
-    sample = {'stage': stage, 'available_mib': available_mib,
-              'allocation_mib': allocation_mib, 'headroom_mib': 256}
-    result.setdefault('memory_stage_guards', []).append(sample)
-    save()
-    assert available_mib >= allocation_mib + 256, sample
 
 
 def host_snapshot():
@@ -399,9 +354,9 @@ def text_command(vm, command, markers, timeout=120, sent=False):
 
 
 def gpu_mode_boot_args(vm):
-    if not a.private_gpu:
+    if not a.gpu_flow:
         return ''
-    return ' panthor_client.rmm_private_data=1' if vm else ' panthor.rmm_service=1'
+    return '' if vm else ' panthor.rmm_service=1'
 
 
 def bootstrap_private_gpu():
@@ -420,18 +375,49 @@ def bootstrap_private_gpu():
     save()
 
 
-def test_private_gpu():
-    """Exercise private data through ordinary DRM; pools carry control only.
+def test_private_event_irq(endpoints):
+    """Force armed events independently of RPC polling and GPU completion."""
+    checks = []
+    for client in range(1, a.clients + 1):
+        channel = call(0, f'offer {endpoints[client][1]}')[0]
+        call(client, f'accept {channel}')
+        for sender, receiver in ((0, client), (client, 0)):
+            before = [call(vm, 'irq-stats')[0] for vm in range(vm_count)]
+            call(receiver, f'arm {channel} 0')
+            for outsider in range(vm_count):
+                if outsider not in (sender, receiver):
+                    call(outsider, f'notify {channel}', 1)
+            denied = [call(vm, 'irq-stats')[0] for vm in range(vm_count)]
+            assert denied == before, 'unauthorized private control event injected IRQ'
+            first = call(sender, f'notify {channel}')
+            second = call(sender, f'notify {channel}')
+            assert first[:3] == [1, endpoints[receiver][1], 1], first
+            assert second[:3] == [2, endpoints[receiver][1], 0], second
+            after = [call(vm, 'irq-stats')[0] for vm in range(vm_count)]
+            expected = before.copy()
+            expected[receiver] += 1
+            assert after == expected, 'private control IRQ missing, misrouted or not coalesced'
+            assert call(receiver, f'query {channel}')[:2] == [2, 0]
+            call(receiver, f'ack {channel} 2')
+            checks.append({'sender': sender, 'receiver': receiver, 'before': before,
+                           'after_two_notifications': after, 'outsider_denied': True})
+        call(0, f'close {channel}')
+    result['event_irq'] = {'intid': 127, 'controlled_armed_events': checks,
+                           'negative_and_coalescing': 'PASS',
+                           'scope': 'Realm control notification; not physical GPU completion IRQ'}
+    save()
 
-    Existing shared-BO selftests/cookies/plan counters are not private-mode
-    evidence. Keep both data paths' evidence distinct and never silently run
-    the shared suite when private bootstrap/open/submission fails.
-    """
+
+def test_private_gpu():
+    """Exercise private data through ordinary DRM; pools carry RPC control only."""
     endpoints = [call(vm, 'register') for vm in range(vm_count)]
     assert len({endpoint[1] for endpoint in endpoints}) == vm_count
     assert all(endpoint[2] & 16 for endpoint in endpoints)
     for vm in range(vm_count):
         assert call(vm, 'irq-bind')[0] == 127
+    # Exercise real armed delivery before timing. A short benchmark can
+    # legally complete all RPCs in the bounded poll path without new IRQs.
+    test_private_event_irq(endpoints)
     before = [call(vm, 'irq-stats')[0] for vm in range(vm_count)]
     active = []
     size = a.memory_pages * 4096
@@ -446,11 +432,31 @@ def test_private_gpu():
             if other != vm:
                 call(other, f'mem-describe {grant}', 1)
         for member in (0, vm):
-            call(member, f'pool-bind-gpu {grant}')
+            call(member, f'pool-bind {grant}')
             bindings.append((member, grant))
         active.append((vm, channel, grant))
     result['private_gpu']['control_pool_bytes_per_client'] = size
     result['simultaneous_client_bindings'] = a.clients
+    save()
+    for vm, channel, grant in active:
+        if a.session_quota:
+            text_command(vm, f'session-quota {a.session_quota}',
+                         [f'GPU_PROXY_SESSION_QUOTA=PASS limit={a.session_quota}'], 180)
+        if a.security_selftests:
+            text_command(vm, f'gpu-private group-selftest {channel} 2',
+                         ['GPU_GROUP_MEMORY=PASS', 'GPU_TASK_OBSERVATION=PASS',
+                          'GPU_IRQ_SECURITY_SELFTEST=PASS'], 300)
+    def irq_status():
+        vm, channel, _ = active[0]
+        text = text_command(vm, f'gpu-private irq-status {channel}', ['GPU_IRQ_STATUS='])
+        match = re.search(r'GPU_IRQ_STATUS=(\{[^\r\n]+\})', text)
+        assert match, 'RMM IRQ status missing'
+        return json.loads(match[1])
+    irq_before = irq_status()
+    result['gpu_irq_security'] = {'before': irq_before,
+                                  'simulation_selftest': a.security_selftests}
+    result['private_gpu']['session_quota'] = a.session_quota or 'NOT_RUN'
+    result['private_gpu']['observation_selftests'] = 'PASS' if a.security_selftests else 'NOT_RUN'
     save()
     if a.benchmark_only:
         if a.profiles and all(profile in ML_PROFILES for profile in a.profiles):
@@ -459,14 +465,16 @@ def test_private_gpu():
             run_concurrent_glmark()
         else:
             glmark(1)
-        if a.profiles == ['glmark-720'] or not a.suite:
+        # The optimization admission threshold is a single-Client baseline
+        # requirement. Concurrent Clients share GPU/CPU resources; their
+        # valid per-Client scores must not each be required to exceed 1000.
+        if a.clients == 1 and (a.profiles == ['glmark-720'] or not a.suite):
             scores = ([item['score'] for item in result['concurrent_glmark']]
                       if a.suite else [result['glmark']['score']])
             result['private_gpu']['glmark_720_gate'] = {
                 'threshold': 1000, 'scores': scores,
                 'status': 'PASS' if all(score >= 1000 for score in scores) else 'FAIL'}
             save()
-            assert all(score >= 1000 for score in scores), 'private full-720p score below 1000'
     else:
         for vm in range(1, a.clients + 1):
             text_command(vm, 'gpu-private drm-selftest', ['GPU_PRIVATE_DRM=PASS'], 300)
@@ -489,9 +497,25 @@ def test_private_gpu():
             result['two_client_compute_check'] = 'PASS'
         if a.glmark_rootfs:
             glmark(1)
+    irq_after = irq_status()
+    result['gpu_irq_security']['after'] = irq_after
+    result['gpu_irq_security']['provenance'] = (
+        'EL3_PHYSICAL_IRQ' if irq_after['physical'] > irq_before['physical'] else
+        'ROOT_DEVICE_SAMPLING' if irq_after['root_samples'] > irq_before['root_samples'] else
+        'NO_DEVICE_EVENT')
+    assert not irq_after['lost'], 'Monitor/RMM event history incomplete'
+    assert irq_after['overflows'] == irq_before['overflows'], 'new event overflow during workload'
+    assert result['gpu_irq_security']['provenance'] != 'NO_DEVICE_EVENT', 'GPU workload has no trusted device events'
+    assert irq_after['claims'] > irq_before['claims'], 'Proxy made no accepted event statements'
+    save()
+    gate = result['private_gpu'].get('glmark_720_gate')
+    if gate:
+        assert gate['status'] == 'PASS', 'private full-720p score below 1000'
     after = [call(vm, 'irq-stats')[0] for vm in range(vm_count)]
-    assert all(after[vm] > before[vm] for vm in range(a.clients + 1))
-    result['event_irq'] = {'before': before, 'after_workloads': after, 'intid': 127}
+    # Require delivery/ownership/coalescing in the controlled test above;
+    # incidental workload traffic may finish without ever arming an IRQ.
+    result['event_irq'].update(before=before, after_workloads=after)
+    save()
     for vm, channel, grant in reversed(active):
         for member in (vm, 0):
             call(member, f'pool-unbind {grant}')
@@ -507,18 +531,6 @@ def test_private_gpu():
     result['private_gpu']['trusted_device_reclamation'] = 'NOT_VERIFIED'
 
 
-# Exercise the baseline DRM modes and GPUVM isolation over the actual Realm
-# transport. Host PFN and passthrough cases remain separate.
-GPU_IOCTL_MODES = (
-    'basic', 'vm-create', 'bo-create', 'bo-lifecycle', 'bo-mmap',
-    'vm-bind', 'vm-bind-async-sync', 'vm-state-flush',
-    'syncobj-lifecycle', 'syncobj-wait', 'syncobj-transfer',
-    'syncobj-timeline-wait', 'syncobj-signal-query', 'sync-file-snapshot',
-    'group-lifecycle', 'group-submit-syncpoint', 'tiler-heap-lifecycle',
-    'gpuvm-isolation',
-)
-
-
 def kernel_issues(log):
     patterns = {
         'csg_update_timeout': r'CSG \d+ update request timedout',
@@ -527,6 +539,9 @@ def kernel_issues(log):
         'kernel_warning': r'WARNING:',
         'kernel_oops': r'Oops:',
         'kernel_panic': r'Kernel panic',
+        'rcu_stall': r'rcu:.*(?:detected.*stall|kthread.*starved|timer wakeup didn.t happen)',
+        'cpu_lockup': r'(?i)(?:soft lockup|hard lockup)',
+        'hung_task': r'INFO: task .* blocked for more than',
         'out_of_memory': r'(?:Out of memory|invoked oom-killer|oom-kill:)',
     }
     lines = re.split(r'[\r\n]', log)
@@ -534,14 +549,8 @@ def kernel_issues(log):
             for name, pattern in patterns.items()}
 
 
-def gpu_fault_identity(line):
-    match = re.search(r'\[\s*([0-9.]+)\]\s*(.*)$', line)
-    return match.groups() if match else (None, line.strip())
 
 
-def gpu_smoke(vm, mode):
-    text_command(vm, f'gpu-smoke --{mode} /dev/dri/renderD128',
-                 ['PANTHOR_IOCTL_SMOKE='+mode.upper().replace('-', '_')+'_PASS'])
 
 
 def glmark(vm):
@@ -655,71 +664,12 @@ def run_concurrent_ml():
         save()
 
 
-def test_concurrent_benchmark():
-    result['realm_memory_samples'] = {}
-    for vm in range(vm_count):
-        result['realm_memory_samples'][str(vm)] = {'before_pool': text_command(
-            vm, 'memory-info', ['XSHM_MEMORY_INFO_END'])}
-    endpoints = [call(vm, 'register') for vm in range(vm_count)]
-    assert len({endpoint[1] for endpoint in endpoints}) == vm_count
-    assert all(endpoint[2] & 16 for endpoint in endpoints)
-    for vm in range(vm_count):
-        assert call(vm, 'irq-bind')[0] == 127
-    before = [call(vm, 'irq-stats')[0] for vm in range(vm_count)]
-    active = []
-    size = a.memory_pages * 4096
-    for vm in range(1, vm_count):
-        channel = call(0, f'offer {endpoints[vm][1]}')[0]
-        call(vm, f'accept {channel}')
-        if a.reclaim_targets:
-            memory_guard(f'client-{vm}-before-source', 2 * size / (1024 * 1024))
-        source = call(0, f'pool-source {size}')[0]
-        if a.reclaim_targets:
-            memory_guard(f'client-{vm}-before-target', size / (1024 * 1024))
-        target = call(vm, f'pool-target {size}')[0]
-        grant = memory_operation(0, f'mem-offer {channel} {source} {size}', 2)
-        memory_operation(vm, f'mem-attach {grant} {target}', 5)
-        if a.reclaim_targets:
-            memory_guard(f'client-{vm}-after-attach')
-        for member in (0, vm):
-            call(member, f'pool-bind-gpu {grant}')
-            bindings.append((member, grant))
-        active.append((vm, channel, grant))
-    result['simultaneous_client_bindings'] = a.clients
-    if a.reclaim_targets:
-        memory_guard('before-workload')
-    for vm in range(vm_count):
-        result['realm_memory_samples'][str(vm)]['bound_pool'] = text_command(
-            vm, 'memory-info', ['XSHM_MEMORY_INFO_END'])
-    log = text_command(0, 'kernel-log', ['XSHM_KERNEL_LOG_END'])
-    for endpoint in endpoints[1:]:
-        assert f'permissions PASS owner={endpoint[1]}' in log
-        assert f'GPU isolation PASS owner={endpoint[1]}' in log
-    if all(profile in ML_PROFILES for profile in a.profiles):
-        run_concurrent_ml()
-    else:
-        run_concurrent_glmark()
-    after = [call(vm, 'irq-stats')[0] for vm in range(vm_count)]
-    assert all(after[vm] > before[vm] for vm in range(vm_count))
-    result['event_irq'] = {'before': before, 'after_workloads': after, 'intid': 127}
-    for vm, channel, grant in reversed(active):
-        for member in (vm, 0):
-            call(member, f'pool-unbind {grant}')
-            bindings.remove((member, grant))
-        memory_operation(vm, f'mem-detach {grant}', 2)
-        memory_operation(0, f'mem-revoke {grant}', 0)
-        call(0, f'close {channel}')
-    for vm in range(vm_count):
-        call(vm, 'unregister')
 
 
 def run_concurrent_glmark():
     profile = a.profiles[0]
     command = f'performance {profile}-barrier'
     result['concurrent_glmark'] = []
-    if a.telemetry:
-        for vm in range(vm_count):
-            text_command(vm, 'telemetry-start', [])
     prepared = {}
     for vm in range(1, vm_count):
         buffers[vm] = b''
@@ -759,76 +709,6 @@ def run_concurrent_glmark():
         'dispatch_spread_ms': (max(event['dispatch'] for event in benchmark_events.values())-
                                min(event['dispatch'] for event in benchmark_events.values()))/1e6}
     assert result['benchmark_overlap']['fraction'] >= 0.9, result['benchmark_overlap']
-    if a.telemetry:
-        for vm in range(vm_count):
-            samples = text_command(vm, 'telemetry-stop', ['XSHM_CPU_SAMPLES_END'])
-            (out/f'cpu-realm-{vm}.log').write_text(samples)
-def test_benchmark():
-    endpoints = [call(vm, 'register') for vm in range(2)]
-    assert endpoints[0][1] != endpoints[1][1]
-    assert all(endpoint[2] & 16 for endpoint in endpoints)
-    for vm in range(2):
-        assert call(vm, 'irq-bind')[0] == 127
-    before = [call(vm, 'irq-stats')[0] for vm in range(2)]
-    channel = call(0, f'offer {endpoints[1][1]}')[0]
-    call(1, f'accept {channel}')
-    size = a.memory_pages * 4096
-    source = call(0, f'pool-source {size}')[0]
-    target = call(1, f'pool-target {size}')[0]
-    grant = memory_operation(0, f'mem-offer {channel} {source} {size}', 2)
-    memory_operation(1, f'mem-attach {grant} {target}', 5)
-    for vm, ipa in ((0, source), (1, target)):
-        identity = call(vm, f'mem-describe {grant}')
-        assert identity[0] == channel and identity[3] == ipa
-        call(vm, f'pool-bind-gpu {grant}')
-        bindings.append((vm, grant))
-    log = text_command(0, 'kernel-log', ['XSHM_KERNEL_LOG_END'])
-    assert f'permissions PASS owner={endpoints[1][1]}' in log
-    if a.suite:
-        result['performance_cases'] = []
-        for profile in a.profiles or PERFORMANCE_PROFILES:
-            command = 'performance '+profile
-            buffers[1] = b''
-            processes[1].stdin.write((command+'\n').encode())
-            processes[1].stdin.flush()
-            data = receive(1, b'XSHM_COMMAND_EXIT=', 1800)
-            code = parse_command_exit(receive(1, b'\n').strip().strip(b'\r'))
-            (out/(profile+'.log')).write_bytes(data)
-            required = ([b'IOCTL_MATRIX_DONE failures=0'] if profile == 'ioctl' else
-                        [b'COMPUTE_CHECK=PASS', b'PERF_ITER_US', b'GL_RENDERER=Mali-G610'] if profile.startswith('compute-') else
-                        [b'ML_RESULT=PASS', b'ML_CHECK=PASS', b'ML_CLEAN_RESULT=PASS'] if profile in ML_PROFILES and not profile.startswith('ncnn-') else
-                        [b'NCNN_RESULT=PASS', b'NCNN_MODEL_RESULT=PASS', b'NCNN_BACKEND_QUALIFICATION=PASS'] if profile.startswith('ncnn-') else
-                        [b'GLMARK_RESULT=PASS', b'GLMARK_VALIDATE=PASS', b'GLMARK_CLEAN_RESULT=PASS', b'GLMARK_SCORE='])
-            result['performance_cases'].append({'profile': profile, 'returncode': code,
-                'pass_marker': b'PERFORMANCE_CASE_RESULT=PASS' in data and all(m in data for m in required),
-                'required_markers': {m.decode(): m in data for m in required}})
-            save()
-            print('PERFORMANCE_CASE', profile, code, flush=True)
-    else:
-        glmark(1)
-    log = text_command(0, 'kernel-log', ['XSHM_KERNEL_LOG_END'])
-    plans = re.findall(r'TASK_PLAN_STATS session=(\d+) registered=(\d+) runs=(\d+)', log)
-    result['task_plans'] = {'registered': sum(int(p[1]) for p in plans),
-                            'runs': sum(int(p[2]) for p in plans)}
-    assert result['task_plans']['registered'] > 0
-    assert result['task_plans']['runs'] > result['task_plans']['registered']
-    after = [call(vm, 'irq-stats')[0] for vm in range(2)]
-    assert all(after[vm] > before[vm] for vm in range(2)), 'workload did not use trusted IRQ'
-    result['event_irq'] = {'before': before, 'after_workloads': after, 'intid': 127}
-    for vm in (1, 0):
-        call(vm, f'pool-unbind {grant}')
-        bindings.remove((vm, grant))
-    if a.large_pool:
-        # After all GPU users/transport queues are gone, exercise every page
-        # through the still-active RMM lease without poisoning fresh BO data.
-        assert call(0, 'pool-fill-pages 280512')[2] == a.memory_pages
-        assert call(1, f'pool-check-pages 280512 {grant}')[2] == a.memory_pages
-        result['large_pool_page_check'] = {'pages': a.memory_pages, 'status': 'PASS'}
-    memory_operation(1, f'mem-detach {grant}', 2)
-    memory_operation(0, f'mem-revoke {grant}', 0)
-    call(0, f'close {channel}')
-    for vm in range(2):
-        call(vm, 'unregister')
 
 
 def test_memory(channel):
@@ -860,7 +740,7 @@ def test_memory(channel):
         for iteration in range(2):
             pending_provider = call(0, f'query {channel}')[0]
             pending_borrower = call(1, f'query {channel}')[0]
-            bind = 'pool-bind-gpu' if a.gpu_flow else 'pool-bind'
+            bind = 'pool-bind'
             call(0, f'{bind} {grant}')
             bindings.append((0, grant))
             call(1, f'{bind} {grant}')  # Probe includes a real HELLO/ACK RPC.
@@ -871,11 +751,6 @@ def test_memory(channel):
             call(0, f'mem-revoke {grant}', -16)
             call(1, f'mem-detach {grant}', -16)
             call(1, f'pool-write 0 999 {grant}', -16)
-            if a.gpu_flow:
-                for mode in GPU_IOCTL_MODES:
-                    gpu_smoke(1, mode)
-                if a.glmark_rootfs and iteration == 0:
-                    glmark(1)
             # Require new publications after each fresh binding.
             assert call(0, f'query {channel}')[0] > pending_provider
             assert call(1, f'query {channel}')[0] > pending_borrower
@@ -888,15 +763,6 @@ def test_memory(channel):
         call(0, f'pool-write 0 {seed}')
         call(0, f'pool-write {size-8} 1234567')
         result['transport_check'] = 'PASS'
-        if a.gpu_flow:
-            result['gpu_flow_check'] = 'PASS'
-        if a.glmark_rootfs:
-            data = text_command(0, 'kernel-log', ['XSHM_KERNEL_LOG_END'])
-            plans = re.findall(r'TASK_PLAN_STATS session=(\d+) registered=(\d+) runs=(\d+)', data)
-            registered = sum(int(plan[1]) for plan in plans)
-            runs = sum(int(plan[2]) for plan in plans)
-            assert registered > 0 and runs > registered
-            result['task_plans'] = {'registered': registered, 'runs': runs}
     memory_operation(1, f'mem-detach {grant}', 2)
     memory_operation(1, f'mem-attach {grant} {target}', 5)
     assert call(1, f'pool-read {size-8} {grant}')[2] == 1234567
@@ -924,82 +790,6 @@ def test_memory(channel):
     result['memory_check'] = 'PASS'
 
 
-def test_two_clients(channel, endpoints):
-    size = a.memory_pages * 4096
-    channels = [channel, call(0, f'offer {endpoints[2]}')[0]]
-    call(2, f'accept {channels[1]}')
-    sources = [call(0, f'pool-source {size}')[0] for _ in range(2)]
-    assert sources[0] != sources[1]
-    # Ambiguous access must not silently choose another Client's pool.
-    call(0, 'pool-info', -22)
-    call(0, 'pool-read 0', -22)
-    active = []
-    for n, vm in enumerate((1, 2)):
-        target = call(vm, f'pool-target {size}')[0]
-        seed = 0x3344556600000000 + n * 0x100000
-        call(0, f'--pool {sources[n]} pool-fill-pages {seed}')
-        grant = memory_operation(0, f'mem-offer {channels[n]} {sources[n]} {size}', 2)
-        memory_operation(vm, f'mem-attach {grant} {target}', 5)
-        assert call(vm, f'pool-check-pages {seed} {grant}')[2] == a.memory_pages
-        # Each Client is unauthorized to inspect or attach the other grant.
-        other = 3 - vm
-        call(other, f'mem-describe {grant}', 1)
-        call(0, f'pool-bind-gpu {grant}')
-        bindings.append((0, grant))
-        call(vm, f'pool-bind-gpu {grant}')
-        bindings.append((vm, grant))
-        active.append((vm, grant))
-    result['simultaneous_client_bindings'] = 2
-    # Check initialization evidence before a long workload can wrap dmesg.
-    log = text_command(0, 'kernel-log', ['XSHM_KERNEL_LOG_END'])
-    for endpoint in endpoints[1:]:
-        assert f'permissions PASS owner={endpoint}' in log, f'missing permission selftest for endpoint {endpoint}'
-        assert f'GPU isolation PASS owner={endpoint}' in log, f'missing GPU lifetime selftest for endpoint {endpoint}'
-    result['permission_selftests'] = 'PASS'
-    modes = GPU_IOCTL_MODES + (('bo-sg-mmap',) if a.bo_sg_mmap else ())
-    for mode in modes:
-        command = f'gpu-smoke --{mode} /dev/dri/renderD128'
-        for vm in (1, 2):
-            buffers[vm] = b''
-            processes[vm].stdin.write((command+'\n').encode())
-            processes[vm].stdin.flush()
-        for vm in (1, 2):
-            text_command(vm, command, ['PANTHOR_IOCTL_SMOKE='+mode.upper().replace('-', '_')+'_PASS'], sent=True)
-    if a.bo_sg_mmap:
-        result['bo_sg_mmap_check'] = 'PASS'
-    if a.compute_rootfs:
-        for vm in (1, 2):
-            buffers[vm] = b''
-            processes[vm].stdin.write(b'compute\n')
-            processes[vm].stdin.flush()
-        for vm in (1, 2):
-            data = text_command(vm, 'compute', ['COMPUTE_CHECK=PASS count=65536 samples=16',
-                                'GL_RENDERER=Mali-G610'], 300, sent=True)
-            assert 'alu_iters=64' in data
-        result['two_client_compute_check'] = 'PASS'
-    if a.gpu_fault_isolation:
-        before = text_command(0, 'kernel-log', ['XSHM_KERNEL_LOG_END'])
-        gpu_smoke(1, 'gpuvm-fault-isolation')
-        after = text_command(0, 'kernel-log', ['XSHM_KERNEL_LOG_END'])
-        prior_faults = {gpu_fault_identity(line) for line in kernel_issues(before)['gpu_translation_fault']}
-        new_faults = {line for line in kernel_issues(after)['gpu_translation_fault']
-                      if gpu_fault_identity(line) not in prior_faults}
-        addresses = set(re.findall(r'Unhandled Page fault in AS\d+ at VA (0x[0-9A-Fa-f]+)', after)) - set(re.findall(r'Unhandled Page fault in AS\d+ at VA (0x[0-9A-Fa-f]+)', before))
-        assert len({gpu_fault_identity(line) for line in new_faults}) == 1 and all('TRANSLATION_FAULT' in line for line in new_faults), new_faults
-        assert {int(address, 16) for address in addresses} == {0xa00000}, addresses
-        expected_gpu_fault_lines.update(gpu_fault_identity(line) for line in new_faults)
-        result['expected_gpu_fault'] = {'status': 'PASS', 'address': '0xa00000', 'lines': sorted(new_faults)}
-    for vm, grant in reversed(active):
-        call(vm, f'pool-unbind {grant}')
-        bindings.remove((vm, grant))
-        call(0, f'pool-unbind {grant}')
-        bindings.remove((0, grant))
-        memory_operation(vm, f'mem-detach {grant}', 2)
-        memory_operation(0, f'mem-revoke {grant}', 0)
-    call(0, f'close {channels[1]}')
-    result['two_client_gpu_flow_check'] = 'PASS'
-    result['memory_check'] = 'PASS'
-    result['provider_replacement_check'] = 'NOT_RUN (separate single-Client lifecycle test)'
 
 
 save()
@@ -1009,15 +799,9 @@ try:
                          if line.startswith('MemAvailable:'))
     result['memory_plan'] = {'realm_mib': [memory[0] for memory in memory_plan],
                              'cma_mib': [memory[1] for memory in memory_plan],
-                             'swiotlb_mib': realm_swiotlb_mib() if a.compact_memory or a.private_gpu else None,
+                             'swiotlb_mib': 16 if a.gpu_flow else None,
                              'host_headroom_mib': 256, 'available_mib': available_kib / 1024}
     admission_mib = sum(memory[0] for memory in memory_plan)
-    if a.reclaim_targets:
-        vmm_digest = result['inputs'][str(bins/'bin/firecracker')]
-        assert vmm_digest == 'fb2c3816d776a288d34b8c7f5b74b1e1722bb64d79079cac9c303319361310ec', vmm_digest
-        admission_mib -= a.clients * a.memory_pages / 256
-        result['memory_plan']['admission_basis'] = 'private configuration minus reclaimed Client target pools; bootstrap allocations guarded separately'
-        result['memory_plan']['steady_private_upper_mib'] = admission_mib
     assert admission_mib + 256 <= available_kib / 1024, result['memory_plan']
     save()
     monitor_thread = threading.Thread(target=monitor_resources, daemon=True)
@@ -1042,7 +826,7 @@ try:
         }
         path = out/f'realm-{vm}.json'
         if memory_plan[vm][1] is not None:
-            config['boot-source']['boot_args'] += f' cma={memory_plan[vm][1]}M swiotlb={realm_swiotlb_mib() * 512}'
+            config['boot-source']['boot_args'] += f' cma={memory_plan[vm][1]}M swiotlb={16 * 512}'
         config['boot-source']['boot_args'] += gpu_mode_boot_args(vm)
         if a.gpu_flow and vm == 0:
             if a.clients == 4:
@@ -1051,23 +835,16 @@ try:
             config['boot-source']['kernel_image_path'] = str(bins/'kernels/realm-xshm/proxy/Image')
             if a.rpc_stats:
                 config['boot-source']['boot_args'] += (
-                    ' panthor.submit_stats=1 panthor.job_irq_stats=1 panthor_proxy.rpc_stats=1')
+                    ' panthor_proxy.rpc_stats=1')
         if a.performance and vm:
             config['boot-source']['boot_args'] += (
                 ' client_comm_vmshm.realm_poll_us=1000 client_comm_vmshm.concurrent_rpc=1')
-            if not a.private_gpu:
-                config['boot-source']['boot_args'] += (
-                    ' panthor_client.completed_wait_cache=1 panthor_client.fused_snapshot=1'
-                    ' panthor_client.lazy_snapshot_wait=1')
         if a.notify_trace:
             config['boot-source']['boot_args'] += ' realm_xshm.notify_trace=1'
-        if a.completion_trace:
-            driver = 'panthor_client' if vm else 'panthor_proxy'
-            config['boot-source']['boot_args'] += f' {driver}.completion_trace=1'
-        if a.transfer_capture and vm:
-            config['boot-source']['boot_args'] += ' panthor_client.transfer_capture=1 panthor_client.fused_snapshot=1'
         if a.rpc_stats and vm:
             config['boot-source']['boot_args'] += ' client_comm_vmshm.rpc_stats=1'
+        if a.security_selftests and vm == 0:
+            config['boot-source']['boot_args'] += ' panthor_proxy.irq_probe=1'
         if workload_rootfs and (a.benchmark_only and vm or vm == 1 or (a.clients == 2 and vm == 2)):
             config['drives'] = [{'drive_id': 'workload', 'path_on_host': str(workload_rootfs),
                                  'is_root_device': False, 'is_read_only': True}]
@@ -1075,7 +852,7 @@ try:
         command = [str(bins/'bin/firecracker'), '--no-api', '--no-seccomp', '--config-file', str(path),
                    '--id', f'xshm-{vm}']
         if a.pin_cpus or a.performance:
-            cpu = ('1' if vm == 0 else '2,3') if a.performance and a.benchmark_only and (a.compact_memory or a.clients > 1) else str(vm + 1 if a.performance else (1 if vm else 0))
+            cpu = ('1' if vm == 0 else '2,3') if a.performance and a.benchmark_only and a.clients > 1 else str(vm + 1 if a.performance else (1 if vm else 0))
             if vm and a.client_cpu_layout == 'round-robin':
                 cpu = str(2 + (vm - 1) % 2)
             command = ['taskset', '-c', str(cpu)] + command
@@ -1092,24 +869,19 @@ try:
         sel.register(proc.stdout, selectors.EVENT_READ, vm)
         if not a.parallel_boot:
             receive(vm, b'XSHM_READY')
-            if a.performance and a.benchmark_only and (a.compact_memory or a.clients > 1):
+            if a.performance and a.benchmark_only and a.clients > 1:
                 isolate_vmm_io(vm)
     if a.parallel_boot:
         for vm in range(vm_count):
             receive(vm, b'XSHM_READY')
-            if a.performance and a.benchmark_only and (a.compact_memory or a.clients > 1):
+            if a.performance and a.benchmark_only and a.clients > 1:
                 isolate_vmm_io(vm)
     if a.notify_trace:
         for vm in range(vm_count):
             assert call(vm, 'register')[2] & 64, 'RMM notification timing capability missing'
-    if a.private_gpu:
+    if a.gpu_flow:
         bootstrap_private_gpu()
         test_private_gpu()
-    elif a.benchmark_only:
-        if a.compact_memory or a.clients > 1:
-            test_concurrent_benchmark()
-        else:
-            test_benchmark()
     else:
         ea = call(0, 'register')
         eb = call(1, 'register')
@@ -1169,10 +941,7 @@ try:
                                           'coalesced': coalesced,
                                           'inactive_and_outsider_denied': True}
         if a.memory_pages:
-            if a.clients == 2:
-                test_two_clients(channel, [ea[1], eb[1], ec[1]])
-            else:
-                test_memory(channel)
+            test_memory(channel)
         if a.trusted_events:
             result['event_irq']['after_workloads'] = [call(vm, 'irq-stats')[0] for vm in range(3)]
             for vm in range(2 if a.clients == 1 else 3):
@@ -1197,11 +966,6 @@ try:
         for vm in range(vm_count):
             trace = text_command(vm, 'notify-trace', ['XSHM_NOTIFY_TRACE_END'])
             (out/f'notify-realm-{vm}.log').write_text(trace)
-    if a.completion_trace:
-        for vm in range(vm_count):
-            role = 'client' if vm else 'proxy'
-            stats = text_command(vm, f'completion-stats {role}', ['XSHM_COMPLETION_STATS_END'])
-            (out/f'completion-stats-realm-{vm}.log').write_text(stats)
     if a.gpu_flow:
         result['kernel_health'] = {}
         for vm in range(vm_count):
@@ -1210,10 +974,11 @@ try:
             # retain these even if the kernel ring wrapped during the suite.
             files[vm].flush()
             serial = (out/f'realm-{vm}.log').read_text(errors='replace')
+            if vm == 0 and a.security_selftests:
+                assert 'GPU_IRQ_PROXY_STATEMENT=PASS' in log+serial, 'Proxy event statement probes not executed'
+                assert 'GPU_IRQ_PROXY_STATEMENT=FAIL' not in log+serial, 'Proxy event statement probe failed'
+                result['gpu_irq_security']['proxy_statement_probes'] = 'PASS'
             issues = kernel_issues(log+'\n'+serial)
-            if vm == 0 and expected_gpu_fault_lines:
-                issues['gpu_translation_fault'] = [line for line in issues['gpu_translation_fault']
-                    if gpu_fault_identity(line) not in expected_gpu_fault_lines]
             result['kernel_health'][str(vm)] = issues
             assert not any(issues.values()), f'Realm {vm}: kernel faults: '+str(
                 {name: len(lines) for name, lines in issues.items() if lines})

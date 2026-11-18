@@ -1,0 +1,39 @@
+{
+  "status": "PASS_ACCEPTED_STACK_DEFAULTS_BASE_ROOTFS_AND_PRIMARY_SOURCE_RESTORED",
+  "live": {
+    "realm": 1,
+    "cpus": "0-1",
+    "driver": "pmthor",
+    "cmdline": "root=PARTLABEL=root rootwait isolcpus=1,2,3 maxcpus=4 nohlt cpuidle.off=1 rcupdate.rcu_cpu_st kvm_arm.mode=protected",
+    "governor": "userspace",
+    "selected_hz": 300000000
+  },
+  "proc_version": "Linux version 6.12.0-opencca-pmthor-opp3 (mzh@DESKTOP-BDU23CK) (aarch64-linux-gnu-gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0, GNU ld (GNU Binutils for Ubuntu) 2.46) #2 SMP PREEMPT Fri Oct 30 11:28:38 CST 2026",
+  "actual_SD_firmware_sha256": {
+    "idbloader.img": "aa5327d4c3f9e7cc3073c7cc2b49e056442c62f70c16de7add51c53e7051dff2",
+    "u-boot.itb": "239b9cb5d067fbdba84b4c0bed867a6e48ce5f1c10161653fd86fd3b6fc03f47"
+  },
+  "selected_Host_Image_sha256": "f79105ad2809859801a39a1dd3f9db9768c41e6b8e8f4d129e78e60f8d90fbb1",
+  "default_runtime_sha256": {
+    "/root/GPU-SFTP/tests/realm-xshm/run-realms.py": "a0ad3085b320655bf8a2a805acc85344b0139ae9be534860fb5713835443d9fc",
+    "/root/GPU-SFTP/firecracker-bins/bin/firecracker": "fb2c3816d776a288d34b8c7f5b74b1e1722bb64d79079cac9c303319361310ec",
+    "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/Image": "c6e6560b9f4340c2514b5b3404bad9e3bcc9eb640f427430b2f6bf23748614d0",
+    "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/initrd.cpio": "82342786a7ef8ae0721499f13558fd63f1864bc742078fd4bdcdf4d0702ca1e2",
+    "/root/GPU-SFTP/firecracker-bins/kernels/realm-xshm/proxy/Image": "9db12d358d6a6ca865842f8c85d4eb72f05fd99ec89967c6811981401490cd22",
+    "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4": "5d0c2ec8e5c1830f6a93c39d34bd8ae02a99702792e9e16a9d9034388f606d60"
+  },
+  "full_proof_sha256": "ed38ff405154dbc8074bd15f26427ffe72a700c7071df27c8d1d0f1d7657a637",
+  "predeployment_embedded_Image_release": "6.12.0-opencca-pmthor-opp3",
+  "predeployment_Image_check_sha256": "9cf3ed143a5c528bcb45150ce8426bcffd1d6eea5c2d7fd4d2bea0563eb0f48a",
+  "fresh_idle_actor_audit_sha256": "05cde7aa6badf4225d3fa127534911339fc2e0ef687ad16d871afcdb5d67ad8b",
+  "fresh_idle_actor_summary": {
+    "active_comparison_processes": [],
+    "udmabuf_device": false,
+    "proc_version": "Linux version 6.12.0-opencca-pmthor-opp3 (mzh@DESKTOP-BDU23CK) (aarch64-linux-gnu-gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0, GNU ld (GNU Binutils for Ubuntu) 2.46) #2 SMP PREEMPT Fri Oct 30 11:28:38 CST 2026",
+    "cpus": "0-1",
+    "cmdline": "root=PARTLABEL=root rootwait isolcpus=1,2,3 maxcpus=4 nohlt cpuidle.off=1 rcupdate.rcu_cpu_st kvm_arm.mode=protected",
+    "driver": "pmthor",
+    "selected_GPU_hz": 300000000,
+    "library_sha256": "26557ca02c0fc235e0bdf56b79b525ccf37e26dabe22d6e24c68a8522bb442ba"
+  }
+}

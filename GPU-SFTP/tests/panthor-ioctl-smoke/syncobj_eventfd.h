@@ -3,7 +3,7 @@
 static int private_syncobj_mode(void)
 {
 	char mode[8];
-	FILE *input = fopen("/sys/module/panthor_client/parameters/rmm_private_data", "r");
+	FILE *input = fopen("/sys/module/panthor_client/parameters/private_gpu", "r");
 	int result = -1;
 
 	if (!input)

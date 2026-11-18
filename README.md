@@ -6,11 +6,7 @@ Git 子模块提交，OpenCCA 上游组件的必要修改由带 SHA-256 的补�
 
 完整操作入口：**[无上下文 Agent 环境部署与测试手册](docs/start/AGENT_ENVIRONMENT_AND_TEST_RUNBOOK.md)**，涵盖硬件探测、Pi 准备、Host 部署、全部测试、判定标准和故障恢复。
 
-当前开发以 **[P42 + BO 容量修复基线](docs/shared/CURRENT_BASELINE.md)** 为准：
-RMM 授权共享、可信 IRQ、可复用执行计划、原生 fence 完成凭据和批量快照回收。
-最新 [Native / ProxyClient 对比](docs/shared/GPU_NATIVE_PROXYCLIENT_COMPARISON_20261018.md)
-列出完整有效结果及哪些项目仍是 P42 参考。旧实验和论文提案见
-[历史与研究归档](docs/archive/20261018/README.md)。
+当前发布基线为完整 720p **1170 分**，包含 Client 私有 BO、RMM 授权和可信完成。源码、原始镜像与复验条件见[当前发布基线](docs/shared/CURRENT_BASELINE.md)，按主题查阅[从设计演进到性能实测](docs/design/README.md)。历史研究见[归档](docs/archive/20261018/README.md)。
 
 ## 新机器开始
 
@@ -21,7 +17,7 @@ OpenCCA Host 内核的 RK3588，普通 x86 机器负责构建和远程控制。
 sudo apt-get update
 sudo apt-get install -y git curl ca-certificates python3 openssh-client \
     sshpass rsync file xz-utils
-git clone https://github.com/marsha1111mao-del/gpu.git
+git clone --branch release/gpu-1170-20261114 https://github.com/marsha1111mao-del/gpu.git
 cd gpu
 ./scripts/setup/bootstrap.sh
 python3 scripts/check/check-checkout.py
@@ -51,6 +47,7 @@ bootstrap恢复的是manifest固定载荷；当前RMM-only Realm内核/initrd/VM
 | `scripts/check/` | checkout、日志和设计检查 |
 | `scripts/deploy/` | Host 内核部署；刷写操作详见专门 runbook |
 | `docs/shared/` | 当前基线、最新性能和 BO 修复报告 |
+| `docs/design/` | 设计演进、实现、安全、性能手段与实验对照 |
 | `docs/archive/` | 历史实现、逐轮实验、失败记录与研究提案 |
 
 ## 历史发布基线

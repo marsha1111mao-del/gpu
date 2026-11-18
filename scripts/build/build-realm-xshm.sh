@@ -16,4 +16,9 @@ file "$OUT_DIR/realm-xshm"
 file "$OUT_DIR/realm-gpu-private"
 
 "${CROSS_COMPILE:-aarch64-linux-gnu-}gcc" -O2 -Wall -Wextra -Werror -static \
+ "$ROOT_DIR/GPU-SFTP/tests/gpu-proxy-session-budget/session-quota-probe.c" \
+ -o "$OUT_DIR/session-quota-probe"
+file "$OUT_DIR/session-quota-probe"
+
+"${CROSS_COMPILE:-aarch64-linux-gnu-}gcc" -O2 -Wall -Wextra -Werror -static \
  "${ROOT_DIR}/GPU-SFTP/tests/realm-xshm/init.c" -o "$OUT_DIR/init"

@@ -20,6 +20,8 @@ typedef uint64_t u64;
 #define IS_ALIGNED(n,a) (((n)&((a)-1))==0)
 #define SZ_128K (128U*1024)
 #define SZ_8M (8U*1024*1024)
+#define SZ_1M (1024U*1024)
+#define SZ_256M (256U*1024*1024)
 #define U64_MAX UINT64_MAX
 #define U32_MAX UINT32_MAX
 #define GFP_KERNEL 0
@@ -45,11 +47,11 @@ static void kfree(void *p) { if(p){frees++;free(p);} }
 #define kvfree(p) kfree(p)
 struct page { unsigned char data[4096]; unsigned long ipa; const void *owner; bool visible, nc; };
 static void *page_address(struct page *p) { return p->data; }
-static void clear_highpage(struct page *p) { assert(p->visible && !p->nc);memset(p->data,0,4096); }
+static void clear_highpage(struct page *p) { assert(p->visible);memset(p->data,0,4096); }
 static void __free_page(struct page *p)
 {
     /* No live RMM backing record may survive an actual page free. */
-    assert(!gpu_private_range_busy(p->owner,p->ipa,4096));kfree(p);
+    assert(!p->nc && !gpu_private_range_busy(p->owner,p->ipa,4096));kfree(p);
 }
 static struct page *alloc_page(int flags) { return kzalloc(sizeof(struct page),flags); }
 #define __GFP_ZERO 0
@@ -69,6 +71,7 @@ static void list_move_tail(struct list_head *p,struct list_head *h) {list_del(p)
 static bool list_empty(struct list_head *h) {return h->next==h;}
 static void INIT_LIST_HEAD(struct list_head *h) {h->next=h->prev=h;}
 typedef unsigned int refcount_t;
+static void refcount_set(refcount_t *r,unsigned int n) {*r=n;}
 static bool refcount_dec_and_test(refcount_t *r) {assert(*r);return !--*r;}
 static unsigned int refcount_read(refcount_t *r) {return *r;}
 static void refcount_inc(refcount_t *r) { assert(*r);++*r; }
@@ -99,6 +102,8 @@ static unsigned long live_roots[16];
 static bool grow_lost,alloc_abandon;
 static unsigned int seal_reply_fault;
 static unsigned int uncached_reply_fault;
+static unsigned int tx_steps, tx_reply_fault, tx_fault_step;
+static bool tx_barrier_fail;
 /* Model another Realm's complete RSI calls at a call boundary. This is not a
  * thread/concurrency test: the actual RMM core executes each call atomically.
  */
@@ -140,7 +145,7 @@ static bool restore_page(const void *o,unsigned long ipa,unsigned long pa)
 {struct page *p=page_by_pa(pa);assert(p->owner==o && p->ipa==ipa && !p->visible);p->visible=true;p->nc=false;return true;}
 static bool restore_nc(const void *o,unsigned long ipa,unsigned long pa)
 {struct page *p=page_by_pa(pa);assert(p->owner==o && p->ipa==ipa && !p->visible);p->visible=true;p->nc=true;return true;}
-static bool cache_barrier(void) {return true;}
+static bool cache_barrier(void) {return !tx_barrier_fail;}
 static bool clear_page(unsigned long pa)
 {struct page *p=page_by_pa(pa);assert(!p->visible);memset(p->data,0,4096);return true;}
 static const struct gpu_private_ops ops={.source_page=source_page,.table_pa=table_pa,
@@ -150,7 +155,7 @@ static const struct gpu_private_ops ops={.source_page=source_page,.table_pa=tabl
     .restore_page_uncached=restore_nc,.cache_barrier=cache_barrier};
 static int gpu_call_locked(struct realm_gpu_call *call,struct page *unused)
 {
-    assert(gpu_lock && !unused);calls++;
+    assert(gpu_lock && (!!unused == (call->operation==REALM_GPU_MAP_BEGIN)));calls++;
     if (call->operation==REALM_GPU_MAP && ++map_calls==fail_map_at) {
         if(transport_fail)return -EIO;
         sync_ok=false;
@@ -195,6 +200,15 @@ static int gpu_call_locked(struct realm_gpu_call *call,struct page *unused)
         if(heap_reply_fault==9)r.value[3]++;
         if(heap_reply_fault==10)r.value[2]=0;
         break;
+    case REALM_GPU_MAPPING_VERSION:gpu_private_mapping_version(caller,call->handle,&r);break;
+    case REALM_GPU_MAP_BEGIN: {
+        struct gpu_private_map_request request;
+        memcpy(&request,page_address(unused),sizeof(request));
+        gpu_private_map_begin(&ops,caller,call->handle,&request,&r);break;
+    }
+    case REALM_GPU_MAP_STEP:
+        tx_steps++;gpu_private_map_step(&ops,caller,call->handle,call->args[0],&r);break;
+    case REALM_GPU_MAP_ABORT:gpu_private_map_abort(&ops,caller,call->handle,&r);break;
     case REALM_GPU_MAP:
         gpu_private_map(&ops,caller,call->handle,call->args[0],call->args[1],call->args[2],call->args[3],call->args[4],&r);break;
     case REALM_GPU_UNMAP:
@@ -202,6 +216,7 @@ static int gpu_call_locked(struct realm_gpu_call *call,struct page *unused)
     case REALM_GPU_UNMAP_BO:
         gpu_private_unmap_bo(&ops,caller,call->handle,call->args[0],call->args[1],call->args[2],call->args[3],&r);break;
     case REALM_GPU_QUERY:gpu_private_query(caller,call->handle,0,&r);break;
+    case REALM_GPU_BO_IDLE:gpu_private_bo_idle(caller,call->handle,&r);break;
     case REALM_GPU_BO_DESTROY:gpu_private_bo_destroy(caller,call->handle,&r);break;
     case REALM_GPU_BO_SEAL:gpu_private_bo_seal(&ops,caller,call->handle,&r);break;
     case REALM_GPU_BO_RELEASE:gpu_private_bo_release(&ops,caller,call->handle,&r);break;
@@ -210,6 +225,15 @@ static int gpu_call_locked(struct realm_gpu_call *call,struct page *unused)
     default:assert(false);
     }
     call->status=r.status;memcpy(call->result,r.value,sizeof(r.value));
+    if(call->operation==REALM_GPU_MAP_STEP && tx_reply_fault && (!tx_fault_step || tx_steps==tx_fault_step)) {
+        unsigned int fault=tx_reply_fault;tx_reply_fault=0;
+        if(fault==1)call->result[0]++;
+        if(fault==2)call->result[1]++;
+        if(fault==3)call->result[2]++;
+        if(fault==4)call->result[3]=REALM_GPU_MAP_DONE;
+        if(fault==5)call->status=0;
+        if(fault==6)return -EIO;
+    }
     if(after) {
         gpu_private_service_map(&ops,&service,caller,call->handle,after,0,inject_va,1,3|8,&r);assert(!r.status);
     }
@@ -254,6 +278,8 @@ static struct realm_gpu_bo *realm_gpu_bo_alloc(u64 channel,u64 bytes,u32 access)
     }
     list_add_tail(&bo->link,&private_bos);return bo;
 }
+static struct realm_gpu_bo *private_bo_alloc(u64 channel,u64 bytes,u32 access,bool control)
+{ assert(!control);return realm_gpu_bo_alloc(channel,bytes,access); }
 static void reap_groups(void) { }
 static void reap_tasks(void) { }
 
@@ -293,22 +319,12 @@ static int xa_alloc(struct xarray *x,u32 *id,void *p,struct xa_limit lim,int fla
     for(u32 i=lim.min;i<140 && i<=lim.max;i++)if(!x->slot[i]){*id=i;x->slot[i]=p;return 0;}
     return -ENOSPC;
 }
-static int xa_insert(struct xarray *x,u32 id,void *p,int flags)
-{if(id>=140 || x->slot[id])return -EBUSY;x->slot[id]=p;return 0;}
 static void *xa_find(struct xarray *x,unsigned long *id,unsigned long maxid,int flags)
 {for(;*id<140 && *id<=maxid;(*id)++)if(x->slot[*id])return x->slot[*id];return NULL;}
 static void xa_destroy(struct xarray *x) {for(u32 i=0;i<140;i++)assert(!x->slot[i]);}
-struct panthor_client_file {u64 session_id;int lock;bool private_data;struct xarray private_vms,heaps,bos,syncobjs,groups;};
-static unsigned int heap_rpc_calls,destroy_rpc_calls;
+struct panthor_client_vm {struct realm_gpu_context *context;};
+struct panthor_client_file {u64 session_id;int lock;struct xarray private_vms,heaps,bos,groups;};
 static u64 client_comm_vmshm_rmm_channel(void) {return 7;}
-static int panthor_client_rpc_tiler_heap_create(const struct panthor_vmshm_tiler_heap_create_req *req,
-    struct panthor_vmshm_tiler_heap_create_rsp *rsp)
-{
-    heap_rpc_calls++;*rsp=(struct panthor_vmshm_tiler_heap_create_rsp){.client_heap_handle=9,
-        .proxy_heap_handle=19,.proxy_vm_id=1,.tiler_heap_ctx_gpu_va=0x10000,.first_heap_chunk_gpu_va=0x11000};return 0;
-}
-static int panthor_client_tiler_heap_destroy_rpc_session(u64 session,u32 handle,u32 *proxy)
-{destroy_rpc_calls++;if(proxy)*proxy=19;return 0;}
 #include "client.inc"
 static struct realm_gpu_context *context_new(void)
 {
@@ -572,8 +588,59 @@ static void uncached_client_tests(void)
     assert(realm_gpu_private_call(&call)==-EINVAL && calls==before);cases++;
     realm_gpu_bo_put(bo);no_leaks();
 }
+static void direct_map_tests(void)
+{
+    /* Real Client wrapper and RMM PTE/ref implementation across >1 batch. */
+    struct realm_gpu_context *c=context_new();assert(!realm_gpu_context_set_va_split(c,0x80000000));
+    struct realm_gpu_bo *bo=realm_gpu_bo_alloc(7,513*PAGE_SIZE,3);
+    u64 version=UINT64_MAX;tx_steps=0;
+    assert(!realm_gpu_context_map(c,bo,0,0x2000000,513*PAGE_SIZE,3|8,&version));
+    assert(version==1 && tx_steps==5 && !c->map_failed);
+    struct gpu_private_result r;
+    gpu_private_mapping_check(&ops,caller,c->handle,bo->handle,512*PAGE_SIZE,0x2200000,1,3|8,&r);assert(!r.status);
+    assert(!realm_gpu_context_map(c,NULL,0,0x2000000,513*PAGE_SIZE,0,&version));assert(version==2);
+    assert(realm_gpu_context_map(c,bo,0,0x80000000,PAGE_SIZE,3,&version)==-EINVAL);
+    assert(realm_gpu_context_map(c,bo,0,0x7ffff000,2*PAGE_SIZE,3,&version)==-EINVAL);
+    assert(realm_gpu_context_map(c,bo,0,0x2000000,PAGE_SIZE,7,&version)==-EINVAL); /* BO is RW, never X. */
+    assert(!realm_gpu_context_map(c,bo,0,0x2000000,PAGE_SIZE,3|8,&version));
+    unsigned int saved_steps=tx_steps;unsigned int saved_refs=bo_lookup(caller,bo->handle)->mapped;
+    fail_alloc=alloc_calls+1;
+    assert(realm_gpu_context_map(c,NULL,0,0x2000000,PAGE_SIZE,0,&version)==-ENOMEM);
+    fail_alloc=0;assert(tx_steps==saved_steps && bo_lookup(caller,bo->handle)->mapped==saved_refs);
+    assert(!realm_gpu_context_map(c,NULL,0,0x2000000,PAGE_SIZE,0,&version));
+    realm_gpu_bo_put(bo);realm_gpu_context_put(c);no_leaks();cases+=7;
+    /* Malformed/progress/lost replies never publish a version or continue applying. */
+    for(unsigned int fault=1;fault<=6;fault++) {
+        c=context_new();assert(!realm_gpu_context_set_va_split(c,0x80000000));bo=realm_gpu_bo_alloc(7,PAGE_SIZE,3);
+        version=UINT64_MAX;tx_reply_fault=fault;
+        assert(realm_gpu_context_map(c,bo,0,0x2000000,PAGE_SIZE,3|8,&version)<0 && version==UINT64_MAX);
+        assert(!bo_lookup(caller,bo->handle)->mapped && !c->map_failed);
+        assert(!realm_gpu_context_map(c,bo,0,0x2000000,PAGE_SIZE,3|8,&version));
+        assert(!realm_gpu_context_map(c,NULL,0,0x2000000,PAGE_SIZE,0,&version));
+        realm_gpu_bo_put(bo);realm_gpu_context_put(c);no_leaks();cases++;
+    }
+    /* A malformed final commit reply must block task-version consumption,
+     * even if RMM committed successfully and its own context is not poisoned. */
+    c=context_new();assert(!realm_gpu_context_set_va_split(c,0x80000000));bo=realm_gpu_bo_alloc(7,PAGE_SIZE,3);
+    tx_steps=0;tx_fault_step=3;tx_reply_fault=2;version=UINT64_MAX;
+    assert(realm_gpu_context_map(c,bo,0,0x2000000,PAGE_SIZE,3|8,&version)==-EPROTO);
+    assert(c->map_failed && version==UINT64_MAX && bo_lookup(caller,bo->handle)->mapped==1);
+    assert(realm_gpu_context_mapping_version(c,&version)==-EIO);
+    tx_fault_step=0;gpu_private_device_revoked(&ops);
+    realm_gpu_bo_put(bo);realm_gpu_context_put(c);no_leaks();cases++;
+    /* Post-leaf barrier failure holds real backing until trusted revocation. */
+    c=context_new();assert(!realm_gpu_context_set_va_split(c,0x80000000));bo=realm_gpu_bo_alloc(7,PAGE_SIZE,3);
+    tx_barrier_fail=true;version=UINT64_MAX;
+    assert(realm_gpu_context_map(c,bo,0,0x2000000,PAGE_SIZE,3|8,&version)<0 && version==UINT64_MAX && c->map_failed);
+    assert(bo_lookup(caller,bo->handle)->mapped==1);
+    assert(realm_gpu_context_map(c,NULL,0,0x2000000,PAGE_SIZE,0,&version)==-EIO);
+    tx_barrier_fail=false;gpu_private_device_revoked(&ops);
+    realm_gpu_bo_put(bo);realm_gpu_context_put(c);no_leaks();cases++;
+}
+
 int main(void)
 {
+    direct_map_tests();
     exact_cleanup_tests();
     struct realm_gpu_context *c=context_new();
     assert(realm_gpu_context_set_va_split(c,0)==-EINVAL);
@@ -664,14 +731,15 @@ int main(void)
     realm_gpu_context_put(c);no_leaks();cases++;
     /* Actual DRM frontend create/destroy and VM/file teardown; no heap RPC. */
     c=context_new();assert(!realm_gpu_context_set_va_split(c,0x80000000));
-    struct panthor_client_file f={.session_id=9,.private_data=true};
+    struct panthor_client_file f={.session_id=9};
     actual_frontend_xarray_init(&f);
-    assert(f.heaps.alloc && f.syncobjs.alloc && !f.private_vms.alloc);cases++;
-    f.private_vms.slot[1]=c;
+    assert(f.heaps.alloc && !f.private_vms.alloc && !f.bos.alloc && !f.groups.alloc);cases++;
+    struct panthor_client_vm local_vm={.context=c};
+    f.private_vms.slot[1]=&local_vm;
     struct drm_panthor_tiler_heap_create args={.vm_id=1,.initial_chunk_count=2,
         .chunk_size=SZ_128K,.max_chunks=8,.target_in_flight=3};
-    assert(!panthor_client_tiler_heap_create(&f,&args) && args.handle && !heap_rpc_calls);
-    assert(!panthor_client_tiler_heap_destroy(&f,args.handle) && !destroy_rpc_calls);cases++;
+    assert(!panthor_client_tiler_heap_create(&f,&args) && args.handle);
+    assert(!panthor_client_tiler_heap_destroy(&f,args.handle));cases++;
     f.heaps.fail_insert=true;assert(panthor_client_tiler_heap_create(&f,&args)==-ENOMEM);
     f.heaps.fail_insert=false;assert(!heap_context_busy(c->handle));cases++;
     args.vm_id=2;assert(panthor_client_tiler_heap_create(&f,&args)==-ENOENT);args.vm_id=1;cases++;
@@ -680,10 +748,6 @@ int main(void)
     panthor_client_private_heaps_release_vm(&f,1);assert(!xa_load(&f.heaps,args.handle));cases++;
     assert(!panthor_client_tiler_heap_create(&f,&args));panthor_client_heaps_release_local(&f);cases++;
     f.private_vms.slot[1]=NULL;realm_gpu_context_put(c);no_leaks();
-    f.private_data=false;
-    assert(!panthor_client_tiler_heap_create(&f,&args) && heap_rpc_calls==1);
-    assert(!panthor_client_tiler_heap_destroy(&f,args.handle) && destroy_rpc_calls==1);cases++;
-    no_leaks();
     oom_tests();
     resident_client_tests();
     uncached_client_tests();
@@ -749,6 +813,27 @@ int main(void)
             list_del(&g.link);gpu_private_context_put(caller,c->handle);
         }
         realm_gpu_context_put(c);no_leaks();cases++;
+    }
+    /* Real Client cache + real RMM registry: retain NC backing, query idle,
+     * zero before exposure, and finally restore attributes/release records. */
+    {
+        struct realm_gpu_bo_cache *cache=realm_gpu_bo_cache_create(7,7);
+        struct realm_gpu_bo *bo=realm_gpu_bo_alloc_cached(cache,2*SZ_1M);
+        u64 handle=bo->handle;
+        assert(!realm_gpu_bo_set_uncached(bo));
+        for(unsigned int cycle=0;cycle<3;cycle++) {
+            for(unsigned long i=0;i<bo->nr_pages;i++)memset(bo->pages[i]->data,0x7f,PAGE_SIZE);
+            realm_gpu_bo_put(bo);
+            assert(cache->idle && bo_lookup(caller,handle));
+            bo=realm_gpu_bo_alloc_cached(cache,2*SZ_1M);
+            assert(bo->handle==handle && bo->uncached_complete);
+            unsigned int before=calls;assert(!realm_gpu_bo_set_uncached(bo));assert(calls==before);
+            for(unsigned long i=0;i<bo->nr_pages;i++) {
+                assert(bo->pages[i]->visible && bo->pages[i]->nc);
+                for(unsigned j=0;j<PAGE_SIZE;j++)assert(!bo->pages[i]->data[j]);
+            }
+        }
+        realm_gpu_bo_put(bo);realm_gpu_bo_cache_close(cache);no_leaks();cases+=3;
     }
     printf("GPU_PRIVATE_HEAP=PASS cases=%u actual Client/frontend/kernel heap functions + actual RMM PT/ref core; private initialized data, native chunk links, RW/XN leaves, batching, owned VA, exact-object atomic cleanup, foreign-mapping preservation, prior-grant interleavings, fault retention, real task-hold gate and diagnostic protection; HOST_DOUBLES_ONLY NO_LINUX_CONCURRENCY_OR_PHYSICAL_GPU_EXECUTION\n",cases);
     return 0;

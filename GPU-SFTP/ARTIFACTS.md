@@ -2,6 +2,8 @@
 
 ## 固定运行载荷
 
+1170 分发布载荷使用[独立清单](../baselines/gpu-1170-20261114/manifest.json)，恢复方式见[发布复验步骤](../docs/design/05-results.md#复验发布载荷)。下文的默认清单继续提供用户态及历史 Host/Guest 参考。
+
 `runtime-manifest.json` 固定当前RMM共享载荷及分别注明版本的Host/直通参考载荷的归档大小、SHA-256 和归档内
 每个文件的大小/哈希。`scripts/artifacts/restore-runtime.py` 先验证完整清单，
 再恢复到本目录；重复执行幂等，默认拒绝覆盖内容不同的本地文件。

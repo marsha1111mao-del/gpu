@@ -9,8 +9,9 @@ import hashlib
 import json
 import os
 from pathlib import Path
-import re
 import subprocess
+
+from gpu_c_source import extract_c_function, replace_c_fragment
 
 ROOT = Path(__file__).resolve().parents[2]
 RMM = ROOT / 'opencca/tf-rmm'
@@ -19,6 +20,7 @@ parser.add_argument('--out', required=True, type=Path)
 parser.add_argument('--task-chain', action='store_true', help='include modeled firmware and two-Client task lifecycle')
 parser.add_argument('--realm-lifecycle', action='store_true', help='actual RMI policy/Realm destruction followed by modeled RD address reuse')
 parser.add_argument('--actual-only', action='store_true', help='run real-source scenarios without mutation checks')
+parser.add_argument('--task-case', type=int, help='run one focused task-chain case without mutations')
 args = parser.parse_args()
 if args.realm_lifecycle:
     args.task_chain = True
@@ -30,34 +32,56 @@ busy = RMM / 'runtime/rsi/opencca_gpu.c'
 
 
 def extract(path, name):
-    source = path.read_text()
-    match = re.search(r'^(?:static )?(?:bool|void|unsigned long|int|enum s2_walk_status) ' + name + r'\([^;{}]*\)\s*\{', source, re.M)
-    assert match, name
-    return source[match.start():source.index('\n}', match.end()) + 2] + '\n'
+    return extract_c_function(path.read_text(), name)
 
 
 memory_names = ['source_page', 'clear_page', 'write_page', 'read_page',
                 'sync_page_for_device', 'sync_page_for_cpu', 'cache_barrier']
 texts = {
-    'chain-memory.inc': '\n'.join(extract(private, n) for n in memory_names),
+    'chain-memory.inc': '#include "gpu_test_memory_fallback.h"\n' + '\n'.join(extract(private, n) for n in memory_names),
     'chain-copy.inc': extract(private, 'copy_page_input'),
     'chain-translate.inc': extract(translate, 'realm_ipa_to_pa'),
     'chain-busy.inc': extract(busy, 'opencca_gpu_page_busy'),
-    'chain-dispatch.inc': '\n'.join(extract(private, n) for n in ['task_heap_call', 'handle_rsi_opencca_gpu_private']),
+    'chain-dispatch.inc': '#include "gpu_test_diagnostic_stubs.h"\n' + '\n'.join(extract(private, n) for n in ['task_heap_call', 'handle_rsi_opencca_gpu_private']),
 }
 if args.task_chain:
-    texts['chain-lifecycle.inc'] = '\n'.join([
+    role_stubs = [
+        '#ifndef ERROR\n',
+        '#define ERROR(...) ((void)fprintf(stderr, __VA_ARGS__))\n',
+        '#endif\n',
+        'static const struct gpu_firmware_ops reclaim_harness_fw_ops;\n',
+        '#define firmware_operations reclaim_harness_fw_ops\n',
+        'void opencca_gpu_release_realm_mappings(struct granule *owner);\n',
+        'bool xshm_memory_release_owner(const void *owner,\n'
+        '                               const struct xshm_memory_ops *ops)\n'
+        '{ (void)owner; (void)ops; return true; }\n',
+        'static void opencca_gpu_role_claim_measure(const void *owner,\n'
+        '                                           unsigned long endpoint_id)\n'
+        '{\n\t(void)owner;\n\t(void)endpoint_id;\n}',
+    ]
+    if args.realm_lifecycle:
+        role_stubs.append(
+            'static void opencca_gpu_role_claim_clear_locked(struct granule *owner)\n'
+            '{\n\tassert(owner != NULL && owner->locked);\n}')
+    else:
+        role_stubs.insert(2,
+            'void opencca_gpu_release_realm_mappings(struct granule *owner)\n'
+            '{ (void)owner; }\n')
+    texts['chain-lifecycle.inc'] = '\n'.join(role_stubs + [
         extract(private, 'opencca_gpu_private_device_revoked'),
         extract(private, 'opencca_gpu_private_reclaim'),
         extract(busy, 'smc_opencca_gpu_pm'),
         extract(busy, 'handle_rsi_opencca_gpu_control'),
     ])
+    texts['chain-lifecycle.inc'] += '\n#undef firmware_operations\n'
 if args.realm_lifecycle:
     realm = RMM / 'runtime/rmi/realm.c'
     texts['chain-realm-actual.inc'] = '\n'.join([
         extract(RMM / 'runtime/core/xshm_policy.c', 'xshm_rmi_allowed'),
         extract(busy, 'opencca_gpu_pm_destroy_allowed'),
         extract(busy, 'opencca_gpu_release_realm_mappings'),
+        extract(RMM / 'runtime/rsi/opencca_gpu.c', 'opencca_gpu_service_release_locked'),
+        extract(RMM / 'runtime/rsi/opencca_gpu.c', 'opencca_gpu_service_release'),
         extract(RMM / 'runtime/rsi/xshm.c', 'opencca_xshm_release_realm'),
         extract(realm, 'free_sl_rtts'),
         extract(realm, 'total_root_rtt_refcount'),
@@ -93,18 +117,21 @@ oracles = {
     'skip_write_clean': 'trusted control write reaches device bytes',
     'task_skip_device_flush': 'READY flushes actual two Client pages',
     'task_skip_cpu_invalidate': 'exact two data-page CPU returns',
-    'task_skip_control_invalidate': 'bounded complete/return/retire continuation',
+    # The exact two-queue progress check detects stale control data before
+    # the older bounded FINISH continuation check can be reached.
+    'task_skip_control_invalidate': 'fresh two-queue progress reports exact member and queue state',
     'revoke_skip_private': 'revoked contexts release after trusted reset',
     'revoke_skip_firmware': 'revoked firmware group handle is stale',
     'revoke_on_failure': 'failed reset retains task references',
     'revoke_accept_host_error': 'malformed Host reset rejected without side effects',
-    'revoke_allow_proxy_reset': 'Realm reset cannot bypass trusted mediated control',
+    'revoke_allow_proxy_reset': 'compromised Proxy cannot use native control reset as an equivalent path',
     'reclaim_ignore_rec_refs': 'Host reclaim must prove dead REC-free non-NEW owner and trusted revocation',
     'reclaim_allow_new_rd': 'Host reclaim must prove dead REC-free non-NEW owner and trusted revocation',
     'reclaim_keep_bo_service': 'recycled service RD cannot inspect living Client BO',
     'reclaim_keep_context_service': 'recycled service RD cannot inspect living Client context',
     'reclaim_skip_live_scrub': 'scrub published before restoring WB',
     'destroy_skip_private_policy': 'RMI policy blocks destroy while private registrations remain',
+    'destroy_relock_rd': 'valid serialized granule lock',
     'destroy_skip_rec_guard': 'existing REC blocks destroy before RTT traversal',
     'destroy_skip_root_guard': 'nonempty RTT must reject destroy before VMID release',
     'destroy_skip_endpoint_release': 'actual Realm destroy releases endpoint and pending IRQ identity',
@@ -123,13 +150,15 @@ def run(name, changed, mutant=False):
     command = [os.environ.get('HOST_CC', 'cc'), '-std=c11', '-Wall', '-Wextra', '-Werror',
                '-O2', '-g', '-fsanitize=address,undefined', '-fno-sanitize-recover=undefined',
                '-fno-omit-frame-pointer', '-fno-pie', '-no-pie', '-MMD', '-I' + str(case)]
-    command += ['-I' + str(RMM / p) for p in ['runtime/tests/rtt-stubs', 'runtime/tests/mmio-stubs',
+    command += ['-I' + str(RMM / p) for p in ['runtime/tests/rtt-stubs', 'runtime/tests/mmio-stubs', 'runtime/tests',
                 'runtime/include', 'ext/mbedtls/include', 'ext/mbedtls/library']]
     command += [str(RMM / p) for p in sources] + [str(case / name) for name in copied_sources] + ['-o', str(case / 'test')]
     with (case / 'build.log').open('w') as log:
         built = subprocess.run(command, stdout=log, stderr=subprocess.STDOUT)
     assert built.returncode == 0, (name, 'build failure', case / 'build.log')
-    scenarios = [7, 8] if args.realm_lifecycle else list(range(7)) if args.task_chain and not mutant else [0]
+    scenarios = [7, 8] if args.realm_lifecycle else ([0, 1, 2, 3, 4, 6] if args.task_chain and not mutant else [0])
+    if args.task_case is not None:
+        scenarios = [args.task_case]
     if name.startswith('destroy_'):
         scenarios = [8 if name == 'destroy_skip_gpu_release' else 7]
     if name.startswith('revoke_'):
@@ -153,7 +182,16 @@ def run(name, changed, mutant=False):
             assert ran.returncode == -6 and 'Assertion' in log and expected in log, (name, 'expected oracle assertion', expected, log)
         else:
             marker = 'GPU_RSI_TASK_CHAIN=PASS' if args.task_chain else 'GPU_RSI_MEMORY_CHAIN=PASS'
-            assert ran.returncode == 0 and marker in log, (name, log)
+            equivalent_control = args.task_chain and not args.realm_lifecycle
+            if equivalent_control:
+                required_lines = {
+                    'GPU_EQUIVALENT_CONTROL=PASS cases=2 actual_proxy_metadata_dispatch_completion_service_native_reset_mmio MODEL_ONLY no_external_dma'
+                }
+            if args.task_chain and not args.realm_lifecycle:
+                marker_present = any(line.startswith(marker) for line in log.splitlines())
+                assert ran.returncode == 0 and marker_present and required_lines <= set(log.splitlines()), (name, log)
+            else:
+                assert ran.returncode == 0 and marker in log, (name, log)
             print(log.strip(), flush=True)
 
 
@@ -226,14 +264,15 @@ if args.task_chain and not args.realm_lifecycle and not args.actual_only:
     ]
     for name, path, old, new in reclaim_mutations:
         changed = dict(texts)
-        assert changed[path].count(old) == 1, name
-        changed[path] = changed[path].replace(old, new, 1)
+        changed[path] = replace_c_fragment(changed[path], old, new)
         run(name, changed, True)
     mutant_count = len(mutations) + 3 + len(revoke_mutations) + len(reclaim_mutations)
 else:
     mutant_count = len(mutations)
 if args.realm_lifecycle and not args.actual_only:
     realm_mutations = [
+        ('destroy_relock_rd', 'chain-realm-actual.inc',
+         'opencca_gpu_service_release_locked(g_rd);', 'opencca_gpu_service_release(g_rd);'),
         ('destroy_skip_private_policy', 'chain-realm-actual.inc', '!gpu_private_owner_busy(owner) &&', 'true &&'),
         ('destroy_skip_rec_guard', 'chain-realm-actual.inc',
          'res = find_lock_unused_granule(rd_addr, GRANULE_STATE_RD, &g_rd);',

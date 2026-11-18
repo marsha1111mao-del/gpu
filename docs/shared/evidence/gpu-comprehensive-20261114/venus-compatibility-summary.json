@@ -1,0 +1,37 @@
+{
+  "status": "PASS_STANDARD_VENUS_UDMABUF_PATH_AND_MATCHED_MODEL_COMPARISON",
+  "common_GLES_graphics_Host_Image_sha256": "0f99818450b46f5f2b9b3e0457ad85dd60640de6a9843f6c9f2440a4a3b24843",
+  "all_three_models_Host_Image_sha256": "edf9253e96139fd86b6c5539ab214fa77fc98e82235223049cdacb5ecc418203",
+  "configuration_change": {
+    "UDMABUF": [
+      "not set",
+      "y"
+    ]
+  },
+  "embedded_release": "6.12.0-opencca-pmthor-opp3",
+  "renderer_server_package": {
+    "version": "1.1.0-2",
+    "package_sha256": "de85c1afdfe6be09295e0bd15e1c90bfc1d7ad09641f6290a02da6f1266b42d3",
+    "helper_sha256": "380cccc3c9eeab4353510b3e8bcaf676553abeb9059c7a9c964853ce48e221b7",
+    "library_sha256_unchanged": "26557ca02c0fc235e0bdf56b79b525ccf37e26dabe22d6e24c68a8522bb442ba"
+  },
+  "renderer_environment": {
+    "RENDER_SERVER_EXEC_PATH": "/root/gpu-comprehensive/venus-server-r1/virgl_render_server",
+    "VKR_DEBUG": "udmabuf",
+    "LD_PRELOAD": null
+  },
+  "qualification_run": "gpu-wide-venus-qualify-r4-20261115",
+  "qualification_summary_sha256": "7f31839c8253c0f7297fd41cf311c2d7159e388b6e574278ad9ab095d1062e17",
+  "shared720_validation_gate": {
+    "run_id": "gpu-wide-udmabuf-shared720-gate-r1-20261115",
+    "score": 1170,
+    "audit_sha256": "4261d133f77c5e2127769534413ad759b932785773dee2454132ea4fa2cd4fd9"
+  },
+  "matched_plan_sha256": "82a62fb6fe3d33056328a6a47f2a54d624e55828b32f10236e9baac98160b1b9",
+  "prior_successful_model_rows_not_pooled": 72,
+  "matched_model_state_sha256": "6dedeeed7161a3f98eb26abb307e29f9198eac2049dd2acb83618f59d15f3494",
+  "user_selected_model_scope": "Core comparison: three independent single-user model trials; retain existing multi-user extensions",
+  "excluded_extension_configurations": 9,
+  "retained_matched_extension_rows": 32,
+  "scope": "GLES/graphics and model families have separately matched Host Images. Core models are single-user three-trial measurements chosen by the user. Existing multi-user extensions are retained outside the core, never marked hardware-unavailable. Model compatibility adds same-version helper and standard builtin UDMABUF; no RMM/Guest/library/model changes. Qualification samples and extra720 gate are excluded."
+}

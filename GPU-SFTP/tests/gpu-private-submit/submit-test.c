@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /* Actual planner/worker; doubles below do not prove Linux or GPU execution. */
 #include "kernel-doubles.inc"
+#define time_before(a,b) ((long)((a)-(b))<0)
+#define jiffies_to_nsecs(n) ((u64)(n)*1000000ULL)
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 #define BIT(n) (1U << (n))
 #define BIT_ULL(n) (1ULL << (n))
@@ -44,28 +46,57 @@ static bool queue_delayed_work(struct workqueue_struct *q,struct delayed_work *w
 }
 static void cancel_delayed_work_sync(struct delayed_work *w) {if(scheduled==w)scheduled=NULL;}
 static void destroy_workqueue(struct workqueue_struct *q) {destroyed++;}
+struct realm_gpu_context { u64 handle; };
+struct panthor_client_vm { struct realm_gpu_context *context; u64 sync_sequence; bool dirty,closing; };
+static struct realm_gpu_context context={.handle=999};
+static struct panthor_client_vm local_vm={.context=&context};
+static u64 mapping_version;
+static int metadata_error,version_error;
+static unsigned int metadata_syncs,version_queries;
+static void panthor_client_vm_put(struct panthor_client_vm *vm) {assert(vm==&local_vm);}
+struct realm_gpu_task;
+static int realm_gpu_task_mapping_version(struct realm_gpu_context *ctx,struct realm_gpu_task *task,u64 *version) {
+    assert(ctx->handle==999 && task);version_queries++;
+    if(version_error)return version_error;
+    *version=mapping_version;return 0;
+}
 struct realm_gpu_group { u64 handle; };
 struct realm_gpu_task { u64 handle;bool retired; };
 #include "structures.inc"
 struct panthor_client_private_run;
 struct panthor_client_file {
     u64 session_id;struct mutex private_submit_lock,private_gpu_lock,lock;
-    bool private_closing,private_gpu_failed,private_data,private_dispatch;
+    bool private_closing,private_gpu_failed;
+    u64 private_live_dispatches,private_live_misses;
+    bool private_observer;u64 private_observer_waits,private_observer_errors,private_observer_ns;
+	u64 local_irq_signals,local_irq_scopes,local_irq_queued,local_irq_drained;
+	u64 local_irq_spilled,local_irq_coalesced,local_irq_native_calls;
+	u64 local_irq_native_samples,local_irq_native_ns;
+
     struct workqueue_struct *private_gpu_wq;
     struct delayed_work private_gpu_work;
     struct list_head private_jobs,private_map_waiters;
     struct panthor_client_private_run *private_run;
     atomic_t private_gpu_pending;
-    u64 private_phase_calls[7],private_phase_ns[7],private_phase_again[7],private_phase_gap_ns[7];
-    u64 private_phase_pages[7],private_phase_empty_calls[7],private_phase_empty_ns[7];
+    u64 private_phase_calls[PANTHOR_PRIVATE_PHASE_COUNT],private_phase_ns[PANTHOR_PRIVATE_PHASE_COUNT];
+    u64 private_phase_again[PANTHOR_PRIVATE_PHASE_COUNT],private_phase_gap_ns[PANTHOR_PRIVATE_PHASE_COUNT];
+    u64 private_phase_pages[PANTHOR_PRIVATE_PHASE_COUNT],private_phase_empty_calls[PANTHOR_PRIVATE_PHASE_COUNT];
+    u64 private_phase_empty_ns[PANTHOR_PRIVATE_PHASE_COUNT];
     u64 private_cache_regressions;
     u64 private_retired_slices, private_local_hint_skips, private_local_hint_tasks;
     u64 private_hint_pause_watches,private_hint_pause_early,private_hint_pause_reads;
+    u64 private_slow_hint_watches,private_slow_hint_early,private_slow_hint_ns;
     u64 private_complete_wait_calls[5],private_complete_wait_ns[5];
     u64 private_complete_wait_max_ns[5],private_complete_wait_late[5];
     u64 private_first_poll_pauses,private_first_poll_pause_ns,private_poll_trainings;
     struct xarray groups,heaps;
 };
+static int panthor_client_private_vm_sync(struct panthor_client_file *p,struct panthor_client_vm *vm,u32 id) {
+    assert(p->private_gpu_lock.held && vm==&local_vm && (id==7 || id==8));metadata_syncs++;
+    if(vm->closing)return -ENOENT;
+    if(metadata_error)return metadata_error;
+    vm->dirty=false;return 0;
+}
 static struct panthor_client_file *sleep_file;
 static void check_complete_pause(void) {
     assert(sleep_file && !sleep_file->private_gpu_lock.held && !sleep_file->lock.held &&
@@ -75,11 +106,11 @@ struct drm_device { unsigned int unused; };
 static unsigned int heap_creates,heap_destroys;
 static int heap_error;
 static int panthor_client_tiler_heap_create(struct panthor_client_file *p,struct drm_panthor_tiler_heap_create *a) {
-    if(p->private_data)assert(p->private_gpu_lock.held && p->private_submit_lock.held);
+    assert(p->private_gpu_lock.held && p->private_submit_lock.held);
     heap_creates++;return heap_error;
 }
 static int panthor_client_tiler_heap_destroy(struct panthor_client_file *p,u32 handle) {
-    if(p->private_data)assert(p->private_gpu_lock.held && p->private_submit_lock.held);
+    assert(p->private_gpu_lock.held && p->private_submit_lock.held);
     heap_destroys++;return heap_error;
 }
 static unsigned int destroy_rpc,group_releases;
@@ -98,8 +129,8 @@ static unsigned int stages,observed_count,retires,abandoned,task_frees,cancels;
 static u64 last_canceled;
 static int stage_error,operation_error,rpc_error,cancel_error;
 static u32 error_operation,error_action;
-static unsigned int operation_calls[64],rpc_calls[6];
-static unsigned int again[64];
+static unsigned int operation_calls[REALM_GPU_MAX_OPERATION+1],rpc_calls[7];
+static unsigned int again[REALM_GPU_MAX_OPERATION+1];
 static u64 timed_gpu_duration_ns,timed_gpu_ready_at;
 static unsigned int heap_calls,heap_again,return_again,return_progress_calls;
 static int heap_service_error;
@@ -109,7 +140,7 @@ static int realm_gpu_task_heap_service(struct realm_gpu_task *t) {
     if(heap_again){heap_again--;return -EAGAIN;}
     return 0;
 }
-static unsigned int malformed,dispatch_state;
+static unsigned int malformed,dispatch_state,live_dispatch_state;
 static bool staged_delegation;
 static struct realm_gpu_task *realm_gpu_task_stage(struct realm_gpu_group *g,u64 channel,
         const struct realm_gpu_task_command *commands,u32 count,bool delegate) {
@@ -119,10 +150,11 @@ static struct realm_gpu_task *realm_gpu_task_stage(struct realm_gpu_group *g,u64
     struct realm_gpu_task *t=calloc(1,sizeof(*t));assert(t);t->handle=1000+stages;return t;
 }
 static int realm_gpu_task_call(struct realm_gpu_task *t,u32 operation,struct realm_gpu_call *r) {
-    assert(t && !t->retired && operation<64);operation_calls[operation]++;
+    assert(t && !t->retired && operation<=REALM_GPU_MAX_OPERATION);operation_calls[operation]++;
     memset(r,0,sizeof(*r));
     if(operation==error_operation)return operation_error;
     if(again[operation]){again[operation]--;return -EAGAIN;}
+    if(operation==REALM_GPU_TASK_DISPATCH_LIVE){r->result[0]=live_dispatch_state;return 0;}
     if(operation==REALM_GPU_TASK_READY_LAUNCH && timed_gpu_duration_ns)
         timed_gpu_ready_at=profile_clock+timed_gpu_duration_ns;
     if(operation==REALM_GPU_TASK_FINISH && timed_gpu_ready_at && profile_clock<timed_gpu_ready_at)
@@ -153,12 +185,15 @@ static int panthor_client_rpc_call(u32 req_type,const void *req,u32 req_len,u32 
     assert(req_type==PANTHOR_VMSHM_MSG_RMM_TASK_REQ && rsp_type==PANTHOR_VMSHM_MSG_RMM_TASK_RSP);
     assert(req_len==sizeof(*q) && capacity==sizeof(*r) && min_len==sizeof(*r));
     assert(q->session_id==222 && q->token==1000+stages && q->client_group_handle);
-    assert(q->action && q->action<6);rpc_calls[q->action]++;
+    assert(q->action && q->action<=6);
+    assert(q->mapping_version==(q->action==PANTHOR_VMSHM_RMM_TASK_QUIESCE?0:mapping_version));
+    assert(q->metadata_sequence==local_vm.sync_sequence && !local_vm.dirty);
+    rpc_calls[q->action]++;
     if(q->action==error_action)return rpc_error;
-    *r=(struct panthor_vmshm_rmm_task_rsp){.state=q->action==PANTHOR_VMSHM_RMM_TASK_PREPARE_LAUNCH?4:q->action+3,.token=q->token,.queue=observed[0].queue};
-    if(q->action==PANTHOR_VMSHM_RMM_TASK_DISPATCH)r->state=dispatch_state;
+    *r=(struct panthor_vmshm_rmm_task_rsp){.state=6,.token=q->token,.queue=observed[0].queue};
+    if(q->action==PANTHOR_VMSHM_RMM_TASK_DISPATCH_LEASE)r->state=dispatch_state;
     if(malformed==1)r->token++;
-    if(malformed==2)r->state++;
+    if(malformed==2)r->state=7;
     if(malformed==3)r->queue++;
     if(malformed==4)r->pad=1;
     if(malformed==5)r->ret=1;
@@ -167,6 +202,27 @@ static int panthor_client_rpc_call(u32 req_type,const void *req,u32 req_len,u32 
 static bool hint_enabled, hint_pending;
 static bool realm_gpu_task_has_hint(struct realm_gpu_task *t) { assert(t && !t->retired); return hint_enabled && observed_count==1; }
 static bool realm_gpu_task_hint_pending(struct realm_gpu_task *t) { assert(t && !t->retired); return hint_pending; }
+
+/* Kernel/transport doubles only; real chain, claim/RCU and observer semantics
+ * have separate actual-body models. Unexpected RPC here must fail the test. */
+static bool local_fence_work=true;
+struct irq_work_local_batch {u64 queued,drained,spilled,coalesced,native_calls,native_samples,native_ns;};
+static bool irq_work_local_begin(struct irq_work_local_batch *batch,bool enabled,bool sampled)
+{
+    assert(sleep_file && sleep_file->private_gpu_lock.held);
+    memset(batch,0,sizeof(*batch));(void)enabled;(void)sampled;return true;
+}
+static void irq_work_local_end(struct irq_work_local_batch *batch)
+{
+    assert(sleep_file && sleep_file->private_gpu_lock.held && !batch->queued && !batch->drained);
+}
+struct vmshm_comm_rx {u32 len;};
+static int client_comm_vmshm_call(u32 type,u32 flags,const void *payload,u32 bytes,
+    u32 reply_type,void *reply,u32 capacity,struct vmshm_comm_rx *rx)
+{
+    assert(!"Unexpected observer RPC in original worker fixture");return -EIO;
+}
+
 #include "actual.inc"
 
 static struct panthor_client_file pc;
@@ -188,17 +244,19 @@ static void setup(void) {
     profile_clock=0;simulated_pause_ns=0;
     timed_gpu_duration_ns=timed_gpu_ready_at=0;
     heap_calls=heap_again=return_again=return_progress_calls=0;heap_service_error=0;
-    dispatch_state=5;staged_delegation=false;
+    dispatch_state=4;live_dispatch_state=0;staged_delegation=false;
     stages=observed_count=retires=abandoned=task_frees=cancels=0;last_canceled=0;
     stage_error=operation_error=rpc_error=cancel_error=0;error_operation=error_action=malformed=0;
     destroy_rpc=group_releases=destroyed=0;fail_alloc_after=-1;
+    local_vm.dirty=local_vm.closing=false;local_vm.sync_sequence=3;mapping_version=17;
+    metadata_error=version_error=0;metadata_syncs=version_queries=0;
     for(unsigned int i=1;i<16;i++)file.objects[i].refs=1;
     group=calloc(1,sizeof(*group));assert(group);
     *group=(struct panthor_client_group){.session_id=222,.client_handle=1,
-        .private_group=&native_group,.private_vm_id=7,.private_queue_count=16,
+        .private_group=&native_group,.private_vm=&local_vm,.private_vm_id=7,.private_queue_count=16,
         .private_user_va_end=0x80000000};
     refcount_set(&group->refcnt,1);
-    pc.groups.entries[1]=group;pc.session_id=222;pc.private_gpu_wq=&wq;pc.private_data=true;file.driver_priv=&pc;
+    pc.groups.entries[1]=group;pc.session_id=222;pc.private_gpu_wq=&wq;file.driver_priv=&pc;
     pc.private_gpu_work.work.fn=panthor_client_private_gpu_work;
     INIT_LIST_HEAD(&pc.private_jobs);
     INIT_LIST_HEAD(&pc.private_map_waiters);
@@ -269,6 +327,7 @@ static void arrive_in_hint_pause(void) {
     assert(!pc.private_gpu_lock.held);
     if(profile_clock>=hint_arrive_at)hint_pending=false;
 }
+static void advance_slow_tick(void) { jiffies++; }
 int main(void) {
     /* Hints are per queue and only schedule a later real FINISH. A timed GPU
      * double verifies fewer premature queries without manufacturing success.
@@ -285,7 +344,7 @@ int main(void) {
         assert(pc.private_poll_trainings==i+1);
     }
     assert(last_queries<first_queries && group->private_poll_delay_ns[0]>0);
-    assert(pc.private_first_poll_pauses==11 && !rpc_calls[PANTHOR_VMSHM_RMM_TASK_START]);cleanup();
+    assert(pc.private_first_poll_pauses==11 && !operation_calls[REALM_GPU_TASK_START]);cleanup();
 
     for(unsigned int mode=0;mode<3;mode++){
         setup();signal_op(0,2,0);sync_range(0,0,1);
@@ -359,8 +418,7 @@ int main(void) {
             pc.private_phase_gap_ns[phase]>0);
         assert(scheduled_delay==0 && pc.private_complete_wait_calls[PANTHOR_PRIVATE_WAIT_SHORT_PAUSE]==(i==1?2:0));
         drain();assert(status(2)==1 && retires==1 && !abandoned &&
-            !operation_calls[REALM_GPU_TASK_READY] && !operation_calls[REALM_GPU_TASK_PUBLISH] &&
-            !pc.private_phase_calls[PANTHOR_PRIVATE_PUBLISH]);cleanup();
+            !operation_calls[REALM_GPU_TASK_READY] && !operation_calls[REALM_GPU_TASK_PUBLISH]);cleanup();
     }
     /* Only eight short retries, then the original delayed polling; each
      * turn issues one real COMPLETE under the same deadline, no START replay.
@@ -375,7 +433,7 @@ int main(void) {
             pc.private_complete_wait_calls[PANTHOR_PRIVATE_WAIT_SHORT_PAUSE]==8 && scheduled_delay>0 && !status(2) &&
             pc.private_run->deadline==complete_deadline);
     }
-    drain();assert(status(2)==1 && retires==1 && !rpc_calls[PANTHOR_VMSHM_RMM_TASK_START]);cleanup();
+    drain();assert(status(2)==1 && retires==1 && !operation_calls[REALM_GPU_TASK_START]);cleanup();
     setup();signal_op(0,2,0);sync_range(0,0,1);again[REALM_GPU_TASK_FINISH]=1;
     complete_pause_hook=close_in_complete_sleep;assert(!submit());drain();
     assert(pc.private_complete_wait_calls[PANTHOR_PRIVATE_WAIT_SHORT_PAUSE]==1 && !scheduled && !status(2) && pc.private_run && !retires);
@@ -384,7 +442,7 @@ int main(void) {
     setup();signal_op(0,2,0);sync_range(0,0,1);again[REALM_GPU_TASK_FINISH]=1;
     complete_pause_hook=expire_in_complete_sleep;assert(!submit());drain();
     assert(pc.private_complete_wait_calls[PANTHOR_PRIVATE_WAIT_SHORT_PAUSE]==1 && status(2)==-ETIMEDOUT && abandoned==1 && !retires);
-    assert(operation_calls[REALM_GPU_TASK_FINISH]==1 && !rpc_calls[PANTHOR_VMSHM_RMM_TASK_START]);cleanup();
+    assert(operation_calls[REALM_GPU_TASK_FINISH]==1 && !operation_calls[REALM_GPU_TASK_START]);cleanup();
     /* Inject a 20ms active-pause descheduling overrun, then a separate 30ms immediate
      * queue wait and 40ms delayed wait. Diagnostics must distinguish them,
      * preserve the deadline and never complete a fence on a timing sample.
@@ -408,7 +466,7 @@ int main(void) {
     assert(pc.private_complete_wait_calls[PANTHOR_PRIVATE_WAIT_QUEUE_DELAYED]==1 &&
         pc.private_complete_wait_max_ns[PANTHOR_PRIVATE_WAIT_QUEUE_DELAYED]==40000001 &&
         pc.private_complete_wait_late[PANTHOR_PRIVATE_WAIT_QUEUE_DELAYED]==1 && !status(2));
-    drain();assert(status(2)==1 && retires==1 && !rpc_calls[PANTHOR_VMSHM_RMM_TASK_START]);cleanup();
+    drain();assert(status(2)==1 && retires==1 && !operation_calls[REALM_GPU_TASK_START]);cleanup();
     /* Proxy acceptance, real completion, CPU return and retirement are distinct. */
     setup();signal_op(0,2,0);sync_range(0,0,1);
     again[REALM_GPU_TASK_READY_LAUNCH]=2;again[REALM_GPU_TASK_FINISH]=2;
@@ -418,7 +476,7 @@ int main(void) {
     assert(!status(2) && !retires && return_progress_calls==1 && !heap_service_error && heap_calls==2 &&
         !operation_calls[REALM_GPU_TASK_RETURN] && !operation_calls[REALM_GPU_TASK_RETIRE]);
     drain();assert(status(2)==1 && retires==1 && !abandoned);
-    assert(rpc_calls[PANTHOR_VMSHM_RMM_TASK_PREPARE_LAUNCH]==1 && !rpc_calls[PANTHOR_VMSHM_RMM_TASK_START] && !rpc_calls[PANTHOR_VMSHM_RMM_TASK_QUIESCE]);cleanup();
+    assert(rpc_calls[PANTHOR_VMSHM_RMM_TASK_DISPATCH_LEASE]==1 && !operation_calls[REALM_GPU_TASK_START] && !rpc_calls[PANTHOR_VMSHM_RMM_TASK_QUIESCE]);cleanup();
 
     /* OOM handling/continuation never advances COMPLETE, repeats START,
      * signals a fence or extends the original task deadline.
@@ -431,7 +489,7 @@ int main(void) {
     for(unsigned int i=0;i<6;i++) {
         tick();assert(pc.private_run && pc.private_run->phase==PANTHOR_PRIVATE_COMPLETE);
         assert(pc.private_run->deadline==heap_deadline && !status(2) && !retires);
-        assert(stages==1 && !rpc_calls[PANTHOR_VMSHM_RMM_TASK_START]);
+        assert(stages==1 && !operation_calls[REALM_GPU_TASK_START]);
     }
     assert(heap_calls==6 && !heap_again);drain();assert(status(2)==1 && retires==1);cleanup();
     for(unsigned int error=0;error<2;error++) {
@@ -439,7 +497,7 @@ int main(void) {
         again[REALM_GPU_TASK_FINISH]=1;heap_service_error=error?-EPROTO:-EIO;
         assert(!submit());drain();
         assert(status(2)==heap_service_error && heap_calls==1 && abandoned==1 && !retires);
-        assert(stages==1 && !rpc_calls[PANTHOR_VMSHM_RMM_TASK_START]);cleanup();
+        assert(stages==1 && !operation_calls[REALM_GPU_TASK_START]);cleanup();
     }
 
     /* Six independent queue heads can share one RMM lease. */
@@ -525,12 +583,12 @@ int main(void) {
     for(unsigned int mode=1;mode<=5;mode++){
         setup();malformed=mode;signal_op(0,2,0);sync_range(0,0,1);assert(!submit());drain();
         assert(status(2)==-EPROTO && pc.private_gpu_failed && abandoned==1 && !retires);
-        assert(rpc_calls[PANTHOR_VMSHM_RMM_TASK_PREPARE_LAUNCH]==1 && !rpc_calls[PANTHOR_VMSHM_RMM_TASK_START] && rpc_calls[PANTHOR_VMSHM_RMM_TASK_QUIESCE]==1 && !operation_calls[REALM_GPU_TASK_READY_LAUNCH]);cleanup();
+        assert(rpc_calls[PANTHOR_VMSHM_RMM_TASK_DISPATCH_LEASE]==1 && !operation_calls[REALM_GPU_TASK_START] && rpc_calls[PANTHOR_VMSHM_RMM_TASK_QUIESCE]==1 && !operation_calls[REALM_GPU_TASK_READY_LAUNCH]);cleanup();
     }
 
-    /* Lost PREPARE_LAUNCH replies and Proxy EAGAIN must never be replayed. */
+    /* Lost DISPATCH_LEASE replies and Proxy EAGAIN must never be replayed. */
     for(unsigned int mode=0;mode<2;mode++){
-        const unsigned int action=PANTHOR_VMSHM_RMM_TASK_PREPARE_LAUNCH;
+        const unsigned int action=PANTHOR_VMSHM_RMM_TASK_DISPATCH_LEASE;
         setup();error_action=action;rpc_error=mode?-EAGAIN:-EIO;
         signal_op(0,2,0);sync_range(0,0,1);assert(!submit());drain();
         assert(status(2)==rpc_error && abandoned==1 && rpc_calls[action]==1 && rpc_calls[PANTHOR_VMSHM_RMM_TASK_QUIESCE]==1);
@@ -555,7 +613,7 @@ int main(void) {
     unsigned long admission_deadline=pc.private_run->deadline;
     tick();tick();
     assert(!status(2) && stages==3 && !cancels && !pc.private_run->task &&
-           pc.private_run->deadline==admission_deadline && !pc.private_gpu_failed && !rpc_calls[PANTHOR_VMSHM_RMM_TASK_PREPARE_LAUNCH]);
+           pc.private_run->deadline==admission_deadline && !pc.private_gpu_failed && !rpc_calls[PANTHOR_VMSHM_RMM_TASK_DISPATCH_LEASE]);
     stage_error=0;drain();assert(status(2)==1 && stages==4 && retires==1 && !abandoned);cleanup();
 
     setup();stage_error=-ENOSPC;signal_op(0,2,0);sync_range(0,0,1);assert(!submit());tick();
@@ -568,41 +626,41 @@ int main(void) {
     assert(status(2)==-ECANCELED && !cancels && !abandoned && !rpc_calls[PANTHOR_VMSHM_RMM_TASK_QUIESCE]);cleanup();
 
     /* Full CSGs require trusted cancellation, then staging a fresh exact token. */
-    setup();error_action=PANTHOR_VMSHM_RMM_TASK_PREPARE_LAUNCH;rpc_error=-ENOSPC;
+    setup();error_action=PANTHOR_VMSHM_RMM_TASK_DISPATCH_LEASE;rpc_error=-ENOSPC;
     args.queue_submits.count=2;inputs[1].queue_index=0;
     signal_op(0,2,0);signal_op(1,3,0);sync_range(0,0,1);sync_range(1,1,1);
     assert(!submit());tick();admission_deadline=pc.private_run->deadline;tick();tick();
     assert(stages==3 && cancels==3 && last_canceled==1003 && task_frees==3 && !abandoned &&
            !status(2) && !status(3) && !pc.private_run->task && !pc.private_run->exposed &&
-           pc.private_run->deadline==admission_deadline && !rpc_calls[PANTHOR_VMSHM_RMM_TASK_START] && !rpc_calls[PANTHOR_VMSHM_RMM_TASK_QUIESCE]);
+           pc.private_run->deadline==admission_deadline && !operation_calls[REALM_GPU_TASK_START] && !rpc_calls[PANTHOR_VMSHM_RMM_TASK_QUIESCE]);
     error_action=0;drain();
     assert(stages==5 && retires==2 && cancels==3 && status(2)==1 && status(3)==1 &&
            !pc.private_gpu_failed && !abandoned);cleanup();
 
-    setup();error_action=PANTHOR_VMSHM_RMM_TASK_PREPARE_LAUNCH;rpc_error=-ENOSPC;signal_op(0,2,0);sync_range(0,0,1);assert(!submit());tick();
+    setup();error_action=PANTHOR_VMSHM_RMM_TASK_DISPATCH_LEASE;rpc_error=-ENOSPC;signal_op(0,2,0);sync_range(0,0,1);assert(!submit());tick();
     jiffies=pc.private_run->deadline-1;tick();
     assert(status(2)==-ETIMEDOUT && cancels==1 && !abandoned && !pc.private_gpu_failed && !rpc_calls[PANTHOR_VMSHM_RMM_TASK_QUIESCE]);cleanup();
 
-    setup();error_action=PANTHOR_VMSHM_RMM_TASK_PREPARE_LAUNCH;rpc_error=-ENOSPC;signal_op(0,2,0);sync_range(0,0,1);assert(!submit());tick();
+    setup();error_action=PANTHOR_VMSHM_RMM_TASK_DISPATCH_LEASE;rpc_error=-ENOSPC;signal_op(0,2,0);sync_range(0,0,1);assert(!submit());tick();
     pc.private_closing=true;panthor_client_private_gpu_stop(&pc);
     assert(status(2)==-ECANCELED && cancels==1 && !abandoned && !rpc_calls[PANTHOR_VMSHM_RMM_TASK_QUIESCE]);cleanup();
 
     /* A lying Proxy/partial preparation/uncertain cancellation cannot replay. */
     const int cancel_errors[]={-EBUSY,-EIO,-EPROTO,-EINVAL};
     for(unsigned int i=0;i<ARRAY_SIZE(cancel_errors);i++){
-        setup();error_action=PANTHOR_VMSHM_RMM_TASK_PREPARE_LAUNCH;rpc_error=-ENOSPC;cancel_error=cancel_errors[i];
+        setup();error_action=PANTHOR_VMSHM_RMM_TASK_DISPATCH_LEASE;rpc_error=-ENOSPC;cancel_error=cancel_errors[i];
         signal_op(0,2,0);sync_range(0,0,1);assert(!submit());drain();
         assert(status(2)==-ENOSPC && stages==1 && cancels==1 && abandoned==1 &&
-               pc.private_gpu_failed && !retires && !rpc_calls[PANTHOR_VMSHM_RMM_TASK_START] && rpc_calls[PANTHOR_VMSHM_RMM_TASK_QUIESCE]==1);cleanup();
+               pc.private_gpu_failed && !retires && !operation_calls[REALM_GPU_TASK_START] && rpc_calls[PANTHOR_VMSHM_RMM_TASK_QUIESCE]==1);cleanup();
     }
     setup();error_operation=REALM_GPU_TASK_READY_LAUNCH;operation_error=-ENOSPC;signal_op(0,2,0);sync_range(0,0,1);assert(!submit());drain();
     assert(status(2)==-ENOSPC && stages==1 && !cancels && abandoned==1 && pc.private_gpu_failed);cleanup();
-    setup();error_action=PANTHOR_VMSHM_RMM_TASK_PREPARE_LAUNCH;rpc_error=-EAGAIN;signal_op(0,2,0);sync_range(0,0,1);assert(!submit());drain();
+    setup();error_action=PANTHOR_VMSHM_RMM_TASK_DISPATCH_LEASE;rpc_error=-EAGAIN;signal_op(0,2,0);sync_range(0,0,1);assert(!submit());drain();
     assert(status(2)==-EAGAIN && stages==1 && !cancels && abandoned==1 && pc.private_gpu_failed);cleanup();
 
     /* Permanent stage failure still errors the job; a fresh submission is possible. */
     setup();stage_error=-EINVAL;signal_op(0,2,0);sync_range(0,0,1);assert(!submit());drain();
-    assert(status(2)==-EINVAL && !pc.private_gpu_failed && !abandoned && !rpc_calls[PANTHOR_VMSHM_RMM_TASK_PREPARE_LAUNCH]);
+    assert(status(2)==-EINVAL && !pc.private_gpu_failed && !abandoned && !rpc_calls[PANTHOR_VMSHM_RMM_TASK_DISPATCH_LEASE]);
     stage_error=0;inputs[0].queue_index=1;signal_op(0,3,0);assert(!submit());drain();assert(status(3)==1);cleanup();
 
     /* The largest dependency set includes sixteen explicit waits plus FIFO. */
@@ -640,16 +698,15 @@ int main(void) {
      * A response is never completion: only trusted FINISH can signal output.
      */
     for(unsigned int mode=0;mode<12;mode++) {
-        setup();pc.private_dispatch=true;signal_op(0,2,0);sync_range(0,0,1);
+        setup();dispatch_state=5;signal_op(0,2,0);sync_range(0,0,1);
         if(mode==1)dispatch_state=4;
         if(mode>=2 && mode<=6)malformed=mode-1;
-        if(mode==7){error_action=PANTHOR_VMSHM_RMM_TASK_DISPATCH;rpc_error=-EIO;}
-        if(mode==8){error_action=PANTHOR_VMSHM_RMM_TASK_DISPATCH;rpc_error=-EAGAIN;}
+        if(mode==7){error_action=PANTHOR_VMSHM_RMM_TASK_DISPATCH_LEASE;rpc_error=-EIO;}
+        if(mode==8){error_action=PANTHOR_VMSHM_RMM_TASK_DISPATCH_LEASE;rpc_error=-EAGAIN;}
         if(mode==9){error_operation=REALM_GPU_TASK_FINISH;operation_error=-EBUSY;}
         if(mode==10)again[REALM_GPU_TASK_FINISH]=2;
         if(mode==11){dispatch_state=4;again[REALM_GPU_TASK_READY_LAUNCH]=2;}
-        assert(!submit());drain();assert(staged_delegation && rpc_calls[PANTHOR_VMSHM_RMM_TASK_DISPATCH]==1);
-        assert(!rpc_calls[PANTHOR_VMSHM_RMM_TASK_PREPARE_LAUNCH]);
+        assert(!submit());drain();assert(staged_delegation && rpc_calls[PANTHOR_VMSHM_RMM_TASK_DISPATCH_LEASE]==1);
         assert(!pc.private_phase_pages[PANTHOR_PRIVATE_PREPARE]);
         if(mode>=2 && mode<=9)assert(status(2)<0 && abandoned==1);
         else assert(status(2)==1 && retires==1 && !abandoned);
@@ -765,10 +822,6 @@ int main(void) {
     setup();assert(!submit());tick();heap_create.vm_id=8;
     assert(!panthor_client_ioctl_tiler_heap_create(NULL,&heap_create,&file));
     assert(heap_creates==1 && !retires);heap_create.vm_id=7;drain();cleanup();
-    setup();pc.private_data=false;
-    assert(!panthor_client_ioctl_tiler_heap_create(NULL,&heap_create,&file));
-    assert(!panthor_client_ioctl_tiler_heap_destroy(NULL,&heap_destroy,&file));
-    assert(heap_creates==1 && heap_destroys==1 && !pc.private_gpu_lock.held);cleanup();
     for(unsigned int mode=0;mode<2;mode++){
         setup();pc.heaps.entries[1]=&heap;pc.private_gpu_failed=mode==0;pc.private_closing=mode==1;
         assert(panthor_client_ioctl_tiler_heap_destroy(NULL,&heap_destroy,&file)==(mode?-ECANCELED:-EIO));
@@ -831,6 +884,99 @@ int main(void) {
     assert(pc.private_closing && pc.private_run && pc.private_run->task && !task_frees);
     assert(!retires && !status(2) && !scheduled);
     cleanup();assert(task_frees==1);cases++;
+    /* Reconciliation failure occurs before staging or hardware exposure. */
+    setup();local_vm.dirty=true;metadata_error=-ESTALE;signal_op(0,2,0);sync_range(0,0,1);
+    assert(!submit());drain();assert(status(2)==-ESTALE && !stages && !version_queries);cleanup();
+    setup();local_vm.dirty=true;signal_op(0,2,0);sync_range(0,0,1);
+    assert(!submit());drain();assert(status(2)==1 && metadata_syncs==1 && version_queries==1 && !local_vm.dirty);cleanup();
+    setup();version_error=-EBUSY;signal_op(0,2,0);sync_range(0,0,1);
+    assert(!submit());drain();assert(status(2)==-EBUSY && stages==1 && !operation_calls[REALM_GPU_TASK_DISPATCH_LIVE]);cleanup();
+    /* Only a typed no-grant result permits Proxy fallback. No direct error
+     * or accepted launch can be replayed, or mistaken for completed work. */
+    for(unsigned int mode=0;mode<9;mode++) {
+        setup();dispatch_state=5;
+        signal_op(0,2,0);sync_range(0,0,1);
+        live_dispatch_state=mode==0 || mode==7?0:mode==2?4:5;
+        if(mode>=3 && mode<=5) {
+            error_operation=REALM_GPU_TASK_DISPATCH_LIVE;
+            operation_error=mode==3?-EIO:mode==4?-EPROTO:-ENOSPC;
+            cancel_error=-EBUSY;
+        }
+        if(mode==6){error_operation=REALM_GPU_TASK_FINISH;operation_error=-EIO;}
+        if(mode==7){error_action=PANTHOR_VMSHM_RMM_TASK_DISPATCH_LEASE;rpc_error=-EIO;}
+        if(mode==8){error_operation=REALM_GPU_TASK_DISPATCH_LIVE;operation_error=-EINVAL;}
+        assert(!submit());tick();
+        if(mode<3 || mode==6)assert(!status(2) && !retires);
+        drain();
+        assert(operation_calls[REALM_GPU_TASK_DISPATCH_LIVE]==1);
+        assert(rpc_calls[PANTHOR_VMSHM_RMM_TASK_DISPATCH_LEASE]==(mode==0 || mode==7));
+        if(mode<3)assert(status(2)==1 && retires==1 && operation_calls[REALM_GPU_TASK_FINISH]==1);
+        else assert(status(2)<0 && !retires && abandoned==1);
+        assert(operation_calls[REALM_GPU_TASK_READY_LAUNCH]==(mode==2));
+        cleanup();cases++;
+    }
+
+#if GPU_TEST_SLOW_HINT_WAIT
+    /* A scheduling hint arrives, while the actual RMM still says pending. */
+    setup();signal_op(0,2,0);sync_range(0,0,1);hint_enabled=hint_pending=true;
+    assert(!submit());tick();tick();
+    pc.private_run->local_hint_skips=8;pc.private_run->completion_polls=8;
+    again[REALM_GPU_TASK_FINISH]=2;hint_arrive_at=profile_clock+10000;
+    complete_pause_hook=arrive_in_hint_pause;tick();
+    assert(pc.private_slow_hint_watches==1 && pc.private_slow_hint_early==1);
+    assert(scheduled_delay==0 && operation_calls[REALM_GPU_TASK_FINISH]==1 && heap_calls==1);
+    assert(!status(2) && !retires && !task_frees);
+    complete_pause_hook=NULL;tick();
+    assert(pc.private_slow_hint_watches==1 && scheduled_delay>0);
+    assert(operation_calls[REALM_GPU_TASK_FINISH]==2 && heap_calls==2 && !status(2) && !retires);
+    drain();assert(status(2)==1 && retires==1);cleanup();
+    puts("C6_BOUNDARY=PASS false-hint one-credit real-FINISH/OOM");
+
+    /* Missing arrival consumes only the original interval, never +1 tick. */
+    setup();signal_op(0,2,0);sync_range(0,0,1);hint_enabled=hint_pending=true;
+    assert(!submit());tick();tick();
+    pc.private_run->local_hint_skips=pc.private_run->completion_polls=8;
+    again[REALM_GPU_TASK_FINISH]=2;u64 slow_before=profile_clock;tick();
+    assert(pc.private_slow_hint_watches==1 && !pc.private_slow_hint_early && scheduled_delay==0);
+    assert(profile_clock-slow_before>=1000000ULL && profile_clock-slow_before<1010000ULL);
+    assert(!status(2) && !retires && !task_frees);
+    tick();assert(pc.private_slow_hint_watches==1 && scheduled_delay>0);
+    drain();assert(status(2)==1 && retires==1);cleanup();
+    puts("C6_BOUNDARY=PASS elapsed-budget no-double-wait");
+
+    setup();signal_op(0,2,0);sync_range(0,0,1);
+    assert(!submit());tick();tick();
+    pc.private_run->local_hint_skips=pc.private_run->completion_polls=8;
+    again[REALM_GPU_TASK_FINISH]=1;tick();
+    assert(!pc.private_slow_hint_watches && scheduled_delay>0);
+    drain();assert(status(2)==1);cleanup();
+    puts("C6_BOUNDARY=PASS no-hint original-timer");
+
+    for(unsigned int mode=0;mode<2;mode++) {
+        setup();signal_op(0,2,0);sync_range(0,0,1);hint_enabled=hint_pending=true;
+        assert(!submit());tick();tick();
+        pc.private_run->local_hint_skips=pc.private_run->completion_polls=8;
+        again[REALM_GPU_TASK_FINISH]=3;
+        complete_pause_hook=mode?expire_in_complete_sleep:close_in_complete_sleep;
+        tick();assert(pc.private_slow_hint_watches==1 && !status(2) && !retires && !task_frees);
+        complete_pause_hook=NULL;
+        if(!mode) assert(pc.private_closing && !scheduled && pc.private_run);
+        else {tick();assert(status(2)==-ETIMEDOUT && operation_calls[REALM_GPU_TASK_FINISH]==1 && abandoned==1);}
+        cleanup();
+    }
+    puts("C6_BOUNDARY=PASS close-and-deadline retain-backing");
+
+    jiffies=~0UL-2UL;
+    setup();signal_op(0,2,0);sync_range(0,0,1);hint_enabled=hint_pending=true;
+    assert(!submit());tick();tick();
+    pc.private_run->local_hint_skips=pc.private_run->completion_polls=8;
+    again[REALM_GPU_TASK_FINISH]=1;complete_pause_hook=advance_slow_tick;
+    tick();complete_pause_hook=NULL;
+    assert(pc.private_slow_hint_watches==1 && scheduled_delay==0 && !status(2));
+    drain();assert(status(2)==1 && retires==1);cleanup();
+    puts("C6_BOUNDARY=PASS tick-wrap bounded-reschedule");
+#endif
+
     printf("GPU_PRIVATE_SUBMIT=PASS cases=%u actual Client planner/ready-slice worker; per-job binary/timeline fences, queue FIFO and cross-submit readiness, immutable inputs, trusted return/retire gate, failure/close retention and no launch replay; HOST_DOUBLES_ONLY NO_LINUX_CONCURRENCY_OR_GPU_EXECUTION\n",cases);
     return 0;
 }

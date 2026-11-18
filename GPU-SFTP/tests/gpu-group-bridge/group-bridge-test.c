@@ -137,7 +137,7 @@ static int gpu_call_locked(struct realm_gpu_call *call, void *unused)
 	}
 	return 0;
 }
-static unsigned int native_creates, native_destroys, validations, invalidations;
+static unsigned int validations;
 static int validate_result;
 static u64 expected_context = 41, expected_group = 81;
 static u64 proxy_comm_vmshm_channel_rmm_channel(void *p) { assert(p); return 7; }
@@ -152,15 +152,13 @@ static int realm_gpu_private_call_checked(struct realm_gpu_call *call)
 		return -EINVAL;
 	return validate_result;
 }
-static void panthor_proxy_apply_group_core_partition(struct panthor_proxy_session *s, struct drm_panthor_group_create *a) { (void)s; (void)a; }
-static void panthor_proxy_plans_invalidate(struct panthor_proxy_session *s, u32 g, u32 b) { (void)s; assert(g && !b); invalidations++; }
-static int panthor_vmshm_group_create(void *s, struct drm_panthor_group_create *a, const struct drm_panthor_queue_create *q)
-{
-	(void)s; assert(a->vm_id == 9 && q[0].ringbuf_size == 4096); native_creates++; a->group_handle = 77; return 0;
-}
-static int panthor_vmshm_group_destroy(void *s, u32 handle) { (void)s; assert(handle == 77); native_destroys++; return 0; }
 static void reap_heaps(void) { }
 static bool heap_context_busy(u64 context) { (void)context; return false; }
+/* Only scheduling admission is covered here. Worker/Monitor checks execute
+ * in the IRQ protocol fixtures and actual Proxy Realm run.
+ */
+static unsigned int irq_kicks;
+static void panthor_proxy_irq_kick(void) { irq_kicks++; }
 #include "actual-functions.inc"
 
 static struct realm_gpu_context *context(void)
@@ -225,20 +223,28 @@ static void proxy_paths(void)
 {
 	struct panthor_proxy_session s = { .channel = (void *)1 };
 	struct panthor_proxy_vm vm = { .client_vm_id = 1, .proxy_vm_id = 9,
-		.rmm_private = true, .private_context = 41 };
+		.private_context = 41 };
 	struct panthor_vmshm_group_create_req req = { .client_vm_id = 1, .queue_count = 2, .private_group = 81,
 		.queues = { { .ringbuf_size = 4096 }, { .ringbuf_size = 65536 } } };
 	struct panthor_vmshm_group_create_rsp rsp = {0};
-	u32 translated = 123;
 	s.vms.slots[1] = &vm;
 	assert(!panthor_proxy_session_group_create(&s, &req, &rsp));
-	assert(validations == 3 && !native_creates && rsp.client_group_handle && !rsp.proxy_group_handle);
-	assert(panthor_proxy_session_translate_group_locked(&s, rsp.client_group_handle, &translated) == -EOPNOTSUPP);
-	assert(translated == 123); /* Never turn a reservation into native handle zero. */
+	assert(validations == 3 && rsp.client_group_handle && !rsp.proxy_group_handle);
 	assert(panthor_proxy_session_group_create(&s, &req, &rsp) == -EEXIST);
-	assert(validations == 3 && !native_creates);
+	assert(validations == 3);
 	assert(!panthor_proxy_session_group_destroy(&s, rsp.client_group_handle, NULL));
-	assert(!native_destroys && invalidations == 1);
+	unsigned int priority_validations = validations;
+	req.priority = PANTHOR_GROUP_PRIORITY_HIGH;
+	assert(panthor_proxy_session_group_create(&s, &req, &rsp) == -EACCES);
+	assert(validations == priority_validations);
+	req.priority = PANTHOR_GROUP_PRIORITY_MEDIUM;
+	req.queues[0].priority = 16;
+	assert(panthor_proxy_session_group_create(&s, &req, &rsp) == -EINVAL);
+	assert(validations == priority_validations);
+	req.queues[0].priority = 1;
+	assert(panthor_proxy_session_group_create(&s, &req, &rsp) == -EINVAL);
+	assert(validations == priority_validations + 2);
+	req.queues[0].priority = 0;
 	req.queues[0].ringbuf_size = 8192;
 	assert(panthor_proxy_session_group_create(&s, &req, &rsp) == -EINVAL);
 	req.queues[0].ringbuf_size = 4096; req.queues[1].priority = 1;
@@ -252,27 +258,24 @@ static void proxy_paths(void)
 	assert(panthor_proxy_session_group_create(&s, &req, &rsp) == -EBUSY);
 	validate_result = 0; s.groups.fail_alloc = true;
 	assert(panthor_proxy_session_group_create(&s, &req, &rsp) == -ENOMEM);
-	assert(!native_creates && !native_destroys); /* No native cleanup of Client token. */
 	s.groups.fail_alloc = false; req.private_group = 0;
 	assert(panthor_proxy_session_group_create(&s, &req, &rsp) == -EINVAL);
-	req.private_group = 81; vm.rmm_private = false;
-	assert(panthor_proxy_session_group_create(&s, &req, &rsp) == -EINVAL);
-	req.private_group = 0; req.queues[0].ringbuf_size = 4097;
+	req.private_group = 81; req.queues[0].ringbuf_size = 4097;
 	assert(panthor_proxy_session_group_create(&s, &req, &rsp) == -EINVAL);
 	req.queues[0].ringbuf_size = 4096; req.queues[1].pad[1] = 1;
 	assert(panthor_proxy_session_group_create(&s, &req, &rsp) == -EINVAL);
 	req.queues[1].pad[1] = 0;
 	assert(!panthor_proxy_session_group_create(&s, &req, &rsp));
-	assert(native_creates == 1 && rsp.proxy_group_handle == 77);
-	assert(!panthor_proxy_session_translate_group_locked(&s, rsp.client_group_handle, &translated) && translated == 77);
-	assert(!panthor_proxy_session_group_destroy(&s, rsp.client_group_handle, NULL) && native_destroys == 1);
-	s.groups.fail_alloc = true;
-	assert(panthor_proxy_session_group_create(&s, &req, &rsp) == -ENOMEM);
-	assert(native_creates == 2 && native_destroys == 2); /* Existing native rollback retained. */
+	assert(!rsp.proxy_group_handle && rsp.proxy_vm_id == 9);
+	u32 released = 123;
+	assert(!panthor_proxy_session_group_destroy(&s, rsp.client_group_handle, &released));
+	assert(!released);
+	assert(panthor_proxy_session_group_destroy(&s, rsp.client_group_handle, NULL) == -EINVAL);
+
 }
 int main(void)
 {
 	kernel_lifetimes(); proxy_paths(); assert(allocations == frees);
-	printf("GPU_GROUP_BRIDGE=PASS actual Guest helpers and Proxy create/destroy/translation; quarantine/transport failure retention, context ordering, bounded retirement, no native fallback, substitution/duplicate rejection, native rollback; host doubles only (%u destroy calls)\n", destroy_calls);
+	printf("GPU_GROUP_BRIDGE=PASS actual Guest helpers and Proxy reservation create/destroy; quarantine/transport failure retention, context ordering, bounded retirement, no native fallback, substitution/duplicate rejection; host doubles only (%u destroy calls)\n", destroy_calls);
 	return 0;
 }

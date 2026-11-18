@@ -22,7 +22,7 @@ for name in ('read_page', 'sync_page_for_device', 'sync_page_for_cpu'):
     assert match, name
     end = source.index('\n}', match.end()) + 2
     functions.append(source[match.start():end])
-(out / 'control-cache.inc').write_text('\n\n'.join(functions) + '\n')
+(out / 'control-cache.inc').write_text('#include "gpu_test_memory_fallback.h"\n' + '\n\n'.join(functions) + '\n')
 # Both the retained whole-page callback and the experimental range callback
 # must obey the same freshness/order contract. Range size is not a GPU timing
 # prediction; the whole-page baseline remains valid when a trial is withdrawn.
@@ -35,6 +35,7 @@ binary = out / 'control-cache-test'
 subprocess.run([os.environ.get('HOST_CC', 'cc'), '-std=c11', '-Wall', '-Wextra',
                 '-Werror', '-O2', '-g', '-fsanitize=address,undefined',
                 '-fno-omit-frame-pointer', '-fno-pie', '-no-pie', '-I' + str(out),
+                '-I' + str(rmm/'runtime/tests'),
                 str(rmm / 'runtime/tests/opencca_gpu_control_cache_test.c'),
                 '-o', str(binary)], check=True)
 subprocess.run([str(binary), mode], check=True)

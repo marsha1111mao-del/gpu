@@ -4,13 +4,15 @@
 Real core/lease/device sources; RD, RTT restoration and GPU reset are models.
 """
 from pathlib import Path
-import os
+import argparse, os
 import re
 import subprocess
 
 root = Path(__file__).resolve().parents[2]
 rmm = root / 'opencca/tf-rmm'
-out = root / 'build/rmm-client-bo-20261030/reclaim-unit'
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--out', type=Path, default=root / 'build/rmm-client-bo-20261030/reclaim-unit')
+out = parser.parse_args().out.resolve()
 out.mkdir(parents=True, exist_ok=True)
 
 

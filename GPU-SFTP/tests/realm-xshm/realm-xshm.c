@@ -123,12 +123,10 @@ static int pool_command(int argc, char **argv)
 		pool.operation = REALM_XSHM_POOL_INFO;
 		if (argc != 2)
 			return 2;
-	} else if (!strcmp(argv[1], "pool-bind") || !strcmp(argv[1], "pool-bind-gpu") || !strcmp(argv[1], "pool-unbind") ||
+	} else if (!strcmp(argv[1], "pool-bind") || !strcmp(argv[1], "pool-unbind") ||
 		   !strcmp(argv[1], "pool-unbind-busy")) {
 		pool.operation = !strcmp(argv[1], "pool-bind") ?
 			REALM_XSHM_POOL_BIND : REALM_XSHM_POOL_UNBIND;
-		if (!strcmp(argv[1], "pool-bind-gpu"))
-			pool.operation = REALM_XSHM_POOL_BIND_GPU;
 		busy_probe = !strcmp(argv[1], "pool-unbind-busy");
 		if ((argc != 3 && !(busy_probe && argc == 4)) ||
 		    parse_number(argv[2], &pool.grant))
@@ -249,7 +247,7 @@ int main(int argc, char **argv)
 		     "realm-xshm mem-detach|mem-revoke|mem-status|mem-continue|mem-describe GRANT\n"
 		     "realm-xshm pool-source|pool-target SIZE\n"
 		     "realm-xshm pool-info\n"
-		     "realm-xshm pool-bind|pool-bind-gpu|pool-unbind GRANT\n"
+		     "realm-xshm pool-bind|pool-unbind GRANT\n"
 		     "realm-xshm pool-fill-pages|pool-check-pages SEED [GRANT]\n"
 		     "realm-xshm pool-unbind-busy GRANT [COMM_DEVICE]\n"
 		     "realm-xshm pool-read OFFSET [GRANT]\n"

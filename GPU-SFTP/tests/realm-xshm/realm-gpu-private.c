@@ -51,7 +51,7 @@ static int private_mode(const char *role)
 	int enabled;
 
 	if (!strcmp(role, "client"))
-		path = "/sys/module/panthor_client/parameters/rmm_private_data";
+		path = "/sys/module/panthor_client/parameters/private_gpu";
 	else if (!strcmp(role, "proxy"))
 		path = "/sys/module/panthor/parameters/rmm_service";
 	else
@@ -257,10 +257,19 @@ static int task_prelaunch_selftest(int fd, uint64_t channel, uint64_t context, u
 		REALM_GPU_READ, &result))
 		goto out;
 	mapped = true;
-	if (success(fd, REALM_GPU_TASK_STAGE, group, channel, 0, BASE + PAGE - 8, 16, 7, &result))
+	struct realm_gpu_task_command crossing = {
+		.start = BASE + PAGE - 64, .bytes = 72, .latest_flush = 7
+	};
+	if (success(fd, REALM_GPU_TASK_STAGE_BATCH, group, (uintptr_t)&crossing, channel, 1, 0, 0, &result))
 		goto out;
 	token = result.result[0];
-	if (!token || result.result[1] || result.result[2] || result.result[3])
+	if (!token || result.result[1] != 1 || result.result[2] != 1 || result.result[3])
+		goto out;
+	if (success(fd, REALM_GPU_TASK_OBSERVATION, token, channel, 0, 0, 0, 0, &result) ||
+	    result.result[0] || result.result[1] || result.result[2] || result.result[3] != token)
+		goto out;
+	if (call(fd, REALM_GPU_TASK_OBSERVATION, token, 0, 0, 0, 0, 0, &result) ||
+	    result.status != 1 || result.result[3])
 		goto out;
 	if (call(fd, REALM_GPU_UNMAP, context, BASE, 2, 0, 0, 0, &result) || result.status != 2)
 		goto out;
@@ -275,6 +284,23 @@ static int task_prelaunch_selftest(int fd, uint64_t channel, uint64_t context, u
 	if (call(fd, REALM_GPU_TASK_PUBLISH, token, channel, 1, 0, 0, 0, &result) ||
 	    result.status != 2 || result.result[0])
 		goto out; /* Publication cannot skip trusted PREPARE and cache READY. */
+	if (success(fd, REALM_GPU_IRQ_SELFTEST, token, channel, 0, 0, 0, 0, &result) ||
+	    result.result[0] < 150 || result.result[1] < 131 ||
+	    !result.result[2] || result.result[3])
+		goto out;
+	printf("GPU_IRQ_SECURITY_SELFTEST=PASS checks=%llu simulated=%llu epoch=%llu source=EL3_SIMULATION_PRODUCER no_GPU_completion_claim\n",
+		(unsigned long long)result.result[0], (unsigned long long)result.result[1],
+		(unsigned long long)result.result[2]);
+	if (call(fd, REALM_GPU_TASK_IRQ_PEEK, token, channel, 0, 0, 0, 0, &result) ||
+	    result.status != 1 ||
+	    call(fd, REALM_GPU_TASK_IRQ_CLAIM, token, channel, 1, 1,
+		REALM_GPU_IRQ_COMPLETE, 1, &result) || result.status != 1)
+		goto out; /* A valid Client task still cannot impersonate Proxy. */
+	if (call(fd, REALM_GPU_GROUP_IRQ_PEEK, group, channel, 0, 0, 0, 0, &result) ||
+	    result.status != 1 ||
+	    call(fd, REALM_GPU_GROUP_IRQ_CLAIM, group, channel, 1, 1,
+		REALM_GPU_IRQ_COMPLETE, 1, &result) || result.status != 1)
+		goto out;
 	if (success(fd, REALM_GPU_TASK_CANCEL, token, 0, 0, 0, 0, 0, &result))
 		goto out;
 	retired = token;
@@ -283,6 +309,10 @@ static int task_prelaunch_selftest(int fd, uint64_t channel, uint64_t context, u
 		goto out;
 	if (call(fd, REALM_GPU_TASK_PROGRESS, retired, channel, 0, 0, 0, 0, &result) || result.status != 1)
 		goto out;
+	if (call(fd, REALM_GPU_TASK_OBSERVATION, retired, channel, 0, 0, 0, 0, &result) ||
+	    result.status != 1 || result.result[3])
+		goto out;
+	puts("GPU_TASK_OBSERVATION=PASS prelaunch_readonly stale_token_and_channel_rejection RMM_METADATA_NOT_PHYSICAL_IRQ");
 	/* Same diagnostic exercises userspace -> private kernel page -> RMM array
 	 * snapshot. No command is launched, even when a real Realm runs this test.
 	 */
@@ -862,8 +892,8 @@ out:
 	return ret;
 }
 
-/* Real frontend/RPC/native VM_BIND plumbing, with execution deliberately absent.
- * Require the private-mode parameter so the existing shared path cannot PASS.
+/* Real frontend/RPC/metadata VM_BIND plumbing, without GPU execution.
+ * Require the read-only private-driver marker to reject the native driver.
  */
 static int drm_selftest(const char *device, unsigned long pages)
 {
@@ -1218,6 +1248,9 @@ int main(int argc, char **argv)
 		if ((argc != 3 && argc != 4) || number(argv[2], &args[0]) || !args[0] ||
 		    (argc == 4 && number(argv[3], &pages)) || !pages || pages > 131072)
 			return 2;
+	} else if (!strcmp(argv[1], "irq-status")) {
+		if (argc != 3 || number(argv[2], &args[0]) || !args[0])
+			return 2;
 	} else if (!strcmp(argv[1], "group-selftest")) {
 		args[1] = 1;
 		if ((argc != 3 && argc != 4) || number(argv[2], &args[0]) || !args[0] ||
@@ -1240,7 +1273,18 @@ int main(int argc, char **argv)
 		perror("/dev/realm-xshm");
 		return 1;
 	}
-	if (!strcmp(argv[1], "selftest")) {
+	if (!strcmp(argv[1], "irq-status")) {
+		struct realm_gpu_call second;
+		ret = success(fd, REALM_GPU_IRQ_STATUS, 0, args[0], 0, 0, 0, 0, &result);
+		if (!ret)
+			ret = success(fd, REALM_GPU_IRQ_STATUS, 1, args[0], 0, 0, 0, 0, &second);
+		if (!ret)
+			printf("GPU_IRQ_STATUS={\"physical\":%llu,\"root_samples\":%llu,\"simulated\":%llu,\"overflows\":%llu,\"claims\":%llu,\"rejected\":%llu,\"epoch\":%llu,\"lost\":%llu}\n",
+				(unsigned long long)result.result[0], (unsigned long long)result.result[1],
+				(unsigned long long)result.result[2], (unsigned long long)result.result[3],
+				(unsigned long long)second.result[0], (unsigned long long)second.result[1],
+				(unsigned long long)second.result[2], (unsigned long long)second.result[3]);
+	} else if (!strcmp(argv[1], "selftest")) {
 		ret = selftest(fd, args[0], pages);
 	} else if (!strcmp(argv[1], "group-selftest")) {
 		ret = group_selftest(fd, args[0], args[1]);
