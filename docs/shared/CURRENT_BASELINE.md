@@ -1,4 +1,8 @@
-# 当前发布基线
+# 当前 GPU 1200 与 1170 回退基线
+
+当前开发与复验版本完整 720p 实测 1205／1203。1170 保留作回退。参见[两版源码、载荷与恢复入口](../../baselines/README.md)。
+
+## 1170 的原验收
 
 完整 720p glmark2 实测 **1170 分**，run-id 为 gpu-normalize2-720-r1-20261114。使用 RK3588、Mali-G610、Mesa 25.0.7、GPU 实际 594 MHz 和匹配的 Client/Proxy/RMM。Host 为 6.12.0-opencca-pmthor-opp3 protected hVHE。完整 33 场景的 validation 为 26 成功、1 项既有失败、6 项未知。[完整验收与复验命令](../design/05-results.md)
 

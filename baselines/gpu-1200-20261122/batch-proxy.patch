@@ -1,0 +1,71 @@
+--- a/drivers/gpu/drm/panthor-proxy/panthor_proxy_drv.c
++++ b/drivers/gpu/drm/panthor-proxy/panthor_proxy_drv.c
+@@ -72,6 +72,7 @@
+ 	struct xarray bos;
+ 	struct xarray groups;
+ 	unsigned long irq_group_cursor;
++	u64 observer_requests, observer_rsi_calls, observer_samples, observer_ready;
+ 	refcount_t refcnt;
+ 	bool closing;
+ };
+@@ -121,6 +122,9 @@
+ static DECLARE_DELAYED_WORK(panthor_proxy_irq_worker, panthor_proxy_irq_work);
+ static bool panthor_proxy_irq_stopping;
+ static bool panthor_proxy_irq_probe;
++static bool observer_batch;
++module_param(observer_batch, bool, 0444);
++MODULE_PARM_DESC(observer_batch, "Group up to four checked advisory GPU samples per RSI entry");
+ static u64 panthor_proxy_irq_cursor;
+ module_param_named(irq_probe, panthor_proxy_irq_probe, bool, 0400);
+ MODULE_PARM_DESC(
+@@ -411,6 +415,11 @@
+ 		pr_info("panthor-proxy: SESSION_RELEASE session=%llu leftover_bos=%u leftover_vms=%u leftover_groups=%u\n",
+ 			session->session_id, leftover_bos, leftover_vms,
+ 			leftover_groups);
++	if (session->observer_requests)
++		pr_info("panthor-proxy: OBSERVER_BATCH enabled=%u requests=%llu rsi_calls=%llu samples=%llu ready=%llu\n",
++			observer_batch, session->observer_requests,
++			session->observer_rsi_calls, session->observer_samples,
++			session->observer_ready);
+ 
+ 	panthor_vmshm_session_close(session->real_session);
+ 	proxy_comm_vmshm_channel_put(session->channel);
+@@ -1611,24 +1620,33 @@
+ 		goto out;
+ 	}
+ 	if (req->action == PANTHOR_VMSHM_RMM_TASK_WAIT_HINT) {
+-		u64 deadline = ktime_get_ns() + 200000ULL;
++		const u64 deadline = ktime_get_ns() + 200000ULL;
++		u32 remaining = 64U;
+ 
+-		for (u32 queries = 0U; queries < 64U; queries++) {
++		session->observer_requests++;
++		while (remaining) {
++			u32 samples = observer_batch ? min(remaining, 4U) : 1U;
++
++			call.args[1] = observer_batch ? samples : 0U;
++			session->observer_rsi_calls++;
+ 			ret = realm_gpu_private_call_checked(&call);
+ 			if (ret)
+ 				goto out;
+ 			if (call.result[0] > 1U ||
+ 			    call.result[1] >= group->queue_count ||
+-			    call.result[2] > 63U || call.result[3]) {
++			    call.result[2] >= remaining ||
++			    remaining - call.result[2] > samples || call.result[3]) {
+ 				ret = -EPROTO;
+ 				goto out;
+ 			}
++			session->observer_samples += remaining - call.result[2];
++			remaining = call.result[2];
+ 			expected = call.result[0];
+-			if (expected || !call.result[2] ||
+-			    ktime_get_ns() >= deadline)
++			if (expected || !remaining || ktime_get_ns() >= deadline)
+ 				break;
+ 			cpu_relax();
+ 		}
++		session->observer_ready += expected;
+ 		goto advisory_reply;
+ 	}
+ 	ret = realm_gpu_private_call_checked(&call);

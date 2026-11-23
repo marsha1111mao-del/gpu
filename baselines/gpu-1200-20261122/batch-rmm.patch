@@ -1,0 +1,33 @@
+--- a/runtime/rsi/opencca_gpu_private.c
++++ b/runtime/rsi/opencca_gpu_private.c
+@@ -1151,16 +1151,27 @@
+ 							owner, handle, &result);
+ 		}
+ 		break;
+-	case GPU_PRIVATE_TASK_OBSERVER_POLL:
+-		if ((b | c | d | e) != 0UL ||
++	case GPU_PRIVATE_TASK_OBSERVER_POLL: {
++		unsigned long samples = b ? b : 1UL;
++
++		if (samples > 4UL || (c | d | e) != 0UL ||
+ 		    !opencca_gpu_service_isolated(owner,
+ 						  xshm_endpoint_id(owner)))
+ 			break;
+ 		client = xshm_endpoint_peer(owner, a, &peer_id);
+-		if (client != NULL)
++		if (client == NULL)
++			break;
++		/* Share the routing boundary, not the observation proof or credit.
++		 * Each read still validates the live task and charges one sample.
++		 * Bound the extra time under the global policy lock.
++		 */
++		do {
+ 			gpu_firmware_task_observer_poll(
+ 				&operations, owner, client, handle, &result);
++		} while (--samples && result.status == GPU_PRIVATE_SUCCESS &&
++			 !result.value[0] && result.value[2]);
+ 		break;
++	}
+ 	case GPU_PRIVATE_TASK_VALIDATE:
+ 	case GPU_PRIVATE_TASK_PREPARE:
+ 	case GPU_PRIVATE_TASK_PREPARE_LAUNCH:

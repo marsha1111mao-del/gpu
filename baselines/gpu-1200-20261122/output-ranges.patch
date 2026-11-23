@@ -1,0 +1,206 @@
+--- a/runtime/include/opencca_gpu_firmware.h
++++ b/runtime/include/opencca_gpu_firmware.h
+@@ -112,12 +112,20 @@
+ 			 unsigned long[4]);
+ };
+ 
++struct gpu_firmware_output_range {
++	uint32_t offset, size;
++};
++
+ struct gpu_firmware_ops {
+ 	bool (*digest)(const void *image, size_t size,
+ 		       unsigned char output[32]);
+ 	unsigned long (*address)(const void *memory);
+ 	void (*clean)(const void *memory, size_t size);
+ 	void (*invalidate)(const void *memory, size_t size);
++	/* One full barrier after invalidating all validated output ranges. */
++	void (*invalidate_outputs)(const unsigned char *shared,
++				   const struct gpu_firmware_output_range *ranges,
++				   unsigned int count);
+ 	bool (*install)(unsigned long root);
+ 	bool (*boot)(unsigned long root);
+ 	bool (*configuration)(unsigned long root,
+--- a/runtime/core/opencca_gpu_firmware.c
++++ b/runtime/core/opencca_gpu_firmware.c
+@@ -168,6 +168,8 @@
+ struct fw_slot {
+ 	struct fw_iface group;
+ 	struct fw_iface stream[GPU_FIRMWARE_STREAMS];
++	struct gpu_firmware_output_range headers[2];
++	struct gpu_firmware_output_range outputs[GPU_FIRMWARE_STREAMS];
+ };
+ 
+ static struct {
+@@ -263,11 +265,9 @@
+ 	uint32_t fatal;
+ };
+ 
+-static void stream_status(const struct gpu_firmware_ops *ops,
+-			  const unsigned char *output,
+-			  struct fw_stream_status *status)
++static void stream_status_read(const unsigned char *output,
++			       struct fw_stream_status *status)
+ {
+-	ops->invalidate(output, FW_STREAM_OUTPUT_SIZE);
+ 	output = __builtin_assume_aligned(output, _Alignof(uint32_t));
+ 	__builtin_memcpy(&status->ack, output, sizeof(status->ack));
+ 	__builtin_memcpy(&status->scoreboards, output + 23U * 4U,
+@@ -280,6 +280,27 @@
+ 			 sizeof(status->fatal));
+ }
+ 
++static void stream_status(const struct gpu_firmware_ops *ops,
++			  const unsigned char *output,
++			  struct fw_stream_status *status)
++{
++	ops->invalidate(output, FW_STREAM_OUTPUT_SIZE);
++	stream_status_read(output, status);
++}
++
++static void invalidate_headers(const struct gpu_firmware_ops *ops,
++			       const unsigned char *shared,
++			       const struct fw_slot *slot)
++{
++	if (ops->invalidate_outputs != NULL)
++		ops->invalidate_outputs(shared, slot->headers, 2U);
++	else {
++		ops->invalidate(shared + interfaces.global.output,
++				FW_GLOBAL_OUTPUT_SIZE);
++		ops->invalidate(shared + slot->group.output, FW_GROUP_OUTPUT_SIZE);
++	}
++}
++
+ static uint32_t le32(unsigned long offset)
+ {
+ 	return (uint32_t)image[offset] | ((uint32_t)image[offset + 1UL] << 8U) |
+@@ -2483,8 +2504,7 @@
+ 	interface_words(glb_in, shared + interfaces.global.input,
+ 			sizeof(glb_in));
+ 	interface_words(csg_in, shared + slot->group.input, sizeof(csg_in));
+-	ops->invalidate(shared + interfaces.global.output, sizeof(glb_out));
+-	ops->invalidate(shared + slot->group.output, sizeof(csg_out));
++	invalidate_headers(ops, shared, slot);
+ 	interface_words(glb_out, shared + interfaces.global.output,
+ 			sizeof(glb_out));
+ 	interface_words(csg_out, shared + slot->group.output, sizeof(csg_out));
+@@ -2500,14 +2520,20 @@
+ 	bool suspended_slot =
+ 		!task->start_attempted && (csg_in[0] & 7U) == 2U &&
+ 		((csg_in[0] ^ csg_out[0]) & TASK_CSG_ACK_MASK) == 0U;
++	bool outputs_synced = ops->invalidate_outputs != NULL;
+ 
++	if (outputs_synced)
++		ops->invalidate_outputs(shared, slot->outputs, interfaces.streams);
+ 	for (unsigned int i = 0U; i < interfaces.streams; i++) {
+ 		uint32_t req, expected = task->started && (cs_mask &
+ 							   (1U << i)) != 0U ?
+ 						 1U :
+ 						 0U;
+ 
+-		stream_status(ops, shared + slot->stream[i].output, &cs_out);
++		if (outputs_synced)
++			stream_status_read(shared + slot->stream[i].output, &cs_out);
++		else
++			stream_status(ops, shared + slot->stream[i].output, &cs_out);
+ 		interface_words(&req, shared + slot->stream[i].input,
+ 				sizeof(req));
+ 		if ((req & 7U) != expected ||
+@@ -3687,18 +3713,25 @@
+ 	step = 4U;
+ 	start = ops->clock();
+ 	do {
+-		ops->invalidate(shared + interfaces.global.output,
+-				sizeof(glb_out));
+-		ops->invalidate(shared + slot->group.output, sizeof(csg_out));
++		invalidate_headers(ops, shared, slot);
+ 		interface_words(glb_out, shared + interfaces.global.output,
+ 				sizeof(glb_out));
+ 		interface_words(csg_out, shared + slot->group.output,
+ 				sizeof(csg_out));
+ 		if (glb_out[4] != 0U)
+ 			goto failed;
++		bool outputs_synced = ops->invalidate_outputs != NULL;
++
++		if (outputs_synced)
++			ops->invalidate_outputs(shared, slot->outputs,
++						interfaces.streams);
+ 		for (unsigned int i = 0U; i < interfaces.streams; i++) {
+-			stream_status(ops, shared + slot->stream[i].output,
+-				      &cs_out);
++			if (outputs_synced)
++				stream_status_read(shared + slot->stream[i].output,
++						   &cs_out);
++			else
++				stream_status(ops, shared + slot->stream[i].output,
++					      &cs_out);
+ 			if ((cs_out.ack & TASK_CS_ERRORS) != 0U ||
+ 			    cs_out.fault != 0U || cs_out.fatal != 0U) {
+ 				ERROR("GPU OBSERVE cs=%u ack=%x fault=%x fatal=%x\n",
+@@ -4848,6 +4881,14 @@
+ 		    !iface_range(group[2], FW_GROUP_OUTPUT_SIZE,
+ 				 &interfaces.slots[g].group.output))
+ 			return false;
++		struct fw_slot *slot = &interfaces.slots[g];
++
++		slot->headers[0] = (struct gpu_firmware_output_range) {
++			interfaces.global.output, FW_GLOBAL_OUTPUT_SIZE
++		};
++		slot->headers[1] = (struct gpu_firmware_output_range) {
++			slot->group.output, FW_GROUP_OUTPUT_SIZE
++		};
+ 		if (g == 0U) {
+ 			memcpy(first_group, group, sizeof(group));
+ 			interfaces.streams = group[5];
+@@ -4869,6 +4910,9 @@
+ 			    !iface_range(stream[2], FW_STREAM_OUTPUT_SIZE,
+ 					 &interfaces.slots[g].stream[s].output))
+ 				return false;
++			slot->outputs[s] = (struct gpu_firmware_output_range) {
++				slot->stream[s].output, FW_STREAM_OUTPUT_SIZE
++			};
+ 			if (g == 0U && s == 0U)
+ 				interfaces.stream_features = stream[0];
+ 			else if (interfaces.stream_features != stream[0])
+--- a/runtime/rsi/opencca_gpu_private.c
++++ b/runtime/rsi/opencca_gpu_private.c
+@@ -469,6 +469,31 @@
+ 	dsb(sy);
+ }
+ 
++static void invalidate_outputs(const unsigned char *shared,
++			       const struct gpu_firmware_output_range *ranges,
++			       unsigned int count)
++{
++	unsigned long ctr;
++
++	__asm__ volatile ("mrs %0, ctr_el0" : "=r" (ctr));
++	if ((4U << ((ctr >> 16U) & 15U)) != GPU_FIRMWARE_CACHE_LINE) {
++		for (unsigned int i = 0U; i < count; i++)
++			invalidate(shared + ranges[i].offset, ranges[i].size);
++		return;
++	}
++	/* Each discovered output begins on its own line. No load or device
++	 * access crosses the common completion barrier.
++	 */
++	for (unsigned int i = 0U; i < count; i++) {
++		uintptr_t line = (uintptr_t)shared + ranges[i].offset;
++		uintptr_t end = line + ranges[i].size;
++
++		for (; line < end; line += GPU_FIRMWARE_CACHE_LINE)
++			__asm__ volatile ("dc ivac, %0" :: "r" (line) : "memory");
++	}
++	dsb(sy);
++}
++
+ static void irq_next(unsigned int csg, uint64_t epoch, uint64_t after,
+ 		     struct gpu_private_result *result)
+ {
+@@ -525,6 +550,7 @@
+ 	.address = table_pa,
+ 	.clean = clean,
+ 	.invalidate = invalidate,
++	.invalidate_outputs = invalidate_outputs,
+ 	.install = opencca_gpu_firmware_install,
+ 	.boot = opencca_gpu_firmware_boot,
+ 	.configuration = opencca_gpu_firmware_configuration,

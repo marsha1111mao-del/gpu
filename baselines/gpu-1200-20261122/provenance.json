@@ -1,0 +1,90 @@
+{
+  "base": "build/gpu-normalization-20261114/phase2",
+  "source_changes": {
+    "proxy": {
+      "base_tree": "build/gpu-normalization-20261114/phase2/matched-guests-r1/workspace/Linux-Guest-GPU",
+      "tested_tree": "build/gpu1200-20261122/batch-guest",
+      "files": {
+        "drivers/gpu/drm/panthor-proxy/panthor_proxy_drv.c": {
+          "base_sha256": "122a81edf4fcb5678650c78296484c8957a356804bc256d13d1ad0b6a1967fa6",
+          "tested_sha256": "151cccfdc717d3b4b34ac1ca10e503f5e01a419fc27519147987c354a859581e"
+        }
+      }
+    },
+    "rmm": {
+      "base_tree": "build/gpu-normalization-20261114/phase2/rmm-arm64-r1/source/tf-rmm",
+      "tested_tree": "build/gpu1200-20261122/output-ranges/firmware",
+      "files": {
+        "runtime/core/opencca_gpu_firmware.c": {
+          "base_sha256": "c0a44892ee0fd607ccde4db2588ba63f33931ff4a8e7747725fe4dc7faac56b1",
+          "tested_sha256": "63a936750427907f3e571831bf2d0876b019d017498c9d125a93f42fe95cbaef"
+        },
+        "runtime/include/opencca_gpu_firmware.h": {
+          "base_sha256": "48b488e7c9230998c4d6d3c6445fdd5ef61876f07537d7ae142f4c6f1c576932",
+          "tested_sha256": "cab7629d8af3203f9879c34972ff13af7e107aaee4cd62f925677a26642c4c2e"
+        },
+        "runtime/rsi/opencca_gpu_private.c": {
+          "base_sha256": "b4dd869a176fa77e7f34ce6b26d17e936fe2deb437b1d23cb5f83bac1201c82b",
+          "tested_sha256": "6096508d037ed0d00c3cdbe6fd4d60fa6947747a1ae066e784a51cefb5a46e05"
+        }
+      }
+    }
+  },
+  "patches": {
+    "batch-proxy.patch": "075d14a52527314ddc1a157702b1b043e0da3d09a22d3316cc9be80221119f95",
+    "batch-rmm.patch": "3d1972f358398fb8bf38c17f46a48433fbee3999d5f4e1a03d44b74186ace81e",
+    "output-ranges.patch": "b7fc14eecf79e5caf087e90e171567916b08d95acdf4c3952caf544a5d376532"
+  },
+  "hardware": {
+    "host_release": "6.12.0-opencca-pmthor-opp3",
+    "kvm_arm_mode": "protected",
+    "gpu_hz": 594000000
+  },
+  "tested_remote_dependencies": {
+    "/root/GPU-SFTP/firecracker-bins/bin/firecracker": "fb2c3816d776a288d34b8c7f5b74b1e1722bb64d79079cac9c303319361310ec",
+    "/root/GPU-SFTP/firecracker-bins/rootfs/rootfs-panfrost.ext4": "5d0c2ec8e5c1830f6a93c39d34bd8ae02a99702792e9e16a9d9034388f606d60"
+  },
+  "shared_local_dependencies": {
+    "directory": "build/baselines/shared-rk3588-opp3",
+    "checksum_list": "SHA256SUMS",
+    "host_kernel_partition_capture": {
+      "source": "/dev/mmcblk1p3",
+      "partition_label": "kernel",
+      "archive": "host-kernel-sd-p3.img.gz",
+      "archive_sha256": "b7cfadd86eee959ec806f7611f10bf28a7a359515a3894f4d2a7cdd9ceec789f",
+      "raw_sha256": "787cd736fd656eef798eceaa117c13f94fd6850283750d01eb130c3b7881d7fc"
+    }
+  },
+  "runs": [
+    "gpu1200-output-ranges-720-20261122",
+    "gpu1200-output-confirm-720-20261122",
+    "gpu1200-output-confirm-compute-20261122",
+    "gpu1200-output-confirm-restore-20261122"
+  ],
+  "qualification": {
+    "scores": [
+      1205,
+      1203
+    ],
+    "glmark_runs": [
+      "gpu1200-output-ranges-720-20261122",
+      "gpu1200-output-confirm-720-20261122"
+    ],
+    "target": ">1200",
+    "compute_run": "gpu1200-output-confirm-compute-20261122",
+    "compute": "PASS",
+    "candidate_fit": {
+      "sha256": "98d7b60215a10c77a66a7016c4b7e9c2c4c3c1d638b3213801ab8adf06e8547f",
+      "bytes": 1812320
+    },
+    "frozen_readback": {
+      "sd2_fit_sha256": "239b9cb5d067fbdba84b4c0bed867a6e48ce5f1c10161653fd86fd3b6fc03f47",
+      "runtime": {
+        "client-Image": "c6e6560b9f4340c2514b5b3404bad9e3bcc9eb640f427430b2f6bf23748614d0",
+        "proxy-Image": "9db12d358d6a6ca865842f8c85d4eb72f05fd99ec89967c6811981401490cd22",
+        "initrd.cpio": "82342786a7ef8ae0721499f13558fd63f1864bc742078fd4bdcdf4d0702ca1e2",
+        "runner.py": "a0ad3085b320655bf8a2a805acc85344b0139ae9be534860fb5713835443d9fc"
+      }
+    }
+  }
+}
